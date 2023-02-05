@@ -1,0 +1,16 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>셧다운 된 서버의 DAT파일만 열 수 있는 것으로 보임.</p>
+
+<h2 id="2-설명">2. 설명</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>./wlst.sh
+exportDiagnosticData(logicalName='EventsDataArchive', logName='/home/cs2/kdh/weblogic/12.2.1/domains/base_domain/servers/m1/data/store/diagnostics/WLS_DIAGNOSTICS000000.DAT', storeDir='/home/cs2/kdh/weblogic/12.2.1/domains/base_domain/servers/m1/data/store/diagnostics' ,exportFileName='myExport.xml')
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>myExport.xml 열면 xml 로 데이터 집계됨</p>
+
+<p>12cR1 기준 추출가능한 데이터 유형은 <a href="https://docs.oracle.com/middleware/1213/wls/WLSTC/reference.htm#WLSTC244">여기</a>서 확인</p>
+:ET

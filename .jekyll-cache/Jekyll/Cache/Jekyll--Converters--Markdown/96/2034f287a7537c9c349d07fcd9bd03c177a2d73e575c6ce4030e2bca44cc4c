@@ -1,0 +1,47 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>아주 심플하게, 바로 써먹을 수 있는 백업과 복구 방법을 알아보자.</p>
+
+<h2 id="2-backup">2. Backup</h2>
+
+<p>부분 백업도 가능하며, 아래 명령줄은 root 계정으로 전체 DB를 ${FILENAME} 으로 백업한다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ FILENAME</span><span class="o">=</span><span class="s2">"full_backup.sql_</span><span class="si">$(</span><span class="nb">date</span> <span class="s2">"+%Y_%m_%d_:_%H:%M:%S"</span><span class="si">)</span><span class="s2">"</span>
+<span class="nv">$ </span>mysqldump <span class="nt">-u</span> root <span class="nt">-p</span> <span class="nt">--all-databases</span> <span class="o">&gt;</span> <span class="k">${</span><span class="nv">FILENAME</span><span class="k">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="3-recovery">3. Recovery</h2>
+
+<p>다음의 명령으로, 복구할 수 있다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>mysql <span class="nt">-u</span> root <span class="nt">-p</span> &lt; <span class="k">${</span><span class="nv">FILENAME</span><span class="k">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>장애로 인하여 DB데이터를 잃어버린 경우 복구하는게 아니라,</p>
+
+<p>데이터를 이전 백업본으로 돌아가는 경우라면..</p>
+
+<p>위 명령을 수행하면, 덮어씌우는 게 아니라 새로 INSERT를 하게 되어 동일한 data가 삽입될 수 있다고 한다(?).</p>
+
+<p>그럴 경우 복구 하기 전에 아래 명령어들을 모두 수행한다.</p>
+
+<p>다음을 우선 실행하여, 데이터를 날린다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>mysql <span class="nt">-u</span> root <span class="nt">-p</span> &lt;DB&gt; <span class="nt">-e</span> <span class="s2">"drop database &lt;DB&gt;"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>DB를 재생성하고, 특정 유저에게 있던 권한도 날라갔으므로 DB권한을 다시 부여한다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>mysql&gt; CREATE DATABASE &lt;DB&gt; CHARACTER SET utf8 COLLATE utf8_bin<span class="p">;</span>
+mysql&gt; GRANT ALL PRIVILEGES ON &lt;DB&gt;.<span class="k">*</span> TO <span class="s1">'&lt;USERNAME&gt;'</span>@<span class="s1">'%'</span> WITH GRANT OPTION<span class="p">;</span>
+mysql&gt; FLUSH PRIVILEGES<span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

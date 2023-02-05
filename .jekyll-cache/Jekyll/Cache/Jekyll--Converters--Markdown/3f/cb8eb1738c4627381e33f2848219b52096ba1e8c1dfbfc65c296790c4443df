@@ -1,0 +1,173 @@
+I"B$<h2 id="1-개요">1. 개요</h2>
+
+<p>WebLogic Server 14c 기준에서 Server 측에 TLS Protocol을 어떻게 다루는지 알아본다.</p>
+
+<h2 id="2-tls-지원-정보">2. TLS 지원 정보</h2>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/secmg/standards.html#GUID-9DA3FE17-6ABA-4380-B2AE-FCBB39E0B7EC">WebLogic Server 14c 표준 Security 지원 정보</a> 에서 표준으로 지원하는 Security 항목을 확인할 수 있다.</p>
+
+<ul>
+  <li>TLS 1.2 이상을 권장</li>
+  <li>TLS 1.2 미만 버전에 대해서는 JDK에 의해 Disabled 될 수 있다.</li>
+</ul>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/secmg/ssl_version.html">SSL/TLS 프로토콜 버전 지정</a> 에서 Protocol 인수를 살펴볼 수 있다.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">weblogic.security.SSL.protocolVersion</code> : 활성화할 Protocol</li>
+  <li><code class="language-plaintext highlighter-rouge">weblogic.security.SSL.minimumProtocolVersion</code> : 위 Protocol에서 최소 버전 지정</li>
+  <li><code class="language-plaintext highlighter-rouge">weblogic.security.ssl.sslcontext.protocol</code></li>
+  <li>(Note) <code class="language-plaintext highlighter-rouge">$JAVA_HOME/jre/lib/security/java.security</code> 의 <code class="language-plaintext highlighter-rouge">jdk.tls.disabledAlgorithms</code> 에서 Protocol 기본값.</li>
+</ul>
+
+<h2 id="3-wls에서-tls-활성화">3. WLS에서 TLS 활성화</h2>
+
+<p>WebLogic Server 14c 기준으로는 TLS 1.2v 가 최소버전 으로 지정되어 있다.</p>
+
+<p>아래 에서 그 기본값을 검증하고, 최소 버전 변경방법을 살펴본다.</p>
+
+<h3 id="31-tlsv12-default">3.1 TLSv1.2 (Default)</h3>
+
+<p>Self-Signed SSL Certificate 를 적용하였다.</p>
+
+<p>openssl 명령어로 TLS 버전별로 확인을 간략히 해보면…</p>
+
+<p>TLSv1.0</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-connect</span> wls.local:8441 <span class="nt">-tls1</span>
+CONNECTED<span class="o">(</span>00000003<span class="o">)</span>
+140159853406016:error:1409442E:SSL routines:ssl3_read_bytes:tlsv1 alert protocol version:ssl/record/rec_layer_s3.c:1544:SSL alert number 70
+<span class="nt">---</span>
+no peer certificate available
+<span class="nt">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>TLSv1.1</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-connect</span> wls.local:8441 <span class="nt">-tls1_1</span>
+CONNECTED<span class="o">(</span>00000003<span class="o">)</span>
+140675578558272:error:1409442E:SSL routines:ssl3_read_bytes:tlsv1 alert protocol version:ssl/record/rec_layer_s3.c:1544:SSL alert number 70
+<span class="nt">---</span>
+no peer certificate available
+<span class="nt">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>TLSv1.2</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-connect</span> wls.local:8441 <span class="nt">-tls1_2</span>
+CONNECTED<span class="o">(</span>00000003<span class="o">)</span>
+<span class="nv">depth</span><span class="o">=</span>0 DC <span class="o">=</span> KIS, C <span class="o">=</span> KR, ST <span class="o">=</span> ST, L <span class="o">=</span> L, O <span class="o">=</span> O, OU <span class="o">=</span> OU, CN <span class="o">=</span> KIS
+verify error:num<span class="o">=</span>18:self signed certificate
+verify <span class="k">return</span>:1
+<span class="nv">depth</span><span class="o">=</span>0 DC <span class="o">=</span> KIS, C <span class="o">=</span> KR, ST <span class="o">=</span> ST, L <span class="o">=</span> L, O <span class="o">=</span> O, OU <span class="o">=</span> OU, CN <span class="o">=</span> KIS
+verify <span class="k">return</span>:1
+<span class="nt">---</span>
+Certificate chain
+ 0 s:DC <span class="o">=</span> KIS, C <span class="o">=</span> KR, ST <span class="o">=</span> ST, L <span class="o">=</span> L, O <span class="o">=</span> O, OU <span class="o">=</span> OU, CN <span class="o">=</span> KIS
+   i:DC <span class="o">=</span> KIS, C <span class="o">=</span> KR, ST <span class="o">=</span> ST, L <span class="o">=</span> L, O <span class="o">=</span> O, OU <span class="o">=</span> OU, CN <span class="o">=</span> KIS
+<span class="nt">---</span>
+Server certificate
+<span class="nt">-----BEGIN</span> CERTIFICATE-----
+MIIDYzCCAkugAwIBAgIEeZa2YzANBgkqhkiG9w0BAQsFADBiMRMwEQYKCZImiZPy
+...
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>TLSv1.3</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-connect</span> wls.local:8441 <span class="nt">-tls1_3</span>
+CONNECTED<span class="o">(</span>00000003<span class="o">)</span>
+<span class="nv">depth</span><span class="o">=</span>0 DC <span class="o">=</span> KIS, C <span class="o">=</span> KR, ST <span class="o">=</span> ST, L <span class="o">=</span> L, O <span class="o">=</span> O, OU <span class="o">=</span> OU, CN <span class="o">=</span> KIS
+verify error:num<span class="o">=</span>18:self signed certificate
+verify <span class="k">return</span>:1
+<span class="nv">depth</span><span class="o">=</span>0 DC <span class="o">=</span> KIS, C <span class="o">=</span> KR, ST <span class="o">=</span> ST, L <span class="o">=</span> L, O <span class="o">=</span> O, OU <span class="o">=</span> OU, CN <span class="o">=</span> KIS
+verify <span class="k">return</span>:1
+<span class="nt">---</span>
+Certificate chain
+ 0 s:DC <span class="o">=</span> KIS, C <span class="o">=</span> KR, ST <span class="o">=</span> ST, L <span class="o">=</span> L, O <span class="o">=</span> O, OU <span class="o">=</span> OU, CN <span class="o">=</span> KIS
+   i:DC <span class="o">=</span> KIS, C <span class="o">=</span> KR, ST <span class="o">=</span> ST, L <span class="o">=</span> L, O <span class="o">=</span> O, OU <span class="o">=</span> OU, CN <span class="o">=</span> KIS
+<span class="nt">---</span>
+Server certificate
+<span class="nt">-----BEGIN</span> CERTIFICATE-----
+MIIDYzCCAkugAwIBAgIEeZa2YzANBgkqhkiG9w0BAQsFADBiMRMwEQYKCZImiZPy
+...
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>기본적으로 TLSv1.2, TLSv1.3 이 활성화 되어 있다.</p>
+
+<p><em>이후 부터는 위 TLS 명령어의 출력결과를 생략하고, 성공 여부를 직접 기입한다.</em></p>
+
+<h3 id="32-tlsv10-tlsv12-미만">3.2 TLSv1.0 (TLSv1.2 미만)</h3>
+
+<p>다음의 옵션을 적용한다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nt">-Dweblogic</span>.security.SSL.minimumProtocolVersion<span class="o">=</span>TLSv1
+<span class="nt">-Djava</span>.security.properties<span class="o">=</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/java.security
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">java.security</code>는 ${JAVA_HOME}/jre/lib/security/java.security 의 복제본이며, 다음처럼 편집한다.</p>
+
+<pre><code class="language-java.security">#jdk.tls.disabledAlgorithms=SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, \
+jdk.tls.disabledAlgorithms=SSLv3, RC4, DES, MD5withRSA, \
+    DH keySize &lt; 1024, EC keySize &lt; 224, 3DES_EDE_CBC, anon, NULL, \
+    include jdk.disabled.namedCurves
+</code></pre>
+
+<p><em>TLSv1, TLSv1.1</em> 을 비활성 리스트에서 제거했다.</p>
+
+<p>다음의 명령어로 TLSv1.0 ~ TLSv1.3 까지 정상 수행된다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-connect</span> wls.local:8441 <span class="nt">-tls1</span>
+<span class="nv">$ </span>openssl s_client <span class="nt">-connect</span> wls.local:8441 <span class="nt">-tls1_2</span>
+<span class="nv">$ </span>openssl s_client <span class="nt">-connect</span> wls.local:8441 <span class="nt">-tls1_3</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

@@ -1,0 +1,6 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+<ul>
+  <li>WebLogic Console 메뉴에서 Thread Dump 생성</li>
+  <li>jdk의 jstack tool 사용하여 Thread Dump 생성</li>
+</ul>
+:ET

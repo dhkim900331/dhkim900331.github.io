@@ -1,0 +1,210 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>RHCSA 과정을 준비하면서, Swap파티셔닝을 정리한다.</p>
+
+<p>fdisk, gdisk 를 먼저 공부했지만, parted 가 너무 편리하여 parted로 정리한다.</p>
+
+<p><em>Swap이 아닌 일반 스토리지는 <a href="http://localhost:4000/6.rhcsa/StoragePartitioning">여기를 클릭</a></em></p>
+
+<h2 id="2-swap">2. Swap</h2>
+
+<p>일반 스토리지 단계에서부터 이어서 진행한다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="c"># parted /dev/vdb print</span>
+Model: Virtio Block Device <span class="o">(</span>virtblk<span class="o">)</span>
+Disk /dev/vdb: 5369MB
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name    Flags
+ 1      17.4kB  2000MB  2000MB  xfs          backup
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>현재 장치 정보는 위와 같은 상태</p>
+</blockquote>
+
+<h3 id="21-파티션-생성">2.1 파티션 생성</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="c"># parted /dev/vdb mkpart swap1 linux-swap 2001MB 2513MB</span>
+Information: You may need to update /etc/fstab.
+
+<span class="c"># parted /dev/vdb mkpart swap2 linux-swap 2514MB 3026MB</span>
+Information: You may need to update /etc/fstab.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>swap1, swap2 이름의 linux-swap 속성, 각각 512MB 크기를 2개 만들었다.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="c"># parted /dev/vdb print                                  </span>
+Model: Virtio Block Device <span class="o">(</span>virtblk<span class="o">)</span>
+Disk /dev/vdb: 5369MB
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name    Flags
+ 1      17.4kB  2000MB  2000MB  xfs          backup
+ 2      2001MB  2513MB  513MB                swap1   swap
+ 3      2514MB  3026MB  512MB                swap2   swap
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>print로 확인</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="c"># udevadm settle </span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>여기서는 헷갈리지 않고 해당 명령어를 잘 사용했다 ^^</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="c"># mkswap /dev/vdb2</span>
+Setting up swapspace version 1, size <span class="o">=</span> 489 MiB <span class="o">(</span>512749568 bytes<span class="o">)</span>
+no label, <span class="nv">UUID</span><span class="o">=</span>52c19f22-9abe-4e8a-94ac-bb6689e18e4b
+
+<span class="c"># mkswap /dev/vdb3</span>
+Setting up swapspace version 1, size <span class="o">=</span> 488 MiB <span class="o">(</span>511700992 bytes<span class="o">)</span>
+no label, <span class="nv">UUID</span><span class="o">=</span>00eb7f1a-1082-49cb-bd04-8b1d8a48e7a4 
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>파일 시스템을 swap으로 잘 지정하였다.</p>
+
+  <p>여기도 UUID를 잘 어딘가에 기록해둔다.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="c"># parted /dev/vdb print</span>
+Model: Virtio Block Device <span class="o">(</span>virtblk<span class="o">)</span>
+Disk /dev/vdb: 5369MB
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/512B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system     Name    Flags
+ 1      17.4kB  2000MB  2000MB  xfs             backup
+ 2      2001MB  2513MB  513MB   linux-swap<span class="o">(</span>v1<span class="o">)</span>  swap1   swap
+ 3      2514MB  3026MB  512MB   linux-swap<span class="o">(</span>v1<span class="o">)</span>  swap2   swap 
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>print로 swap 까지 잘 확인되는 모습</p>
+</blockquote>
+
+<h3 id="22-swap-활성화">2.2 Swap 활성화</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">UUID</span><span class="o">=</span>52c19f22-9abe-4e8a-94ac-bb6689e18e4b swap swap defaults 0 0
+<span class="nv">UUID</span><span class="o">=</span>00eb7f1a-1082-49cb-bd04-8b1d8a48e7a4 swap swap <span class="nv">pri</span><span class="o">=</span>10 0 0
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>/etc/fstab 으로 영구적으로 활성화 할 수 있게 설정한다.</p>
+
+  <p>pri=10은 가장 먼저 사용하는 우선순위 개념.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="c"># swapon --show</span>
+<span class="c"># swapon /dev/vdb2</span>
+<span class="c"># swapon /dev/vdb3</span>
+<span class="c"># swapon --show</span>
+NAME      TYPE      SIZE USED PRIO
+/dev/vdb2 partition 489M   0B   <span class="nt">-2</span>
+/dev/vdb3 partition 488M   0B   <span class="nt">-3</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><em>1: show 명령으로 활성화된 swap이 있는지 살펴보지만 없다.</em></p>
+
+  <p><em>_2-3: 각각 장치를 활성화하였다.</em></p>
+
+  <p><em>4-7: 정상적으로 활성화되었다고 확인된다.</em></p>
+
+  <p>/dev/vdb3 의 PRIO는 -3을 나온다. reboot 해야 적용된다.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="c"># systemctl reboot</span>
+...
+
+<span class="c"># swapon --show</span>
+NAME      TYPE      SIZE USED PRIO
+/dev/vdb3 partition 488M   0B   10
+/dev/vdb2 partition 489M   0B   <span class="nt">-2</span>
+
+<span class="c"># free -h</span>
+total        used        free      shared  buff/cache   available
+Mem:          1.8Gi       177Mi       1.4Gi        16Mi       188Mi       1.5Gi
+Swap:         976Mi          0B       976Mi
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>시스템 reboot 이후 swap 활성화가 잘 되어 있으며, 메모리에도 잘잡힌다.</p>
+</blockquote>
+:ET

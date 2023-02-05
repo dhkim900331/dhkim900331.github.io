@@ -1,0 +1,373 @@
+I"�E<h2 id="1-개요">1. 개요</h2>
+
+<p>Sample EJB App을 배포하여, Cluster Weight 기능을 테스트한다.</p>
+
+<p>여기서 소개하는 EJB App의 Java Source Code나 Deployment Descriptor XML File의 내용은 올바르지 않을 수 있다.</p>
+
+<h2 id="2-요구-사항">2. 요구 사항</h2>
+
+<ul>
+  <li>다음의 환경에서 진행하였다.
+    <ul>
+      <li>Red Hat Enterprise Linux release 8.7</li>
+      <li>Oracle WebLogic Server 14c</li>
+      <li>Oracle JDK 1.8.0_351</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="21-weblogic">2.1 WebLogic</h4>
+
+<ul>
+  <li>다음의 3개 Instance를 구성하고, 일부만 Clustering 설정한다.</li>
+</ul>
+
+<p><img src="/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_1.png" alt="EJB-ClusterWeight_1" /></p>
+
+<blockquote>
+  <p>각 Instance는 Enable Tunneling 되었다. (중요하지 않아 보임)</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>base_cluster 내의 Instance는 각각 <code class="language-plaintext highlighter-rouge">Configuration - Cluster - Cluster Weight</code> 설정값을 <code class="language-plaintext highlighter-rouge">50</code>과 <code class="language-plaintext highlighter-rouge">100</code> 으로 적용하였다.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">base_cluster - Configuration - Default Load Algorithm</code> 을 <code class="language-plaintext highlighter-rouge">weight-based</code> 설정</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">2.2 EJB Application</code>의</p>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">clientSide</code> 를 <code class="language-plaintext highlighter-rouge">M1</code> 에 배포한다.</li>
+      <li><code class="language-plaintext highlighter-rouge">serverSide</code> 를 <code class="language-plaintext highlighter-rouge">base_cluster</code> 에 배포한다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_2.png" alt="EJB-ClusterWeight_2" /></p>
+
+<h3 id="22-ejb-application">2.2 EJB Application</h3>
+
+<h4 id="221-serverside">2.2.1 serverSide</h4>
+
+<p>serverSide EJB App은 Business Logic (<code class="language-plaintext highlighter-rouge">ejbHome.getMsg()</code>)이 구현되어 있다.</p>
+
+<ul>
+  <li>다음의 EJB App을 준비한다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>tree serverSide/
+serverSide/
+├── index.jsp
+├── META-INF
+└── WEB-INF
+    ├── classes
+    │   └── serverSide
+    │       ├── ejbHome.class
+    │       └── ejbRemote.class
+    ├── src
+    │   └── serverSide
+    │       ├── ejbHome.java
+    │       └── ejbRemote.java
+    ├── weblogic-ejb-jar.xml
+    ├── weblogic.xml
+    └── web.xml
+
+6 directories, 8 files
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>serverSide/index.jsp</li>
+</ul>
+
+<div class="language-jsp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"javax.ejb.EJB"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"javax.naming.*"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"java.util.*"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"serverSide.*"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%</span>
+
+  <span class="nc">Hashtable</span> <span class="n">ht</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Hashtable</span><span class="o">();</span>
+  <span class="n">ht</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">Context</span><span class="o">.</span><span class="na">INITIAL_CONTEXT_FACTORY</span><span class="o">,</span> <span class="s">"weblogic.jndi.WLInitialContextFactory"</span><span class="o">);</span>
+  <span class="n">ht</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="nc">Context</span><span class="o">.</span><span class="na">PROVIDER_URL</span><span class="o">,</span> <span class="s">"http://wls.local:8003"</span><span class="o">);</span>
+
+  <span class="k">try</span> <span class="o">{</span>
+        <span class="nc">Context</span> <span class="n">ctx</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">InitialContext</span><span class="o">(</span><span class="n">ht</span><span class="o">);</span>
+        <span class="n">ejbRemote</span> <span class="n">eRemote</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
+                <span class="n">eRemote</span> <span class="o">=</span> <span class="o">(</span><span class="n">ejbRemote</span><span class="o">)</span><span class="n">ctx</span><span class="o">.</span><span class="na">lookup</span><span class="o">(</span><span class="s">"java:global.serverSide.ejbHome!serverSide.ejbRemote"</span><span class="o">);</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="s">" : "</span><span class="o">);</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">eRemote</span><span class="o">.</span><span class="na">getMsg</span><span class="o">());</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="err">"</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;"</span><span class="o">);</span>
+        <span class="o">}</span>
+  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="nt">%&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>index.jsp는 clientSide를 통해 호출할 것이고, 미리 여기서 만들었을 뿐이다.</p>
+
+  <p>물론 serverSide 의 index.jsp 를 호출해도 동작한다.</p>
+</blockquote>
+
+<ul>
+  <li>WEB-INF/src/serverSide/ejbHome.java</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="kn">package</span> <span class="nn">serverSide</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.ejb.Stateless</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.ejb.Remote</span><span class="o">;</span>
+
+<span class="nd">@Stateless</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"ejbHome"</span><span class="o">,</span> <span class="n">mappedName</span> <span class="o">=</span> <span class="s">"ejbHome"</span><span class="o">)</span>
+<span class="nd">@Remote</span><span class="o">(</span><span class="n">serverSide</span><span class="o">.</span><span class="na">ejbRemote</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ejbHome</span> <span class="kd">implements</span> <span class="n">ejbRemote</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">ejbHome</span><span class="o">(){}</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getMsg</span><span class="o">(){</span> <span class="k">return</span> <span class="s">"Hello EJB"</span><span class="o">;</span> <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>WEB-INF/src/serverSide/ejbRemote.java</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="kn">package</span> <span class="nn">serverSide</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ejbRemote</span> <span class="o">{</span>
+    <span class="nc">String</span> <span class="nf">getMsg</span><span class="o">();</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>Java Compile Tip</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nb">.</span> ./setDomainEnv.sh
+javac <span class="nt">-d</span> ./classes ./src/serverSide/<span class="k">*</span>java
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>WEB-INF/web.xml</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;web-app&gt;</span>
+<span class="nt">&lt;/web-app&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>WEB-INF/weblogic.xml</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;weblogic-web-app&gt;</span>
+	<span class="nt">&lt;container-descriptor&gt;</span>
+		<span class="nt">&lt;servlet-reload-check-secs&gt;</span>1<span class="nt">&lt;/servlet-reload-check-secs&gt;</span>
+		<span class="nt">&lt;resource-reload-check-secs&gt;</span>1<span class="nt">&lt;/resource-reload-check-secs&gt;</span>
+	<span class="nt">&lt;/container-descriptor&gt;</span>
+	
+	<span class="nt">&lt;jsp-descriptor&gt;</span>
+		<span class="nt">&lt;page-check-seconds&gt;</span>1<span class="nt">&lt;/page-check-seconds&gt;</span>
+	<span class="nt">&lt;/jsp-descriptor&gt;</span>
+<span class="nt">&lt;/weblogic-web-app&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>개인적으로 이번 테스트시에 사용한 설정일 뿐이다.</p>
+</blockquote>
+
+<ul>
+  <li>WEB-INF/weblogic-ejb-jar.xml</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;weblogic-ejb-jar&gt;</span>
+    <span class="nt">&lt;weblogic-enterprise-bean&gt;</span>
+                <span class="nt">&lt;ejb-name&gt;</span>serverSide_ejb<span class="nt">&lt;/ejb-name&gt;</span>
+
+
+                <span class="nt">&lt;stateless-session-descriptor&gt;</span>
+                        <span class="nt">&lt;stateless-clustering&gt;</span>
+                                <span class="c">&lt;!--
+                                &lt;home-is-clusterable&gt;false&lt;/home-is-clusterable&gt;
+                                &lt;stateless-bean-is-clusterable&gt;false&lt;/stateless-bean-is-clusterable&gt;
+                                &lt;stateless-bean-load-algorithm&gt;random&lt;/stateless-bean-load-algorithm&gt;
+                                --&gt;</span>
+                        <span class="nt">&lt;/stateless-clustering&gt;</span>
+                <span class="nt">&lt;/stateless-session-descriptor&gt;</span>
+
+
+    <span class="nt">&lt;/weblogic-enterprise-bean&gt;</span>
+<span class="nt">&lt;/weblogic-ejb-jar&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>주석을 하더라도 동작하는 부분은 아직 이해하지 못했다.</p>
+</blockquote>
+
+<h4 id="222-clientside">2.2.2 clientSide</h4>
+
+<p>clientSide는 serverSide를 복제하여 준비하면 된다.</p>
+
+<p>아래에서 차이점을 살펴보면, serverSide 에 있던 Business Logic class (<code class="language-plaintext highlighter-rouge">ejbHome.class</code>) 이없다.</p>
+
+<p>clientSide App은 EJB App이 아니다.</p>
+
+<p>interface class (ejbRemote.class) 만 가지고 있다.</p>
+
+<p>EJB의 특징이 여기서 드러나는데, 외부의 client가 server의 Business Logic 을 interface를 이용해 Remote 접근할 수 있다.</p>
+
+<blockquote>
+  <p>index.jsp 가 serverSide에 있지만, 중요하지 않다.</p>
+</blockquote>
+
+<ul>
+  <li>다음의 EJB App을 준비한다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cp</span> <span class="nt">-pR</span> serverSide clientSide
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>정말, 기본 기능(File)만 있어도 serverSide 의 Business Logic 실행이 가능한지 확인해보기 위해 과감히 삭제한다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">rm </span>clientSide/WEB-INF/classes/serverSide/ejbHome.class
+<span class="nv">$ </span><span class="nb">rm </span>clientSide/WEB-INF/src/serverSide/ejbHome.java
+<span class="nv">$ </span><span class="nb">rm </span>clientSide/WEB-INF/weblogic-ejb-jar.xml
+<span class="nv">$ </span><span class="nb">rm </span>clientSide/WEB-INF/weblogic.xml
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="3-application-수행-및-설명">3. Application 수행 및 설명</h2>
+
+<p>clientSide는 <code class="language-plaintext highlighter-rouge">M1</code>에 serverSide는 <code class="language-plaintext highlighter-rouge">base_cluster(M2, M3)</code> 에 배포되어 있다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">http://M1/clientSide/index.jsp</code> 을 호출하면, <code class="language-plaintext highlighter-rouge">M2 (8003)</code> 을</p>
+
+<p>JNDI Lookup Access Point로 요청을 수행한다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">java:global.serverSide.ejbHome!serverSide.ejbRemote</code> 을 Lookup 하여</p>
+
+<p><code class="language-plaintext highlighter-rouge">base_cluster (M2, M3)</code> 에 배포된 serverSide EJB Remote Object를 조회한다.</p>
+
+<p>위 Global Name은 <code class="language-plaintext highlighter-rouge">&lt;Instance&gt; - Configuration - General - View JNDI Tree</code> 에서 확인할 수 있다.</p>
+
+<p><img src="/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_3.png" alt="EJB-ClusterWeight_3" /></p>
+
+<p>조회 시에, <code class="language-plaintext highlighter-rouge">base_cluster</code> 에 설정한 <code class="language-plaintext highlighter-rouge">weight-base</code> Algorithm 에 따라 동작한다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">index.jsp</code> 는 한번에 10번의 lookup을 의도적으로 수행한다.</p>
+
+<p>다음의 통계 화면에서 결과를 확인할 수 있으며, 초기 요청시에는 분산 가중치가 엇비슷 할 수 있다.</p>
+
+<p><img src="/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_4.png" alt="EJB-ClusterWeight_4" /></p>
+
+<h2 id="4-trouble-shooting">4. Trouble Shooting</h2>
+
+<h3 id="41-naming-service">4.1 Naming Service</h3>
+
+<p>JNDI 호출이 잘 되지 않는 경우에는, 정확한 Naming을 확인해야 하는데, View JNDI Tree 를 참조하여 해결이 되었다.</p>
+
+<p>여기서는 <strong>Global Naming Lookup</strong>을 해야 Cluster Load Balancing이 적용되었다.</p>
+
+<p><img src="/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_5.png" alt="EJB-ClusterWeight_5" /></p>
+
+<h3 id="42-cluster-default-load-algorithm">4.2 Cluster Default Load Algorithm</h3>
+
+<p>&lt;Instance&gt; 의 Cluster Weight 값 외에도 Cluster의 Default Load Algorithm 기본값을 round-robin에서 weight-based 으로 변경해야 된다.</p>
+
+<p>이 부분은, 당연한 말이지만 메뉴얼 숙지를 하지 못한 탓에 놓친 부분이였다.</p>
+:ET

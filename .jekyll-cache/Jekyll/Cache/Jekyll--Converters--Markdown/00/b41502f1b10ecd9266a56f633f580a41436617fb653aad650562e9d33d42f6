@@ -1,0 +1,91 @@
+I"m<h2 id="1-개요">1. 개요</h2>
+
+<p>고객사에 Apache 설치를 위해 OS Package가 사전 설치되어 있어야 하나, 폐쇄망으로 인하여 직접 Package를 설치해야 되는 상황이 발생하였다.</p>
+
+<p>Linux Image를 마운트하여 직접 Package를 구성해보자.</p>
+
+<h2 id="2-local-repo-구성">2. Local Repo 구성</h2>
+
+<h4 id="21-image-upload">2.1 Image Upload</h4>
+
+<ul>
+  <li>고객사와 같이 테스트 환경은 CentOS 7.4.1708 이미지다.</li>
+  <li>해당 이미지를 구할 수 있는 미러는 많으나, 오래된 자료라 Not Found 또는 다운로드 속도 지연 문제로 토렌트로 받을수는 있었다.</li>
+  <li>다음과 같이 받은 DVD (Full image) 파일을 특정 경로에 업로드 한다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="o">[</span>root@localhost yum.repos.d]# <span class="nb">ls</span> <span class="nt">-rtl</span> /root
+합계 4415492
+<span class="nt">-rw-r--r--</span><span class="nb">.</span> 1 root root 4521459712  4월  6 09:31 CentOS-7-x86_64-DVD-1708.iso
+<span class="nt">-rw-------</span><span class="nb">.</span> 1 root root       1277  4월  6 09:55 anaconda-ks.cfg
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="22-image-mount">2.2 Image Mount</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nb">mkdir</span> /mnt_centos7.4 <span class="c"># 이미 있는 '/mnt' 를 사용해도 된다. 필수로 새로 만들 필요는 없다.</span>
+mount <span class="nt">-o</span> loop CentOS-7-x86_64-DVD-1708.iso /mnt_centos7.4
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>loop는 block device 장치를 뜻한다. (루프백)
+일반 파일(iso)을 장치처럼 접근가능하게 하기 위해 부여하는 옵션이다.</p>
+</blockquote>
+
+<h4 id="23-기존-repository-비활성화">2.3 기존 Repository 비활성화</h4>
+
+<ul>
+  <li>폐쇄망이나, 기본으로 Enabled 되어 있는 기존 Repo 목록들을 Disabled 해두어야 yum 설치 시 불필요한 접근을 하지 않겠다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>yum repolist enabled <span class="c"># 명령으로 enabled 항목 확인</span>
+yum-config-manager <span class="nt">--disable</span> <span class="s2">"disabled 전환할 repo name"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="24-local-repo-생성-및-활성화자동">2.4 Local Repo 생성 및 활성화(자동)</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>yum-config-manager <span class="nt">--add-repo</span> <span class="s2">"file:///mnt_centos7.4"</span>
+
+<span class="nb">cat</span> /etc/yum.repos.d/mnt_centos7.4.repo
+<span class="o">[</span>mnt_centos7.4]
+<span class="nv">name</span><span class="o">=</span>added from: file:///mnt_centos7.4
+<span class="nv">baseurl</span><span class="o">=</span>file:///mnt_centos7.4
+<span class="nv">enabled</span><span class="o">=</span>1
+
+
+yum repolist enabled | <span class="nb">grep</span> <span class="s2">"centos"</span>
+mnt_centos7.4              added from: file:///mnt_centos7.4              3,894
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Local repo에서 이미지 검색하는 것이 확인되면, 잘 끝났다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>yum list gcc
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+Installed Packages
+gcc.x86_64             4.8.5-16.el7          @mnt_centos7.4
+</pre></td></tr></tbody></table></code></pre></div></div>
+:ET

@@ -1,0 +1,45 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>servlet-reload-check-secs, resource-reload-check-secs, page-check-seconds</p>
+
+<h2 id="2-설명">2. 설명</h2>
+
+<ul>
+  <li>servlet-reload-check-secs: Servlet 변경</li>
+  <li>resource-reload-check-secs: XML, image 등등 모든 일반 파일 재갱신</li>
+  <li>page-check-seconds: jsp recompile</li>
+</ul>
+
+<p>0 is 항상 변경 확인.</p>
+
+<p>5 is 이전에 변경된 기록 =&gt; 5 일 경우 변경 확인.</p>
+
+<p>-1 is 전혀 확인 하지 않음.</p>
+
+<p>사용자의 요청이 들어왔을 때, 변경 확인.</p>
+
+<p>즉, 0으로 설정 시 매번 변경을 확인한다는 뜻. (요청이 없을때는 0으로 설정해도 변경되지 않는다는 의미.)</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="c">&lt;!-- weblogic.xml 파일의 내용 --&gt;</span>
+<span class="nt">&lt;weblogic-web-app&gt;</span>
+	<span class="nt">&lt;container-descriptor&gt;</span>
+	   <span class="nt">&lt;servlet-reload-check-secs&gt;</span>1<span class="nt">&lt;/servlet-reload-check-secs&gt;</span>
+	   <span class="nt">&lt;resource-reload-check-secs&gt;</span>1<span class="nt">&lt;/resource-reload-check-secs&gt;</span>
+	<span class="nt">&lt;/container-descriptor&gt;</span>
+	<span class="nt">&lt;jsp-descriptor&gt;</span>
+	   <span class="nt">&lt;page-check-seconds&gt;</span>1<span class="nt">&lt;/page-check-seconds&gt;</span>
+	<span class="nt">&lt;/jsp-descriptor&gt;</span>
+<span class="nt">&lt;/weblogic-web-app&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

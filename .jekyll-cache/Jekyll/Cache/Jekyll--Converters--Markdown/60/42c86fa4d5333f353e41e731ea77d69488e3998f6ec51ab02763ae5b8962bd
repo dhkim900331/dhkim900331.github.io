@@ -1,0 +1,437 @@
+I"C<h2 id="1-개요">1. 개요</h2>
+
+<p>NGINX 기본 설치 및 튜닝을 진행한다.</p>
+
+<p>설치 템플릿 구조나 튜닝에 대한 부분은 전체적으로 내가 Apache 에 익숙하므로</p>
+
+<p>은연히 Apache 템플릿에 맞추어질 수 있다.</p>
+
+<h2 id="2-설치">2. 설치</h2>
+
+<h3 id="21-다운로드">2.1 다운로드</h3>
+
+<p><a href="https://nginx.org/en/download.html">여기</a> 에서 Mainline/Stable Version을 받자.</p>
+
+<p>작성일 기준 <a href="https://nginx.org/download/nginx-1.21.6.tar.gz">nginx-1.21.6</a></p>
+
+<blockquote>
+  <p>Mainline Version nginx-1.21.6 으로 진행한다.</p>
+</blockquote>
+
+<h3 id="22-설치">2.2 설치</h3>
+
+<ul>
+  <li>설치 스크립트화를 위해 만들어두었다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+</pre></td><td class="rouge-code"><pre><span class="nv">SOURCE_DIR</span><span class="o">=</span>/tmp/nginx-1.21.6
+<span class="nv">INSTALL_DIR</span><span class="o">=</span>/usr/ssw/nginx-1.21.6
+
+<span class="nv">INSTALL_USERNAME</span><span class="o">=</span>dhkim
+<span class="nv">INSTALL_GROUPNAME</span><span class="o">=</span>dhkim
+
+<span class="nv">INSTALL_OPTIONS</span><span class="o">=</span><span class="s2">"
+--prefix=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2"> </span><span class="se">\</span><span class="s2">
+--sbin-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/sbin/nginx </span><span class="se">\</span><span class="s2">
+--modules-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/modules </span><span class="se">\</span><span class="s2">
+--conf-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/conf/nginx.conf </span><span class="se">\</span><span class="s2">
+--error-log-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/logs/error.log </span><span class="se">\</span><span class="s2">
+--http-log-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/logs/access.log </span><span class="se">\</span><span class="s2">
+--pid-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/logs/nginx.pid </span><span class="se">\</span><span class="s2">
+--lock-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/logs/nginx.lock </span><span class="se">\</span><span class="s2">
+--user=</span><span class="k">${</span><span class="nv">INSTALL_USERNAME</span><span class="k">}</span><span class="s2"> </span><span class="se">\</span><span class="s2">
+--group=</span><span class="k">${</span><span class="nv">INSTALL_GROUPNAME</span><span class="k">}</span><span class="s2"> </span><span class="se">\</span><span class="s2">
+--http-client-body-temp-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/tmp/client-body-temp </span><span class="se">\</span><span class="s2">
+--http-proxy-temp-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/tmp/proxy-temp </span><span class="se">\</span><span class="s2">
+--http-fastcgi-temp-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/tmp/fastcgi-temp </span><span class="se">\</span><span class="s2">
+--http-uwsgi-temp-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/tmp/uwsgi-temp </span><span class="se">\</span><span class="s2">
+--http-scgi-temp-path=</span><span class="k">${</span><span class="nv">INSTALL_DIR</span><span class="k">}</span><span class="s2">/tmp/scgi-temp </span><span class="se">\</span><span class="s2">
+"</span>
+
+<span class="nv">PERFORMANCE_MODULE_OPTIONS</span><span class="o">=</span><span class="s2">"
+--with-threads </span><span class="se">\</span><span class="s2">
+--with-file-aio </span><span class="se">\</span><span class="s2">
+--with-http_v2_module
+"</span>
+
+<span class="nv">MODULE_OPTIONS</span><span class="o">=</span><span class="s2">"
+--with-http_ssl_module </span><span class="se">\</span><span class="s2">
+--with-http_realip_module </span><span class="se">\</span><span class="s2">
+--with-http_addition_module </span><span class="se">\</span><span class="s2">
+--with-http_sub_module </span><span class="se">\</span><span class="s2">
+--with-http_dav_module </span><span class="se">\</span><span class="s2">
+--with-http_flv_module </span><span class="se">\</span><span class="s2">
+--with-http_mp4_module </span><span class="se">\</span><span class="s2">
+--with-http_gunzip_module </span><span class="se">\</span><span class="s2">
+--with-http_gzip_static_module </span><span class="se">\</span><span class="s2">
+--with-http_auth_request_module </span><span class="se">\</span><span class="s2">
+--with-http_random_index_module </span><span class="se">\</span><span class="s2">
+--with-http_secure_link_module </span><span class="se">\</span><span class="s2">
+--with-http_degradation_module </span><span class="se">\</span><span class="s2">
+--with-http_slice_module </span><span class="se">\</span><span class="s2">
+--with-http_stub_status_module </span><span class="se">\</span><span class="s2">
+--with-http_xslt_module=dynamic </span><span class="se">\</span><span class="s2">
+--with-http_image_filter_module=dynamic </span><span class="se">\</span><span class="s2">
+--with-stream=dynamic </span><span class="se">\</span><span class="s2">
+--with-stream_ssl_module </span><span class="se">\</span><span class="s2">
+--with-stream_realip_module </span><span class="se">\</span><span class="s2">
+--with-pcre </span><span class="se">\</span><span class="s2">
+"</span>
+
+<span class="nb">cd</span> <span class="k">${</span><span class="nv">SOURCE_DIR</span><span class="k">}</span>
+make clean
+./configure <span class="k">${</span><span class="nv">INSTALL_OPTIONS</span><span class="k">}</span> <span class="k">${</span><span class="nv">PERFORMANCE_MODULE_OPTIONS</span><span class="k">}</span> <span class="k">${</span><span class="nv">MODULE_OPTIONS</span><span class="k">}</span>
+make <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>http_xslt_module 을 위해 ` libxslt-devel.x86_64` 을 설치했다.</p>
+
+  <p>http_image_filter_module 을 위해 <code class="language-plaintext highlighter-rouge">gd-devel.x86_64</code> 을 설치했다.</p>
+</blockquote>
+
+<h3 id="23-실행-커맨드">2.3 실행 커맨드</h3>
+
+<p><a href="https://nginx.org/en/docs/beginners_guide.html#control">여기</a>에 실행 커맨드.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">pwd</span>
+/usr/ssw/nginx-1.21.6/sbin
+
+<span class="nv">$ </span>./nginx
+nginx: <span class="o">[</span>emerg] <span class="nb">mkdir</span><span class="o">()</span> <span class="s2">"/usr/ssw/nginx-1.21.6/tmp/client-body-temp"</span> failed <span class="o">(</span>2: No such file or directory<span class="o">)</span>
+
+<span class="nv">$ </span><span class="nb">mkdir</span> /usr/ssw/nginx-1.21.6/tmp
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>nginx 기동 시 설치 옵션으로 준 tmp 디렉토리가 없다는 에러가 발생하였다.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>./nginx
+nginx: <span class="o">[</span>emerg] <span class="nb">bind</span><span class="o">()</span> to 0.0.0.0:80 failed <span class="o">(</span>13: Permission denied<span class="o">)</span>
+
+<span class="nv">$ </span><span class="nb">sudo chown </span>root:dhkim nginx
+<span class="nv">$ </span><span class="nb">sudo chmod </span>4770 ./nginx
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>1024 이하 privileged port 이므로 권한 부여가 필요하다.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>./nginx
+<span class="nv">$ </span>ps <span class="nt">-ef</span> | <span class="nb">grep </span>nginx
+root       69613       1  0 10:12 ?        00:00:00 nginx:
+dhkim      69614   69613  0 10:12 ?        00:00:00 nginx:
+dhkim      69616    1816  0 10:12 pts/0    00:00:00 <span class="nb">grep</span> <span class="nt">--color</span><span class="o">=</span>auto nginx
+
+<span class="nv">$ </span>netstat <span class="nt">-an</span> | <span class="nb">grep </span>LISTEN | <span class="nb">grep </span>tcp | <span class="nb">grep </span>80
+tcp        0      0 0.0.0.0:80              0.0.0.0:<span class="k">*</span>               LISTEN
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>잘 기동이 되었다.</p>
+</blockquote>
+
+<h2 id="3-튜닝">3. 튜닝</h2>
+
+<h3 id="31-기본-튜닝">3.1 기본 튜닝</h3>
+
+<ul>
+  <li>nginx.conf</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+</pre></td><td class="rouge-code"><pre>user dhkim dhkim<span class="p">;</span>
+worker_processes  auto<span class="p">;</span>
+
+pid        logs/nginx.pid<span class="p">;</span>
+
+<span class="c"># worker_rlimit_nofile 은 open files 개수이며, worker_connections 보다 같거나 커야 한다.</span>
+worker_rlimit_nofile 2048<span class="p">;</span>
+events <span class="o">{</span>
+    worker_connections  1024<span class="p">;</span>
+    
+    <span class="c"># multi_accept : 동시에 여러 커넥션을 연결한다.</span>
+    multi_accept on<span class="p">;</span>
+    
+    <span class="c"># 커넥션 연결 시 (이벤트 처리에)사용할 메서드</span>
+    use epoll<span class="p">;</span>
+<span class="o">}</span>
+
+http <span class="o">{</span>
+	log_format customformat <span class="s1">'$remote_addr - $remote_user [$time_local] '</span>
+    	                <span class="s1">'"$request" $status $body_bytes_sent '</span>
+        	            <span class="s1">'"$http_referer" "$http_user_agent" '</span>
+						<span class="s1">'[$request_time]'</span><span class="p">;</span>
+
+    <span class="c"># 읽을 데이터와 쓸 데이터들을 버퍼를 거치지 않고, 직접 FD간에 주고받아 성능을 올린다.</span>
+    sendfile on<span class="p">;</span>
+    
+    <span class="c"># sendfile on 필요. 패킷을 바로 보내지 않고, 최대크기(MSS) 를 채운뒤 보내므로 트래픽 감소 효과.</span>
+    tcp_nopush on<span class="p">;</span>
+    
+    <span class="c"># slow network system에서 패킷 안정성을 위해, 200ms 지연 알고리즘이 구현되어 있다.</span>
+    <span class="c"># tcp_nodelay on 옵션으로, 200ms 지연을 제거하여 더 빠르게 응답한다.</span>
+    tcp_nodelay on<span class="p">;</span>
+    
+    <span class="c"># 시간초과하여 닫을 커넥션을 빠르게 닫는다. FIN_WAIT 지연을 없애준다.</span>
+    reset_timedout_connection on<span class="p">;</span>
+    
+    <span class="c"># client -&gt; nginx timeout</span>
+    client_body_timeout 10<span class="p">;</span>
+    <span class="c"># nginx -&gt; client timeout</span>
+    send_timeout 5<span class="p">;</span>
+    keepalive_timeout 20<span class="p">;</span>
+    
+    <span class="c"># keepalive 연결 커넥션 수이며, 최대 도달해야 IDLE 커넥션을 closed 한다.</span>
+    <span class="c"># 큰 수치일 경우, 최대 도달 전까지 메모리 사용량이 늘어날 수 있다.</span>
+    keepalive_requests 500<span class="p">;</span>
+    
+    server_tokens off<span class="p">;</span>
+
+    include       mime.types<span class="p">;</span>
+    default_type  application/octet-stream<span class="p">;</span>
+
+    <span class="c"># root 기본값은 html 임을 명심한다.</span>
+    root /usr/ssw/nginx-1.21.6/html<span class="p">;</span>
+
+    server <span class="o">{</span>
+        listen       80<span class="p">;</span>
+        server_name  test.dhkim.com alias.dhkim.com<span class="p">;</span>
+        
+        error_log  logs/error-test.dhkim.com.log  info<span class="p">;</span>
+        access_log logs/access-test.dhkim.com.log customformat<span class="p">;</span>
+        
+        <span class="c"># Header의 Content-Type에 해당 값을 추가한다. off면 추가하지 않는다.</span>
+        charset utf8<span class="p">;</span>
+        
+        <span class="c"># /testapp 으로 시작하는 URI는 htdocs 아래에서 찾는다.</span>
+        location /testapp <span class="o">{</span>
+            root /usr/ssw/nginx-1.21.6/htdocs<span class="p">;</span>
+            index index.html index.html<span class="p">;</span>
+            
+            <span class="c"># GET/POST 외에 모두 금지</span>
+            limit_except GET POST <span class="o">{</span>
+                deny all<span class="p">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        
+        error_page 403 404 /40x.html<span class="p">;</span>
+        location <span class="o">=</span> /40x.html <span class="o">{</span>
+            root /usr/ssw/nginx-1.21.6/htdocs/testapp/errors<span class="p">;</span>
+        <span class="o">}</span>
+        error_page 500 502 503 504 /50x.html<span class="p">;</span>
+        location <span class="o">=</span> /50x.html <span class="o">{</span>
+            root /usr/ssw/nginx-1.21.6/htdocs/testapp/errors<span class="p">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="32-log-rotation">3.2 Log Rotation</h3>
+
+<p><a href="https://www.nginx.com/resources/wiki/start/topics/examples/logrotation/">링크</a>를 참고하여 스크립트화.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="c">#!/bin/bash</span>
+
+<span class="c"># reopen 시에 소유자가 user 설정 값과 동일하게 변경된다.</span>
+<span class="c"># reopen 기능이 있지만, 소유자를 변경하기 위해서만 사용한다.</span>
+/usr/ssw/nginx-1.21.6/sbin/nginx <span class="nt">-s</span> reopen
+
+<span class="nv">LOG_DIR</span><span class="o">=</span>/usr/ssw/nginx-1.21.6/logs
+<span class="nb">ls</span> <span class="nt">-l</span> <span class="k">${</span><span class="nv">LOG_DIR</span><span class="k">}</span>/<span class="k">*</span>.log | <span class="nb">awk</span> <span class="s1">'{print $NF}'</span> | <span class="se">\</span>
+<span class="k">while </span><span class="nb">read </span>LINE<span class="p">;</span>
+<span class="k">do
+	</span><span class="nb">cp</span> <span class="k">${</span><span class="nv">LINE</span><span class="k">}</span> <span class="k">${</span><span class="nv">LINE</span><span class="k">}</span>.<span class="si">$(</span><span class="nb">date</span> <span class="s2">"+%Y%m%d_%H%M%S"</span><span class="si">)</span>
+	<span class="nb">cat</span> /dev/null <span class="o">&gt;</span> <span class="k">${</span><span class="nv">LINE</span><span class="k">}</span>
+<span class="k">done</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>LOG_DIR 디렉토리 내에 *.log 파일들만 대상으로 한다.</p>
+
+  <p>기존 쓰기 중인 파일은, backup copy 하고, null copy 로 마무리한다.</p>
+
+  <p><strong><em>이후 해당 스크립트를 고도화하고, 크론탭으로 설정하면 되겠다</em></strong></p>
+</blockquote>
+
+<h3 id="33-mod_proxy">3.3 mod_proxy</h3>
+
+<p>작성이 필요하나~ 외부 일정으로 인해 차후 기입.</p>
+
+:ET
