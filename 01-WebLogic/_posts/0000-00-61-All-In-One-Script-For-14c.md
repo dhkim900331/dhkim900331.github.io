@@ -26,6 +26,8 @@ All-In-One-Script-For-14c.sh 실행으로 다음 환경을 구성하도록 한�
 
 # 3. Script
 
+## 3.1 Engine
+
 ```sh
 BASEDIR=/tmp/installFiles_14c
 WLS_INSTALL_FILE=fmw_14.1.1.0.0_wls.jar
@@ -114,8 +116,13 @@ EOF
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-5F06D02F-6D71-45B9-BF41-5D5759D31958
 
 ${JAVA_HOME}/bin/java -jar ${BASEDIR}/${WLS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
+```
 
 
+
+## 3.2 Domain
+
+```sh
 # (4) Domain
 # https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wlstg/domains.html#GUID-5FC3AA22-BCB0-4F98-801A-8EBC5E05DC6A
 
@@ -140,8 +147,13 @@ closeTemplate()
 
 exit()
 EOF
+```
 
 
+
+## 3.3 Startup AdminServer
+
+```sh
 # (5) Create boot.properties
 cat << EOF > ${DOMAIN_HOME}/boot.properties
 username=${CONSOLE_USERNAME}
@@ -169,8 +181,13 @@ do
  fi
 done
 EOF
+```
 
 
+
+## 3.4 Create Managed Server
+
+```sh
 # (7) Create Managed Servers
 # https://oracle-base.com/articles/web/wlst-create-managed-server
 
@@ -222,8 +239,13 @@ activate()
 disconnect()
 exit()
 EOF
+```
 
 
+
+## 3.5 Cluster
+
+```sh
 # (8) Assign Managed Server to Cluster
 # https://oracle-base.com/articles/web/wlst-create-managed-server
 # https://oracle-base.com/articles/web/wlst-create-cluster
@@ -257,8 +279,13 @@ activate()
 disconnect()
 exit()
 EOF
+```
 
 
+
+## 3.6 Deploy App
+
+```sh
 # (9) Deploy App
 # https://docs.oracle.com/middleware/1213/wls/WLSTC/reference.htm#WLSTC200
 . ${DOMAIN_HOME}/bin/setDomainEnv.sh
@@ -284,3 +311,266 @@ exit()
 EOF
 ```
 
+
+
+## 3.7. Create Instances Scripts
+
+```sh
+# (10) Create Instance Scripts
+
+# AdminServer (start, stop, log, ps)
+cat << EOF_1 > ${DOMAIN_HOME}/startA.sh
+#!/bin/sh
+DOMAIN_NAME=${DOMAIN_NAME}
+DOMAIN_HOME=${DOMAIN_HOME}
+SERVER_NAME=AdminServer
+SERVER_PORT=8001
+EOF_1
+
+cat << "EOF_2" >> ${DOMAIN_HOME}/startA.sh
+BOOT_PROPERTIES=${DOMAIN_HOME}/boot.properties
+
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+GC_LOG=${LOG_HOME}/gc
+HEAPDUMP_DIR=${LOG_HOME}/heapdump
+LOG_TIME=$(date +%y%m%d_%H%M)
+
+##### Make Path #####
+mkdir -p ${LOG_HOME} ${NOHUP_LOG} ${GC_LOG} ${HEAPDUMP_DIR}
+###################
+
+## Process Check ##
+WAS_PID=$(ps -ef | grep java | grep weblogic.Server | grep "D${SERVER_NAME}" | awk '{print $2}');
+if [ "${WAS_PID}" != "" ]; then
+     echo "Server already Started... Please shutdown Server!!"
+     exit;
+fi
+###################
+
+##### gc log rotation #####
+mv ${GC_LOG}/gc_${SERVER_NAME}.out ${GC_LOG}/gc_${SERVER_NAME}.out.${LOG_TIME}
+USER_MEM_ARGS="${USER_MEM_ARGS} -verbose:gc -Xloggc:${GC_LOG}/gc_${SERVER_NAME}.out"
+######################
+
+##### Heap dump #####
+USER_MEM_ARGS="${USER_MEM_ARGS} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${HEAPDUMP_DIR}"
+####################
+
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.system.BootIdentityFile=${BOOT_PROPERTIES}"
+export JAVA_OPTIONS
+
+USER_MEM_ARGS="${USER_MEM_ARGS} -D${SERVER_NAME}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dserver.name=${SERVER_NAME} -Dserver.port=${SERVER_PORT}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dweblogic.wsee.skip.async.response=true"
+USER_MEM_ARGS="${USER_MEM_ARGS} -D_Offline_FileDataArchive=true -Dweblogic.connector.ConnectionPoolProfilingEnabled=false -Dcom.bea.wlw.netui.disableInstrumentation=true"
+export USER_MEM_ARGS
+
+mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
+nohup ${DOMAIN_HOME}/bin/startWebLogic.sh > ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
+#sleep 1
+#tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
+EOF_2
+
+
+cat << EOF > ${DOMAIN_HOME}/stop.py
+connect(url=sys.argv[1])
+shutdown(force='true')
+exit()
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/stopA.sh
+. ./bin/setDomainEnv.sh
+SERVER_PORT=${ADM_SVR_PORT}
+java weblogic.WLST stop.py ${HOSTNAME}:\${SERVER_PORT}
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/logA.sh
+DOMAIN_HOME=${DOMAIN_HOME}
+LOG_HOME=\${DOMAIN_HOME}/logs
+NOHUP_LOG=\${LOG_HOME}/nohup
+SERVER_NAME=AdminServer
+tail -10f \${NOHUP_LOG}/\${SERVER_NAME}.out
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/psA.sh
+SERVER_NAME=AdminServer
+ps -ef | grep java | grep weblogic.Server | grep "D\${SERVER_NAME}" | awk '{print $2}'
+EOF
+
+
+# Managed Server-1 (start, stop, log, ps)
+cat << EOF_1 > ${DOMAIN_HOME}/startM1.sh
+#!/bin/sh
+DOMAIN_NAME=${DOMAIN_NAME}
+DOMAIN_HOME=${DOMAIN_HOME}
+SERVER_NAME=${M1_SVR_NAME}
+SERVER_PORT=${M1_SVR_PORT}
+ADM_URL="t3://${HOSTNAME}:${ADM_SVR_PORT}"
+EOF_1
+
+cat << "EOF_2" >> ${DOMAIN_HOME}/startM1.sh
+BOOT_PROPERTIES=${DOMAIN_HOME}/boot.properties
+
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+GC_LOG=${LOG_HOME}/gc
+HEAPDUMP_DIR=${LOG_HOME}/heapdump
+LOG_TIME=$(date +%y%m%d_%H%M)
+
+##### Make Path #####
+mkdir -p ${LOG_HOME} ${NOHUP_LOG} ${GC_LOG} ${HEAPDUMP_DIR}
+###################
+
+## Process Check ##
+WAS_PID=$(ps -ef | grep java | grep weblogic.Server | grep "D${SERVER_NAME}" | awk '{print $2}');
+if [ "${WAS_PID}" != "" ]; then
+     echo "Server already Started... Please shutdown Server!!"
+     exit;
+fi
+###################
+
+##### gc log rotation #####
+mv ${GC_LOG}/gc_${SERVER_NAME}.out ${GC_LOG}/gc_${SERVER_NAME}.out.${LOG_TIME}
+USER_MEM_ARGS="${USER_MEM_ARGS} -verbose:gc -Xloggc:${GC_LOG}/gc_${SERVER_NAME}.out"
+######################
+
+##### Heap dump #####
+USER_MEM_ARGS="${USER_MEM_ARGS} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${HEAPDUMP_DIR}"
+####################
+
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.system.BootIdentityFile=${BOOT_PROPERTIES}"
+export JAVA_OPTIONS
+
+USER_MEM_ARGS="${USER_MEM_ARGS} -D${SERVER_NAME}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dserver.name=${SERVER_NAME} -Dserver.port=${SERVER_PORT}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dweblogic.wsee.skip.async.response=true"
+USER_MEM_ARGS="${USER_MEM_ARGS} -D_Offline_FileDataArchive=true -Dweblogic.connector.ConnectionPoolProfilingEnabled=false -Dcom.bea.wlw.netui.disableInstrumentation=true"
+export USER_MEM_ARGS
+
+mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
+nohup ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${SERVER_NAME} ${ADM_URL}> ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
+#sleep 1
+#tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
+EOF_2
+
+
+cat << EOF > ${DOMAIN_HOME}/stop.py
+connect(url=sys.argv[1])
+shutdown(force='true')
+exit()
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/stopM1.sh
+. ./bin/setDomainEnv.sh
+SERVER_PORT=${M1_SVR_PORT}
+java weblogic.WLST stop.py ${HOSTNAME}:\${SERVER_PORT}
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/logM1.sh
+DOMAIN_HOME=${DOMAIN_HOME}
+LOG_HOME=\${DOMAIN_HOME}/logs
+NOHUP_LOG=\${LOG_HOME}/nohup
+SERVER_NAME=${M1_SVR_NAME}
+tail -10f \${NOHUP_LOG}/\${SERVER_NAME}.out
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/psM1.sh
+SERVER_NAME=${M1_SVR_NAME}
+ps -ef | grep java | grep weblogic.Server | grep "D\${SERVER_NAME}" | awk '{print $2}'
+EOF
+
+
+# Managed Server-2 (start, stop, log, ps)
+cat << EOF_1 > ${DOMAIN_HOME}/startM2.sh
+#!/bin/sh
+DOMAIN_NAME=${DOMAIN_NAME}
+DOMAIN_HOME=${DOMAIN_HOME}
+SERVER_NAME=${M2_SVR_NAME}
+SERVER_PORT=${M2_SVR_PORT}
+ADM_URL="t3://${HOSTNAME}:${ADM_SVR_PORT}"
+EOF_1
+
+cat << "EOF_2" >> ${DOMAIN_HOME}/startM2.sh
+BOOT_PROPERTIES=${DOMAIN_HOME}/boot.properties
+
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+GC_LOG=${LOG_HOME}/gc
+HEAPDUMP_DIR=${LOG_HOME}/heapdump
+LOG_TIME=$(date +%y%m%d_%H%M)
+
+##### Make Path #####
+mkdir -p ${LOG_HOME} ${NOHUP_LOG} ${GC_LOG} ${HEAPDUMP_DIR}
+###################
+
+## Process Check ##
+WAS_PID=$(ps -ef | grep java | grep weblogic.Server | grep "D${SERVER_NAME}" | awk '{print $2}');
+if [ "${WAS_PID}" != "" ]; then
+     echo "Server already Started... Please shutdown Server!!"
+     exit;
+fi
+###################
+
+##### gc log rotation #####
+mv ${GC_LOG}/gc_${SERVER_NAME}.out ${GC_LOG}/gc_${SERVER_NAME}.out.${LOG_TIME}
+USER_MEM_ARGS="${USER_MEM_ARGS} -verbose:gc -Xloggc:${GC_LOG}/gc_${SERVER_NAME}.out"
+######################
+
+##### Heap dump #####
+USER_MEM_ARGS="${USER_MEM_ARGS} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${HEAPDUMP_DIR}"
+####################
+
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.system.BootIdentityFile=${BOOT_PROPERTIES}"
+export JAVA_OPTIONS
+
+USER_MEM_ARGS="${USER_MEM_ARGS} -D${SERVER_NAME}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dserver.name=${SERVER_NAME} -Dserver.port=${SERVER_PORT}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dweblogic.wsee.skip.async.response=true"
+USER_MEM_ARGS="${USER_MEM_ARGS} -D_Offline_FileDataArchive=true -Dweblogic.connector.ConnectionPoolProfilingEnabled=false -Dcom.bea.wlw.netui.disableInstrumentation=true"
+export USER_MEM_ARGS
+
+mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
+nohup ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${SERVER_NAME} ${ADM_URL}> ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
+#sleep 1
+#tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
+EOF_2
+
+
+cat << EOF > ${DOMAIN_HOME}/stop.py
+connect(url=sys.argv[1])
+shutdown(force='true')
+exit()
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/stopM2.sh
+. ./bin/setDomainEnv.sh
+SERVER_PORT=${M2_SVR_PORT}
+java weblogic.WLST stop.py ${HOSTNAME}:\${SERVER_PORT}
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/logM2.sh
+DOMAIN_HOME=${DOMAIN_HOME}
+LOG_HOME=\${DOMAIN_HOME}/logs
+NOHUP_LOG=\${LOG_HOME}/nohup
+SERVER_NAME=${M2_SVR_NAME}
+tail -10f \${NOHUP_LOG}/\${SERVER_NAME}.out
+EOF
+
+
+cat << EOF > ${DOMAIN_HOME}/psM2.sh
+SERVER_NAME=${M2_SVR_NAME}
+ps -ef | grep java | grep weblogic.Server | grep "D\${SERVER_NAME}" | awk '{print $2}'
+EOF
+```
