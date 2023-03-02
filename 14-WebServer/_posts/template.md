@@ -9,9 +9,4 @@ typora-root-url: ..
 
 
 
-
-
 # 2. 설명
-
-
-
