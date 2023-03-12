@@ -29,22 +29,26 @@ All-In-One-Script-For-14c.sh 실행으로 다음 환경을 구성하도록 한�
 ## 3.1 Engine
 
 ```sh
-BASEDIR=/tmp/installFiles_14c
-WLS_INSTALL_FILE=fmw_14.1.1.0.0_wls.jar
+BASEDIR=/sw/installFiles
+OS_USERNAME=$(id --user --name)
+OS_GROUPNAME=$(id --group --name)
+
+WLS_INSTALL_FILE=${BASEDIR}/fmw_14.1.1.0.0_wls.jar
 JAVA_HOME=/sw/jdk/jdk1.8.0_351
 
-ENGINE_PATH=/sw/weblogic/14c
+WLS_INSTALL_PATH=/sw/weblogic/14c
 INVENTORY_PATH=/sw/weblogic/inventories/14c
-INVENTORY_GROUP=$(id --group --name)
+INVENTORY_GROUP=${OS_GROUPNAME}
 
 DOMAIN_NAME=base_domain
-DOMAIN_HOME=${ENGINE_PATH}/domains/${DOMAIN_NAME}
+DOMAIN_HOME=${WLS_INSTALL_PATH}/domains/${DOMAIN_NAME}
 
 HOSTNAME=wls.local
-CONSOLE_USERNAME=weblogic
-CONSOLE_PASSWORD=weblogic1
+ADM_ADDR=${HOSTNAME}
+ADM_PORT=8001
+ADM_USERNAME=weblogic
+ADM_PASSWORD=weblogic1
 
-ADM_SVR_PORT=8001
 M1_SVR_NAME=M1
 M1_SVR_PORT=8002
 M2_SVR_NAME=M2
@@ -61,43 +65,11 @@ APP_2=cohSessionApp
 
 cat << EOF > ${BASEDIR}/rsp
 [ENGINE]
- 
-#DO NOT CHANGE THIS.
 Response File Version=1.0.0.0.0
  
 [GENERIC]
- 
-#Set this to true if you wish to skip software updates
 DECLINE_AUTO_UPDATES=true
-
-#My Oracle Support User Name
-MOS_USERNAME=
-
-#My Oracle Support Password
-MOS_PASSWORD=<SECURE_VALUE>
-
-#If the Software updates are already downloaded and available on your local system,
-#then specify the path to the directory where these patches are available and
-#set SPECIFY_DOWNLOAD_LOCATION to true
-AUTO_UPDATES_LOCATION=
-
-#Proxy Server Name to connect to My Oracle Support
-SOFTWARE_UPDATES_PROXY_SERVER=
-
-#Proxy Server Port
-SOFTWARE_UPDATES_PROXY_PORT=
-
-#Proxy Server Username
-SOFTWARE_UPDATES_PROXY_USER=
-
-#Proxy Server Password
-SOFTWARE_UPDATES_PROXY_PASSWORD=<SECURE_VALUE>
-
-#The oracle home location. This can be an existing Oracle Home or a new Oracle Home
-ORACLE_HOME=${ENGINE_PATH}
- 
-#Set this variable value to the Installation Type selected. 
-#e.g WebLogic Server, Coherence, Complete with Examples
+ORACLE_HOME=${WLS_INSTALL_PATH}
 INSTALL_TYPE=WebLogic Server
 EOF
 
@@ -115,7 +87,7 @@ EOF
 # (3) Installation
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-5F06D02F-6D71-45B9-BF41-5D5759D31958
 
-${JAVA_HOME}/bin/java -jar ${BASEDIR}/${WLS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
+${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
 
 
@@ -126,8 +98,8 @@ ${JAVA_HOME}/bin/java -jar ${BASEDIR}/${WLS_INSTALL_FILE} -silent -responseFile 
 # (4) Domain
 # https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wlstg/domains.html#GUID-5FC3AA22-BCB0-4F98-801A-8EBC5E05DC6A
 
-${ENGINE_PATH}/wlserver/common/bin/wlst.sh << EOF
-readTemplate('${ENGINE_PATH}/wlserver/common/templates/wls/wls.jar')
+${WLS_INSTALL_PATH}/wlserver/common/bin/wlst.sh << EOF
+readTemplate('${WLS_INSTALL_PATH}/wlserver/common/templates/wls/wls.jar')
 
 # https://docs.oracle.com/middleware/1213/wls/WLSTC/reference.htm#WLSTC314
 setOption('JavaHome', '${JAVA_HOME}');
@@ -135,12 +107,12 @@ setOption('ServerStartMode', 'prod')
 setOption('OverwriteDomain', 'true')
 
 cd('/')
-cd('Security/base_domain/User/${CONSOLE_USERNAME}')
-cmo.setPassword('${CONSOLE_PASSWORD}')
+cd('Security/base_domain/User/${ADM_USERNAME}')
+cmo.setPassword('${ADM_PASSWORD}')
 
 cd('Servers/AdminServer')
-set('ListenAddress','${HOSTNAME}')
-set('ListenPort', ${ADM_SVR_PORT})
+set('ListenAddress','${ADM_ADDR}')
+set('ListenPort', ${ADM_PORT})
 
 writeDomain('${DOMAIN_HOME}')
 closeTemplate()
@@ -156,8 +128,8 @@ EOF
 ```sh
 # (5) Create boot.properties
 cat << EOF > ${DOMAIN_HOME}/boot.properties
-username=${CONSOLE_USERNAME}
-password=${CONSOLE_PASSWORD}
+username=${ADM_USERNAME}
+password=${ADM_PASSWORD}
 EOF
 
 
@@ -193,44 +165,40 @@ EOF
 
 . ${DOMAIN_HOME}/bin/setDomainEnv.sh
 java weblogic.WLST << EOF
-connect('${CONSOLE_USERNAME}','${CONSOLE_PASSWORD}','${HOSTNAME}:${ADM_SVR_PORT}')
+connect('${ADM_USERNAME}','${ADM_PASSWORD}','${ADM_ADDR}:${ADM_PORT}')
 edit()
 startEdit()
 
 ## Create Managed
-NAME="${M1_SVR_NAME}"
-PORT="${M1_SVR_PORT}"
 cd('/')
-cmo.createServer(NAME)
-cd('/Servers/' + NAME)
-cmo.setListenAddress('${HOSTNAME}')
-cmo.setListenPort(int(PORT))
+cmo.createServer('${M1_SVR_NAME}')
+cd('/Servers/${M1_SVR_NAME}')
+cmo.setListenAddress('${M1_SVR_ADDR}')
+cmo.setListenPort(${M1_SVR_PORT})
 
-cd('/Servers/' + NAME + '/Log/' + NAME)
+cd('/Servers/${M1_SVR_NAME}/Log/${M1_SVR_NAME}')
 cmo.setLogFileSeverity("Info")
 cmo.setStdoutSeverity("Info")
 cmo.setDomainLogBroadcastSeverity("Off")
 cmo.setRotationType("byTime")
 
-cd('/Servers/' + NAME + '/WebServer/' + NAME + '/WebServerLog/' + NAME)
+cd('/Servers/${M1_SVR_NAME}/WebServer/${M1_SVR_NAME}/WebServerLog/${M1_SVR_NAME}')
 cmo.setNumberOfFilesLimited(True)
 cmo.setRotationType("byTime")
 
-NAME="${M2_SVR_NAME}"
-PORT="${M2_SVR_PORT}"
 cd('/')
-cmo.createServer(NAME)
-cd('/Servers/' + NAME)
-cmo.setListenAddress('${HOSTNAME}')
-cmo.setListenPort(int(PORT))
+cmo.createServer('${M2_SVR_NAME}')
+cd('/Servers/${M2_SVR_NAME}')
+cmo.setListenAddress('${M2_SVR_ADDR}')
+cmo.setListenPort(${M2_SVR_PORT})
 
-cd('/Servers/' + NAME + '/Log/' + NAME)
+cd('/Servers/${M2_SVR_NAME}/Log/${M2_SVR_NAME}')
 cmo.setLogFileSeverity("Info")
 cmo.setStdoutSeverity("Info")
 cmo.setDomainLogBroadcastSeverity("Off")
 cmo.setRotationType("byTime")
 
-cd('/Servers/' + NAME + '/WebServer/' + NAME + '/WebServerLog/' + NAME)
+cd('/Servers/${M2_SVR_NAME}/WebServer/${M2_SVR_NAME}/WebServerLog/${M2_SVR_NAME}')
 cmo.setNumberOfFilesLimited(True)
 cmo.setRotationType("byTime")
 
@@ -252,27 +220,24 @@ EOF
 
 . ${DOMAIN_HOME}/bin/setDomainEnv.sh
 java weblogic.WLST << EOF
-connect('${CONSOLE_USERNAME}','${CONSOLE_PASSWORD}','${HOSTNAME}:${ADM_SVR_PORT}')
+connect('${ADM_USERNAME}','${ADM_PASSWORD}','${ADM_ADDR}:${ADM_PORT}')
 edit()
 startEdit()
 
 ## Create Cluster
-CNAME="${CLUSTER_NAME}"
 cd('/')
-cmo.createCluster(CNAME)
-cd('/Clusters/' + CNAME)
+cmo.createCluster('${CLUSTER_NAME}')
+cd('/Clusters/${CLUSTER_NAME}')
 cmo.setClusterMessagingMode('unicast')
 
 ## Assign Managed to Cluster
-NAME="${M1_SVR_NAME}"
 cd('/')
-cd('/Servers/' + NAME)
-cmo.setCluster(getMBean('/Clusters/' + CNAME))
+cd('/Servers/${M1_SVR_NAME}')
+cmo.setCluster(getMBean('/Clusters/${M1_SVR_NAME}'))
 
-NAME="${M2_SVR_NAME}"
 cd('/')
-cd('/Servers/' + NAME)
-cmo.setCluster(getMBean('/Clusters/' + CNAME))
+cd('/Servers/${M2_SVR_NAME}')
+cmo.setCluster(getMBean('/Clusters/${M2_SVR_NAME}'))
 
 save()
 activate()
@@ -290,7 +255,7 @@ EOF
 # https://docs.oracle.com/middleware/1213/wls/WLSTC/reference.htm#WLSTC200
 . ${DOMAIN_HOME}/bin/setDomainEnv.sh
 java weblogic.WLST << EOF
-connect('${CONSOLE_USERNAME}','${CONSOLE_PASSWORD}','${HOSTNAME}:${ADM_SVR_PORT}')
+connect('${ADM_USERNAME}','${ADM_PASSWORD}','${ADM_ADDR}:${ADM_PORT}')
 edit()
 startEdit()
 
@@ -317,17 +282,13 @@ EOF
 
 ```sh
 # (10) Create Instance Scripts
-
 # AdminServer (start, stop, log, ps)
-cat << EOF_1 > ${DOMAIN_HOME}/startA.sh
+cat << "EOF" > ${DOMAIN_HOME}/startA.sh
 #!/bin/sh
-DOMAIN_NAME=${DOMAIN_NAME}
-DOMAIN_HOME=${DOMAIN_HOME}
-SERVER_NAME=AdminServer
-SERVER_PORT=8001
-EOF_1
-
-cat << "EOF_2" >> ${DOMAIN_HOME}/startA.sh
+DOMAIN_NAME=#DOMAIN_NAME#
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+SERVER_PORT=#SERVER_PORT#
 BOOT_PROPERTIES=${DOMAIN_HOME}/boot.properties
 
 LOG_HOME=${DOMAIN_HOME}/logs
@@ -340,10 +301,18 @@ LOG_TIME=$(date +%y%m%d_%H%M)
 mkdir -p ${LOG_HOME} ${NOHUP_LOG} ${GC_LOG} ${HEAPDUMP_DIR}
 ###################
 
+##### User Check #####
+USER=#OS_USERNAME#
+if [ "$USER" != $(/usr/bin/whoami) ]; then
+     echo "* you do not have permission. *"
+     exit;
+fi
+####################
+
 ## Process Check ##
-WAS_PID=$(ps -ef | grep java | grep weblogic.Server | grep "D${SERVER_NAME}" | awk '{print $2}');
-if [ "${WAS_PID}" != "" ]; then
-     echo "Server already Started... Please shutdown Server!!"
+WAS_PID=$(${DOMAIN_HOME}/psA.sh)
+if [ "$WAS_PID" != "" ]; then
+     echo "Server already Started."
      exit;
 fi
 ###################
@@ -371,49 +340,74 @@ mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
 nohup ${DOMAIN_HOME}/bin/startWebLogic.sh > ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
 #sleep 1
 #tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
-EOF_2
+EOF
 
 
-cat << EOF > ${DOMAIN_HOME}/stop.py
-connect(url=sys.argv[1])
+cat << "EOF" > ${DOMAIN_HOME}/stopA.sh
+#!/bin/sh
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_ADDR=#SERVER_ADDR#
+SERVER_PORT=#SERVER_PORT#
+
+. ${DOMAIN_HOME}/bin/setDomainEnv.sh
+
+##### User Check #####
+USER=#OS_USERNAME#
+if [ "$USER" != $(/usr/bin/whoami) ]; then
+     echo "* you do not have permission. *"
+     exit;
+fi
+####################
+
+## Process Check ##
+WAS_PID=$(${DOMAIN_HOME}/psA.sh)
+if [ "$WAS_PID" == "" ]; then
+     echo "Server already Stopped."
+     exit;
+fi
+###################
+
+java weblogic.WLST << INNER_EOF
+connect(url='${SERVER_ADDR}:${SERVER_PORT}')
 shutdown(force='true')
 exit()
+INNER_EOF
 EOF
 
 
-cat << EOF > ${DOMAIN_HOME}/stopA.sh
-. ./bin/setDomainEnv.sh
-SERVER_PORT=${ADM_SVR_PORT}
-java weblogic.WLST stop.py ${HOSTNAME}:\${SERVER_PORT}
-EOF
-
-
-cat << EOF > ${DOMAIN_HOME}/logA.sh
-DOMAIN_HOME=${DOMAIN_HOME}
-LOG_HOME=\${DOMAIN_HOME}/logs
-NOHUP_LOG=\${LOG_HOME}/nohup
-SERVER_NAME=AdminServer
-tail -10f \${NOHUP_LOG}/\${SERVER_NAME}.out
-EOF
-
-
-cat << EOF > ${DOMAIN_HOME}/psA.sh
-SERVER_NAME=AdminServer
-ps -ef | grep java | grep weblogic.Server | grep "D\${SERVER_NAME}" | awk '{print $2}'
-EOF
-
-
-# Managed Server-1 (start, stop, log, ps)
-cat << EOF_1 > ${DOMAIN_HOME}/startM1.sh
+cat << "EOF" > ${DOMAIN_HOME}/logA.sh
 #!/bin/sh
-DOMAIN_NAME=${DOMAIN_NAME}
-DOMAIN_HOME=${DOMAIN_HOME}
-SERVER_NAME=${M1_SVR_NAME}
-SERVER_PORT=${M1_SVR_PORT}
-ADM_URL="t3://${HOSTNAME}:${ADM_SVR_PORT}"
-EOF_1
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
 
-cat << "EOF_2" >> ${DOMAIN_HOME}/startM1.sh
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
+EOF
+
+
+cat << "EOF" > ${DOMAIN_HOME}/psA.sh
+#!/bin/sh
+SERVER_NAME=#SERVER_NAME#
+ps -ef | grep "java" | grep "weblogic.Server" | grep "D${SERVER_NAME}"
+EOF
+
+sed -i "s|#OS_USERNAME#|${OS_USERNAME}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#DOMAIN_NAME#|${DOMAIN_NAME}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#DOMAIN_HOME#|${DOMAIN_HOME}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#SERVER_NAME#|AdminServer|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#SERVER_ADDR#|${ADM_ADDR}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#SERVER_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*A.sh
+
+
+# Managed Server (start, stop, log, ps)
+cat << "EOF" > ${DOMAIN_HOME}/startM.sh
+#!/bin/sh
+DOMAIN_NAME=#DOMAIN_NAME#
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+SERVER_PORT=#SERVER_PORT#
+ADM_URL="t3://#ADM_ADDR#:#ADM_PORT#"
 BOOT_PROPERTIES=${DOMAIN_HOME}/boot.properties
 
 LOG_HOME=${DOMAIN_HOME}/logs
@@ -426,10 +420,18 @@ LOG_TIME=$(date +%y%m%d_%H%M)
 mkdir -p ${LOG_HOME} ${NOHUP_LOG} ${GC_LOG} ${HEAPDUMP_DIR}
 ###################
 
+##### User Check #####
+USER=#OS_USERNAME#
+if [ "$USER" != $(/usr/bin/whoami) ]; then
+     echo "* you do not have permission. *"
+     exit;
+fi
+####################
+
 ## Process Check ##
-WAS_PID=$(ps -ef | grep java | grep weblogic.Server | grep "D${SERVER_NAME}" | awk '{print $2}');
-if [ "${WAS_PID}" != "" ]; then
-     echo "Server already Started... Please shutdown Server!!"
+WAS_PID=$(${DOMAIN_HOME}/ps${SERVER_NAME}.sh)
+if [ "$WAS_PID" != "" ]; then
+     echo "Server already Started."
      exit;
 fi
 ###################
@@ -457,120 +459,85 @@ mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
 nohup ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${SERVER_NAME} ${ADM_URL}> ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
 #sleep 1
 #tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
-EOF_2
-
-
-cat << EOF > ${DOMAIN_HOME}/stop.py
-connect(url=sys.argv[1])
-shutdown(force='true')
-exit()
 EOF
 
 
-cat << EOF > ${DOMAIN_HOME}/stopM1.sh
-. ./bin/setDomainEnv.sh
-SERVER_PORT=${M1_SVR_PORT}
-java weblogic.WLST stop.py ${HOSTNAME}:\${SERVER_PORT}
-EOF
-
-
-cat << EOF > ${DOMAIN_HOME}/logM1.sh
-DOMAIN_HOME=${DOMAIN_HOME}
-LOG_HOME=\${DOMAIN_HOME}/logs
-NOHUP_LOG=\${LOG_HOME}/nohup
-SERVER_NAME=${M1_SVR_NAME}
-tail -10f \${NOHUP_LOG}/\${SERVER_NAME}.out
-EOF
-
-
-cat << EOF > ${DOMAIN_HOME}/psM1.sh
-SERVER_NAME=${M1_SVR_NAME}
-ps -ef | grep java | grep weblogic.Server | grep "D\${SERVER_NAME}" | awk '{print $2}'
-EOF
-
-
-# Managed Server-2 (start, stop, log, ps)
-cat << EOF_1 > ${DOMAIN_HOME}/startM2.sh
+cat << "EOF" > ${DOMAIN_HOME}/stopM.sh
 #!/bin/sh
-DOMAIN_NAME=${DOMAIN_NAME}
-DOMAIN_HOME=${DOMAIN_HOME}
-SERVER_NAME=${M2_SVR_NAME}
-SERVER_PORT=${M2_SVR_PORT}
-ADM_URL="t3://${HOSTNAME}:${ADM_SVR_PORT}"
-EOF_1
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+SERVER_ADDR=#SERVER_ADDR#
+SERVER_PORT=#SERVER_PORT#
 
-cat << "EOF_2" >> ${DOMAIN_HOME}/startM2.sh
-BOOT_PROPERTIES=${DOMAIN_HOME}/boot.properties
+. ${DOMAIN_HOME}/bin/setDomainEnv.sh
 
-LOG_HOME=${DOMAIN_HOME}/logs
-NOHUP_LOG=${LOG_HOME}/nohup
-GC_LOG=${LOG_HOME}/gc
-HEAPDUMP_DIR=${LOG_HOME}/heapdump
-LOG_TIME=$(date +%y%m%d_%H%M)
-
-##### Make Path #####
-mkdir -p ${LOG_HOME} ${NOHUP_LOG} ${GC_LOG} ${HEAPDUMP_DIR}
-###################
+##### User Check #####
+USER=#OS_USERNAME#
+if [ "$USER" != $(/usr/bin/whoami) ]; then
+     echo "* you do not have permission. *"
+     exit;
+fi
+####################
 
 ## Process Check ##
-WAS_PID=$(ps -ef | grep java | grep weblogic.Server | grep "D${SERVER_NAME}" | awk '{print $2}');
-if [ "${WAS_PID}" != "" ]; then
-     echo "Server already Started... Please shutdown Server!!"
+WAS_PID=$(${DOMAIN_HOME}/ps${SERVER_NAME}.sh)
+if [ "$WAS_PID" == "" ]; then
+     echo "Server already Stopped."
      exit;
 fi
 ###################
 
-##### gc log rotation #####
-mv ${GC_LOG}/gc_${SERVER_NAME}.out ${GC_LOG}/gc_${SERVER_NAME}.out.${LOG_TIME}
-USER_MEM_ARGS="${USER_MEM_ARGS} -verbose:gc -Xloggc:${GC_LOG}/gc_${SERVER_NAME}.out"
-######################
-
-##### Heap dump #####
-USER_MEM_ARGS="${USER_MEM_ARGS} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${HEAPDUMP_DIR}"
-####################
-
-JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.system.BootIdentityFile=${BOOT_PROPERTIES}"
-export JAVA_OPTIONS
-
-USER_MEM_ARGS="${USER_MEM_ARGS} -D${SERVER_NAME}"
-USER_MEM_ARGS="${USER_MEM_ARGS} -Dserver.name=${SERVER_NAME} -Dserver.port=${SERVER_PORT}"
-USER_MEM_ARGS="${USER_MEM_ARGS} -Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m"
-USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dweblogic.wsee.skip.async.response=true"
-USER_MEM_ARGS="${USER_MEM_ARGS} -D_Offline_FileDataArchive=true -Dweblogic.connector.ConnectionPoolProfilingEnabled=false -Dcom.bea.wlw.netui.disableInstrumentation=true"
-export USER_MEM_ARGS
-
-mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
-nohup ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${SERVER_NAME} ${ADM_URL}> ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
-#sleep 1
-#tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
-EOF_2
-
-
-cat << EOF > ${DOMAIN_HOME}/stop.py
-connect(url=sys.argv[1])
+java weblogic.WLST << INNER_EOF
+connect(url='${SERVER_ADDR}:${SERVER_PORT}')
 shutdown(force='true')
 exit()
+INNER_EOF
 EOF
 
 
-cat << EOF > ${DOMAIN_HOME}/stopM2.sh
-. ./bin/setDomainEnv.sh
-SERVER_PORT=${M2_SVR_PORT}
-java weblogic.WLST stop.py ${HOSTNAME}:\${SERVER_PORT}
+cat << "EOF" > ${DOMAIN_HOME}/logM.sh
+#!/bin/sh
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
 
-cat << EOF > ${DOMAIN_HOME}/logM2.sh
-DOMAIN_HOME=${DOMAIN_HOME}
-LOG_HOME=\${DOMAIN_HOME}/logs
-NOHUP_LOG=\${LOG_HOME}/nohup
-SERVER_NAME=${M2_SVR_NAME}
-tail -10f \${NOHUP_LOG}/\${SERVER_NAME}.out
+cat << "EOF" > ${DOMAIN_HOME}/psM.sh
+#!/bin/sh
+SERVER_NAME=#SERVER_NAME#
+ps -ef | grep "java" | grep "weblogic.Server" | grep "D${SERVER_NAME}"
 EOF
 
 
-cat << EOF > ${DOMAIN_HOME}/psM2.sh
-SERVER_NAME=${M2_SVR_NAME}
-ps -ef | grep java | grep weblogic.Server | grep "D\${SERVER_NAME}" | awk '{print $2}'
-EOF
+cp ${DOMAIN_HOME}/startM.sh ${DOMAIN_HOME}/start${M1_SVR_NAME}.sh
+cp ${DOMAIN_HOME}/stopM.sh ${DOMAIN_HOME}/stop${M1_SVR_NAME}.sh
+cp ${DOMAIN_HOME}/logM.sh ${DOMAIN_HOME}/log${M1_SVR_NAME}.sh
+cp ${DOMAIN_HOME}/psM.sh ${DOMAIN_HOME}/ps${M1_SVR_NAME}.sh
+
+cp ${DOMAIN_HOME}/startM.sh ${DOMAIN_HOME}/start${M2_SVR_NAME}.sh
+cp ${DOMAIN_HOME}/stopM.sh ${DOMAIN_HOME}/stop${M2_SVR_NAME}.sh
+cp ${DOMAIN_HOME}/logM.sh ${DOMAIN_HOME}/log${M2_SVR_NAME}.sh
+cp ${DOMAIN_HOME}/psM.sh ${DOMAIN_HOME}/ps${M2_SVR_NAME}.sh
+
+sed -i "s|#OS_USERNAME#|${OS_USERNAME}|g" ${DOMAIN_HOME}/*${M1_SVR_NAME}.sh
+sed -i "s|#DOMAIN_NAME#|${DOMAIN_NAME}|g" ${DOMAIN_HOME}/*${M1_SVR_NAME}.sh
+sed -i "s|#DOMAIN_HOME#|${DOMAIN_HOME}|g" ${DOMAIN_HOME}/*${M1_SVR_NAME}.sh
+sed -i "s|#SERVER_NAME#|${M1_SVR_NAME}|g" ${DOMAIN_HOME}/*${M1_SVR_NAME}.sh
+sed -i "s|#SERVER_ADDR#|${M1_SVR_ADDR}|g" ${DOMAIN_HOME}/*${M1_SVR_NAME}.sh
+sed -i "s|#SERVER_PORT#|${M1_SVR_PORT}|g" ${DOMAIN_HOME}/*${M1_SVR_NAME}.sh
+sed -i "s|#ADM_ADDR#|${ADM_ADDR}|g" ${DOMAIN_HOME}/*${M1_SVR_NAME}.sh
+sed -i "s|#ADM_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*${M1_SVR_NAME}.sh
+
+sed -i "s|#OS_USERNAME#|${OS_USERNAME}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
+sed -i "s|#DOMAIN_NAME#|${DOMAIN_NAME}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
+sed -i "s|#DOMAIN_HOME#|${DOMAIN_HOME}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
+sed -i "s|#SERVER_NAME#|${M2_SVR_NAME}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
+sed -i "s|#SERVER_ADDR#|${M2_SVR_ADDR}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
+sed -i "s|#SERVER_PORT#|${M2_SVR_PORT}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
+sed -i "s|#ADM_ADDR#|${ADM_ADDR}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
+sed -i "s|#ADM_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
 ```

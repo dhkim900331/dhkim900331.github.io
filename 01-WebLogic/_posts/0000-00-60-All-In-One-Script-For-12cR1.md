@@ -1,20 +1,20 @@
 ---
 date: 2023-02-10 08:06:28 +0900
 layout: post
-title: "[WebLogic] All In One Script For 11gR1"
+title: "[WebLogic] All In One Script For 12cR1"
 tags: [WebLogic, Installation, WLST, Python]
 typora-root-url: ..
 ---
 
 # 1. 개요
 
-WebLogic 11gR1 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
+WebLogic 12cR1 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
 
 
 
 # 2. 설명
 
-All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한다.
+All-In-One-Script-For-12cR1.sh 실행으로 다음 환경을 구성하도록 한다.
 
 - AdminServer (TCP 8001 , console account : weblogic, weblogic1)
 - Managed M1 (TCP 8002)
@@ -33,19 +33,15 @@ BASEDIR=/sw/installFiles
 OS_USERNAME=$(id --user --name)
 OS_GROUPNAME=$(id --group --name)
 
-WLS_INSTALL_FILE=${BASEDIR}/wls1036_generic.jar
-JAVA_HOME=/sw/jdk/jdk1.6.0_45
+WLS_INSTALL_FILE=${BASEDIR}/fmw_12.1.3.0.0_wls.jar
+JAVA_HOME=/sw/jdk/jdk1.7.0_361
 
-WLS_INSTALL_PATH=/sw/weblogic/11gR1
-INVENTORY_PATH=/sw/weblogic/inventories/11gR1
+WLS_INSTALL_PATH=/sw/weblogic/12cR1
+INVENTORY_PATH=/sw/weblogic/inventories/12cR1
 INVENTORY_GROUP=${OS_GROUPNAME}
 
 DOMAIN_NAME=base_domain
 DOMAIN_HOME=${WLS_INSTALL_PATH}/domains/${DOMAIN_NAME}
-
-HOSTNAME=wls.local
-CONSOLE_USERNAME=weblogic
-CONSOLE_PASSWORD=weblogic1
 
 HOSTNAME=wls.local
 ADM_ADDR=${HOSTNAME}
@@ -64,30 +60,35 @@ APP_1=testApp
 APP_2=cohSessionApp
 
 
-# (1) silent.xml
-# https://docs.oracle.com/cd/E24329_01/doc.1211/e24492/silent.htm#WLSIG185
-# https://oracle-base.com/articles/11g/weblogic-silent-installation-11g
-# wls1036_generic.jar:lpr.xml or gpr.xml
+# (1) ResponseFile
+# https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/sample-response-files-silent-installation-and-deinstallation.html#GUID-65B11C03-B559-41F1-B9B4-B7276491E580
 
-cat << EOF > ${BASEDIR}/silent.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<bea-installer>
- <input-fields>
-  <data-value name="BEAHOME" value="${WLS_INSTALL_PATH}"/>
-  <data-value name="WLS_INSTALL_DIR" value="${WLS_INSTALL_PATH}/wlserver_10.3"/>
-  <!--<data-value name="COMPONENT_PATHS" value="WebLogic Server/Core Application Server|WebLogic Server/Administration Console|WebLogic Server/Web 2.0 HTTP Pub-Sub Server|WebLogic Server/WebLogic SCA|WebLogic Server/WebLogic JDBC Drivers|WebLogic Server/Third Party JDBC Drivers|WebLogic Server/WebLogic Server Clients|WebLogic Server/WebLogic Web Server Plugins"/>-->
-    <data-value name="COMPONENT_PATHS" value="WebLogic Server"/>
-  <data-value name="INSTALL_SHORTCUT_IN_ALL_USERS_FOLDER" value="no"/>
-  <data-value name="LOCAL_JVMS" value="${JAVA_HOME}"/>
- </input-fields>
-</bea-installer>
+cat << EOF > ${BASEDIR}/rsp
+[ENGINE]
+Response File Version=1.0.0.0.0
+ 
+[GENERIC]
+ORACLE_HOME=${WLS_INSTALL_PATH}
+INSTALL_TYPE=WebLogic Server
+DECLINE_SECURITY_UPDATES=true
+SECURITY_UPATES_VIA_MYORACLESUPPORT=false
 EOF
 
 
-# (2) Installation
-# https://docs.oracle.com/cd/E24329_01/doc.1211/e24492/silent.htm#CIHCAHGC
+# (2) Inventory
+# https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-756E3FD9-4094-412F-9BEB-72C5FD51056B
+# * inventory.loc 파일 샘플은 문서에 없음
 
-${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -mode=silent -silent_xml=${BASEDIR}/silent.xml
+cat << EOF > ${BASEDIR}/loc
+inventory_loc=${INVENTORY_PATH}
+inst_group=${INVENTORY_GROUP}
+EOF
+
+
+# (3) Installation
+# https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-5F06D02F-6D71-45B9-BF41-5D5759D31958
+
+${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
 
 
@@ -96,13 +97,12 @@ ${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -mode=silent -silent_xml=${BASEDI
 
 ```sh
 # (4) Domain
-# https://docs.oracle.com/cd/E12839_01/web.1111/e13715/domains.htm#WLSTG157
-# wlserver_10.3/common/templates/scripts/wlst/basicWLSDomain.py
+# https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wlstg/domains.html#GUID-5FC3AA22-BCB0-4F98-801A-8EBC5E05DC6A
 
-${WLS_INSTALL_PATH}/wlserver_10.3/common/bin/wlst.sh << EOF
-readTemplate('${WLS_INSTALL_PATH}/wlserver_10.3/common/templates/domains/wls.jar')
+${WLS_INSTALL_PATH}/wlserver/common/bin/wlst.sh << EOF
+readTemplate('${WLS_INSTALL_PATH}/wlserver/common/templates/wls/wls.jar')
 
-# https://docs.oracle.com/cd/E12839_01/web.1111/e13813/reference.htm#WLSTC314
+# https://docs.oracle.com/middleware/1213/wls/WLSTC/reference.htm#WLSTC314
 setOption('JavaHome', '${JAVA_HOME}');
 setOption('ServerStartMode', 'prod')
 setOption('OverwriteDomain', 'true')
@@ -117,6 +117,7 @@ set('ListenPort', ${ADM_PORT})
 
 writeDomain('${DOMAIN_HOME}')
 closeTemplate()
+
 exit()
 EOF
 ```
@@ -131,6 +132,7 @@ cat << EOF > ${DOMAIN_HOME}/boot.properties
 username=${ADM_USERNAME}
 password=${ADM_PASSWORD}
 EOF
+
 
 # (6) Start-up AdminServer
 # https://unix.stackexchange.com/questions/405250/passing-and-setting-variables-in-a-heredoc
@@ -252,7 +254,6 @@ EOF
 ```sh
 # (9) Deploy App
 # https://docs.oracle.com/middleware/1213/wls/WLSTC/reference.htm#WLSTC200
-
 . ${DOMAIN_HOME}/bin/setDomainEnv.sh
 java weblogic.WLST << EOF
 connect('${ADM_USERNAME}','${ADM_PASSWORD}','${ADM_ADDR}:${ADM_PORT}')
@@ -275,8 +276,6 @@ disconnect()
 exit()
 EOF
 ```
-
-
 
 
 
