@@ -378,4 +378,3 @@ sed -i "s/#NM_USERNAME#/${NM_USERNAME}/g" ${DOMAIN_HOME}/*${WORKER_NAME_2}.sh
 sed -i "s/#NM_PASSWORD#/${NM_PASSWORD}/g" ${DOMAIN_HOME}/*${WORKER_NAME_2}.sh
 sed -i "s/#NM_ADDR#/${NM_ADDR}/g" ${DOMAIN_HOME}/*${WORKER_NAME_2}.sh
 ```
-
