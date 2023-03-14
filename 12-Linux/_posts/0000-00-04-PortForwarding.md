@@ -1,7 +1,7 @@
 ---
 date: 2022-10-06 17:15:38 +0900
 layout: post
-title: "[linux/putty] Port Forwarding"
+title: "[Linux/Putty] Port Forwarding"
 tags: [os, linux, putty, port, forwarding]
 typora-root-url: ..
 ---

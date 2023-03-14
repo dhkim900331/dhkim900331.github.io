@@ -1,7 +1,7 @@
 ---
 date: 2022-04-11 12:01:17 +0900
 layout: post
-title: "[linux] Create Local Repository"
+title: "[Linux] Create Local Repository"
 tags: [os, linux, repository, local]
 typora-root-url: ..
 ---

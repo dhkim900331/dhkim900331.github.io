@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "[linux] "
-tags: [os, linux, ]
+title: "[Linux] "
+tags: [Linux, OS, ]
 typora-root-url: ..
 ---
 
