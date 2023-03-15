@@ -1,0 +1,18 @@
+I"�<h1 id="1-개요">1. 개요</h1>
+
+<p>다른 JDBC Driver 적용 방법</p>
+
+<h1 id="2-설명">2. 설명</h1>
+
+<p>derby.jar로 설명.</p>
+
+<p>스크립트 쉘에 옵션.</p>
+
+<p><code class="language-plaintext highlighter-rouge">export EXT_PRE_CLASSPATH=derby.jar</code></p>
+
+<p>데이터 소스 생성 시</p>
+
+<p>드라이버 클래스 이름: <code class="language-plaintext highlighter-rouge">org.apache.derby.jdbc.EmbeddedDriver</code></p>
+
+<p>어때요 참쉽죠?</p>
+:ET

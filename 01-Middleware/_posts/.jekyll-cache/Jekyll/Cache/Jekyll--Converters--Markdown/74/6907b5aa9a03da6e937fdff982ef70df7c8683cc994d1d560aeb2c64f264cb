@@ -1,0 +1,80 @@
+I"x<h1 id="1-개요">1. 개요</h1>
+
+<p>세션 복제 될 데이터가 직렬화 되어있는 경우와 그렇지 않은 경우를 테스트해보았습니다.</p>
+
+<p>이때 세션 데이터는 직렬화 구현이 필요한 클래스 객체로 구현해보았습니다.</p>
+
+<h1 id="2-테스트-어플리케이션">2. 테스트 어플리케이션</h1>
+
+<p><a href="/assets/upload/webapp.zip">webapp.zip</a></p>
+
+<blockquote>
+  <p>첨부파일의 FailoverTest.jsp는 원본입니다.</p>
+
+  <p>FailoverTest_class.jsp는 페이지 로드 시 1씩 증가하는 Integer 데이터를 새로 생성한 클래스에 멤버 변수로 선언하여 저장하게 했습니다.</p>
+
+  <p>세션 데이터는 첨부파일의 sessionObject 클래스를 선언하여 멤버 변수에 저장합니다.</p>
+
+  <p>package kdh; -&gt; FailoverTest_class.jsp가 클래스 파일을 import 하기 위해서는 패키지화를 꼭 해야 된다고 해서 kdh로 구성하였습니다.</p>
+
+  <p>implements Serializable -&gt; Serializable를 구현하여 클래스가 세션 복제 될 수 있도록 하였습니다.</p>
+
+  <p>serialVersionUID가 없거나 서로 다르면, 세션 복제는 되더라도 쿠키가 덮어씌워집니다.</p>
+
+  <p>첨부파일의 weblogic.xml에 cookie-domain을 .main.com 으로 설정했습니다.</p>
+
+  <p>윈도우 로컬에서 테스트하였는데, C:\Windows\System32\drivers\etc\hosts 파일에 m1.main.com과 m2.main.com을 등록하였습니다.</p>
+</blockquote>
+
+<h1 id="3-serializable-가-구현되지-않았을-때">3. Serializable 가 구현되지 않았을 때</h1>
+
+<ul>
+  <li>웹로직 인스턴스 m1, m2는 이중화 구성이며 클러스터 되었습니다.</li>
+  <li>웹로직 콘솔 -&gt; Env -&gt; Servers -&gt; m1 / m2 -&gt; Logging -&gt; Advanced -&gt; <strong>Standard out의 Severity level을 Debug로 설정</strong>하였습니다.
+    <ul>
+      <li>-&gt; Debug -&gt; weblogic -&gt; servlet -&gt; internal -&gt; <strong>session 을 체크하고 Enable</strong> 하였습니다.</li>
+      <li><a href="https://community.oracle.com/thread/1123562?tstart=0">참고사이트</a> // 2021.12.20 일 기준 404</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;Session attribute with name:sessionObject class:kdh.sessionObject is not serializable ane will  not be replicated or persisted&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;synchronized on <span class="nt">-4561296442252280985</span> and session is inUse: <span class="nb">false </span>and active request count is: 0&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;<span class="o">[</span>HTTP Session:100078]HTTPSession with <span class="nb">id</span>: <span class="s2">"o3x3KA71JO-6he8QpS7zQL5qKE-c9XLj8FBFrFsLfs9wzWH6pFIr"</span> is of size 1,030 bytes.&gt;
+
+&lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;The change associated with this SessionData<span class="o">(</span><span class="nt">-4561296442252280985</span> or weblogic.servlet.internal.session.ReplicatedSessionData@6a648175 <span class="o">)</span> is: 1017170932&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt; SessionData.syncSession<span class="o">()</span> the change is modified: <span class="nb">false </span>and the active request count is: 0 <span class="k">for</span> <span class="nt">-4561296442252280985</span> and this is: weblogic.servlet.internal.session.ReplicatedSessionData@6a648175 <span class="o">&gt;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Serializable 구현되지 않았을 때 로그</p>
+</blockquote>
+
+<h1 id="4-serializable-구현되었을-때">4. Serializable 구현되었을 때</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;<span class="o">[</span>HTTP Session:100046]Creating new session with ID: LLl3LO-KBxD9qlT40AsWbLjP5gJfcf7MB-5C5FBWVUBM8SPXDRzV <span class="k">for </span>Web application: /webapp.&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;<span class="o">[</span>HTTP Session:100050]The current server is becoming the primary server <span class="k">for </span>replicated session ID: LLl3LO-KBxD9qlT40AsWbLjP5gJfcf7MB-5C5FBWVUBM8SPXDRzV.&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;sessionId:LLl3LO-KBxD9qlT40AsWbLjP5gJfcf7MB-5C5FBWVUBM8SPXDRzV associated with roid:-4561296442252280984&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;<span class="o">[</span>HTTP Session:100077]HTTPSession attribute: <span class="s2">"sessionObject"</span> is of size 61 bytes.&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;Checksum <span class="k">for </span>attribute <span class="s1">'sessionObject'</span>, value: 2071176261&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;synchronized on <span class="nt">-4561296442252280984</span> and session is inUse: <span class="nb">false </span>and active request count is: 0&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;<span class="o">[</span>HTTP Session:100078]HTTPSession with <span class="nb">id</span>: <span class="s2">"LLl3LO-KBxD9qlT40AsWbLjP5gJfcf7MB-5C5FBWVUBM8SPXDRzV"</span> is of size 1,242 bytes.&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;The change associated with this SessionData<span class="o">(</span><span class="nt">-4561296442252280984</span> or weblogic.servlet.internal.session.ReplicatedSessionData@49221aa7 <span class="o">)</span> is: 995501008&gt;
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt; SessionData.syncSession<span class="o">()</span> the change is modified: <span class="nb">true </span>and the active request count is: 0 <span class="k">for</span> <span class="nt">-4561296442252280984</span> and this is: weblogic.servlet.internal.session.ReplicatedSessionData@49221aa7 <span class="o">&gt;</span>
+
+&lt;Debug&gt; &lt;HttpSessions&gt; &lt;BEA-000000&gt; &lt;Replicating session : <span class="nt">-4561296442252280984</span> and weblogic.servlet.internal.session.ReplicatedSessionData@49221aa7 <span class="o">&gt;</span>
+</code></pre></div></div>
+
+:ET

@@ -1,0 +1,89 @@
+I"�<h1 id="1-개요">1. 개요</h1>
+
+<p>OCI(Oracle Call Interface)</p>
+
+<p>SQL<em>Plus, SQL</em>Developer와 같은 oracle db 접속 툴이 oci 임.</p>
+
+<p>oci는 native library를 사용하므로, pure java인 thin 방식보다 더 빠르다고 한다.</p>
+
+<p>support.oracle에 oci 사용 시 weblogic jvm crash, not closed 사례와 같은 문서 혹은 패치 내용이 있으며, thin 방식 사용하는 것을 권장한다고 설명한다.</p>
+
+<blockquote>
+  <p>WLS JDBC Pool - Physical Connections are not closed by Weblogic JDBC Datasource using OCI driver (Doc ID 1928018.1)</p>
+
+  <p>WebLogic Server Crash Observed When Using Oracle OCI JDBC Driver (Doc ID 889840.1)</p>
+</blockquote>
+
+<h1 id="2-설명">2. 설명</h1>
+
+<h2 id="21-oci-를-사용하는-datasource-생성-방법">2.1 OCI 를 사용하는 Datasource 생성 방법.</h2>
+
+<h3 id="1-oci-library-installation">(1). OCI Library installation</h3>
+
+<p>WebLogic 이 설치된 OS에 OCI가 설치되어 있어야 한다.</p>
+
+<p>OCI가 설치되어야 필요한 native library가 설치되며, LD_LIBRARY_PATH와 같은 os 환경 변수에 oci library path가 설정되기 때문이다.</p>
+
+<p>OCI 는 담당자가 사용하는 tool이므로 담당자가 미리 설치를 반드시 해놓아야 하며, 설치를 하지 않은 os의 경우 oci library 파일을 받아 ftp upload 해놓아야 한다.</p>
+
+<p><a href="http://www.oracle.com/technetwork/database/features/instant-client/index-097480.html">여기</a> 에서 oci lib을 다운로드 받는다.</p>
+
+<blockquote>
+  <p>예) instantclient-basic-linux.x64-11.2.0.4.0.zip 을 /home/weblogic/was/1213/domains/lib/instantclient_11_2 압축 해제</p>
+</blockquote>
+
+<p>여기서는, OCI가 설치되어 있지 않은 서버에 oci library만으로 oci datasource 구성 방법을 설명한다.</p>
+
+<h3 id="2-setup-instance">(2). setup instance</h3>
+
+<ul>
+  <li>AdminServer와 OCI를 사용할 ManagedServer 모두 적용한다.</li>
+</ul>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...skip...
+
+<span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"/home/weblogic/was/1213/domains/lib/instantclient_11_2:</span><span class="k">${</span><span class="nv">LD_LIBRARY_PTH</span><span class="k">}</span><span class="s2">"</span>
+
+<span class="nb">export </span><span class="nv">JAVA_OPTIONS</span><span class="o">=</span><span class="s2">"-Djava.library.path=/home/weblogic/was/1213/domains/lib/instantclient_11_2 </span><span class="k">${</span><span class="nv">JAVA_OPTIONS</span><span class="k">}</span><span class="s2">"</span>
+
+...skip...
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>위에서 받은 oci는 11g이므로, ojdbc driver도 11g이어야 한다.</p>
+
+    <p><code class="language-plaintext highlighter-rouge">/home/weblogic/was/1213/domains/lib/instantclient_11_2/ojdbc6.jar 를 domains/lib 에 복사해둔다.</code></p>
+  </li>
+</ul>
+
+<h3 id="3-datasource-url">(3). datasource url</h3>
+
+<ul>
+  <li>JDBC 생성 시 connect url은 oci 라는 글자만 들어가고 나머지는 thin 과 모두 동일하다.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">jdbc:oracle:oci:host:port:sid </code></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="4-설정-시-에러가-발생한다면">(4). 설정 시 에러가 발생한다면</h3>
+
+<ul>
+  <li>
+    <p>적용하려는 oci 버전과 ojdbc 버전이 동일한지 확인한다. (oci version 11g이면 ojdbc 도 11g이어야 한다. oci library 디렉토리의 ojdbc.jar 를 사용한다면 해결되는 문제)</p>
+  </li>
+  <li>
+    <p>LD_LI….와 Djava.lib… 옵션 적용 여부를 확인한다.</p>
+  </li>
+  <li>
+    <p>주로 발생하는 에러와 가이드에 대한 문서는</p>
+
+    <blockquote>
+      <p>java.lang.UnsatisfiedLinkError: no ocijdbc11 in java.library.path with WebLogic 12c (Doc ID 1914466.1)</p>
+
+      <p>How To Configure JDBC OCI In Weblogic?(Doc ID 1917164.1)</p>
+    </blockquote>
+  </li>
+</ul>
+:ET

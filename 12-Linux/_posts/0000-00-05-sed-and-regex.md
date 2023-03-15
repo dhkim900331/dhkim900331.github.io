@@ -288,7 +288,7 @@ $ cat phone_email_name.txt
   * `-` : Phone 중간 번호 마디로써, 그냥 단순 문자.
   * `( ~ )` : 소괄호 단위로 Group이라고 하며, Capture가 된다. 아래에서 설명하지만 Capture를 하면 변수로 꺼내어 쓸 수 있게 된다.
 
-<h3>( [0-9]{1,4} - [0-9]{1,4} - [0-9]{1,4} )</h3>
+<font size="5pt">( [0-9]{1,4} - [0-9]{1,4} - [0-9]{1,4} )</font>
 
 
 
@@ -297,14 +297,14 @@ $ cat phone_email_name.txt
   * 소,중괄호만 Back-slash로 escape 처리해야 하는 것으로 보여진다, 대괄호는 하지 않아도 되는 것으로 확인됨, 구체적은 설명된 문서는 못찾음.
   * 변수로 담아 3단계에서 가독성을 높인다.
 
-<h3>PHONE_REGEX="\([0-9]\{1,4\}-[0-9]\{1,4\}-[0-9]\{1,4\}\)"</h3>
+<font size="5pt">PHONE_REGEX="\\([0-9]\\{1,4\\}-[0-9]\\{1,4\\}-[0-9]\\{1,4\\}\\)"</font>
 
 
 
 * 3단계, 다음의 sed syntax에 삽입한다.
   * `\1` : 1단계에서 말한 Group Capture 순서대로 꺼낼 수 있는 변수다. 소괄호 묶음 마다 숫자를 증가시켜 꺼내 쓸 수 있다.
 
-<h3>sed "s#${PHONE_REGEX}#Phone(\1)#" phone_email_name.txt</h3>
+<font size="5pt">sed "s#${PHONE_REGEX}#Phone(\1)#" phone_email_name.txt</font>
 
 
 

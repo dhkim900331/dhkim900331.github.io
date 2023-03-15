@@ -1,0 +1,51 @@
+I"Q	<h1 id="1-개요">1. 개요</h1>
+
+<p>12c max request parameter count 최대값 변경</p>
+
+<h1 id="2-설명">2. 설명</h1>
+
+<ul>
+  <li>
+    <p>HTTP request의 parameter 최대 개수는 기본값으로 10,000개 입니다.</p>
+  </li>
+  <li>
+    <p>parameter를 10,001개 이상 request에 담아 보내면 아래와 같이 에러 로그가 발생합니다.</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Error&gt; &lt;ServletContext&gt; &lt;BEA-000000&gt; &lt;Rejecting request since max request parameter limit exceeded 10000&gt;
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>보안상의 이슈로 인해, 10,000개의 제한이 걸려있습니다.</p>
+
+    <ul>
+      <li>사이트 https://www.oracle.com/technetwork/topics/security/alerts-086861.html 에서 CVE-2011-5035 구체적인 내용을 확인할 수 있습니다.</li>
+      <li>중요한 보안의 경우 확인하지 못함.</li>
+    </ul>
+
+    <p>소스 코드의 리뷰로 파라메터 개수 변경이 어려운 경우,</p>
+
+    <p>아래의 가이드로 수치를 변경할 수 있습니다.</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /weblogic/wls
+<span class="nb">cd </span>oracle_common/common/bin
+
+<span class="c"># MaxRequestParameterCount 값을 확인 또는 변경하려는 서버로 로그인</span>
+./wlst.sh
+connect<span class="o">(</span><span class="s1">'아이디'</span>,<span class="s1">'패스워드'</span>,<span class="s1">'t3://인스턴스_주소:포트'</span><span class="o">)</span>
+
+<span class="c"># 아래 명령을 차례대로 입력하여 최대 값 확인</span>
+<span class="nb">cd</span><span class="o">(</span><span class="s1">'Servers/AdminServer'</span><span class="o">)</span>
+cmo.getWebServer<span class="o">()</span>.getMaxRequestParameterCount<span class="o">()</span>
+
+<span class="c"># 아래 명령을 차례대로 입력하여 최대 값 수정 및 종료</span>
+edit<span class="o">()</span>
+startEdit<span class="o">()</span>
+cmo.getWebServer<span class="o">()</span>.setMaxRequestParameterCount<span class="o">(</span>20000<span class="o">)</span>
+save<span class="o">()</span>
+activate<span class="o">()</span>
+<span class="nb">exit</span><span class="o">()</span>
+</code></pre></div></div>
+
+:ET
