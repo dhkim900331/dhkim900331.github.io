@@ -47,14 +47,14 @@ WORKER_NAME_1=worker1
 WORKER_ADDR_1=${HOSTNAME}
 WORKER_PORT_1=10080
 WORKER_SSL_1=10443
-WORKER_ADMIN_ADDR_1=${HOSTNAME}
+WORKER_ADMIN_ADDR_1=127.0.0.1
 WORKER_ADMIN_PORT_1=10099
 
 WORKER_NAME_2=worker2
 WORKER_ADDR_2=${HOSTNAME}
 WORKER_PORT_2=10180
 WORKER_SSL_2=10543
-WORKER_ADMIN_ADDR_2=${HOSTNAME}
+WORKER_ADMIN_ADDR_2=127.0.0.1
 WORKER_ADMIN_PORT_2=10199
 
 
@@ -100,6 +100,10 @@ ${BASEDIR}/${OHS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc $
 ```
 
 
+
+ADMIN_ADDR을 127.0.0.1 으로만 해야 되는 것으로 테스트상 확인되는데,
+
+구체적인 이유는 확인되지 않는다.
 
 
 
@@ -161,21 +165,26 @@ create('${WORKER_NAME_1}','SystemComponent')
 create('${WORKER_NAME_2}','SystemComponent')
 delete('ohs1','SystemComponent')
 
+cd('/SystemComponent/${WORKER_NAME_1}')
+cmo.setComponentType('OHS')
+cd('/SystemComponent/${WORKER_NAME_2}')
+cmo.setComponentType('OHS')
+
 cd('/OHS/${WORKER_NAME_1}')
-set('ListenAddress','${WORKER_ADDR_1}')
-set('ListenPort','${WORKER_PORT_1}')
-set('SSLListenPort','${WORKER_SSL_1}')
-set('AdminHost', '${WORKER_ADMIN_ADDR_1}')
-set('AdminPort', '${WORKER_ADMIN_PORT_1}')
-set('ServerName', 'http://${HOSTNAME}:${WORKER_PORT_1}')
+cmo.setListenAddress('${WORKER_ADDR_1}')
+cmo.setListenPort('${WORKER_PORT_1}')
+cmo.setSSLListenPort('${WORKER_SSL_1}')
+cmo.setAdminHost('${WORKER_ADMIN_ADDR_1}')
+cmo.setAdminPort('${WORKER_ADMIN_PORT_1}')
+cmo.setServerName('http://${HOSTNAME}:${WORKER_PORT_1}')
 
 cd('/OHS/${WORKER_NAME_2}')
-set('ListenAddress','${WORKER_ADDR_2}')
-set('ListenPort','${WORKER_PORT_2}')
-set('SSLListenPort','${WORKER_SSL_2}')
-set('AdminHost', '${WORKER_ADMIN_ADDR_2}')
-set('AdminPort', '${WORKER_ADMIN_PORT_2}')
-set('ServerName', 'http://${HOSTNAME}:${WORKER_PORT_2}')
+cmo.setListenAddress('${WORKER_ADDR_2}')
+cmo.setListenPort('${WORKER_PORT_2}')
+cmo.setSSLListenPort('${WORKER_SSL_2}')
+cmo.setAdminHost('${WORKER_ADMIN_ADDR_2}')
+cmo.setAdminPort('${WORKER_ADMIN_PORT_2}')
+cmo.setServerName('http://${HOSTNAME}:${WORKER_PORT_2}')
 
 updateDomain()
 exit()
