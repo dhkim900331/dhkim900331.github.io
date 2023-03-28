@@ -12,7 +12,7 @@ typora-root-url: ..
 
 해당 블로그를 꾸미기 위해 여러 가지 편집을 했는데, 어떤것을 했나?
 
-* 향후 테마가 변경된다 해도 해당 게시물 편집을 하지 않음  
+향후 테마가 변경된다 해도 해당 게시물 편집을 할 수도 안할수도!!
 
 
 
@@ -131,6 +131,8 @@ banner: "/assets/images/banners/home.jpeg"
 * _site/assets/css/main.css 는 _sass 의 컴파일 결과물이므로, 변경하면 적용은 되지만 rebuild 할 때마다 새로이 컴파일 된 결과물이 덮어쓰기 되므로 원복된다.
 * 그러므로 _sass 내 파일들을 변경해야 한다.
 
+
+
 ### (1). 기본 폰트 크기
 
 * 해당 값에 의해 글로벌로 기준 폰트 크기로 사용된다.
@@ -170,7 +172,9 @@ $base-line-height: 1.4 !default;
 ```
 
 
+
 ### (3). 포스트 제목 header 조정
+
 ```_layout.scss
 /**
  * Post header
@@ -188,7 +192,9 @@ $base-line-height: 1.4 !default;
 ```
 
 
+
 ### (4). 인용부호(<) 폰트 크기 조정
+
 * yat.scss 파일에 $base-font-size 값이 14px 로 지정되어 있으면, 1.125*14px = 15.75px 로 지정된다.
 
 ```_base.scss
@@ -209,3 +215,46 @@ blockquote {
   }
 }
 ```
+
+
+
+## 2.6 _includes
+
+### (1). code-highlight.html
+
+code block 을 더블 클릭하면 복사하도록 한다.
+
+내 jekyll theme는 `code-highlight.html` 파일에 codeBox와 codeBox 우상단에 LANGUAGE badge를 구성한다.
+
+Badge는 CSS pusedo element으로써, DOM 아니므로 addEventListener을 직접적으로 할당할 수 없었다.
+
+real position을 구하는 방법으로도 가능해 보이지만 javascript 테스트에 많은 시간이 필요해보인다.
+
+단순히, codeBox 전체에 [더블클릭 시 복사](https://www.aleksandrhovhannisyan.com/blog/how-to-add-a-copy-to-clipboard-button-to-your-jekyll-blog/)하도록 했다. (나만 아는 copy 기능이 생긴 것)
+
+
+
+```javascript
+  function addBadge(block) {
+    var enabled = ('{{ badge_enabled }}' || 'true').toLowerCase();
+    if (enabled == 'true') {
+      var pre = block.parentElement;
+      pre.classList.add('badge');
+	  
+	  /* CUSTOM (2023-03-28) */  
+	  var codeBody = pre.querySelector(".rouge-code pre").innerText;
+	  pre.addEventListener('dblclick', () => {
+		var lang = block.parentNode.getAttribute('data-lang', lang);
+		window.navigator.clipboard.writeText(codeBody);
+		block.parentNode.setAttribute('data-lang', "copied");
+		setTimeout(() => {
+		  block.parentNode.setAttribute('data-lang', lang);
+		}, 2000);
+	  });
+    }
+  }
+```
+
+codeBox의 텍스트를 찾고 `(".rouge-code pre").innerText;` 
+
+해당 박스 전체에 더블클릭 이벤트를 할당 했다. `pre.addEventListener('dblclick',`

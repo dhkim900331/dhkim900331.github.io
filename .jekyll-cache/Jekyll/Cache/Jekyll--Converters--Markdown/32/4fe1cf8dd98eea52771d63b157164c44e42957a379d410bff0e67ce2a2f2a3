@@ -1,4 +1,4 @@
-I"v�<h2 id="1-개요">1. 개요</h2>
+I"��<h2 id="1-개요">1. 개요</h2>
 
 <p>WebLogic 12cR2 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.</p>
 
@@ -11,7 +11,7 @@
   <li>Managed M1 (TCP 8002)</li>
   <li>Managed M2 (TCP 8003)</li>
   <li>myCluster (M1, M2)</li>
-  <li>/sw/app/testApp, cohSessonApp deployed on myCluster</li>
+  <li>/sw/app/{testApp, PostDataTest} deployed on myCluster</li>
 </ul>
 
 <h2 id="3-script">3. Script</h2>
@@ -77,6 +77,8 @@
 57
 58
 59
+60
+61
 </pre></td><td class="rouge-code"><pre><span class="nv">BASEDIR</span><span class="o">=</span>/sw/installFiles
 <span class="nv">OS_USERNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--user</span> <span class="nt">--name</span><span class="si">)</span>
 <span class="nv">OS_GROUPNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--group</span> <span class="nt">--name</span><span class="si">)</span>
@@ -98,14 +100,16 @@
 <span class="nv">ADM_PASSWORD</span><span class="o">=</span>weblogic1
 
 <span class="nv">M1_SVR_NAME</span><span class="o">=</span>M1
+<span class="nv">M1_SVR_ADDR</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
 <span class="nv">M1_SVR_PORT</span><span class="o">=</span>8002
 <span class="nv">M2_SVR_NAME</span><span class="o">=</span>M2
+<span class="nv">M2_SVR_ADDR</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
 <span class="nv">M2_SVR_PORT</span><span class="o">=</span>8003
 <span class="nv">CLUSTER_NAME</span><span class="o">=</span>myCluster
 
 <span class="nv">APP_HOME</span><span class="o">=</span>/sw/app
 <span class="nv">APP_1</span><span class="o">=</span>testApp
-<span class="nv">APP_2</span><span class="o">=</span>cohSessionApp
+<span class="nv">APP_2</span><span class="o">=</span>PostDataTest
 
 
 <span class="c"># (1) ResponseFile</span>
@@ -397,11 +401,11 @@ cmo.setClusterMessagingMode('unicast')
 ## Assign Managed to Cluster
 cd('/')
 cd('/Servers/</span><span class="k">${</span><span class="nv">M1_SVR_NAME</span><span class="k">}</span><span class="sh">')
-cmo.setCluster(getMBean('/Clusters/</span><span class="k">${</span><span class="nv">M1_SVR_NAME</span><span class="k">}</span><span class="sh">'))
+cmo.setCluster(getMBean('/Clusters/</span><span class="k">${</span><span class="nv">CLUSTER_NAME</span><span class="k">}</span><span class="sh">'))
 
 cd('/')
 cd('/Servers/</span><span class="k">${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span><span class="sh">')
-cmo.setCluster(getMBean('/Clusters/</span><span class="k">${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span><span class="sh">'))
+cmo.setCluster(getMBean('/Clusters/</span><span class="k">${</span><span class="nv">CLUSTER_NAME</span><span class="k">}</span><span class="sh">'))
 
 save()
 activate()
@@ -721,6 +725,9 @@ exit()
 257
 258
 259
+260
+261
+262
 </pre></td><td class="rouge-code"><pre><span class="c"># (10) Create Instance Scripts</span>
 <span class="c"># AdminServer (start, stop, log, ps)</span>
 <span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="sh">"</span><span class="no">EOF</span><span class="sh">" &gt; </span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="sh">/startA.sh
@@ -980,6 +987,9 @@ ps -ef | grep "java" | grep "weblogic.Server" | grep "D</span><span class="k">${
 <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s|#SERVER_PORT#|</span><span class="k">${</span><span class="nv">M2_SVR_PORT</span><span class="k">}</span><span class="s2">|g"</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span>.sh
 <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s|#ADM_ADDR#|</span><span class="k">${</span><span class="nv">ADM_ADDR</span><span class="k">}</span><span class="s2">|g"</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span>.sh
 <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s|#ADM_PORT#|</span><span class="k">${</span><span class="nv">ADM_PORT</span><span class="k">}</span><span class="s2">|g"</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span>.sh
+
+<span class="nb">chmod </span>700 <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*</span>.sh
+<span class="nb">rm</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*</span>M.sh
 </pre></td></tr></tbody></table></code></pre></div></div>
 
 :ET

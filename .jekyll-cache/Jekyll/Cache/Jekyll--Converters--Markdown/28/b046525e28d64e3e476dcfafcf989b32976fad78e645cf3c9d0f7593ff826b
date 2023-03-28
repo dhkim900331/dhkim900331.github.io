@@ -1,17 +1,17 @@
-I"m�<h2 id="1-개요">1. 개요</h2>
+I"��<h2 id="1-개요">1. 개요</h2>
 
-<p>WebLogic 14c 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.</p>
+<p>WebLogic 11gR1 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.</p>
 
 <h2 id="2-설명">2. 설명</h2>
 
-<p>All-In-One-Script-For-14c.sh 실행으로 다음 환경을 구성하도록 한다.</p>
+<p>All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한다.</p>
 
 <ul>
   <li>AdminServer (TCP 8001 , console account : weblogic, weblogic1)</li>
   <li>Managed M1 (TCP 8002)</li>
   <li>Managed M2 (TCP 8003)</li>
   <li>myCluster (M1, M2)</li>
-  <li>/sw/app/testApp, cohSessonApp deployed on myCluster</li>
+  <li>/sw/app/{testApp, PostDataTest} deployed on myCluster</li>
 </ul>
 
 <h2 id="3-script">3. Script</h2>
@@ -77,19 +77,25 @@
 57
 58
 59
+60
+61
 </pre></td><td class="rouge-code"><pre><span class="nv">BASEDIR</span><span class="o">=</span>/sw/installFiles
 <span class="nv">OS_USERNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--user</span> <span class="nt">--name</span><span class="si">)</span>
 <span class="nv">OS_GROUPNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--group</span> <span class="nt">--name</span><span class="si">)</span>
 
-<span class="nv">WLS_INSTALL_FILE</span><span class="o">=</span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/fmw_14.1.1.0.0_wls.jar
-<span class="nv">JAVA_HOME</span><span class="o">=</span>/sw/jdk/jdk1.8.0_351
+<span class="nv">WLS_INSTALL_FILE</span><span class="o">=</span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/wls1036_generic.jar
+<span class="nv">JAVA_HOME</span><span class="o">=</span>/sw/jdk/jdk1.6.0_45
 
-<span class="nv">WLS_INSTALL_PATH</span><span class="o">=</span>/sw/weblogic/14c
-<span class="nv">INVENTORY_PATH</span><span class="o">=</span>/sw/weblogic/inventories/14c
+<span class="nv">WLS_INSTALL_PATH</span><span class="o">=</span>/sw/weblogic/11gR1
+<span class="nv">INVENTORY_PATH</span><span class="o">=</span>/sw/weblogic/inventories/11gR1
 <span class="nv">INVENTORY_GROUP</span><span class="o">=</span><span class="k">${</span><span class="nv">OS_GROUPNAME</span><span class="k">}</span>
 
 <span class="nv">DOMAIN_NAME</span><span class="o">=</span>base_domain
 <span class="nv">DOMAIN_HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span>/domains/<span class="k">${</span><span class="nv">DOMAIN_NAME</span><span class="k">}</span>
+
+<span class="nv">HOSTNAME</span><span class="o">=</span>wls.local
+<span class="nv">CONSOLE_USERNAME</span><span class="o">=</span>weblogic
+<span class="nv">CONSOLE_PASSWORD</span><span class="o">=</span>weblogic1
 
 <span class="nv">HOSTNAME</span><span class="o">=</span>wls.local
 <span class="nv">ADM_ADDR</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
@@ -98,44 +104,42 @@
 <span class="nv">ADM_PASSWORD</span><span class="o">=</span>weblogic1
 
 <span class="nv">M1_SVR_NAME</span><span class="o">=</span>M1
+<span class="nv">M1_SVR_ADDR</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
 <span class="nv">M1_SVR_PORT</span><span class="o">=</span>8002
 <span class="nv">M2_SVR_NAME</span><span class="o">=</span>M2
+<span class="nv">M2_SVR_ADDR</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
 <span class="nv">M2_SVR_PORT</span><span class="o">=</span>8003
 <span class="nv">CLUSTER_NAME</span><span class="o">=</span>myCluster
 
 <span class="nv">APP_HOME</span><span class="o">=</span>/sw/app
 <span class="nv">APP_1</span><span class="o">=</span>testApp
-<span class="nv">APP_2</span><span class="o">=</span>cohSessionApp
+<span class="nv">APP_2</span><span class="o">=</span>PostDataTest
 
 
-<span class="c"># (1) ResponseFile</span>
-<span class="c"># https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/sample-response-files-silent-installation-and-deinstallation.html#GUID-65B11C03-B559-41F1-B9B4-B7276491E580</span>
+<span class="c"># (1) silent.xml</span>
+<span class="c"># https://docs.oracle.com/cd/E24329_01/doc.1211/e24492/silent.htm#WLSIG185</span>
+<span class="c"># https://oracle-base.com/articles/11g/weblogic-silent-installation-11g</span>
+<span class="c"># wls1036_generic.jar:lpr.xml or gpr.xml</span>
 
-<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span><span class="sh">/rsp
-[ENGINE]
-Response File Version=1.0.0.0.0
- 
-[GENERIC]
-DECLINE_AUTO_UPDATES=true
-ORACLE_HOME=</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span><span class="sh">
-INSTALL_TYPE=WebLogic Server
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span><span class="sh">/silent.xml
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;bea-installer&gt;
+ &lt;input-fields&gt;
+  &lt;data-value name="BEAHOME" value="</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span><span class="sh">"/&gt;
+  &lt;data-value name="WLS_INSTALL_DIR" value="</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span><span class="sh">/wlserver_10.3"/&gt;
+  &lt;!--&lt;data-value name="COMPONENT_PATHS" value="WebLogic Server/Core Application Server|WebLogic Server/Administration Console|WebLogic Server/Web 2.0 HTTP Pub-Sub Server|WebLogic Server/WebLogic SCA|WebLogic Server/WebLogic JDBC Drivers|WebLogic Server/Third Party JDBC Drivers|WebLogic Server/WebLogic Server Clients|WebLogic Server/WebLogic Web Server Plugins"/&gt;--&gt;
+    &lt;data-value name="COMPONENT_PATHS" value="WebLogic Server"/&gt;
+  &lt;data-value name="INSTALL_SHORTCUT_IN_ALL_USERS_FOLDER" value="no"/&gt;
+  &lt;data-value name="LOCAL_JVMS" value="</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span><span class="sh">"/&gt;
+ &lt;/input-fields&gt;
+&lt;/bea-installer&gt;
 </span><span class="no">EOF
 
 
-</span><span class="c"># (2) Inventory</span>
-<span class="c"># https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-756E3FD9-4094-412F-9BEB-72C5FD51056B</span>
-<span class="c"># * inventory.loc 파일 샘플은 문서에 없음</span>
+</span><span class="c"># (2) Installation</span>
+<span class="c"># https://docs.oracle.com/cd/E24329_01/doc.1211/e24492/silent.htm#CIHCAHGC</span>
 
-<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span><span class="sh">/loc
-inventory_loc=</span><span class="k">${</span><span class="nv">INVENTORY_PATH</span><span class="k">}</span><span class="sh">
-inst_group=</span><span class="k">${</span><span class="nv">INVENTORY_GROUP</span><span class="k">}</span><span class="sh">
-</span><span class="no">EOF
-
-
-</span><span class="c"># (3) Installation</span>
-<span class="c"># https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-5F06D02F-6D71-45B9-BF41-5D5759D31958</span>
-
-<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin/java <span class="nt">-jar</span> <span class="k">${</span><span class="nv">WLS_INSTALL_FILE</span><span class="k">}</span> <span class="nt">-silent</span> <span class="nt">-responseFile</span> <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/rsp <span class="nt">-invPtrLoc</span> <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/loc
+<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin/java <span class="nt">-jar</span> <span class="k">${</span><span class="nv">WLS_INSTALL_FILE</span><span class="k">}</span> <span class="nt">-mode</span><span class="o">=</span>silent <span class="nt">-silent_xml</span><span class="o">=</span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/silent.xml
 </pre></td></tr></tbody></table></code></pre></div></div>
 
 <h3 id="32-domain">3.2 Domain</h3>
@@ -165,12 +169,13 @@ inst_group=</span><span class="k">${</span><span class="nv">INVENTORY_GROUP</spa
 23
 24
 </pre></td><td class="rouge-code"><pre><span class="c"># (4) Domain</span>
-<span class="c"># https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wlstg/domains.html#GUID-5FC3AA22-BCB0-4F98-801A-8EBC5E05DC6A</span>
+<span class="c"># https://docs.oracle.com/cd/E12839_01/web.1111/e13715/domains.htm#WLSTG157</span>
+<span class="c"># wlserver_10.3/common/templates/scripts/wlst/basicWLSDomain.py</span>
 
-<span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span>/wlserver/common/bin/wlst.sh <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
-readTemplate('</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span><span class="sh">/wlserver/common/templates/wls/wls.jar')
+<span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span>/wlserver_10.3/common/bin/wlst.sh <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
+readTemplate('</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span><span class="sh">/wlserver_10.3/common/templates/domains/wls.jar')
 
-# https://docs.oracle.com/middleware/1213/wls/WLSTC/reference.htm#WLSTC314
+# https://docs.oracle.com/cd/E12839_01/web.1111/e13813/reference.htm#WLSTC314
 setOption('JavaHome', '</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span><span class="sh">');
 setOption('ServerStartMode', 'prod')
 setOption('OverwriteDomain', 'true')
@@ -185,7 +190,6 @@ set('ListenPort', </span><span class="k">${</span><span class="nv">ADM_PORT</spa
 
 writeDomain('</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="sh">')
 closeTemplate()
-
 exit()
 </span><span class="no">EOF
 </span></pre></td></tr></tbody></table></code></pre></div></div>
@@ -218,13 +222,11 @@ exit()
 24
 25
 26
-27
 </pre></td><td class="rouge-code"><pre><span class="c"># (5) Create boot.properties</span>
 <span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="sh">/boot.properties
 username=</span><span class="k">${</span><span class="nv">ADM_USERNAME</span><span class="k">}</span><span class="sh">
 password=</span><span class="k">${</span><span class="nv">ADM_PASSWORD</span><span class="k">}</span><span class="sh">
 </span><span class="no">EOF
-
 
 </span><span class="c"># (6) Start-up AdminServer</span>
 <span class="c"># https://unix.stackexchange.com/questions/405250/passing-and-setting-variables-in-a-heredoc</span>
@@ -397,11 +399,11 @@ cmo.setClusterMessagingMode('unicast')
 ## Assign Managed to Cluster
 cd('/')
 cd('/Servers/</span><span class="k">${</span><span class="nv">M1_SVR_NAME</span><span class="k">}</span><span class="sh">')
-cmo.setCluster(getMBean('/Clusters/</span><span class="k">${</span><span class="nv">M1_SVR_NAME</span><span class="k">}</span><span class="sh">'))
+cmo.setCluster(getMBean('/Clusters/</span><span class="k">${</span><span class="nv">CLUSTER_NAME</span><span class="k">}</span><span class="sh">'))
 
 cd('/')
 cd('/Servers/</span><span class="k">${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span><span class="sh">')
-cmo.setCluster(getMBean('/Clusters/</span><span class="k">${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span><span class="sh">'))
+cmo.setCluster(getMBean('/Clusters/</span><span class="k">${</span><span class="nv">CLUSTER_NAME</span><span class="k">}</span><span class="sh">'))
 
 save()
 activate()
@@ -435,8 +437,10 @@ exit()
 21
 22
 23
+24
 </pre></td><td class="rouge-code"><pre><span class="c"># (9) Deploy App</span>
 <span class="c"># https://docs.oracle.com/middleware/1213/wls/WLSTC/reference.htm#WLSTC200</span>
+
 <span class="nb">.</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/bin/setDomainEnv.sh
 java weblogic.WLST <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
 connect('</span><span class="k">${</span><span class="nv">ADM_USERNAME</span><span class="k">}</span><span class="sh">','</span><span class="k">${</span><span class="nv">ADM_PASSWORD</span><span class="k">}</span><span class="sh">','</span><span class="k">${</span><span class="nv">ADM_ADDR</span><span class="k">}</span><span class="sh">:</span><span class="k">${</span><span class="nv">ADM_PORT</span><span class="k">}</span><span class="sh">')
@@ -721,6 +725,9 @@ exit()
 257
 258
 259
+260
+261
+262
 </pre></td><td class="rouge-code"><pre><span class="c"># (10) Create Instance Scripts</span>
 <span class="c"># AdminServer (start, stop, log, ps)</span>
 <span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="sh">"</span><span class="no">EOF</span><span class="sh">" &gt; </span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="sh">/startA.sh
@@ -771,7 +778,7 @@ export JAVA_OPTIONS
 
 USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -D</span><span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span><span class="sh">"
 USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -Dserver.name=</span><span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span><span class="sh"> -Dserver.port=</span><span class="k">${</span><span class="nv">SERVER_PORT</span><span class="k">}</span><span class="sh">"
-USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m"
+USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -Xms1024m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m"
 USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dweblogic.wsee.skip.async.response=true"
 USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -D_Offline_FileDataArchive=true -Dweblogic.connector.ConnectionPoolProfilingEnabled=false -Dcom.bea.wlw.netui.disableInstrumentation=true"
 export USER_MEM_ARGS
@@ -890,7 +897,7 @@ export JAVA_OPTIONS
 
 USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -D</span><span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span><span class="sh">"
 USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -Dserver.name=</span><span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span><span class="sh"> -Dserver.port=</span><span class="k">${</span><span class="nv">SERVER_PORT</span><span class="k">}</span><span class="sh">"
-USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m"
+USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -Xms1024m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m"
 USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dweblogic.wsee.skip.async.response=true"
 USER_MEM_ARGS="</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="sh"> -D_Offline_FileDataArchive=true -Dweblogic.connector.ConnectionPoolProfilingEnabled=false -Dcom.bea.wlw.netui.disableInstrumentation=true"
 export USER_MEM_ARGS
@@ -980,5 +987,8 @@ ps -ef | grep "java" | grep "weblogic.Server" | grep "D</span><span class="k">${
 <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s|#SERVER_PORT#|</span><span class="k">${</span><span class="nv">M2_SVR_PORT</span><span class="k">}</span><span class="s2">|g"</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span>.sh
 <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s|#ADM_ADDR#|</span><span class="k">${</span><span class="nv">ADM_ADDR</span><span class="k">}</span><span class="s2">|g"</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span>.sh
 <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s|#ADM_PORT#|</span><span class="k">${</span><span class="nv">ADM_PORT</span><span class="k">}</span><span class="s2">|g"</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*${</span><span class="nv">M2_SVR_NAME</span><span class="k">}</span>.sh
+
+<span class="nb">chmod </span>700 <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*</span>.sh
+<span class="nb">rm</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/<span class="k">*</span>M.sh
 </pre></td></tr></tbody></table></code></pre></div></div>
 :ET

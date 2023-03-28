@@ -52,7 +52,26 @@ document.addEventListener('DOMContentLoaded', function(event) {
     if (enabled == 'true') {
       var pre = block.parentElement;
       pre.classList.add('badge');
+	  
+	  /* CUSTOM (2023-03-28) */  
+	  var codeBody = pre.querySelector(".rouge-code pre").innerText;
+	  pre.addEventListener('dblclick', () => {
+		var lang = block.parentNode.getAttribute('data-lang', lang);
+		window.navigator.clipboard.writeText(codeBody);
+		block.parentNode.setAttribute('data-lang', "copied");
+		setTimeout(() => {
+		  block.parentNode.setAttribute('data-lang', lang);
+		}, 2000);
+	  });
     }
+  }
+  
+  function getPosition( element ) {
+	var rect = element.getBoundingClientRect();
+	return {
+		x: rect.left,
+		y: rect.top
+	};
   }
 
   function handle(block) {

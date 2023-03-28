@@ -20,7 +20,7 @@ All-In-One-Script-For-14c.sh 실행으로 다음 환경을 구성하도록 한�
 - Managed M1 (TCP 8002)
 - Managed M2 (TCP 8003)
 - myCluster (M1, M2)
-- /sw/app/testApp, cohSessonApp deployed on myCluster
+- /sw/app/{testApp, PostDataTest} deployed on myCluster
 
 
 
@@ -50,14 +50,16 @@ ADM_USERNAME=weblogic
 ADM_PASSWORD=weblogic1
 
 M1_SVR_NAME=M1
+M1_SVR_ADDR=${HOSTNAME}
 M1_SVR_PORT=8002
 M2_SVR_NAME=M2
+M2_SVR_ADDR=${HOSTNAME}
 M2_SVR_PORT=8003
 CLUSTER_NAME=myCluster
 
 APP_HOME=/sw/app
 APP_1=testApp
-APP_2=cohSessionApp
+APP_2=PostDataTest
 
 
 # (1) ResponseFile
@@ -233,11 +235,11 @@ cmo.setClusterMessagingMode('unicast')
 ## Assign Managed to Cluster
 cd('/')
 cd('/Servers/${M1_SVR_NAME}')
-cmo.setCluster(getMBean('/Clusters/${M1_SVR_NAME}'))
+cmo.setCluster(getMBean('/Clusters/${CLUSTER_NAME}'))
 
 cd('/')
 cd('/Servers/${M2_SVR_NAME}')
-cmo.setCluster(getMBean('/Clusters/${M2_SVR_NAME}'))
+cmo.setCluster(getMBean('/Clusters/${CLUSTER_NAME}'))
 
 save()
 activate()
@@ -540,4 +542,7 @@ sed -i "s|#SERVER_ADDR#|${M2_SVR_ADDR}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
 sed -i "s|#SERVER_PORT#|${M2_SVR_PORT}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
 sed -i "s|#ADM_ADDR#|${ADM_ADDR}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
 sed -i "s|#ADM_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
+
+chmod 700 ${DOMAIN_HOME}/*.sh
+rm ${DOMAIN_HOME}/*M.sh
 ```

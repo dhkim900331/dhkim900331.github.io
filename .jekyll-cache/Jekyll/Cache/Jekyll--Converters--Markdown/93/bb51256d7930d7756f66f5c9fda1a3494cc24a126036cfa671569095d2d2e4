@@ -1,4 +1,4 @@
-I"��<h2 id="1-개요">1. 개요</h2>
+I"�<h2 id="1-개요">1. 개요</h2>
 
 <p>Oracle HTTP Server 12cR2 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.</p>
 
@@ -106,14 +106,14 @@
 <span class="nv">WORKER_ADDR_1</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
 <span class="nv">WORKER_PORT_1</span><span class="o">=</span>10080
 <span class="nv">WORKER_SSL_1</span><span class="o">=</span>10443
-<span class="nv">WORKER_ADMIN_ADDR_1</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
+<span class="nv">WORKER_ADMIN_ADDR_1</span><span class="o">=</span>127.0.0.1
 <span class="nv">WORKER_ADMIN_PORT_1</span><span class="o">=</span>10099
 
 <span class="nv">WORKER_NAME_2</span><span class="o">=</span>worker2
 <span class="nv">WORKER_ADDR_2</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
 <span class="nv">WORKER_PORT_2</span><span class="o">=</span>10180
 <span class="nv">WORKER_SSL_2</span><span class="o">=</span>10543
-<span class="nv">WORKER_ADMIN_ADDR_2</span><span class="o">=</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span>
+<span class="nv">WORKER_ADMIN_ADDR_2</span><span class="o">=</span>127.0.0.1
 <span class="nv">WORKER_ADMIN_PORT_2</span><span class="o">=</span>10199
 
 
@@ -157,6 +157,10 @@ inst_group=</span><span class="k">${</span><span class="nv">INVENTORY_GROUP</spa
 
 <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/<span class="k">${</span><span class="nv">OHS_INSTALL_FILE</span><span class="k">}</span> <span class="nt">-silent</span> <span class="nt">-responseFile</span> <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/rsp <span class="nt">-invPtrLoc</span> <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/loc
 </pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>ADMIN_ADDR을 127.0.0.1 으로만 해야 되는 것으로 테스트상 확인되는데,</p>
+
+<p>구체적인 이유는 확인되지 않는다.</p>
 
 <h3 id="32-domain">3.2 Domain</h3>
 
@@ -261,6 +265,11 @@ exit()
 25
 26
 27
+28
+29
+30
+31
+32
 </pre></td><td class="rouge-code"><pre><span class="c"># (7) Component</span>
 <span class="k">${</span><span class="nv">ENGINE_PATH</span><span class="k">}</span>/oracle_common/common/bin/wlst.sh <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
 readDomain('</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="sh">')
@@ -269,21 +278,26 @@ create('</span><span class="k">${</span><span class="nv">WORKER_NAME_1</span><sp
 create('</span><span class="k">${</span><span class="nv">WORKER_NAME_2</span><span class="k">}</span><span class="sh">','SystemComponent')
 delete('ohs1','SystemComponent')
 
+cd('/SystemComponent/</span><span class="k">${</span><span class="nv">WORKER_NAME_1</span><span class="k">}</span><span class="sh">')
+cmo.setComponentType('OHS')
+cd('/SystemComponent/</span><span class="k">${</span><span class="nv">WORKER_NAME_2</span><span class="k">}</span><span class="sh">')
+cmo.setComponentType('OHS')
+
 cd('/OHS/</span><span class="k">${</span><span class="nv">WORKER_NAME_1</span><span class="k">}</span><span class="sh">')
-set('ListenAddress','</span><span class="k">${</span><span class="nv">WORKER_ADDR_1</span><span class="k">}</span><span class="sh">')
-set('ListenPort','</span><span class="k">${</span><span class="nv">WORKER_PORT_1</span><span class="k">}</span><span class="sh">')
-set('SSLListenPort','</span><span class="k">${</span><span class="nv">WORKER_SSL_1</span><span class="k">}</span><span class="sh">')
-set('AdminHost', '</span><span class="k">${</span><span class="nv">WORKER_ADMIN_ADDR_1</span><span class="k">}</span><span class="sh">')
-set('AdminPort', '</span><span class="k">${</span><span class="nv">WORKER_ADMIN_PORT_1</span><span class="k">}</span><span class="sh">')
-set('ServerName', 'http://</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span><span class="sh">:</span><span class="k">${</span><span class="nv">WORKER_PORT_1</span><span class="k">}</span><span class="sh">')
+cmo.setListenAddress('</span><span class="k">${</span><span class="nv">WORKER_ADDR_1</span><span class="k">}</span><span class="sh">')
+cmo.setListenPort('</span><span class="k">${</span><span class="nv">WORKER_PORT_1</span><span class="k">}</span><span class="sh">')
+cmo.setSSLListenPort('</span><span class="k">${</span><span class="nv">WORKER_SSL_1</span><span class="k">}</span><span class="sh">')
+cmo.setAdminHost('</span><span class="k">${</span><span class="nv">WORKER_ADMIN_ADDR_1</span><span class="k">}</span><span class="sh">')
+cmo.setAdminPort('</span><span class="k">${</span><span class="nv">WORKER_ADMIN_PORT_1</span><span class="k">}</span><span class="sh">')
+cmo.setServerName('http://</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span><span class="sh">:</span><span class="k">${</span><span class="nv">WORKER_PORT_1</span><span class="k">}</span><span class="sh">')
 
 cd('/OHS/</span><span class="k">${</span><span class="nv">WORKER_NAME_2</span><span class="k">}</span><span class="sh">')
-set('ListenAddress','</span><span class="k">${</span><span class="nv">WORKER_ADDR_2</span><span class="k">}</span><span class="sh">')
-set('ListenPort','</span><span class="k">${</span><span class="nv">WORKER_PORT_2</span><span class="k">}</span><span class="sh">')
-set('SSLListenPort','</span><span class="k">${</span><span class="nv">WORKER_SSL_2</span><span class="k">}</span><span class="sh">')
-set('AdminHost', '</span><span class="k">${</span><span class="nv">WORKER_ADMIN_ADDR_2</span><span class="k">}</span><span class="sh">')
-set('AdminPort', '</span><span class="k">${</span><span class="nv">WORKER_ADMIN_PORT_2</span><span class="k">}</span><span class="sh">')
-set('ServerName', 'http://</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span><span class="sh">:</span><span class="k">${</span><span class="nv">WORKER_PORT_2</span><span class="k">}</span><span class="sh">')
+cmo.setListenAddress('</span><span class="k">${</span><span class="nv">WORKER_ADDR_2</span><span class="k">}</span><span class="sh">')
+cmo.setListenPort('</span><span class="k">${</span><span class="nv">WORKER_PORT_2</span><span class="k">}</span><span class="sh">')
+cmo.setSSLListenPort('</span><span class="k">${</span><span class="nv">WORKER_SSL_2</span><span class="k">}</span><span class="sh">')
+cmo.setAdminHost('</span><span class="k">${</span><span class="nv">WORKER_ADMIN_ADDR_2</span><span class="k">}</span><span class="sh">')
+cmo.setAdminPort('</span><span class="k">${</span><span class="nv">WORKER_ADMIN_PORT_2</span><span class="k">}</span><span class="sh">')
+cmo.setServerName('http://</span><span class="k">${</span><span class="nv">HOSTNAME</span><span class="k">}</span><span class="sh">:</span><span class="k">${</span><span class="nv">WORKER_PORT_2</span><span class="k">}</span><span class="sh">')
 
 updateDomain()
 exit()
