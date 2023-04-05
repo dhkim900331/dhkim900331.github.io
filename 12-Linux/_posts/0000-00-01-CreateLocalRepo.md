@@ -23,8 +23,7 @@ Linux Image를 마운트하여 직접 Package를 구성해보자.
 * 다음과 같이 받은 DVD (Full image) 파일을 특정 경로에 업로드 한다.
 
 ```bash
-[root@localhost yum.repos.d]# ls -rtl /root
-합계 4415492
+$ ls -rtl /root
 -rw-r--r--. 1 root root 4521459712  4월  6 09:31 CentOS-7-x86_64-DVD-1708.iso
 -rw-------. 1 root root       1277  4월  6 09:55 anaconda-ks.cfg
 ```
@@ -34,8 +33,8 @@ Linux Image를 마운트하여 직접 Package를 구성해보자.
 ### 2.2 Image Mount
 
 ```bash
-mkdir /mnt_centos7.4 # 이미 있는 '/mnt' 를 사용해도 된다. 필수로 새로 만들 필요는 없다.
-mount -o loop CentOS-7-x86_64-DVD-1708.iso /mnt_centos7.4
+$ mkdir /mnt_centos7.4 # 이미 있는 '/mnt' 를 사용해도 된다. 필수로 새로 만들 필요는 없다.
+$ mount -o loop CentOS-7-x86_64-DVD-1708.iso /mnt_centos7.4
 ```
 
 > loop는 block device 장치를 뜻한다. (루프백)
@@ -48,8 +47,8 @@ mount -o loop CentOS-7-x86_64-DVD-1708.iso /mnt_centos7.4
 * 폐쇄망이나, 기본으로 Enabled 되어 있는 기존 Repo 목록들을 Disabled 해두어야 yum 설치 시 불필요한 접근을 하지 않겠다.
 
 ```bash
-yum repolist enabled # 명령으로 enabled 항목 확인
-yum-config-manager --disable "disabled 전환할 repo name"
+$ yum repolist enabled # 명령으로 enabled 항목 확인
+$ yum-config-manager --disable "disabled 전환할 repo id"
 ```
 
 
@@ -57,16 +56,16 @@ yum-config-manager --disable "disabled 전환할 repo name"
 ### 2.4 Local Repo 생성 및 활성화(자동)
 
 ```bash
-yum-config-manager --add-repo "file:///mnt_centos7.4"
+$ yum-config-manager --add-repo "file:///mnt_centos7.4"
 
-cat /etc/yum.repos.d/mnt_centos7.4.repo
+$ cat << EOF > /etc/yum.repos.d/mnt_centos7.4.repo
 [mnt_centos7.4]
 name=added from: file:///mnt_centos7.4
 baseurl=file:///mnt_centos7.4
 enabled=1
+EOF
 
-
-yum repolist enabled | grep "centos"
+$ yum repolist enabled
 mnt_centos7.4              added from: file:///mnt_centos7.4              3,894
 ```
 
@@ -75,9 +74,34 @@ mnt_centos7.4              added from: file:///mnt_centos7.4              3,894
 Local repo에서 이미지 검색하는 것이 확인되면, 잘 끝났다.
 
 ```bash
-yum list gcc
+$ yum list gcc
 Loaded plugins: fastestmirror
 Loading mirror speeds from cached hostfile
 Installed Packages
 gcc.x86_64             4.8.5-16.el7          @mnt_centos7.4
 ```
+
+
+
+위 단계에서, repomd.xml 파일을 찾지 못하는 에러가 발생한다면,
+
+```
+Error: Failed to download metadata for repo 'mnt_centos7.4': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried
+```
+
+
+
+repo 파일의 baseurl을 다음과 같이 BaseOS, AppStream 존재하는 디렉토리 별로 구성해주어야 한다.
+
+```repo
+[mnt_os_base]
+name=added from: file:///mnt_os
+baseurl=file:///mnt_os/BaseOS
+enabled=1
+
+[mnt_os_stream]
+name=added from: file:///mnt_os
+baseurl=file:///mnt_os/AppStream
+enabled=1
+```
+
