@@ -344,3 +344,51 @@ The command completed successfully
 
 
 _**데이터베이스 삭제는 `dbca -silent -deleteDatabase -sourceDB ORCL`**_
+
+
+
+# 7. DB & Listener Startup
+
+```sh
+$ /sw/databases/oracle-19c/product/19.3/dbhome_1/bin/lsnrctl start LISTENER
+$ sqlplus / as sysdba
+sqlplus> startup
+ORACLE instance started.
+
+Total System Global Area  805304088 bytes
+Fixed Size                  9139992 bytes
+Variable Size             218103808 bytes
+Database Buffers          570425344 bytes
+Redo Buffers                7634944 bytes
+Database mounted.
+Database opened.
+```
+
+
+
+# 8. User 관리
+
+```sh
+sqlplus> alter session set "_ORACLE_SCRIPT"=true;
+sqlplus> CREATE USER "계정명" IDENTIFIED BY "비밀번호";
+sqlplus> ALTER USER "계정명" IDENTIFIED BY "변경할 비밀번호";
+sqlplus> GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW to "계정명"
+sqlplus> REVOKE <권한> from "권한을 취소할 계정명"
+```
+
+
+
+# 9. 기본 SQL Query
+
+```sql
+CREATE TABLE emp (empno NUMBER(4) NOT NULL, ename VARCHAR2(10));
+```
+
+```sql
+INSERT INTO emp (empno, ename) VALUES (1, 'jane');
+```
+
+```sql
+SELECT * FROM emp;
+```
+
