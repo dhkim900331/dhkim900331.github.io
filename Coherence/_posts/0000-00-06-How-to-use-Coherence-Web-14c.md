@@ -8,7 +8,7 @@ typora-root-url: ..
 
 # 1. 개요
 
-[How-to-install-Coherence-Web-14c](How-to-install-Coherence-Web-14c.md) 에서 설치를 완료 했다.
+[How-to-install-Coherence-Web-14c](How-to-install-Coherence-Web-14c) 에서 설치를 완료 했다.
 
 여기서는 실제 환경에서 쓰일 수 있게 다음의 항목들을 확인한다.
 
@@ -105,11 +105,7 @@ invalidation-internal-secs 마다 All HTTP Session을 Scan하여 invalid 한 ses
 
 
 
-[5. JMX Monitoring](#5. JMX Monitoring) 을 이용하여 Session 부하를 발생 시킬 때, Reaper Thread가 어떻게 동작하는지 알아본다.
-
-
-
-
+[5. JMX Monitoring](#h-5-jmx-monitoring) 을 이용하여 Session 부하를 발생 시킬 때, Reaper Thread가 어떻게 동작하는지 알아본다.
 
 
 

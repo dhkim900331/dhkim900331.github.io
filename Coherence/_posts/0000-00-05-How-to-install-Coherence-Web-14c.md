@@ -143,7 +143,7 @@ App에서 생성하는 Cache는 Cache-Server에서도, Cache-Client에서도 모
 
 아래는, 앞으로 우리가 구축할 WLS와 Coherence Domain 디렉토리에 복제될 파일 목록들이다.
 
-> [3.2.1 Cluster](#3.2.1 Cluster)을 먼저 수행한다.
+> [3.2.1 Cluster](#h-321-cluster)을 먼저 수행한다.
 
 ```sh
 # Cache-Client가 될 WLS 에 복사
@@ -229,7 +229,7 @@ EOF
 
 
 
-[3.2.2 Startup Cache-Server](#3.2.2 Startup Cache-Server)에서 설명하듯이, 우리가 생성한 `tangosol-coherence-${DOMAIN_NAME}.xml` 파일은 다음 처럼 Option이 설정되어야 한다.
+[3.2.2 Startup Cache-Server](#h-322-startup-cache-server)에서 설명하듯이, 우리가 생성한 `tangosol-coherence-${DOMAIN_NAME}.xml` 파일은 다음 처럼 Option이 설정되어야 한다.
 
 ```sh
 -Dcoherence.override=tangosol-coherence-override-${DOMAIN_NAME}.xml
@@ -456,7 +456,7 @@ Application 마다 Cache 구성이 다를 수 있기 때문이다.
 
 인스턴스 기동 시에, 별다른 Log가 기록되지 않는다.
 
-[3.4 Web-App 배포](#3.4 Web-App 배포) 시에 Log가 출력되었다.
+[3.4 Web-App 배포](#h-34-web-app-배포) 시에 Log가 출력되었다.
 
 
 
