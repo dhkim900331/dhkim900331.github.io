@@ -1,0 +1,567 @@
+I"gi<h2 id="1-개요">1. 개요</h2>
+
+<p>Oracle DB가 필요하게 되어, 19c 설치를 하며 작성을 한다.</p>
+
+<p>정확도가 떨어지는 가이드의 문서가 될 수 있겠다.</p>
+
+<p><a href="https://fliedcat.tistory.com/106">다음의 게시물</a>을 기초로 하였다.</p>
+
+<h2 id="2-문서-작성-기준이-되는-테스트-환경">2. 문서 작성 기준이 되는 테스트 환경</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> /etc/<span class="k">*</span>release
+Oracle Linux Server release 8.7
+<span class="nv">NAME</span><span class="o">=</span><span class="s2">"Oracle Linux Server"</span>
+<span class="nv">VERSION</span><span class="o">=</span><span class="s2">"8.7"</span>
+<span class="nv">ID</span><span class="o">=</span><span class="s2">"ol"</span>
+<span class="nv">ID_LIKE</span><span class="o">=</span><span class="s2">"fedora"</span>
+<span class="nv">VARIANT</span><span class="o">=</span><span class="s2">"Server"</span>
+<span class="nv">VARIANT_ID</span><span class="o">=</span><span class="s2">"server"</span>
+<span class="nv">VERSION_ID</span><span class="o">=</span><span class="s2">"8.7"</span>
+<span class="nv">PLATFORM_ID</span><span class="o">=</span><span class="s2">"platform:el8"</span>
+<span class="nv">PRETTY_NAME</span><span class="o">=</span><span class="s2">"Oracle Linux Server 8.7"</span>
+<span class="nv">ANSI_COLOR</span><span class="o">=</span><span class="s2">"0;31"</span>
+<span class="nv">CPE_NAME</span><span class="o">=</span><span class="s2">"cpe:/o:oracle:linux:8:7:server"</span>
+<span class="nv">HOME_URL</span><span class="o">=</span><span class="s2">"https://linux.oracle.com/"</span>
+<span class="nv">BUG_REPORT_URL</span><span class="o">=</span><span class="s2">"https://bugzilla.oracle.com/"</span>
+
+<span class="nv">ORACLE_BUGZILLA_PRODUCT</span><span class="o">=</span><span class="s2">"Oracle Linux 8"</span>
+<span class="nv">ORACLE_BUGZILLA_PRODUCT_VERSION</span><span class="o">=</span>8.7
+<span class="nv">ORACLE_SUPPORT_PRODUCT</span><span class="o">=</span><span class="s2">"Oracle Linux"</span>
+<span class="nv">ORACLE_SUPPORT_PRODUCT_VERSION</span><span class="o">=</span>8.7
+Red Hat Enterprise Linux release 8.7 <span class="o">(</span>Ootpa<span class="o">)</span>
+Oracle Linux Server release 8.7
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="3-사전-준비사항">3. 사전 준비사항</h2>
+
+<h3 id="31-설치-파일">3.1 설치 파일</h3>
+
+<p><a href="https://www.oracle.com/database/technologies/oracle-database-software-downloads.html">Oracle Database 19c</a>에서 <code class="language-plaintext highlighter-rouge">Linux x86-64 (ZIP, 2.8GB)</code> 를 받았다.</p>
+
+<h3 id="32-packages">3.2 Packages</h3>
+
+<p><a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/operating-system-checklist-for-oracle-database-installation-on-linux.html#GUID-E5C0A90E-7750-45D9-A8BC-C7319ED934F0">Operating System Checklist for Oracle Database Installation on Linux</a> 참고</p>
+
+<blockquote>
+  <p>본인은, 위 문서를 보았지만 기존 시스템에 WLS, OHS 등 다양한 설치를 진행해왔던 터라 실제 Yum 을 진행하지 않고 넘어갔다.</p>
+</blockquote>
+
+<h2 id="4-소프트웨어-설치">4. 소프트웨어 설치</h2>
+
+<h3 id="41-기본-환경-구성">4.1 기본 환경 구성</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> ~/.bash_profile
+<span class="nb">export </span><span class="nv">ORACLE_BASE</span><span class="o">=</span>/sw/databases/oracle-19c
+<span class="nb">export </span><span class="nv">ORACLE_HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">ORACLE_BASE</span><span class="k">}</span>/product/19.3/dbhome_1
+<span class="nb">export </span><span class="nv">ORACLE_SID</span><span class="o">=</span>ORCL
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$ORACLE_HOME</span>/bin:<span class="nv">$PATH</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">mkdir</span> <span class="nt">-p</span> <span class="nv">$ORACLE_HOME</span>
+<span class="nv">$ </span><span class="nb">mv </span>LINUX.X64_193000_db_home.zip <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>
+<span class="nv">$ </span><span class="nb">cd</span> <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span> <span class="o">&amp;&amp;</span> unzip <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/LINUX.X64_193000_db_home.zip
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="42-응답-파일-작성">4.2 응답 파일 작성</h3>
+
+<p>기본적으로 <code class="language-plaintext highlighter-rouge">$ORACLE_HOME/inventory/response/db_install.rsp</code> 위치한 기본 응답파일을 사용하면 된다.</p>
+
+<p>아래는 위 파일을 내 환경에 맞게 변경하였고, 주석을 제거하였다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">oracle.install.responseFileVersion</code> 은 그대로 사용해야 되는것으로 보인다.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> <span class="nv">$ORACLE_HOME</span>/install/response/db_install.rsp
+
+<span class="nv">UNIX_GROUP_NAME</span><span class="o">=</span>&lt;Group Name of OS Account that run installer&gt;
+<span class="nv">INVENTORY_LOCATION</span><span class="o">=</span>/sw/databases/oracle-19c/inventory
+<span class="nv">ORACLE_HOME</span><span class="o">=</span>/sw/databases/oracle-19c/product/19.3/dbhome_1
+<span class="nv">ORACLE_BASE</span><span class="o">=</span>/sw/databases/oracle-19c
+
+oracle.install.responseFileVersion<span class="o">=</span>/oracle/install/rspfmt_dbinstall_response_schema_v19.0.0
+oracle.install.option<span class="o">=</span>INSTALL_DB_SWONLY
+
+oracle.install.db.InstallEdition<span class="o">=</span>SE2
+oracle.install.db.OSDBA_GROUP<span class="o">=</span>&lt;Group Name&gt;
+oracle.install.db.OSBACKUPDBA_GROUP<span class="o">=</span>&lt;Group Name&gt;
+oracle.install.db.OSDGDBA_GROUP<span class="o">=</span>&lt;Group Name&gt;
+oracle.install.db.OSKMDBA_GROUP<span class="o">=</span>&lt;Group Name&gt;
+oracle.install.db.OSRACDBA_GROUP<span class="o">=</span>&lt;Group Name&gt;
+oracle.install.db.rootconfig.executeRootScript<span class="o">=</span><span class="nb">true
+</span>oracle.install.db.rootconfig.configMethod<span class="o">=</span>SUDO
+oracle.install.db.rootconfig.sudoPath<span class="o">=</span>/usr/bin/sudo
+oracle.install.db.rootconfig.sudoUserName<span class="o">=</span>&lt;<span class="nb">sudo </span>username&gt;
+oracle.install.db.config.starterdb.type<span class="o">=</span>GENERAL_PURPOSE
+oracle.install.db.config.starterdb.globalDBName<span class="o">=</span>GLOBAL_ORCL
+oracle.install.db.config.starterdb.SID<span class="o">=</span>ORCL
+oracle.install.db.ConfigureAsContainerDB<span class="o">=</span><span class="nb">false
+</span>oracle.install.db.config.starterdb.characterSet<span class="o">=</span>AL32UTF8
+oracle.install.db.config.starterdb.password.ALL<span class="o">=</span>&lt;Password of OS Account that run installer&gt;
+oracle.install.db.config.starterdb.password.SYS<span class="o">=</span>&lt;Password of OS Account that run installer&gt;
+oracle.install.db.config.starterdb.password.SYSTEM<span class="o">=</span>&lt;Password of OS Account that run installer&gt;
+oracle.install.db.config.starterdb.password.DBSNMP<span class="o">=</span>&lt;Password of OS Account that run installer&gt;
+oracle.install.db.config.starterdb.password.PDBADMIN<span class="o">=</span>&lt;Password of OS Account that run installer&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="43-설치-실행">4.3 설치 실행</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="nv">$ $ORACLE_HOME</span>/runInstaller <span class="nt">-silent</span> <span class="nt">-responseFile</span> <span class="nv">$ORACLE_HOME</span>/install/response/db_install.rsp
+Launching Oracle Database Setup Wizard...
+
+<span class="o">[</span>WARNING] <span class="o">[</span>INS-08101] Unexpected error <span class="k">while </span>executing the action at state: <span class="s1">'supportedOSCheck'</span>
+   CAUSE: No additional information available.
+   ACTION: Contact Oracle Support Services or refer to the software manual.
+   SUMMARY:
+       - java.lang.NullPointerException
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>내 환경과 같이 OS Pass에 실패할 경우, 다음과 같이 진행한다. <a href="https://positivemh.tistory.com/486">참고</a></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">export </span><span class="nv">CV_ASSUME_DISTID</span><span class="o">=</span>RHEL7.6
+<span class="nv">$ $ORACLE_HOME</span>/runInstaller <span class="nt">-silent</span> <span class="nt">-responseFile</span> <span class="nv">$ORACLE_HOME</span>/install/response/db_install.rsp
+
+Launching Oracle Database Setup Wizard...
+
+<span class="o">[</span>WARNING] <span class="o">[</span>INS-32056] The specified Oracle Base contains the existing Central Inventory location: /sw/databases/oracle-19c/inventory.
+   ACTION: Oracle recommends that the Central Inventory location is outside the Oracle Base directory. Specify a different location <span class="k">for </span>the Oracle Base.
+
+ Enter password <span class="k">for </span>user &lt;<span class="k">***</span><span class="o">&gt;</span> :
+The response file <span class="k">for </span>this session can be found at:
+ /sw/databases/oracle-19c/product/19.3/dbhome_1/install/response/db_2022-12-29_02-58-41PM.rsp
+
+You can find the log of this <span class="nb">install </span>session at:
+ /sw/databases/oracle-19c/inventory/logs/InstallActions2022-12-29_02-58-41PM/installActions2022-12-29_02-58-41PM.log
+Successfully Setup Software.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="44-설치-확인">4.4 설치 확인</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>sqlplus / as sysdba
+
+SQL<span class="k">*</span>Plus: Release 19.0.0.0.0 - Production on Thu Dec 29 15:06:11 2022
+Version 19.3.0.0.0
+
+Copyright <span class="o">(</span>c<span class="o">)</span> 1982, 2019, Oracle.  All rights reserved.
+
+Connected to an idle instance.
+
+SQL&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="5-리스너-구성-및-확인">5. 리스너 구성 및 확인</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>netca <span class="nt">-silent</span> <span class="nt">-responseFile</span> <span class="nv">$ORACLE_HOME</span>/assistants/netca/netca.rsp
+
+Parsing <span class="nb">command </span>line arguments:
+    Parameter <span class="s2">"silent"</span> <span class="o">=</span> <span class="nb">true
+    </span>Parameter <span class="s2">"responsefile"</span> <span class="o">=</span> /sw/databases/oracle-19c/product/19.3/dbhome_1/assistants/netca/netca.rsp
+Done parsing <span class="nb">command </span>line arguments.
+Oracle Net Services Configuration:
+Profile configuration complete.
+Oracle Net Listener Startup:
+    Running Listener Control:
+      /sw/databases/oracle-19c/product/19.3/dbhome_1/bin/lsnrctl start LISTENER
+    Listener Control complete.
+    Listener started successfully.
+Listener configuration complete.
+Oracle Net Services configuration successful. The <span class="nb">exit </span>code is 0
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>lsnrctl status
+
+LSNRCTL <span class="k">for </span>Linux: Version 19.0.0.0.0 - Production on 29-DEC-2022 15:09:17
+
+Copyright <span class="o">(</span>c<span class="o">)</span> 1991, 2019, Oracle.  All rights reserved.
+
+Connecting to <span class="o">(</span><span class="nv">DESCRIPTION</span><span class="o">=(</span><span class="nv">ADDRESS</span><span class="o">=(</span><span class="nv">PROTOCOL</span><span class="o">=</span>TCP<span class="o">)(</span><span class="nv">HOST</span><span class="o">=</span>wls.local<span class="o">)(</span><span class="nv">PORT</span><span class="o">=</span>1521<span class="o">)))</span>
+STATUS of the LISTENER
+<span class="nt">------------------------</span>
+Alias                     LISTENER
+Version                   TNSLSNR <span class="k">for </span>Linux: Version 19.0.0.0.0 - Production
+Start Date                29-DEC-2022 15:08:43
+Uptime                    0 days 0 hr. 0 min. 33 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /sw/databases/oracle-19c/product/19.3/dbhome_1/network/admin/listener.ora
+Listener Log File         /sw/databases/oracle-19c/diag/tnslsnr/wls/listener/alert/log.xml
+Listening Endpoints Summary...
+  <span class="o">(</span><span class="nv">DESCRIPTION</span><span class="o">=(</span><span class="nv">ADDRESS</span><span class="o">=(</span><span class="nv">PROTOCOL</span><span class="o">=</span>tcp<span class="o">)(</span><span class="nv">HOST</span><span class="o">=</span>wls.local<span class="o">)(</span><span class="nv">PORT</span><span class="o">=</span>1521<span class="o">)))</span>
+  <span class="o">(</span><span class="nv">DESCRIPTION</span><span class="o">=(</span><span class="nv">ADDRESS</span><span class="o">=(</span><span class="nv">PROTOCOL</span><span class="o">=</span>ipc<span class="o">)(</span><span class="nv">KEY</span><span class="o">=</span>EXTPROC1521<span class="o">)))</span>
+The listener supports no services
+The <span class="nb">command </span>completed successfully
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="6-데이터베이스-생성-및-확인">6. 데이터베이스 생성 및 확인</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> <span class="nv">$ORACLE_HOME</span>/assistants/dbca/dbca.rsp
+<span class="nv">gdbName</span><span class="o">=</span>GLOBAL_ORCL
+<span class="nv">sid</span><span class="o">=</span>ORCL
+<span class="nv">databaseConfigType</span><span class="o">=</span>SI
+<span class="nv">createAsContainerDatabase</span><span class="o">=</span><span class="nb">true
+</span><span class="nv">numberOfPDBs</span><span class="o">=</span>1
+<span class="nv">pdbName</span><span class="o">=</span>ORCLPDB
+<span class="nv">useLocalUndoForPDBs</span><span class="o">=</span><span class="nb">true
+</span><span class="nv">pdbAdminPassword</span><span class="o">=</span>wls.local1234
+<span class="nv">templateName</span><span class="o">=</span>General_Purpose.dbc
+<span class="nv">sysPassword</span><span class="o">=</span>wls.local1234
+<span class="nv">systemPassword</span><span class="o">=</span> wls.local1234
+<span class="nv">storageType</span><span class="o">=</span>FS
+<span class="nv">characterSet</span><span class="o">=</span>AL32UTF8
+<span class="nv">nationalCharacterSet</span><span class="o">=</span>AL16UTF16
+<span class="nv">listeners</span><span class="o">=</span>LISTENER
+<span class="nv">databaseType</span><span class="o">=</span>MULTIPURPOSE
+<span class="nv">totalMemory</span><span class="o">=</span>1024
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>dbca <span class="nt">-silent</span> <span class="nt">-createDatabase</span> <span class="nt">-responsefile</span> <span class="nv">$ORACLE_HOME</span>/assistants/dbca/dbca.rsp
+
+...
+54% <span class="nb">complete
+</span>Creating Pluggable Databases
+58% <span class="nb">complete
+</span>77% <span class="nb">complete
+</span>Executing Post Configuration Actions
+100% <span class="nb">complete
+</span>Database creation complete. For details check the logfiles at:
+ /sw/databases/oracle-19c/cfgtoollogs/dbca/GLOBAL_ORCL.
+Database Information:
+Global Database Name:GLOBAL_ORCL
+System Identifier<span class="o">(</span>SID<span class="o">)</span>:ORCL
+Look at the log file <span class="s2">"/sw/databases/oracle-19c/cfgtoollogs/dbca/GLOBAL_ORCL/GLOBAL_ORCL.log"</span> <span class="k">for </span>further details.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>sqlplus / as sysdba
+
+SQL&gt; <span class="k">select </span>NAME,CDB from v<span class="nv">$database</span> <span class="p">;</span>
+NAME      CDB
+<span class="nt">---------</span> <span class="nt">---</span>
+GLOBAL_O  YES
+
+
+SQL&gt; show con_name<span class="p">;</span>
+CON_NAME
+<span class="nt">------------------------------</span>
+CDB<span class="nv">$ROOT</span>
+
+
+SQL&gt; alter session <span class="nb">set </span><span class="nv">container</span><span class="o">=</span>ORCLPDB<span class="p">;</span>
+Session altered.
+
+
+SQL&gt; show con_name<span class="p">;</span>
+CON_NAME
+<span class="nt">------------------------------</span>
+ORCLPDB
+
+
+<span class="o">!</span> lsnrctl status
+
+LSNRCTL <span class="k">for </span>Linux: Version 19.0.0.0.0 - Production on 30-DEC-2022 10:25:00
+
+Copyright <span class="o">(</span>c<span class="o">)</span> 1991, 2019, Oracle.  All rights reserved.
+
+Connecting to <span class="o">(</span><span class="nv">DESCRIPTION</span><span class="o">=(</span><span class="nv">ADDRESS</span><span class="o">=(</span><span class="nv">PROTOCOL</span><span class="o">=</span>TCP<span class="o">)(</span><span class="nv">HOST</span><span class="o">=</span>wls.local<span class="o">)(</span><span class="nv">PORT</span><span class="o">=</span>1521<span class="o">)))</span>
+STATUS of the LISTENER
+<span class="nt">------------------------</span>
+Alias                     LISTENER
+Version                   TNSLSNR <span class="k">for </span>Linux: Version 19.0.0.0.0 - Production
+Start Date                29-DEC-2022 15:08:43
+Uptime                    0 days 19 hr. 16 min. 16 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /sw/databases/oracle-19c/product/19.3/dbhome_1/network/admin/listener.ora
+Listener Log File         /sw/databases/oracle-19c/diag/tnslsnr/wls/listener/alert/log.xml
+Listening Endpoints Summary...
+  <span class="o">(</span><span class="nv">DESCRIPTION</span><span class="o">=(</span><span class="nv">ADDRESS</span><span class="o">=(</span><span class="nv">PROTOCOL</span><span class="o">=</span>tcp<span class="o">)(</span><span class="nv">HOST</span><span class="o">=</span>wls.local<span class="o">)(</span><span class="nv">PORT</span><span class="o">=</span>1521<span class="o">)))</span>
+  <span class="o">(</span><span class="nv">DESCRIPTION</span><span class="o">=(</span><span class="nv">ADDRESS</span><span class="o">=(</span><span class="nv">PROTOCOL</span><span class="o">=</span>ipc<span class="o">)(</span><span class="nv">KEY</span><span class="o">=</span>EXTPROC1521<span class="o">)))</span>
+Services Summary...
+Service <span class="s2">"GLOBAL_ORCL"</span> has 1 instance<span class="o">(</span>s<span class="o">)</span><span class="nb">.</span>
+  Instance <span class="s2">"ORCL"</span>, status READY, has 1 handler<span class="o">(</span>s<span class="o">)</span> <span class="k">for </span>this service...
+Service <span class="s2">"ORCLXDB"</span> has 1 instance<span class="o">(</span>s<span class="o">)</span><span class="nb">.</span>
+  Instance <span class="s2">"ORCL"</span>, status READY, has 1 handler<span class="o">(</span>s<span class="o">)</span> <span class="k">for </span>this service...
+Service <span class="s2">"f1023596eb1af8a5e053f522410aa522"</span> has 1 instance<span class="o">(</span>s<span class="o">)</span><span class="nb">.</span>
+  Instance <span class="s2">"ORCL"</span>, status READY, has 1 handler<span class="o">(</span>s<span class="o">)</span> <span class="k">for </span>this service...
+Service <span class="s2">"orclpdb"</span> has 1 instance<span class="o">(</span>s<span class="o">)</span><span class="nb">.</span>
+  Instance <span class="s2">"ORCL"</span>, status READY, has 1 handler<span class="o">(</span>s<span class="o">)</span> <span class="k">for </span>this service...
+The <span class="nb">command </span>completed successfully
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><em><strong>데이터베이스 삭제는 <code class="language-plaintext highlighter-rouge">dbca -silent -deleteDatabase -sourceDB ORCL</code></strong></em></p>
+
+<h2 id="7-db--listener-startup">7. DB &amp; Listener Startup</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>/sw/databases/oracle-19c/product/19.3/dbhome_1/bin/lsnrctl start LISTENER
+<span class="nv">$ </span>sqlplus / as sysdba
+sqlplus&gt; startup
+ORACLE instance started.
+
+Total System Global Area  805304088 bytes
+Fixed Size                  9139992 bytes
+Variable Size             218103808 bytes
+Database Buffers          570425344 bytes
+Redo Buffers                7634944 bytes
+Database mounted.
+Database opened.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="8-user-관리">8. User 관리</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>sqlplus&gt; alter session <span class="nb">set</span> <span class="s2">"_ORACLE_SCRIPT"</span><span class="o">=</span><span class="nb">true</span><span class="p">;</span>
+sqlplus&gt; CREATE USER <span class="s2">"계정명"</span> IDENTIFIED BY <span class="s2">"비밀번호"</span><span class="p">;</span>
+sqlplus&gt; ALTER USER <span class="s2">"계정명"</span> IDENTIFIED BY <span class="s2">"변경할 비밀번호"</span><span class="p">;</span>
+sqlplus&gt; GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW to <span class="s2">"계정명"</span>
+sqlplus&gt; REVOKE &lt;권한&gt; from <span class="s2">"권한을 취소할 계정명"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="9-기본-sql-query">9. 기본 SQL Query</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">emp</span> <span class="p">(</span><span class="n">empno</span> <span class="n">NUMBER</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="n">ename</span> <span class="n">VARCHAR2</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">emp</span> <span class="p">(</span><span class="n">empno</span><span class="p">,</span> <span class="n">ename</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'jane'</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">emp</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

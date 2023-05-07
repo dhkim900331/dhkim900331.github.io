@@ -114,7 +114,7 @@ invalidation-internal-secs 마다 All HTTP Session을 Scan하여 invalid 한 ses
 [Allowing Remote Access to Oracle Coherence MBeans](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/manage/using-jmx-manage-oracle-coherence.html#GUID-844DAAE6-6F00-4B15-AA44-47C3F595A6C5)
 
 ```sh
--Dcoherence.management.all=true
+-Dcoherence.management=all
 -Dcoherence.management.remote=true
 -Dcom.sun.management.jmxremote.port=<JMX port>
 -Dcom.sun.management.jmxremote.authenticate=false

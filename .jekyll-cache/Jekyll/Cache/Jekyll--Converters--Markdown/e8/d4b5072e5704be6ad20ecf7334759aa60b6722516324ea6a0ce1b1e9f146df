@@ -1,0 +1,12 @@
+I"F<h2 id="1-개요">1. 개요</h2>
+
+<p>JSSE 및 SSL 관련</p>
+
+<h2 id="2-설명">2. 설명</h2>
+
+<p>~ WebLogic 10.3.2 : Certicom SSL + SHA1 만 가능.</p>
+
+<p>WebLogic 10.3.3 ~ : Use JSEE Enabled를 통해 SHA2 가능.  SHA2 가 JSSE 환경에서만 동작.</p>
+
+<p>WebLogic 12c : JSSE가 Default로 Enabled되어 있음.</p>
+:ET
