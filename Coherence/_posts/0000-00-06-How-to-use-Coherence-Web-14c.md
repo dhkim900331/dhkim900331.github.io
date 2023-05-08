@@ -97,15 +97,33 @@ Cluster Member들 간에는 HeartBeat를 주고 받는다.
 
 
 
-# 4. Session Reaper Thread
-
-App 에서 생성된 HTTP Session은 timeout-secs 만큼 유효하다.
-
-invalidation-internal-secs 마다 All HTTP Session을 Scan하여 invalid 한 session을 삭제하여 Memory를 확보한다.
 
 
+# 4. MBean Monitoring
 
-[5. JMX Monitoring](#h-5-jmx-monitoring) 을 이용하여 Session 부하를 발생 시킬 때, Reaper Thread가 어떻게 동작하는지 알아본다.
+다음 옵션을 추가하여, WLST MBean 을 Monitoring 할 수 있다.
+
+```sh
+-Djavax.management.builder.initial=weblogic.management.jmx.mbeanserver.WLSMBeanServerBuilder
+```
+
+
+
+MBean Coherence Tree를 찾아가려면, 아래와 같은 핵심코드가 필요하다.
+
+```sh
+# connect to server
+connect(username, password, url)
+    
+# get LocalMemberId
+cd('custom:/Coherence/Coherence:type=Cluster')
+localMemberId = str(get('LocalMemberId'))
+    
+# change dir to cohSessionApp
+cd('custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId=' + localMemberId + ',appId=<app-name>')
+```
+
+
 
 
 
@@ -150,4 +168,96 @@ Member ID는 Node의 각 Attributes 에서 MemberName이나 ProcessName 으로 �
 ```
 
 
+
+
+
+# 6. Session Reaper Thread
+
+App 에서 생성된 HTTP Session은 timeout-secs 만큼 유효하다.
+
+invalidation-internal-secs 마다 All HTTP Session을 Scan하여 invalid 한 session을 삭제하여 Memory를 확보한다.
+
+
+
+[4. MBean Monitoring](#h-4-mbean-monitoring) 을 이용하여 아래의 Code를 작성하고,
+
+Session 부하를 발생 시킬 때, Reaper Thread가 어떻게 동작하는지 알아본다.
+
+
+
+WLST MBean code
+
+```py
+# import
+import os
+import sys
+import time
+    
+# log file
+fo = open("/tmp/coh.log", "wb+")
+    
+# connection information
+username = 'weblogic'
+password = 'weblogic1'
+url = 'wls.local:8002'
+    
+# connect to server
+connect(username, password, url)
+    
+# get LocalMemberId
+cd('custom:/Coherence/Coherence:type=Cluster')
+localMemberId = str(get('LocalMemberId'))
+    
+# change dir to cohSessionApp
+cd('custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId=' + localMemberId + ',appId=cohSessionAppcohSessionApp')
+    
+    
+gap = 5000
+for idx in range(0, 100):
+        ###### print MBeans ######
+        ### Attr to Var ###
+        # Reaper Cycle
+        NextReapCycle = str(get('NextReapCycle'))
+        LastReapCycle = str(get('LastReapCycle'))
+    
+        # Reap Duration
+        AverageReapDuration = str(get('AverageReapDuration'))
+        LastReapDuration = str(get('LastReapDuration'))
+        MaxReapDuration = str(get('MaxReapDuration'))
+    
+        # Reaped Sessions
+        AverageReapedSessions = str(get('AverageReapedSessions'))
+        MaxReapedSessions = str(get('MaxReapedSessions'))
+        ReapedSessions = str(get('ReapedSessions'))
+        ReapedSessionsTotal = str(get('ReapedSessionsTotal'))
+    
+        # Sessions
+        SessionUpdates = str(get('SessionUpdates'))
+    
+    
+        ### Var to Log ###
+        dm = " | "
+        writeLogData = str(idx) + dm
+        writeLogData += NextReapCycle + dm
+        writeLogData += LastReapCycle + dm
+    
+        writeLogData += AverageReapDuration + dm
+        writeLogData += LastReapDuration + dm
+        writeLogData += MaxReapDuration + dm
+    
+        writeLogData += AverageReapedSessions + dm
+        writeLogData += MaxReapedSessions + dm
+        writeLogData += ReapedSessions + dm
+        writeLogData += ReapedSessionsTotal + dm
+    
+        writeLogData += SessionUpdates
+    
+        fo.write(writeLogData+"\n")
+        fo.flush()
+        print(writeLogData)
+        Thread.sleep(gap)
+    
+fo.close()
+exit()
+```
 
