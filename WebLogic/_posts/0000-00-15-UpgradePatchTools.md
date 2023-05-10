@@ -127,9 +127,9 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
   ```sh
   ./opatch apply 27419391 -jdk /opt/java7 -invPtrLoc $ORACLE_HOME/oraInst.loc -oh $ORACLE_HOME
   
-  ./opatch rollback 27419391 -jdk /opt/java7 -invPtrLoc $ORACLE_HOME/oraInst.loc -oh $ORACLE_HOME
+  ./opatch rollback -id 27419391 -jdk /opt/java7 -invPtrLoc $ORACLE_HOME/oraInst.loc -oh $ORACLE_HOME
   
-  ./opatch lsinventory -jdk /opt/java7 -invPtrLoc $ORACLE_HOME/oraInst.loc
+  ./opatch lsinventory -jdk /opt/java7 -invPtrLoc $ORACLE_HOME/oraInst.loc -oh $ORACLE_HOME
   ```
 
   
