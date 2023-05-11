@@ -73,6 +73,10 @@ public class FileUploadServlet extends HttpServlet {
 }
 ```
 
+> 실제로 위와 같이 10GB 설정 시에는 Field Type 을 넘어서기 때문에, -1 으로 무제한 설정을 해야 한다.
+>
+> 최대 명시적인 제한을 2GB 보다 크게는 안된다.
+
 
 
 배포 후 curl 로 테스트 한다.

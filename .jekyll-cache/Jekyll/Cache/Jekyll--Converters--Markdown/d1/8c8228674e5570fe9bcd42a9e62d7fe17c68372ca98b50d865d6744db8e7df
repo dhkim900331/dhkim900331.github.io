@@ -1,0 +1,123 @@
+I"N<h2 id="1-개요">1. 개요</h2>
+
+<p><del>Commons FileUpload 라이브러리를 이용한 파일 업로드 예제 어플리케이션</del></p>
+
+<p><a href="http://localhost:4000/weblogic/Uploading-File-With-Servlet">Uploading-File-With-Servlet</a> 를 작성하며 알게 되었는데, Servlet 3.0 부터 외부 라이브러리 없이 request.getParts() 로 가능하다.</p>
+
+<h2 id="2-설명">2. 설명</h2>
+
+<p>배포할 /sw/app/fileUpload 어플리케이션 구조는 다음과 같다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>/sw/app/fileUpload/
+├── META-INF
+└── WEB-INF
+    ├── classes
+    │   └── example
+    │       └── dong
+    │           └── FileUploadServlet.class
+    ├── src
+    │   └── example
+    │       └── dong
+    │           └── FileUploadServlet.java
+    ├── weblogic.xml
+    └── web.xml
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>xml file에는 별다른 내용이 없다.</p>
+</blockquote>
+
+<p>FileUploadServlet.java 코드</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="rouge-code"><pre><span class="kn">package</span> <span class="nn">example.dong</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.annotation.*</span><span class="o">;</span>
+
+
+<span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"FileUploadServlet"</span><span class="o">,</span> <span class="n">urlPatterns</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"/fileuploadservlet"</span> <span class="o">})</span>
+<span class="nd">@MultipartConfig</span><span class="o">(</span>
+  <span class="n">fileSizeThreshold</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">10</span><span class="o">,</span>     <span class="c1">// 10 MB</span>
+  <span class="n">maxFileSize</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">10</span><span class="o">,</span>    <span class="c1">// 10 GB</span>
+  <span class="n">maxRequestSize</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1">// 10 GB</span>
+<span class="o">)</span>
+<span class="cm">/* Simple Java File Upload Example */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FileUploadServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span>
+
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ServletException</span><span class="o">,</span> <span class="nc">IOException</span> <span class="o">{</span>
+
+    <span class="cm">/* For comparison of Servlet and Apache Commons File Upload APIs */</span>
+    <span class="nc">Part</span> <span class="n">filePart</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getPart</span><span class="o">(</span><span class="s">"file"</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">fileName</span> <span class="o">=</span> <span class="n">filePart</span><span class="o">.</span><span class="na">getSubmittedFileName</span><span class="o">();</span>
+    <span class="k">for</span> <span class="o">(</span><span class="nc">Part</span> <span class="n">part</span> <span class="o">:</span> <span class="n">request</span><span class="o">.</span><span class="na">getParts</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">part</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">fileName</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">response</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">print</span><span class="o">(</span><span class="s">"Sucessfully Java file upload. -&gt; "</span> <span class="o">+</span> <span class="n">filePart</span><span class="o">.</span><span class="na">getSize</span><span class="o">());</span>
+  <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>실제로 위와 같이 10GB 설정 시에는 Field Type 을 넘어서기 때문에, -1 으로 무제한 설정을 해야 한다.</p>
+
+  <p>최대 명시적인 제한을 2GB 보다 크게는 안된다.</p>
+</blockquote>
+
+<p>배포 후 curl 로 테스트 한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl <span class="nt">-F</span> <span class="s1">'file=@/tmp/test.txt'</span> http://../fileUpload/fileuploadservlet
+Sucessfully Java file upload. -&gt; 10485760
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>참고로, test.txt (10 MB)와 같은 파일은 <a href="https://zetawiki.com/wiki/%EB%A6%AC%EB%88%85%EC%8A%A4_%EB%8C%80%EC%9A%A9%EB%9F%89_%ED%8C%8C%EC%9D%BC_%EC%83%9D%EC%84%B1">다음의 명령</a>으로 간편하게 생성할 수 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">dd </span><span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>test.txt <span class="nv">bs</span><span class="o">=</span>1 <span class="nv">count</span><span class="o">=</span>0 <span class="nv">seek</span><span class="o">=</span>10M
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET
