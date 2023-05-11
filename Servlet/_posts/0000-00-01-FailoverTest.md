@@ -1,7 +1,7 @@
 ---
 date: 2022-05-30 10:24:20 +0900
 layout: post
-title: "[JSP] Fail over Test를 위한 JSP"
+title: "[Servlet/JSP] Fail over Test를 위한 JSP"
 tags: [JSP, Servlet, Session, Failover, Clustering]
 typora-root-url: ..
 ---

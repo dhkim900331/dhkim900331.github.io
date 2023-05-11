@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[JSP] "
+title: "[Servlet/JSP] "
 tags: [JSP, Servlet]
 typora-root-url: ..
 ---
