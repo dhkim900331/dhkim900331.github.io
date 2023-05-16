@@ -1,7 +1,7 @@
 ---
 date: 2022-04-30 14:19:33 +0900
 layout: post
-title: "[OracleHTTPServer] Cross Domain (Access Control Allow Origin)"
+title: "[OHS] Cross Domain (Access Control Allow Origin)"
 tags: [OracleHTTPServer, OHS, Apache, CORS]
 typora-root-url: ..
 ---

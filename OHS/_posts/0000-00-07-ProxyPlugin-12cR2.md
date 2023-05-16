@@ -1,7 +1,7 @@
 ---
 date: 2022-12-06 08:53:52 +0900
 layout: post
-title: "[OracleHTTPServer/Plugin] Proxy Plugin 12cR2"
+title: "[OHS/Plugin] Proxy Plugin 12cR2"
 tags: [OracleHTTPServer, Apache, OHS, Proxy, Plugin]
 typora-root-url: ..
 ---

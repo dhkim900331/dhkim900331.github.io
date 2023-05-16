@@ -1,7 +1,7 @@
 ---
 date: 2023-05-16 07:39:11 +0900
 layout: post
-title: "[OracleHTTPServer/SSL] How to Configure SSL ProxyPass"
+title: "[OHS/SSL] How to Configure SSL ProxyPass"
 tags: [OracleHTTPServer, OHS, Apache, SSL, ProxyPass, HTTPS]
 typora-root-url: ..
 ---

@@ -1,7 +1,7 @@
 ---
 date: 2022-12-05 08:54:01 +0900
 layout: post
-title: "[OracleHTTPServer] Oracle HTTP Server 12cR2 Installation"
+title: "[OHS] Oracle HTTP Server 12cR2 Installation"
 tags: [OracleHTTPServer, OHS, Install]
 typora-root-url: ..
 ---

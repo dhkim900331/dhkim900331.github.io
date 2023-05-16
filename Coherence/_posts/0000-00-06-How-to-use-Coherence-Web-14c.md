@@ -212,7 +212,7 @@ localMemberId = str(get('LocalMemberId'))
 cd('custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId=' + localMemberId + ',appId=cohSessionAppcohSessionApp')
     
     
-gap = 5000
+sleep_in_ms = 5000
 for idx in range(0, 100):
         ###### print MBeans ######
         ### Attr to Var ###
@@ -255,7 +255,7 @@ for idx in range(0, 100):
         fo.write(writeLogData+"\n")
         fo.flush()
         print(writeLogData)
-        Thread.sleep(gap)
+        Thread.sleep(sleep_in_ms)
     
 fo.close()
 exit()

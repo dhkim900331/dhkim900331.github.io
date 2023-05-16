@@ -1,7 +1,7 @@
 ---
 date: 2022-08-02 14:56:46 +0900
 layout: post
-title: "[OracleHTTPServer/Proxy] Http Proxy (mod_proxy+)"
+title: "[OHS/Proxy] Http Proxy (mod_proxy+)"
 tags: [OracleHTTPServer, OHS, Apache, mod_proxy, LB, Rewirterule, Loadbalaner]
 typora-root-url: ..
 ---
