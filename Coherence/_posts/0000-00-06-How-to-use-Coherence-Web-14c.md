@@ -188,6 +188,7 @@ Session 부하를 발생 시킬 때, Reaper Thread가 어떻게 동작하는지 
 WLST MBean code
 
 ```py
+java weblogic.WLST << EOF
 # import
 import os
 import sys
@@ -214,50 +215,197 @@ cd('custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId=' + local
     
 sleep_in_ms = 5000
 for idx in range(0, 100):
-        ###### print MBeans ######
-        ### Attr to Var ###
-        # Reaper Cycle
-        NextReapCycle = str(get('NextReapCycle'))
-        LastReapCycle = str(get('LastReapCycle'))
-    
-        # Reap Duration
-        AverageReapDuration = str(get('AverageReapDuration'))
-        LastReapDuration = str(get('LastReapDuration'))
-        MaxReapDuration = str(get('MaxReapDuration'))
-    
-        # Reaped Sessions
-        AverageReapedSessions = str(get('AverageReapedSessions'))
-        MaxReapedSessions = str(get('MaxReapedSessions'))
-        ReapedSessions = str(get('ReapedSessions'))
-        ReapedSessionsTotal = str(get('ReapedSessionsTotal'))
-    
-        # Sessions
-        SessionUpdates = str(get('SessionUpdates'))
-    
-    
-        ### Var to Log ###
-        dm = " | "
-        writeLogData = str(idx) + dm
-        writeLogData += NextReapCycle + dm
-        writeLogData += LastReapCycle + dm
-    
-        writeLogData += AverageReapDuration + dm
-        writeLogData += LastReapDuration + dm
-        writeLogData += MaxReapDuration + dm
-    
-        writeLogData += AverageReapedSessions + dm
-        writeLogData += MaxReapedSessions + dm
-        writeLogData += ReapedSessions + dm
-        writeLogData += ReapedSessionsTotal + dm
-    
-        writeLogData += SessionUpdates
-    
-        fo.write(writeLogData+"\n")
-        fo.flush()
-        print(writeLogData)
-        Thread.sleep(sleep_in_ms)
-    
+  
+  ###### print MBeans ######
+  ### Attr to Var ###
+  # Reaper Cycle
+  NextReapCycle = str(get('NextReapCycle'))
+  LastReapCycle = str(get('LastReapCycle'))
+  
+  # Reap Duration
+  AverageReapDuration = str(get('AverageReapDuration'))
+  LastReapDuration = str(get('LastReapDuration'))
+  MaxReapDuration = str(get('MaxReapDuration'))
+  
+  # Reaped Sessions
+  AverageReapedSessions = str(get('AverageReapedSessions'))
+  MaxReapedSessions = str(get('MaxReapedSessions'))
+  ReapedSessions = str(get('ReapedSessions'))
+  ReapedSessionsTotal = str(get('ReapedSessionsTotal'))
+  
+  # Sessions
+  SessionUpdates = str(get('SessionUpdates'))
+  
+  ### Var to Log ###
+  dm = " | "
+  writeLogData = str(idx) + dm
+  writeLogData += NextReapCycle + dm
+  writeLogData += LastReapCycle + dm
+  
+  writeLogData += AverageReapDuration + dm
+  writeLogData += LastReapDuration + dm
+  writeLogData += MaxReapDuration + dm
+  
+  writeLogData += AverageReapedSessions + dm
+  writeLogData += MaxReapedSessions + dm
+  writeLogData += ReapedSessions + dm
+  writeLogData += ReapedSessionsTotal + dm
+  
+  writeLogData += SessionUpdates
+  
+  fo.write(writeLogData+"\n")
+  fo.flush()
+  print(writeLogData)
+  Thread.sleep(sleep_in_ms)
+
 fo.close()
 exit()
+EOF
 ```
+
+
+
+Session 을 원하는 Size만큼 생성 시키는 App
+
+```jsp
+java weblogic.WLST << EOF
+# import
+import os
+import sys
+import time
+
+# log file
+fo = open("/tmp/coh.log", "wb+")
+
+# connection information
+username = 'weblogic'
+password = 'weblogic1'
+url = 'wls.local:8002'
+
+# connect to server
+connect(username, password, url)
+
+# get LocalMemberId
+cd('custom:/Coherence/Coherence:type=Cluster')
+localMemberId = str(get('LocalMemberId'))
+
+# change dir to cohSessionApp
+cd('custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId=' + localMemberId + ',appId=cohSessionAppcohSessionApp')
+
+sleep_in_ms = 5000
+for idx in range(0, 100):
+  ###### print MBeans ######
+  ### Attr to Var ###
+  # Reaper Cycle
+  LastReapCycle = str(get('LastReapCycle'))
+  NextReapCycle = str(get('NextReapCycle'))
+  
+  # Reap Duration
+  AverageReapDuration = str(get('AverageReapDuration'))
+  LastReapDuration = str(get('LastReapDuration'))
+  MaxReapDuration = str(get('MaxReapDuration'))
+  
+  # Reaped Sessions
+  AverageReapedSessions = str(get('AverageReapedSessions'))
+  MaxReapedSessions = str(get('MaxReapedSessions'))
+  ReapedSessions = str(get('ReapedSessions'))
+  ReapedSessionsTotal = str(get('ReapedSessionsTotal'))
+  
+  # Sessions
+  SessionUpdates = str(get('SessionUpdates'))
+  OverflowUpdates = str(get('OverflowUpdates'))
+  
+  ### Var to Log ###
+  dm = " | "
+  writeLogData = ""
+  
+  # Print Init Header
+  if idx == 0:
+    writeLogData += "LastReapCycle" + dm
+    writeLogData += "NextReapCycle" + dm
+    
+    writeLogData += "AverageReapDuration" + dm
+    writeLogData += "LastReapDuration" + dm
+    writeLogData += "MaxReapDuration" + dm
+    
+    writeLogData += "AverageReapedSessions" + dm
+    writeLogData += "MaxReapedSessions" + dm
+    writeLogData += "ReapedSessions" + dm
+    writeLogData += "ReapedSessionsTotal" + dm
+    
+    writeLogData += "SessionUpdates" + dm
+    writeLogData += "OverflowUpdates" + "\n"
+  
+  writeLogData += str(idx) + dm
+  writeLogData += LastReapCycle + dm
+  writeLogData += NextReapCycle + dm
+  
+  writeLogData += AverageReapDuration + dm
+  writeLogData += LastReapDuration + dm
+  writeLogData += MaxReapDuration + dm
+  
+  writeLogData += AverageReapedSessions + dm
+  writeLogData += MaxReapedSessions + dm
+  writeLogData += ReapedSessions + dm
+  writeLogData += ReapedSessionsTotal + dm
+  
+  writeLogData += OverflowUpdates + dm
+  writeLogData += SessionUpdates
+  
+  fo.write(writeLogData+"\n")
+  fo.flush()
+  print(writeLogData)
+  Thread.sleep(sleep_in_ms)
+
+fo.close()
+exit()
+EOF
+```
+
+
+
+addedByte 크기의 Bytes Array Object를 addedNum 갯수만큼 ArrayList 로 만들고, listSession 명명의 Session 객체로 저장한다.
+
+재호출 시마다, Session 객체가 동일한 과정으로 점차 커지게 된다.
+
+이렇게 반복적으로 생성되는 객체를 Apache JMeter로 대량 생산하고, Session Timeout이 만료되어 Invalid 된다.
+
+곧 이어 Session Reaper Thread가 Reaping 할 것이다.
+
+Reaping 에 대해 살펴보는것이 목적이다.
+
+
+
+Apache JMeter는 다음과 같이 설정했다.
+
+* Thread Group
+  * Number of Threads (users): 100
+  * Ramp-up period (seconds): 1
+  * Loop Count: Infinite
+  * Use KeepAlive: X (No)
+
+1초 이내에 100명의 사용자가 준비되며, 지속적으로 신규 사용자처럼 유입된다.
+
+
+
+
+
+## 6.1 Test #1
+
+종합적으로, 다음의 환경에서 Test가 진행된다.
+
+* RHEL 8.7, 2 physical core (4 logic core with hyperthreading), JDK 1.8.0_351
+
+* Coherence Server 1 EA
+  * `-Xms1024m -Xmx1024m`
+* Managed Coherence Server 1 EA
+  * `-Xms3096m -Xmx3096m`
+  * `coherence.session.localstorage=false`
+  * Deployed 'cohSessionApp'
+    * Session Timeout Secs : 30
+    * Invalidation Interval Secs : 60
+
+
+
+
 
