@@ -53,8 +53,8 @@ import javax.servlet.annotation.*;
 @WebServlet(name = "FileUploadServlet", urlPatterns = { "/fileuploadservlet" })
 @MultipartConfig(
   fileSizeThreshold = 1024 * 1024 * 10,     // 10 MB
-  maxFileSize = 1024 * 1024 * 1024 * 10,    // 10 GB
-  maxRequestSize = 1024 * 1024 * 1024 * 10  // 10 GB
+  maxFileSize = 1024 * 1024 * 1024 * 1,    // 1 GB
+  maxRequestSize = 1024 * 1024 * 1024 * 1  // 1 GB
 )
 /* Simple Java File Upload Example */
 public class FileUploadServlet extends HttpServlet {
@@ -73,9 +73,21 @@ public class FileUploadServlet extends HttpServlet {
 }
 ```
 
-> 실제로 위와 같이 10GB 설정 시에는 Field Type 을 넘어서기 때문에, -1 으로 무제한 설정을 해야 한다.
->
-> 최대 명시적인 제한을 2GB 보다 크게는 안된다.
+
+
+maxFileSize = maxRequestSize = 1024 * 1024 * 1024 * 10 과 같이 10GB 으로 설정하면 Exception 발생한다.
+
+```
+The field file exceeds its maximum permitted size of -2147483648 characters.
+```
+
+
+
+Field 가 수용가능한 범위는 int32 이며, integer 32bit 범위는 -2,147,483,648 ~ 2,147,483,647 이다.
+
+maxFileSize = maxRequestSize = 2147483647 을 설정하여 최대 한계인 2GB File upload 까지 가능하다.
+
+maxFileSize = maxRequestSize = -1 을 설정하면, Unlimited 이다.
 
 
 

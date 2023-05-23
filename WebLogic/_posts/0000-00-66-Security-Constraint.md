@@ -121,6 +121,8 @@ POST/GET 은 HTTPS 전환되어 보호되고,
 
 # 5. References
 
+**http-method 와 transport-guarantee 으로 애플리케이션 요청을 보호하는 방법 (Doc ID 2947435.1)**
+
 HTTP 사용자 요청을 HTTPS로 리다이렉트하는 방법 (Doc ID 1557741.1)
 
 [web.xml Deployment Descriptors](https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/scprg/thin_client.html#GUID-ED32AA9B-6BB4-4B61-A68E-84659B7947D7)

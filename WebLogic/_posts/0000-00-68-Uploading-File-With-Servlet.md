@@ -164,3 +164,11 @@ upload_6a7e572a_18808acfaa3__7ffd_00000000.tmp
 
 
 위 환경에서, 테스트하면 Java Heap memory 사용을 급격하게 하여, OOME 가 발생하였다.
+
+
+
+
+
+# 5. References
+
+**Servlet 3.0에서 도입된 Servlet File upload가 WebLogic Server에 미치는 영향 (Doc ID 2950552.1)**
