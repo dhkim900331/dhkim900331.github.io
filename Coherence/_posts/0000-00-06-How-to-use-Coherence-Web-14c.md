@@ -188,87 +188,7 @@ Session 부하를 발생 시킬 때, Reaper Thread가 어떻게 동작하는지 
 WLST MBean code
 
 ```py
-java weblogic.WLST << EOF
-# import
-import os
-import sys
-import time
-    
-# log file
-fo = open("/tmp/coh.log", "wb+")
-    
-# connection information
-username = 'weblogic'
-password = 'weblogic1'
-url = 'wls.local:8002'
-    
-# connect to server
-connect(username, password, url)
-    
-# get LocalMemberId
-cd('custom:/Coherence/Coherence:type=Cluster')
-localMemberId = str(get('LocalMemberId'))
-    
-# change dir to cohSessionApp
-cd('custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId=' + localMemberId + ',appId=cohSessionAppcohSessionApp')
-    
-    
-sleep_in_ms = 5000
-for idx in range(0, 100):
-  
-  ###### print MBeans ######
-  ### Attr to Var ###
-  # Reaper Cycle
-  NextReapCycle = str(get('NextReapCycle'))
-  LastReapCycle = str(get('LastReapCycle'))
-  
-  # Reap Duration
-  AverageReapDuration = str(get('AverageReapDuration'))
-  LastReapDuration = str(get('LastReapDuration'))
-  MaxReapDuration = str(get('MaxReapDuration'))
-  
-  # Reaped Sessions
-  AverageReapedSessions = str(get('AverageReapedSessions'))
-  MaxReapedSessions = str(get('MaxReapedSessions'))
-  ReapedSessions = str(get('ReapedSessions'))
-  ReapedSessionsTotal = str(get('ReapedSessionsTotal'))
-  
-  # Sessions
-  SessionUpdates = str(get('SessionUpdates'))
-  
-  ### Var to Log ###
-  dm = " | "
-  writeLogData = str(idx) + dm
-  writeLogData += NextReapCycle + dm
-  writeLogData += LastReapCycle + dm
-  
-  writeLogData += AverageReapDuration + dm
-  writeLogData += LastReapDuration + dm
-  writeLogData += MaxReapDuration + dm
-  
-  writeLogData += AverageReapedSessions + dm
-  writeLogData += MaxReapedSessions + dm
-  writeLogData += ReapedSessions + dm
-  writeLogData += ReapedSessionsTotal + dm
-  
-  writeLogData += SessionUpdates
-  
-  fo.write(writeLogData+"\n")
-  fo.flush()
-  print(writeLogData)
-  Thread.sleep(sleep_in_ms)
-
-fo.close()
-exit()
-EOF
-```
-
-
-
-Session 을 원하는 Size만큼 생성 시키는 App
-
-```jsp
-java weblogic.WLST << EOF
+java -Djava.security.egd=file:/dev/urandom weblogic.WLST << EOF
 # import
 import os
 import sys
@@ -364,15 +284,7 @@ EOF
 
 
 
-addedByte 크기의 Bytes Array Object를 addedNum 갯수만큼 ArrayList 로 만들고, listSession 명명의 Session 객체로 저장한다.
-
-재호출 시마다, Session 객체가 동일한 과정으로 점차 커지게 된다.
-
-이렇게 반복적으로 생성되는 객체를 Apache JMeter로 대량 생산하고, Session Timeout이 만료되어 Invalid 된다.
-
-곧 이어 Session Reaper Thread가 Reaping 할 것이다.
-
-Reaping 에 대해 살펴보는것이 목적이다.
+Session 을 원하는 Size만큼 생성 시키는 Application은 [Coherence-Session-Test-Application]({{ site.url }}/Coherence-Session-Test-Application) 을 사용한다.
 
 
 
