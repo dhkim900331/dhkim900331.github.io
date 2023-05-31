@@ -179,6 +179,12 @@ invalidation-internal-secs 마다 All HTTP Session을 Scan하여 invalid 한 ses
 
 
 
+
+
+## 6.1 Ready For Test
+
+### (1) WLST
+
 [4. MBean Monitoring](#h-4-mbean-monitoring) 을 이용하여 아래의 Code를 작성하고,
 
 Session 부하를 발생 시킬 때, Reaper Thread가 어떻게 동작하는지 알아본다.
@@ -213,7 +219,7 @@ localMemberId = str(get('LocalMemberId'))
 cd('custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId=' + localMemberId + ',appId=cohSessionAppcohSessionApp')
 
 sleep_in_ms = 5000
-for idx in range(0, 100):
+for idx in range(0, 200):
   ###### print MBeans ######
   ### Attr to Var ###
   # Reaper Cycle
@@ -284,35 +290,59 @@ EOF
 
 
 
-Session 을 원하는 Size만큼 생성 시키는 Application은 [Coherence-Session-Test-Application]({{ site.url }}/Coherence-Session-Test-Application) 을 사용한다.
 
 
+### (2) Test Application
+
+Session 을 원하는 Size만큼 생성 시키는 Application은 [Coherence-Session-Test-Application]({{ site.url }}/Coherence/Coherence-Session-Test-Application) 을 사용한다.
+
+
+
+
+
+### (3) Apache JMeter
 
 Apache JMeter는 다음과 같이 설정했다.
 
 * Thread Group
-  * Number of Threads (users): 100
+  * Number of Threads (users): 50
   * Ramp-up period (seconds): 1
   * Loop Count: Infinite
   * Use KeepAlive: X (No)
+  * Specify Thread lifetime
+    * Duration(Seconds) : 300
 
-1초 이내에 100명의 사용자가 준비되며, 지속적으로 신규 사용자처럼 유입된다.
+1초 이내에 50명의 사용자가 준비되며, 지속적으로 신규 사용자처럼 유입된다.
+
+이 작업은 300 secs 동안 지속된다. TPS로 환산할 수 없으나, 성능이 좋지 않은 Local 에서 작업하기에는 꽤 클 것이다.
+
+
+
+성능이 좋지 않은 Local Test System 에서 작업하니, 사용자를 더 크게 늘릴 수 없었다.
+
+늘리는 경우, Coherence에 쌓이는 Cache 가 매우 많아 Reaper가 동작하지 않는 문제가 있었다.
 
 
 
 
 
-## 6.1 Test #1
+### (4) Cache Server/Client
 
-종합적으로, 다음의 환경에서 Test가 진행된다.
+Cache Server(Coherence Web), Cache Client(WebLogic Server; MCS)는 물리적으로 같은 Node이며
+
+기본적으로 다음의 초기 환경을 구성하였다.
+
+
 
 * RHEL 8.7, 2 physical core (4 logic core with hyperthreading), JDK 1.8.0_351
 
 * Coherence Server 1 EA
-  * `-Xms1024m -Xmx1024m`
+  * `-Xms2048m -Xmx2048m`
 * Managed Coherence Server 1 EA
   * `-Xms3096m -Xmx3096m`
   * `coherence.session.localstorage=false`
+  * `coherence.reaperdaemon.parallel=true`
+  * `wm/CoherenceWorkManager` : Min(2) / Max(2)
   * Deployed 'cohSessionApp'
     * Session Timeout Secs : 30
     * Invalidation Interval Secs : 60
@@ -321,3 +351,221 @@ Apache JMeter는 다음과 같이 설정했다.
 
 
 
+## 6.2 50 Users
+
+기본 환경 구성한대로, 50 Users 반복 요청 시에 쌓이는 Session Data와,
+
+30 Secs 마다 Session은 Invalid 된다.
+
+Invalid 된 Session을 정리하는 Reaper Thread가 어떻게 작업을 이루어 냈는지 Data를 뽑아내었다.
+
+
+
+JMeter로 부하를 인입하고, WLST로 Coherence에 Session이 적재된 것이 관측된 최초 지점부터 Data를 Grep해보면 대략 아래와 같이 쌓인다.
+
+
+
+```
+LastReapCycle | NextReapCycle | AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates
+
+...
+
+1 | Tue May 30 16:02:33 KST 2023 | Tue May 30 16:03:33 KST 2023 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 278 | 275
+2 | Tue May 30 16:02:33 KST 2023 | Tue May 30 16:03:33 KST 2023 | 0 | 0 | 0 | 0 | 0 | 0 | 
+
+...
+
+71 | Tue May 30 16:08:43 KST 2023 | Tue May 30 16:09:43 KST 2023 | 11485 | 5898 | 20649 | 6243 | 9865 | 5381 | 37458 | 37303 | 37289
+
+...
+```
+
+
+
+JMeter로 300 Secs 동안 요청이 인입되고 난뒤에는 종료될 것이다.
+
+초기, Session Data가 관측되지 않는 (SessionUpdates 가 0) Data는 제외.
+
+말기, Session Data가 더 이상 정리될 것이 없는 (ReapedSessionsTotal이 SessionUpdates 에 가까움) Data 까지만 수집한다.
+
+
+
+평균 또는 수집된 데이터를 보면,
+
+| AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates |
+| ------------------- | ---------------- | --------------- | --------------------- | ----------------- | -------------- | ------------------- | -------------- | --------------- |
+| 4520.352113         | 9164.901408      | 12129           | 2680.43662            | 9631              | 6347.28169     | 38257               | 38123          | 38078           |
+
+
+
+AverageReapDuration : Reap에 소요된 평균 시간 (평균값)
+
+LastReapDuration : 가장 마지막 Reap에 소요된 시간 (평균값)
+
+MaxReapDuration : Reap에 소요된 최대 시간 (최대값)
+
+AverageReapedSessions : Reaped Session의 평균 갯수, 평균적으로 Reap 1 Cycle 당 몇개의 Session이 Reaped 되는지를 나타냄 (평균값)
+
+MaxReapedSessions : Reaped Session의 최대 갯수, 한번에 최대 몇개의 Session이 Reaped 되었는지를 나타냄 (최대값)
+
+ReapedSessions : Reap 1 Cycle 당 한번에 몇개의 Session이 Reaped 되었는지 나타냄 (평균값)
+
+ReapedSessionTotal : 지금까지 총합 Reaped Session 갯수 (최대값)
+
+SessionUpdates : Session이 만들어지거나, Touched 되었을 때 집계 됨 (최대값)
+
+OverflowUpdates : Overflow는 큰 Session Data를 저장할 때 사용되는 Model이며, OverflowThreshold(default 1024) 크기를 넘어서는 Session의 총 Updates 갯수가 집계됨. (최대값)
+
+
+
+평균에 의미가 없는 값들은, 최대값으로 수집했다.
+
+
+
+
+
+## 6.3 50 Users / 4 Threads
+
+앞서, WebLogic WorkManager에 의해 Min/Max가 2 Threads로 환경을 구성하여 테스트했다면,
+
+이번에는 4 Threads로 구성하여 개선되는지 살펴본다.
+
+
+
+```xml
+  <self-tuning>
+    <min-threads-constraint>
+      <name>MinThreadsConstraint-0</name>
+      <target>myCluster</target>
+      <count>4</count>
+    </min-threads-constraint>
+    <max-threads-constraint>
+      <name>MaxThreadsConstraint-0</name>
+      <target>myCluster</target>
+      <count>4</count>
+    </max-threads-constraint>
+    <work-manager>
+      <name>wm/CoherenceWorkManager</name>
+      <target>myCluster</target>
+    </work-manager>
+```
+
+
+
+평균은,
+
+| AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates |
+| ------------------- | ---------------- | --------------- | --------------------- | ----------------- | -------------- | ------------------- | -------------- | --------------- |
+| 4446.315068         | 8821.205479      | 13252           | 2884.260274           | 9754              | 6474.520548    | 37743               | 37582          | 37551           |
+
+
+
+검증을 위해, 동일하게 한번 더 테스트하였는데 아래와 같다.
+
+| AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates |
+| ------------------- | ---------------- | --------------- | --------------------- | ----------------- | -------------- | ------------------- | -------------- | --------------- |
+| 3637.561644         | 10007.67123      | 14751           | 2068.520548           | 9829              | 6447.589041    | 38384               | 38203          | 38255           |
+
+
+
+이외에도 여러번의 테스트를 해보았는데, 결과마다 편차가 조금 심한 편이지만 대체적으로 Reaper Thread를 늘려 개선이 되는 것은 확인이 된다.
+
+
+
+
+
+## 6.4 50 Users / 8 Threads
+
+평균은,
+
+| AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates |
+| ------------------- | ---------------- | --------------- | --------------------- | ----------------- | -------------- | ------------------- | -------------- | --------------- |
+| 4944.534247         | 9499.547945      | 13958           | 2801.657534           | 9838              | 6346.931507    | 37692               | 37577          | 37579           |
+
+
+
+재차 테스트 시에,
+
+| AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates |
+| ------------------- | ---------------- | --------------- | --------------------- | ----------------- | -------------- | ------------------- | -------------- | --------------- |
+| 6347.72             | 9040.72          | 16162           | 3886.213333           | 9784              | 6437.76        | 38259               | 38072          | 38081           |
+
+
+
+오히려 감소하기도 하고, 특별히 드라마틱한 변화가 없다.
+
+
+
+
+
+## 6.5 50 Users / 12 Threads
+
+평균은,
+
+| AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates |
+| ------------------- | ---------------- | --------------- | --------------------- | ----------------- | -------------- | ------------------- | -------------- | --------------- |
+| 3344.381579         | 8949.065789      | 22647           | 1913.447368           | 9654              | 6253.592105    | 38098               | 37919          | 37915           |
+
+
+
+재차 테스트,
+
+| AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates |
+| ------------------- | ---------------- | --------------- | --------------------- | ----------------- | -------------- | ------------------- | -------------- | --------------- |
+| 6243.068493         | 9646.287671      | 13999           | 3526.219178           | 9837              | 6268.753425    | 37427               | 37278          | 37320           |
+
+
+
+
+
+## 6.6 Outcomes
+
+성능이 좋지 않은 Local Test 환경에서는 4 Reaper Thread 환경 부터 그나마 Tuning 의 결과가 확인이 된다.
+
+그럼에도 반복 수행 시 Local Test 환경의 영향인지, 들쑥 날쑥하고 드라마틱한 결과를 보여주지는 않는다.
+
+
+
+Test 결과 또한 좋았으면 했지만 그렇지 않았으므로
+
+MBean 항목에 대한 이해를 얻은 것으로 마무리 해야 할 듯 싶다.
+
+
+
+
+
+## 6.7 OverflowUpdates
+
+OverflowUpdates : Overflow는 큰 Session Data를 저장할 때 사용되는 Model이며, OverflowThreshold(default 1024) 크기를 넘어서는 Session의 총 Updates 갯수가 집계됨.
+
+
+
+앞에서 언급을 했었다.
+
+
+
+Test App에서 생성하는 Session Data의 Size를 1024 bytes 보다 작게 만들 경우,
+
+SessionUpdates는 증가하되, OverflowUpdates는 증가하지 않을 것으로 보이는데,
+
+이 부분을 검증하기 위해서 Session Data 의 정확한 Size를 Inspect 해야 한다.
+
+
+
+JFR, Heap Dump, Instrumentation.getObjectSize 등등 여러가지를 확인해보고 있으나,
+
+껍데기 Size만 확인되는 등 정확한 수치가 나오질 않아 좀 더 확인해봐야 하는 부분이다.
+
+
+
+
+
+# 7. References
+
+[Overflow 관련](https://docs.oracle.com/en//middleware/standalone/coherence/14.1.1.0/administer-http-sessions/monitoring-applications.html#GUID-93AB0B53-6335-4E55-B66C-8CA566EEE8A0)
+
+[WLST로 수집되는 MBean 항목 부연 설명 관련 자료](https://dhkim900331.github.io/coherence/How-To-Monitor-Coherence-Web-3#h-32-mbean-%ED%95%AD%EB%AA%A9-%EC%84%A4%EB%AA%85)
+
+**Recommended Thread-count-min And Thread-count-max Values in Coherence (Doc ID 2294067.1)**
+
+**Explanation Of Meaning For Coherence Threadpool Error Message (Doc ID 2728051.1)**
