@@ -2,11 +2,11 @@
 date: 2023-05-11 09:07:29 +0900
 layout: post
 title: "[Servlet/JSP] File upload App"
-tags: [JSP, Servlet, File, Upload]
+tags: [Programming, JSP, Servlet, File, Upload]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 ~~Commons FileUpload 라이브러리를 이용한 파일 업로드 예제 어플리케이션~~
 
@@ -14,7 +14,7 @@ typora-root-url: ..
 
 
 
-# 2. 설명
+# 2. Description
 
 
 

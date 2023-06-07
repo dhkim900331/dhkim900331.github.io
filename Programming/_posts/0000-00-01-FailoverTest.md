@@ -2,11 +2,11 @@
 date: 2022-05-30 10:24:20 +0900
 layout: post
 title: "[Servlet/JSP] Fail over Test를 위한 JSP"
-tags: [JSP, Servlet, Session, Failover, Clustering]
+tags: [Programming, JSP, Servlet, Session, Failover, Clustering]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 기본적으로 session clustering 환경 구성 후, Failover Test를 위해 사용하는 JSP
 
@@ -14,7 +14,7 @@ typora-root-url: ..
 
 
 
-# 2. 설명
+# 2. Description
 
 다음의 어플리케이션의 구조이며, 해당 소스는 `infinispan`에서 사용되어 `distributable` 태그를 갖는다.
 

@@ -2,11 +2,11 @@
 date: 2023-06-01 08:58:38 +0900
 layout: post
 title: "[Java/Instrumentation] Instrumentation.getObjectSize()"
-tags: [Java, Instrumentation, getObjectSize]
+tags: [Programming, Java, Instrumentation, getObjectSize]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 Instrumentation 의 getObjectSize를 통해 Object 의 Size를 조사하는 방법
 

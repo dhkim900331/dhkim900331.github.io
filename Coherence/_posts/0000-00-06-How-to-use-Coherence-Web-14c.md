@@ -518,29 +518,9 @@ OverflowUpdates : Overflow는 큰 Session Data를 저장할 때 사용되는 Mod
 
 
 
-## 6.6 Outcomes
-
-성능이 좋지 않은 Local Test 환경에서는 4 Reaper Thread 환경 부터 그나마 Tuning 의 결과가 확인이 된다.
-
-그럼에도 반복 수행 시 Local Test 환경의 영향인지, 들쑥 날쑥하고 드라마틱한 결과를 보여주지는 않는다.
-
-
-
-Test 결과 또한 좋았으면 했지만 그렇지 않았으므로
-
-MBean 항목에 대한 이해를 얻은 것으로 마무리 해야 할 듯 싶다.
-
-
-
-
-
-## 6.7 OverflowUpdates
+## 6.6 OverflowUpdates
 
 OverflowUpdates : Overflow는 큰 Session Data를 저장할 때 사용되는 Model이며, OverflowThreshold(default 1024) 크기를 넘어서는 Session의 총 Updates 갯수가 집계됨.
-
-
-
-앞에서 언급을 했었다.
 
 
 
@@ -558,13 +538,82 @@ JFR, Heap Dump, Instrumentation.getObjectSize 등등 여러가지를 확인해�
 
 
 
+이후에, 여러날에 걸쳐 확인을 해보았는데 openjdk 의 JOL(Java Object Layout) Library 를 활용하여 Object Size를 측정할 수 있었다.
+
+[Java-Object-Layout]({{ site.url }}/programming/Java-Object-Layout) Post 에서 다루었다.
 
 
-# 7. References
+
+Post에 따르면, _obj Byte Array를 정확히 실제 크기 1024 Bytes에 맞추기 위해서는
+
+* Header bytes 16 를 빼고
+* Gap 8bytes 의 배수에 맞게끔
+
+설정하면 된다고 했다.
+
+
+
+그러므로 _obj Byte Array 갯수는 정확히 1008 개를 만들면, 실제 JVM Heap Memory에 올라가는 Object Size는 1024 Bytes가 된다.
+
+`byte[] _obj = new byte[1008];`
+
+
+
+이제 Coherence Session Data를 Update 하고 MBean을 살펴보면
+
+* OverflowThreshold : 1024
+* OverflowUpdates : 0
+* OverflowMaxSize : 0
+
+Session Data가 1024 bytes 보다 작기 때문에, 1회 호출 시에는 Overflow cache 가 아닌 것이 확인된다.
+
+
+
+연속 2회 호출하여, Session Data 크기를 증분 시키면,
+
+* OverflowThreshold : 1024
+* OverflowUpdates : 1
+* OverflowMaxSize : 2019
+
+예상값 2032 Bytes 보다 작은 2019 Bytes로 확인되며, Overflow 가 update 되었다.
+
+
+
+연속 호출을 더 여러번 해보았는데, 항상 JVM Heap memory 에 적재되는 실제 Size보다 항상 13 Bytes가 적게 측정되었다.
+
+Coherence 의 Session을 다루는 Object를 JOL로 확인해보고 싶으나, Object 를 특정짓지 못하였다.
+
+
+
+
+
+# 7. Outcomes
+
+성능이 좋지 않은 Local Test 환경에서는 4 Reaper Thread 환경 부터 그나마 Tuning 의 결과가 확인이 된다.
+
+그럼에도 반복 수행 시 Local Test 환경의 영향인지, 들쑥 날쑥하고 드라마틱한 결과를 보여주지는 않는다.
+
+
+
+Test 결과 또한 좋았으면 했지만 그렇지 않았으므로
+
+MBean 항목에 대한 이해를 얻은 것으로 마무리 해야 할 듯 싶다.
+
+
+
+그 외에도, JOL 을 이용하여 Overflowupdate 기준을 실제 추적하는 Test도 진행할 수 있었다.
+
+
+
+
+
+# 8. References
 
 [Overflow 관련](https://docs.oracle.com/en//middleware/standalone/coherence/14.1.1.0/administer-http-sessions/monitoring-applications.html#GUID-93AB0B53-6335-4E55-B66C-8CA566EEE8A0)
 
 [WLST로 수집되는 MBean 항목 부연 설명 관련 자료](https://dhkim900331.github.io/coherence/How-To-Monitor-Coherence-Web-3#h-32-mbean-%ED%95%AD%EB%AA%A9-%EC%84%A4%EB%AA%85)
+
+[Java-Object-Layout]({{ site.url }}/programming/Java-Object-Layout)
 
 **Recommended Thread-count-min And Thread-count-max Values in Coherence (Doc ID 2294067.1)**
 
