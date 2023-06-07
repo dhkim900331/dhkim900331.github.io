@@ -449,19 +449,17 @@ html {
 
 */
 
-	h2 {
-      margin-top: 30px;
-	  margin-bottom: 0px; /* CUSTOM (2023-03-15) */
-	}
+    h2 {
+        margin-top: 40px; /* CUSTOM (2023-06-07) */
+        margin-bottom: 7px; /* CUSTOM (2023-06-07) */
+    }
 	
     h3, h4, h5, h6 {
-      margin: 10px 0 10px;
-	  margin-top: 20px; /* CUSTOM (2023-03-15) */
-	  margin-bottom: 0px; /* CUSTOM (2023-03-15) */
+      margin-bottom: 7px; /* CUSTOM (2023-06-07) */
     }
-
+    
     p, hr {
-      margin-bottom: 3px;
+      margin-bottom: 8px; /* CUSTOM (2023-06-07) */
     }
 
     hr {

@@ -1,0 +1,158 @@
+I"4!<h2 id="1-overview">1. Overview</h2>
+
+<p>기본적으로 session clustering 환경 구성 후, Failover Test를 위해 사용하는 JSP</p>
+
+<p>다른 포스트에서도 webapp.zip 등으로 첨부파일 업로드 한 것이 있으나, 좀 더 깔끔한 것으로 업데이트</p>
+
+<h2 id="2-description">2. Description</h2>
+
+<p>다음의 어플리케이션의 구조이며, 해당 소스는 <code class="language-plaintext highlighter-rouge">infinispan</code>에서 사용되어 <code class="language-plaintext highlighter-rouge">distributable</code> 태그를 갖는다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>tree /usr/app/testapp.war
+/usr/app/testapp.war
+├── WEB-INF
+│   ├── classes
+│   │   └── example
+│   │       └── sessionObject.class
+│   ├── run_compile.sh
+│   ├── src
+│   │   └── example
+│   │       └── sessionObject.java
+│   └── web.xml
+└── session.jsp
+
+5 directories, 5 files
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>
+    <p>주요 스크립트</p>
+
+    <ul>
+      <li>
+        <p>session.jsp</p>
+
+        <div class="language-jsp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;%@ page </span><span class="na">language=</span><span class="s">"java"</span><span class="na"> contentType=</span><span class="s">"text/html;charset=UTF-8"</span><span class="na"> pageEncoding=</span><span class="s">"UTF-8"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"java.io.Serializable"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"example.sessionObject"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">sessionObject</span> <span class="n">so</span> <span class="o">=</span> <span class="o">(</span><span class="n">sessionObject</span><span class="o">)</span> <span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"so"</span><span class="o">);</span>
+    
+        <span class="k">if</span> <span class="o">(</span><span class="n">so</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="n">so</span> <span class="o">=</span> <span class="k">new</span> <span class="n">sessionObject</span><span class="o">();</span>
+        <span class="k">else</span> <span class="n">so</span><span class="o">.</span><span class="na">incCnt</span><span class="o">();</span>
+    
+        <span class="n">session</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"so"</span><span class="o">,</span> <span class="n">so</span><span class="o">);</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"[TEST] so.getCnt() : "</span> <span class="o">+</span> <span class="n">so</span><span class="o">.</span><span class="na">getCnt</span><span class="o">());</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="err">"</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;</span><span class="s">");
+    
+        out.println("</span><span class="o">[</span><span class="no">TEST</span><span class="o">]</span> <span class="n">session</span><span class="o">.</span><span class="na">getId</span><span class="o">()</span> <span class="o">:</span> <span class="s">" + session.getId());
+        out.println("</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;</span><span class="s">");
+        out.println("</span><span class="o">[</span><span class="no">TEST</span><span class="o">]</span> <span class="n">system</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="err">\</span><span class="s">"jboss.node.name\") : "</span> <span class="o">+</span> <span class="nc">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">"jboss.node.name"</span><span class="o">));</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="err">"</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;"</span><span class="o">);</span>
+<span class="nt">%&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+      <li>
+        <p>sessionObject.java</p>
+
+        <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="kn">package</span> <span class="nn">example</span><span class="o">;</span>
+    
+<span class="kn">import</span> <span class="nn">java.io.Serializable</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">sessionObject</span> <span class="kd">implements</span> <span class="nc">Serializable</span><span class="o">{</span>
+        <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">1234567L</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kt">int</span> <span class="n">cnt</span><span class="o">;</span>
+    
+        <span class="kd">public</span> <span class="nf">sessionObject</span><span class="o">(){</span>
+                <span class="n">cnt</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="o">}</span>
+    
+        <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getCnt</span><span class="o">(){</span>
+                <span class="k">return</span> <span class="n">cnt</span><span class="o">;</span>
+        <span class="o">}</span>
+    
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">incCnt</span><span class="o">(){</span>
+                <span class="n">cnt</span><span class="o">++;</span>
+        <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+      <li>
+        <p>web.xml</p>
+
+        <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;web-app&gt;</span>
+        <span class="nt">&lt;distributable/&gt;</span>
+<span class="nt">&lt;/web-app&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+      <li>
+        <p>run_compile.sh</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="c">#!/bin/bash</span>
+<span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/java/jdk-8u312-ojdkbuild-linux-x64
+<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin/javac <span class="nt">-d</span> ./classes src/example/sessionObject.java
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+:ET

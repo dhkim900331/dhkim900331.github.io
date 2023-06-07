@@ -41,7 +41,7 @@ h1, h2, h3, h4, h5, h6,
 p, blockquote, pre,
 ul, ol, dl, figure,
 %vertical-rhythm {
-  margin-bottom: $spacing-unit / 2;
+  margin-bottom: $spacing-unit / 2 + 5px; /* CUSTOM (2023-06-07) */
 }
 
 
@@ -146,7 +146,7 @@ blockquote {
 pre,
 code {
   /* @include relative-font-size(0.9375); */
-  @include relative-font-size(0.8375); /* CUSTOM (2023-03-28) */
+  @include relative-font-size(0.8375); /* CUSTOM (2023-06-07) */
   color: $text-color;
 }
 
@@ -224,7 +224,7 @@ table {
 
   th, td {
     /* padding: ($spacing-unit / 3) ($spacing-unit / 2); */
-	padding: ($spacing-unit / 3) ($spacing-unit / 3); /* CUSTOM (2023-03-28) */
+    padding: ($spacing-unit / 3) ($spacing-unit / 3); /* CUSTOM (2023-03-28) */
   }
 
   th {

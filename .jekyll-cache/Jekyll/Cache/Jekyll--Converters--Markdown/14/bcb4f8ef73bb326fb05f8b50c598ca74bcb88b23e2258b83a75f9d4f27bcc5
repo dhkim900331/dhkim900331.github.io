@@ -1,0 +1,281 @@
+I"�D<h2 id="1-overview">1. Overview</h2>
+
+<p>Instrumentation 의 getObjectSize를 통해 Object 의 Size를 조사하는 방법</p>
+
+<p>Java bytecode에 개입할 수 있는 Instrumentation Class의 getObjectSize method를 통해서 Object의 Size를 조사하는 방법을 소개한다.</p>
+
+<h2 id="2-objectsizeagent">2. ObjectSizeAgent</h2>
+
+<p>getObjectSize 를 수행하는 ObjectSizeAgent App은 javaagent 로 심어져야 한다.</p>
+
+<p>App은 다음과 같은 구조로 개발된다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>tree /sw/app/ObjectSizeAgent/
+/sw/app/ObjectSizeAgent/
+├── compile.sh
+├── MANIFEST.MF
+├── ObjectSizeAgent.class
+├── ObjectSizeAgent.jar
+└── ObjectSizeAgent.java
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="21-compilesh">2.1 compile.sh</h3>
+
+<p>편의를 위해 compile script를 만들었다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>javac ObjectSizeAgent.java
+jar cvfm ObjectSizeAgent.jar MANIFEST.MF ObjectSizeAgent.class
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>java 를 compile 하고 ObjectSizeAgent.jar 에 MANIFEST.MF와 class를 packaging 한다.</p>
+
+<h3 id="22-manifestmf">2.2 MANIFEST.MF</h3>
+
+<p>생략가능하다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>Premain-Class: ObjectSizeAgent
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="23-objectsizeagentjava">2.3 ObjectSizeAgent.java</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">java.lang.instrument.Instrumentation</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ObjectSizeAgent</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="nc">Instrumentation</span> <span class="n">instrumentation</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">premain</span><span class="o">(</span><span class="nc">String</span> <span class="n">agentArgs</span><span class="o">,</span> <span class="nc">Instrumentation</span> <span class="n">inst</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">instrumentation</span> <span class="o">=</span> <span class="n">inst</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">long</span> <span class="nf">getObjectSize</span><span class="o">(</span><span class="nc">Object</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">instrumentation</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="s">"Java agent not initialized"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">instrumentation</span><span class="o">.</span><span class="na">getObjectSize</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="3-my-app">3. My App</h2>
+
+<p>javaagent로 등록된 ObjectSizeAgent.jar 에서 getObjectSize method를 호출하여 특정 Object의 Size를 알 수 있다.</p>
+
+<p>나에게는 Session을 다루는 Servlet 이 있으며, 여러 Size를 계산할 필요가 있었다.</p>
+
+<h3 id="31-sessionservletjava">3.1 SessionServlet.java</h3>
+
+<p>Servlet code는 아래와 같다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">javax.servlet.http.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.annotation.WebServlet</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+
+<span class="kn">import</span>  <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+
+<span class="nd">@WebServlet</span><span class="o">(</span><span class="s">"/SessionServlet"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SessionServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ServletException</span><span class="o">,</span> <span class="nc">IOException</span> <span class="o">{</span>
+
+    <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;();</span>
+    <span class="kt">int</span> <span class="n">addedNum</span> <span class="o">=</span> <span class="mi">500</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">addedByte</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">objectInSession</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">addedByte</span><span class="o">];</span>
+    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">addedNum</span><span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
+      <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">objectInSession</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nc">HttpSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span> <span class="n">sList</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;)</span><span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"listSession"</span><span class="o">);</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">sList</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+      <span class="n">sList</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span><span class="o">{</span>
+      <span class="n">sList</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">session</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"listSession"</span><span class="o">,</span> <span class="n">sList</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">log</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"list.size() = "</span> <span class="o">+</span> <span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"sList.size = "</span> <span class="o">+</span> <span class="n">sList</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"session.getMaxInactiveInterval() = "</span> <span class="o">+</span> <span class="n">session</span><span class="o">.</span><span class="na">getMaxInactiveInterval</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"session.getClass().getName() = "</span> <span class="o">+</span> <span class="n">session</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"ObjectSizeAgent.getObjectSize(list) = "</span> <span class="o">+</span> <span class="nc">ObjectSizeAgent</span><span class="o">.</span><span class="na">getObjectSize</span><span class="o">(</span><span class="n">list</span><span class="o">)</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"ObjectSizeAgent.getObjectSize(sList) = "</span> <span class="o">+</span> <span class="nc">ObjectSizeAgent</span><span class="o">.</span><span class="na">getObjectSize</span><span class="o">(</span><span class="n">sList</span><span class="o">)</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"ObjectSizeAgent.getObjectSize(session) = "</span> <span class="o">+</span> <span class="nc">ObjectSizeAgent</span><span class="o">.</span><span class="na">getObjectSize</span><span class="o">(</span><span class="n">session</span><span class="o">)</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">log</span><span class="o">);</span>
+
+
+    <span class="kd">final</span> <span class="kt">long</span>  <span class="no">MEGABYTE</span> <span class="o">=</span> <span class="mi">1024L</span> <span class="o">*</span> <span class="mi">1024L</span><span class="o">;</span>
+    <span class="kt">long</span> <span class="n">heapSize</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">totalMemory</span><span class="o">()</span> <span class="o">/</span> <span class="no">MEGABYTE</span><span class="o">;</span>
+    <span class="kt">long</span> <span class="n">heapMaxSize</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">maxMemory</span><span class="o">()</span> <span class="o">/</span> <span class="no">MEGABYTE</span><span class="o">;</span>
+    <span class="kt">long</span> <span class="n">heapFreeSize</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">freeMemory</span><span class="o">()</span> <span class="o">/</span> <span class="no">MEGABYTE</span><span class="o">;</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"heapSize (MB) = "</span> <span class="o">+</span> <span class="n">heapSize</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"heapMaxSize (MB) = "</span> <span class="o">+</span> <span class="n">heapMaxSize</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"heapSize (MB) = "</span> <span class="o">+</span> <span class="n">heapFreeSize</span> <span class="o">+</span> <span class="s">"\r\n"</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">log</span><span class="o">);</span>
+
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>ObjectSizeAgent.getObjectSize() method를 통해서 Size를 inspect 하고 있다.</p>
+
+<h3 id="32-compilesh">3.2 compile.sh</h3>
+
+<p>여기서도 편의를 위해 compile script를 사용하고 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="nb">.</span> /sw/weblogic/14c/domains/base_domain/bin/setDomainEnv.sh
+
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:/sw/app/ObjectSizeAgent/ObjectSizeAgent.jar"</span>
+
+<span class="nb">cd</span> /sw/app/cohSessionApp/WEB-INF
+javac src/<span class="k">*</span>.java <span class="nt">-d</span> classes/
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Weblogic 14c에 배포되는 특성이 있으며, classpath에 Agent jar가 있다.</p>
+
+<h2 id="4-weblogic">4. Weblogic</h2>
+
+<p>Weblogic에 javaagent를 등록하여 기동한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nt">-javaagent</span>:/sw/app/ObjectSizeAgent/ObjectSizeAgent.jar
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>이외 별달리 할 것은 없다.</p>
+
+<h2 id="5-test">5. Test</h2>
+
+<p>App을 호출하면 Session에 담기려는 Size, Session data 자체의 Size가 return 된다.</p>
+
+<p>호출 예시</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>list.size() = 500
+sList.size = 1000
+session.getMaxInactiveInterval() = 30
+session.getClass().getName() = weblogic.servlet.internal.session.CoherenceWebSessionData
+ObjectSizeAgent.getObjectSize(list) = 24
+ObjectSizeAgent.getObjectSize(sList) = 24
+ObjectSizeAgent.getObjectSize(session) = 128
+
+heapSize (MB) = 2967
+heapMaxSize (MB) = 2967
+heapSize (MB) = 2307
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>특이사항으로는, 나의 App은 반복 호출 시 더 큰 Object를 Session에 저장하는데</p>
+
+<p>getObjectSize로 확인해도 항상 24bytes 를 유지하는 모습이 관찰된다.</p>
+
+<p>이는 getObjectSize는 Object의 <a href="https://www.baeldung.com/jvm-measuring-object-sizes">shallow size</a>를 return 하기 때문이라며,,</p>
+
+<p>공식자료는 찾지 못했다.</p>
+
+<p>deep size 확인을 위해서는, JOL(Java Object Layout) 3rd library 를 활용해야 될 것으로 보인다.</p>
+
+:ET

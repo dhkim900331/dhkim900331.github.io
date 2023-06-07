@@ -1,0 +1,100 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>Outlook 에 내장된 VBA 를 이용하여, 자동으로 이메일을 보내는 Macro를 개발해본다.</p>
+
+<h2 id="2-설명">2. 설명</h2>
+
+<p>Win Object를 잘 다루지 못하므로, Googling 을 통해서 많은 도움을 얻고자 했는데.. Chat GPT를 통해서 뚝딱 완성이 되어 버렸다.</p>
+
+<p>질문은 여러개가 있었지만, 주요한 것은 두개정도다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>- how to make macro that automatically send email per 1 minutes and that is background like user32
+- can you change TimerLoop to other method with user32 library ?
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>토대로 완성된 코드는,</p>
+
+<div class="language-vb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+</pre></td><td class="rouge-code"><pre><span class="k">Option</span> <span class="n">Explicit</span>
+
+<span class="k">Private</span> <span class="k">Declare</span> <span class="n">PtrSafe</span> <span class="k">Function</span> <span class="nf">SetTimer</span> <span class="k">Lib</span> <span class="s">"user32"</span> <span class="p">(</span><span class="k">ByVal</span> <span class="n">hWnd</span> <span class="ow">As</span> <span class="n">LongPtr</span><span class="p">,</span> <span class="k">ByVal</span> <span class="n">nIDEvent</span> <span class="ow">As</span> <span class="n">LongPtr</span><span class="p">,</span> <span class="k">ByVal</span> <span class="n">uElapse</span> <span class="ow">As</span> <span class="kt">Long</span><span class="p">,</span> <span class="k">ByVal</span> <span class="n">lpTimerFunc</span> <span class="ow">As</span> <span class="n">LongPtr</span><span class="p">)</span> <span class="ow">As</span> <span class="n">LongPtr</span>
+<span class="k">Private</span> <span class="k">Declare</span> <span class="n">PtrSafe</span> <span class="k">Function</span> <span class="nf">KillTimer</span> <span class="k">Lib</span> <span class="s">"user32"</span> <span class="p">(</span><span class="k">ByVal</span> <span class="n">hWnd</span> <span class="ow">As</span> <span class="n">LongPtr</span><span class="p">,</span> <span class="k">ByVal</span> <span class="n">nIDEvent</span> <span class="ow">As</span> <span class="n">LongPtr</span><span class="p">)</span> <span class="ow">As</span> <span class="n">LongPtr</span>
+
+<span class="k">Private</span> <span class="n">TimerID</span> <span class="ow">As</span> <span class="n">LongPtr</span>
+
+<span class="k">Sub</span> <span class="nf">StartEmailSending</span><span class="p">()</span>
+    <span class="c1">' Start the Windows timer</span>
+    <span class="k">Dim</span> <span class="nv">Minutes</span> <span class="ow">As</span> <span class="kt">Integer</span>
+    <span class="n">Minutes</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">TimerID</span> <span class="o">=</span> <span class="n">SetTimer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Minutes</span> <span class="o">*</span> <span class="mi">60000</span><span class="p">,</span> <span class="ow">AddressOf</span> <span class="n">TimerCallback</span><span class="p">)</span>
+<span class="k">End</span> <span class="k">Sub</span>
+
+<span class="k">Sub</span> <span class="nf">StopEmailSending</span><span class="p">()</span>
+    <span class="c1">' Stop the Windows timer</span>
+    <span class="n">KillTimer</span> <span class="mi">0</span><span class="p">,</span> <span class="n">TimerID</span>
+<span class="k">End</span> <span class="k">Sub</span>
+
+<span class="k">Private</span> <span class="k">Sub</span> <span class="nf">TimerCallback</span><span class="p">(</span><span class="k">ByVal</span> <span class="n">hWnd</span> <span class="ow">As</span> <span class="n">LongPtr</span><span class="p">,</span> <span class="k">ByVal</span> <span class="n">uMsg</span> <span class="ow">As</span> <span class="kt">Long</span><span class="p">,</span> <span class="k">ByVal</span> <span class="n">nIDEvent</span> <span class="ow">As</span> <span class="n">LongPtr</span><span class="p">,</span> <span class="k">ByVal</span> <span class="n">dwTime</span> <span class="ow">As</span> <span class="kt">Long</span><span class="p">)</span>
+    <span class="c1">' Callback function triggered by the timer</span>
+    <span class="n">SendEmail</span>
+<span class="k">End</span> <span class="k">Sub</span>
+
+<span class="k">Private</span> <span class="k">Sub</span> <span class="nf">SendEmail</span><span class="p">()</span>
+    <span class="k">Dim</span> <span class="nv">dtToday</span> <span class="ow">As</span> <span class="kt">Date</span>
+    <span class="n">dtToday</span> <span class="o">=</span> <span class="n">Now</span><span class="p">()</span>
+
+    <span class="k">Dim</span> <span class="nv">objMail</span> <span class="ow">As</span> <span class="n">Outlook</span><span class="p">.</span><span class="n">MailItem</span>
+    <span class="k">Set</span> <span class="n">objMail</span> <span class="o">=</span> <span class="n">Application</span><span class="p">.</span><span class="n">CreateItem</span><span class="p">(</span><span class="n">olMailItem</span><span class="p">)</span>
+    <span class="n">objMail</span><span class="p">.</span><span class="n">Subject</span> <span class="o">=</span> <span class="s">"[AutoRemider] "</span> <span class="o">&amp;</span> <span class="n">dtToday</span>
+    <span class="n">objMail</span><span class="p">.</span><span class="n">Body</span> <span class="o">=</span> <span class="s">"Reminder"</span>
+    <span class="n">objMail</span><span class="p">.</span><span class="n">To</span> <span class="o">=</span> <span class="s">"abcd@efg.com"</span>
+    <span class="n">objMail</span><span class="p">.</span><span class="n">Send</span>
+    <span class="k">Set</span> <span class="n">objMail</span> <span class="o">=</span> <span class="k">Nothing</span>
+<span class="k">End</span> <span class="k">Sub</span>
+
+
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Outlook Macro run에서 StartEmailSending 를 통해 X분마다 user32 의 SetTimer background 동작으로 mail 을 보낸다.</p>
+:ET

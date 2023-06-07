@@ -1,0 +1,610 @@
+I"*�<h2 id="1-overview">1. Overview</h2>
+
+<p>JOL(Java Layout Object) Library 사용법</p>
+
+<h2 id="2-description">2. Description</h2>
+
+<p>Java 객체의 실제 크기를 Inspect 하기 위해서는 Instrumentation 을 활용할 수 있으나,</p>
+
+<p>이는 Shallow size만 알아낼 수 있다.</p>
+
+<p>실제 Size를 Heap dump보다 정확하게 추적할 수 있다고 소개하는 JOL 을 사용해보자.</p>
+
+<h2 id="3-use">3. Use</h2>
+
+<p><a href="https://builds.shipilev.net/jol/">최신버전을 다운로드</a> 하여 WEB-INF/lib 에 위치시킨다.</p>
+
+<h3 id="31-my-app">3.1 My App</h3>
+
+<p>아래와 같은 Business Java code 가 있다고 가정한다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre>   <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;();</span>
+    <span class="kt">int</span> <span class="n">addedNum</span> <span class="o">=</span> <span class="mi">500</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">addedByte</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">objectInSession</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">addedByte</span><span class="o">];</span>
+    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">addedNum</span><span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
+      <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">objectInSession</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nc">HttpSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span> <span class="n">sList</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;)</span><span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"listSession"</span><span class="o">);</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">sList</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+      <span class="n">sList</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span><span class="o">{</span>
+      <span class="n">sList</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">session</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"listSession"</span><span class="o">,</span> <span class="n">sList</span><span class="o">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>App 반복 요청 시, 매회 ArrayList로 이루어진 500 bytes data를 누적하여 Session에 저장한다.</p>
+
+<h3 id="32-import-jol">3.2 Import JOL</h3>
+
+<p>이때, Session 에 저장되는 실제 size를 추적하기 위해,</p>
+
+<p>다음의 JOL library import 한다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">org.openjdk.jol.info.ClassLayout</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.openjdk.jol.info.GraphLayout</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.openjdk.jol.vm.VM</span><span class="o">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="33-specified-field-size-in-vm">3.3 Specified Field Size in VM</h4>
+
+<p><code class="language-plaintext highlighter-rouge">System.out.println(VM.current().details());</code> 호출 시</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre># VM mode: 64 bits
+# Compressed references (oops): 3-bit shift
+# Compressed class pointers: 3-bit shift
+# WARNING | Compressed references base/shifts are guessed by the experiment!
+# WARNING | Therefore, computed addresses are just guesses, and ARE NOT RELIABLE.
+# WARNING | Make sure to attach Serviceability Agent to get the reliable addresses.
+# Object alignment: 8 bytes
+#                       ref, bool, byte, char, shrt,  int,  flt,  lng,  dbl
+# Field sizes:            4,    1,    1,    2,    2,    4,    4,    8,    8
+# Array element sizes:    4,    1,    1,    2,    2,    4,    4,    8,    8
+# Array base offsets:    16,   16,   16,   16,   16,   16,   16,   16,   16
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>byte가 memory에서 1 byte를 차지한다고 알 수 있다.</p>
+
+<h3 id="34-shallow-size-of-arraylist">3.4 Shallow Size of ArrayList</h3>
+
+<p><code class="language-plaintext highlighter-rouge">System.out.println(ClassLayout.parseInstance(sList).toPrintable());</code> 호출 시</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>java.util.ArrayList object internals:
+OFF  SZ                 TYPE DESCRIPTION               VALUE
+  0   8                      (object header: mark)     0x0000000000000005 (biasable; age: 0)
+  8   4                      (object header: class)    0x000179d0
+ 12   4                  int AbstractList.modCount     500
+ 16   4                  int ArrayList.size            500
+ 20   4   java.lang.Object[] ArrayList.elementData     [[0], [0], ... more 400+
+ 
+ ...
+ 
+ Instance size: 24 bytes
+Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>ClassLayout은 Object 또는 Class 자체의 Size(Shallow size)만을 계산한다고 하기 때문에, ArrayList.size=500 임에도 매우 작은 24 bytes 로 보여진다.</p>
+
+<h3 id="35-shallow-size-of-array-in-arraylist">3.5 Shallow Size of Array in ArrayList</h3>
+
+<p><code class="language-plaintext highlighter-rouge">System.out.println(ClassLayout.parseInstance(sList.toArray()).toPrintable());</code> 호출 시</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>[Ljava.lang.Object; object internals:
+OFF  SZ               TYPE DESCRIPTION               VALUE
+  0   8                    (object header: mark)     0x0000000000000001 (non-biasable; age: 0)
+  8   4                    (object header: class)    0x00011840
+ 12   4                    (array length)            500
+ 16 2000   java.lang.Object Object;.&lt;elements&gt;        N/A
+Instance size: 2016 bytes
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>toArray() 를 조사한 결과, Shallow Size 임에도 2016 bytes 라는 전체 실제 Size로 보인는 결과가 나온다.</p>
+
+<h3 id="36-shallow-size-of-single-object-in-arraylist">3.6 Shallow Size of Single Object in ArrayList</h3>
+
+<p><code class="language-plaintext highlighter-rouge">System.out.println(ClassLayout.parseInstance(sList.toArray()[0]).toPrintable());</code> 호출 시</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>[B object internals:
+OFF  SZ   TYPE DESCRIPTION               VALUE
+  0   8        (object header: mark)     0x0000000000000001 (non-biasable; age: 0)
+  8   4        (object header: class)    0x000007a8
+ 12   4        (array length)            1
+ 16   1   byte [B.&lt;elements&gt;             N/A
+ 17   7        (object alignment gap)
+Instance size: 24 bytes
+Space losses: 0 bytes internal + 7 bytes external = 7 bytes total
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">byte[] objectInSession</code> Object의 Size는 24 bytes 이며, 내부에 <code class="language-plaintext highlighter-rouge">new byte[addedByte];</code> 으로 생성한 1 byte 가 확인된다.</p>
+
+<p>여기까지의 내용으로는 모든 Object의 Size를 추적하여, 실제 Session data size를 확인할 수 있을 것 같았지만 난해하였고,</p>
+
+<p>ClassLayout은 조사하는 Object 자체만의 Shallow Size를 보여준다.</p>
+
+<h3 id="37-retained-size-of-arraylist">3.7 Retained Size of ArrayList</h3>
+
+<p>GraphLayout을 이용하면, 첫 진입점부터 닿을 수 있는 Deep 한 곳까지의 모든 Size를 조사할 수 있다고 한다.</p>
+
+<p>ClassLayout을 이용하면 Accurate Size를 얻을 수 없다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">System.out.println(GraphLayout.parseInstance(sList).toPrintable());</code> 호출 시</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>java.util.ArrayList@4513a2d0d object externals:
+          ADDRESS       SIZE TYPE                PATH                           VALUE
+        7d56522c0         24 java.util.ArrayList                                (object)
+        7d56522d8         24 [B                  .elementData[0]                [0]
+        7d56522f0       4520 (something else)    (somewhere else)               (something else)
+        7d5653498       2216 [Ljava.lang.Object; .elementData                   [[0], [0], ... more 400+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>어디까지 닿았는지 모를 something else (4520 size) 외에 ArrayList (2216 size)가 확인된다.</p>
+
+<p>최소한 App에서 생성한 Session data size는 2216 bytes 이상이 아닐까?</p>
+
+<p>우리가 Session에 넣은 Object가 아니라 Session 자체를 조사하면 어떻게 되나?</p>
+
+<h3 id="38-retained-size-of-httpsession">3.8 Retained Size of HttpSession</h3>
+
+<p><code class="language-plaintext highlighter-rouge">System.out.println(GraphLayout.parseInstance(session).toPrintable());</code> 호출 시</p>
+
+<p>OOME 으로 죽었다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">System.out.println(GraphLayout.parseInstance(session).totalSize());</code> 호출 시</p>
+
+<p>92958432 , 즉 88 Mbytes 로 확인된다.</p>
+
+<p>1 User가 생성한 1 Session의 순수 크기를 알고 싶지만, Retained 는 연결된 모든 Object를 추적하여서 그런지, 매우 큰 MB Size가 나왔다.</p>
+
+<p>이 어플리케이션의 ArrayList를 걷어내고, 좀 더 단순한 구조에서 확인해보는 테스트가 필요해보인다.</p>
+
+<p>그리하여, 다음과 같이 My App을 수정하였다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">javax.servlet.http.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.annotation.WebServlet</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.openjdk.jol.info.ClassLayout</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.openjdk.jol.info.GraphLayout</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.openjdk.jol.vm.VM</span><span class="o">;</span>
+
+<span class="nd">@WebServlet</span><span class="o">(</span><span class="s">"/SessionServlet"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SessionServlet</span> <span class="kd">extends</span> <span class="nc">HttpServlet</span> <span class="o">{</span>
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ServletException</span><span class="o">,</span> <span class="nc">IOException</span> <span class="o">{</span>
+  
+    <span class="nc">HttpSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">byteSession</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">[])</span> <span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"byteSession"</span><span class="o">);</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">_obj</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">500</span><span class="o">];</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">_tmp</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+  
+    <span class="k">if</span> <span class="o">(</span><span class="n">byteSession</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+      <span class="n">session</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"byteSession"</span><span class="o">,</span> <span class="n">_obj</span><span class="o">);</span>
+      <span class="n">byteSession</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">[])</span> <span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"byteSession"</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span><span class="o">{</span>
+      <span class="n">_tmp</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">_obj</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">byteSession</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">_obj</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">_tmp</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">_obj</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">byteSession</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">_tmp</span><span class="o">,</span> <span class="n">_obj</span><span class="o">.</span><span class="na">length</span><span class="o">,</span> <span class="n">byteSession</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+      <span class="n">session</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"byteSession"</span><span class="o">,</span> <span class="n">_tmp</span><span class="o">);</span>
+      <span class="n">byteSession</span> <span class="o">=</span> <span class="o">(</span><span class="kt">byte</span><span class="o">[])</span> <span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"byteSession"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nc">String</span> <span class="n">log</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">et</span> <span class="o">=</span> <span class="s">"\n\r"</span><span class="o">;</span>
+    <span class="k">if</span><span class="o">(</span><span class="n">_obj</span><span class="o">!=</span><span class="kc">null</span><span class="o">){</span>
+      <span class="n">log</span> <span class="o">+=</span> <span class="s">"_obj.length = "</span> <span class="o">+</span> <span class="n">_obj</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+      <span class="n">log</span> <span class="o">+=</span> <span class="s">"ObjectSizeAgent.getObjectSize(_obj) = "</span> <span class="o">+</span> <span class="nc">ObjectSizeAgent</span><span class="o">.</span><span class="na">getObjectSize</span><span class="o">(</span><span class="n">_obj</span><span class="o">)</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="k">if</span><span class="o">(</span><span class="n">_tmp</span><span class="o">!=</span><span class="kc">null</span><span class="o">){</span>
+      <span class="n">log</span> <span class="o">+=</span> <span class="s">"_tmp.length = "</span> <span class="o">+</span> <span class="n">_tmp</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+      <span class="n">log</span> <span class="o">+=</span> <span class="s">"ObjectSizeAgent.getObjectSize(_tmp) = "</span> <span class="o">+</span> <span class="nc">ObjectSizeAgent</span><span class="o">.</span><span class="na">getObjectSize</span><span class="o">(</span><span class="n">_tmp</span><span class="o">)</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span><span class="o">(</span><span class="n">byteSession</span><span class="o">!=</span><span class="kc">null</span><span class="o">){</span>
+      <span class="n">log</span> <span class="o">+=</span> <span class="s">"byteSession.length = "</span> <span class="o">+</span> <span class="o">((</span><span class="n">byteSession</span><span class="o">!=</span><span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="n">byteSession</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">et</span> <span class="o">:</span> <span class="s">""</span> <span class="o">+</span> <span class="n">et</span><span class="o">);</span>
+      <span class="n">log</span> <span class="o">+=</span> <span class="s">"ObjectSizeAgent.getObjectSize(byteSession) = "</span> <span class="o">+</span> <span class="nc">ObjectSizeAgent</span><span class="o">.</span><span class="na">getObjectSize</span><span class="o">(</span><span class="n">byteSession</span><span class="o">)</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"ObjectSizeAgent.getObjectSize(session) = "</span> <span class="o">+</span> <span class="nc">ObjectSizeAgent</span><span class="o">.</span><span class="na">getObjectSize</span><span class="o">(</span><span class="n">session</span><span class="o">)</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">log</span><span class="o">+</span><span class="n">et</span><span class="o">);</span>
+    
+    <span class="kd">final</span> <span class="kt">long</span>  <span class="no">MEGABYTE</span> <span class="o">=</span> <span class="mi">1024L</span> <span class="o">*</span> <span class="mi">1024L</span><span class="o">;</span>
+    <span class="kt">long</span> <span class="n">heapSize</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">totalMemory</span><span class="o">()</span> <span class="o">/</span> <span class="no">MEGABYTE</span><span class="o">;</span>
+    <span class="kt">long</span> <span class="n">heapMaxSize</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">maxMemory</span><span class="o">()</span> <span class="o">/</span> <span class="no">MEGABYTE</span><span class="o">;</span>
+    <span class="kt">long</span> <span class="n">heapFreeSize</span> <span class="o">=</span> <span class="nc">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">freeMemory</span><span class="o">()</span> <span class="o">/</span> <span class="no">MEGABYTE</span><span class="o">;</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"heapSize (MB) = "</span> <span class="o">+</span> <span class="n">heapSize</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"heapMaxSize (MB) = "</span> <span class="o">+</span> <span class="n">heapMaxSize</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+    <span class="n">log</span> <span class="o">+=</span> <span class="s">"heapSize (MB) = "</span> <span class="o">+</span> <span class="n">heapFreeSize</span> <span class="o">+</span> <span class="n">et</span><span class="o">;</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">log</span><span class="o">);</span>
+    
+    <span class="c1">// _obj</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"--- Layout : _obj ---"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ClassLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">_obj</span><span class="o">).</span><span class="na">toPrintable</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">GraphLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">_obj</span><span class="o">).</span><span class="na">totalSize</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">et</span><span class="o">);</span>
+    
+    <span class="c1">// _tmp</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">_tmp</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"--- Layout : _tmp ---"</span><span class="o">);</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ClassLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">_tmp</span><span class="o">).</span><span class="na">toPrintable</span><span class="o">());</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">GraphLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">_tmp</span><span class="o">).</span><span class="na">totalSize</span><span class="o">());</span>
+      <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">et</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="c1">// byteSession</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"--- Layout : byteSession ---"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ClassLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">byteSession</span><span class="o">).</span><span class="na">toPrintable</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">GraphLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">byteSession</span><span class="o">).</span><span class="na">totalSize</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">et</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>ArrayList 등을 걷어내고, 순수 Byte Array 로만 Session에 ‘byteSession’ Key 의 Value 로 값을 저장한다.</p>
+
+<h3 id="39-shallow-size-of-byte-array">3.9 Shallow Size of Byte Array</h3>
+
+<p>반복 호출 시마다 Session에 <code class="language-plaintext highlighter-rouge">byte[] _obj = new byte[500];</code> 만큼의 Data를 증분시킨다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">_obj</code> 자체의 Shallow/Retained Size는 다음의 Java code 로 알 수 있다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>    <span class="c1">// _obj</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"--- Layout : _obj ---"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Shallow : "</span> <span class="o">+</span> <span class="nc">ClassLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">_obj</span><span class="o">).</span><span class="na">toPrintable</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Retained : "</span> <span class="o">+</span> <span class="nc">GraphLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">_obj</span><span class="o">).</span><span class="na">totalSize</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">et</span><span class="o">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">_obj</code> 자체의 입장에서는, 더 이상 닿을 곳이 없는 root 그 자체이기 때문에 <code class="language-plaintext highlighter-rouge">520 bytes</code> 로 항상 동일하게 측정된다.</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>--- Layout : _obj ---
+Shallow : [B object internals:
+OFF  SZ   TYPE DESCRIPTION               VALUE
+  0   8        (object header: mark)     0x0000000000000001 (non-biasable; age: 0)
+  8   4        (object header: class)    0x000007a8
+ 12   4        (array length)            500
+ 16 500   byte [B.&lt;elements&gt;             N/A
+516   4        (object alignment gap)
+Instance size: 520 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+
+Retained : 520
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>캡슐화를 위한 header(8+4=12 bytes)</p>
+
+<p>_obj 배열 크기 Data 4 bytes</p>
+
+<p>_obj 배열 Data 자체 500 bytes</p>
+
+<p>그리고 <strong>ObjectAlignmentInBytes</strong> , Data 정렬을 위한 gap 으로 4 bytes 가 추가되어</p>
+
+<p>_obj 객체 자체의 총크기는 520 bytes 가 된다.</p>
+
+<p>텟</p>
+
+<h3 id="310-what-is-objectalignmentinbytes">3.10 What is ObjectAlignmentInBytes?</h3>
+
+<p>여기서 잠깐, <strong>ObjectAlignmentInBytes</strong> 를 살펴보면,</p>
+
+<p>JVM에서는 Data를 Heap 에 저장할 때, 8 ~ 256 bytes 의 단위의 gap 을 유지하며 저장한다.</p>
+
+<p>현재 나의 해당 설정값은, 8 bytes 이다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>java <span class="nt">-XX</span>:+PrintFlagsFinal | <span class="nb">grep</span> <span class="s2">"ObjectAlignmentInBytes"</span>
+     intx ObjectAlignmentInBytes                    <span class="o">=</span> 8                                   <span class="o">{</span>lp64_product<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Heap Memory에 Data가 올라갈 때, 8의 배수를 유지하도록 한다는 것이다.</p>
+
+<p>이 값이, 더 커질 경우 어떤 장/단점이 있는지는 구글링 자료에 많으나 이해가 되지 않았다.</p>
+
+<p>가령 위에서 살펴본 _obj Object 의 Size는 header + length + Data = 12 + 4 + 500 = 516 bytes 이다.</p>
+
+<p>Heap 에 저장될 때, 8 bytes 의 배수 단위로 Data의 정렬이 이루어져야 하므로,</p>
+
+<p><code class="language-plaintext highlighter-rouge">8 X 65 = 520 bytes</code> , 8의 65 배수로 Data가 정렬이 되어야 한다.</p>
+
+<p>그리하여, <strong>Data 정렬을 위한 gap 으로 4 bytes 를 마저 추가</strong>한 것이다.</p>
+
+<h3 id="311-shallow-size-of-bytesession">3.11 Shallow Size of byteSession</h3>
+
+<p>App에서 생성(_obj) 하여 Session에 집어넣을 때, byteSession (Session에 저장된 byte Array) 의 크기를 추적해본다.</p>
+
+<p>추적 code는 다음과 같다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>    <span class="c1">// byteSession</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"--- Layout : byteSession ---"</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Shallow : "</span> <span class="o">+</span> <span class="nc">ClassLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">byteSession</span><span class="o">).</span><span class="na">toPrintable</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Retained : "</span> <span class="o">+</span> <span class="nc">GraphLayout</span><span class="o">.</span><span class="na">parseInstance</span><span class="o">(</span><span class="n">byteSession</span><span class="o">).</span><span class="na">totalSize</span><span class="o">());</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">et</span><span class="o">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>1회 호출 시에는, _obj Data와 다르지 않다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>--- Layout : byteSession ---
+Shallow : [B object internals:
+OFF  SZ   TYPE DESCRIPTION               VALUE
+  0   8        (object header: mark)     0x00000067e900d701 (hash: 0x67e900d7; age: 0)
+  8   4        (object header: class)    0x000007a8
+ 12   4        (array length)            500
+ 16 500   byte [B.&lt;elements&gt;             N/A
+516   4        (object alignment gap)
+Instance size: 520 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+
+Retained : 520
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>2회 연속 호출 시에는,</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>--- Layout : _tmp ---
+Shallow : [B object internals:
+OFF  SZ   TYPE DESCRIPTION               VALUE
+  0   8        (object header: mark)     0x0000000000000001 (non-biasable; age: 0)
+  8   4        (object header: class)    0x000007a8
+ 12   4        (array length)            1000
+ 16 1000   byte [B.&lt;elements&gt;             N/A
+Instance size: 1016 bytes
+Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+
+Retained : 1016
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">8 X 127 = 1016 Bytes</code>, 8의 127 배수로 정렬이 완료되므로 추가 Gap data가 없다.</p>
+
+<p>3회 연속 호출 시에는,</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>--- Layout : byteSession ---
+Shallow : [B object internals:
+OFF  SZ   TYPE DESCRIPTION               VALUE
+  0   8        (object header: mark)     0x00000036a33af901 (hash: 0x36a33af9; age: 0)
+  8   4        (object header: class)    0x000007a8
+ 12   4        (array length)            1500
+ 16 1500   byte [B.&lt;elements&gt;             N/A
+1516   4        (object alignment gap)
+Instance size: 1520 bytes
+Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
+
+Retained : 1520
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>다시금 4 bytes Gap 이 추가되었다.</p>
+
+<h2 id="4-outcome">4. Outcome</h2>
+
+<p>JOL Library 를 사용하여, 특정 또는 Class 자체가 JVM Heap Memory에 차지하는 실제 Size를 추적할 수 있음을 확인했다.</p>
+
+<p>또한, Object Alignment Gap 에 대해서 알 수 있었다.</p>
+
+<h2 id="5-references">5. References</h2>
+
+<p>https://www.baeldung.com/jvm-measuring-object-sizes</p>
+
+<p>https://github.com/openjdk/jol</p>
+
+<p><a href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html">ObjectAlignmentInBytes</a></p>
+:ET
