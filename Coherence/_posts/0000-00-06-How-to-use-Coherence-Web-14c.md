@@ -92,6 +92,8 @@ Cluster Member들 간에는 HeartBeat를 주고 받는다.
 # 3. Firewall
 
 * Cluster Port (Default 7574) 는 Multicast/Unicast 에서 모두 사용되고, UDP/TCP 로 쓰인다. Coherence에 Proxy를 구성하고, Client에서 Naming Service로 Proxy를 이용할 때 Name을 검색하는 Port.
+  * Cluster Port가 Unicast 에서 사용되는 시기는, WKA(Well-Known-Addresses) 를 사용할 때다. WKA 멤버를 찾을 때, Cluster Port를 사용한다.
+
 * Death Detection 을 위해 TCP 7 (Echo port)를 사용한다.
 * 위 외에 메뉴얼상 필요한 Port는 없고, Member간의 통신 방식에 사용하는 Port를 열어주면 된다.
 
@@ -294,7 +296,7 @@ EOF
 
 ### (2) Test Application
 
-Session 을 원하는 Size만큼 생성 시키는 Application은 [Coherence-Session-Test-Application]({{ site.url }}/Coherence/Coherence-Session-Test-Application) 을 사용한다.
+Session 을 원하는 Size만큼 생성 시키는 Application은 [Coherence-Session-Test-Application]({{ site.url }}/coherence/Coherence-Session-Test-Application) 을 사용한다.
 
 
 
@@ -614,6 +616,8 @@ MBean 항목에 대한 이해를 얻은 것으로 마무리 해야 할 듯 싶�
 [WLST로 수집되는 MBean 항목 부연 설명 관련 자료](https://dhkim900331.github.io/coherence/How-To-Monitor-Coherence-Web-3#h-32-mbean-%ED%95%AD%EB%AA%A9-%EC%84%A4%EB%AA%85)
 
 [Java-Object-Layout]({{ site.url }}/programming/Java-Object-Layout)
+
+[Specifying a Cluster's Multicast Address and Port](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/setting-cluster.html#GUID-D3FDEDBF-B97A-4C8D-BEFF-AB54C9D94CB5)
 
 **Recommended Thread-count-min And Thread-count-max Values in Coherence (Doc ID 2294067.1)**
 
