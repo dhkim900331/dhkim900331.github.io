@@ -369,11 +369,12 @@ Database opened.
 # 8. User 관리
 
 ```sh
-sqlplus> alter session set "_ORACLE_SCRIPT"=true;
-sqlplus> CREATE USER "계정명" IDENTIFIED BY "비밀번호";
-sqlplus> ALTER USER "계정명" IDENTIFIED BY "변경할 비밀번호";
-sqlplus> GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW to "계정명"
-sqlplus> REVOKE <권한> from "권한을 취소할 계정명"
+sqlplus> ALTER SESSION SET "_ORACLE_SCRIPT"=true;
+sqlplus> CREATE USER weblogic IDENTIFIED BY weblogic1;
+sqlplus> ALTER USER weblogic IDENTIFIED BY weblogic1;
+sqlplus> GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW to weblogic;
+sqlplus> DROP USER  weblogic CASCADE;
+sqlplus> REVOKE <권한> FROM weblogic;
 ```
 
 
