@@ -1,4 +1,4 @@
-I"gi<h2 id="1-개요">1. 개요</h2>
+I"�h<h2 id="1-개요">1. 개요</h2>
 
 <p>Oracle DB가 필요하게 되어, 19c 설치를 하며 작성을 한다.</p>
 
@@ -543,11 +543,13 @@ Database opened.
 3
 4
 5
-</pre></td><td class="rouge-code"><pre>sqlplus&gt; alter session <span class="nb">set</span> <span class="s2">"_ORACLE_SCRIPT"</span><span class="o">=</span><span class="nb">true</span><span class="p">;</span>
-sqlplus&gt; CREATE USER <span class="s2">"계정명"</span> IDENTIFIED BY <span class="s2">"비밀번호"</span><span class="p">;</span>
-sqlplus&gt; ALTER USER <span class="s2">"계정명"</span> IDENTIFIED BY <span class="s2">"변경할 비밀번호"</span><span class="p">;</span>
-sqlplus&gt; GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW to <span class="s2">"계정명"</span>
-sqlplus&gt; REVOKE &lt;권한&gt; from <span class="s2">"권한을 취소할 계정명"</span>
+6
+</pre></td><td class="rouge-code"><pre>sqlplus&gt; ALTER SESSION SET <span class="s2">"_ORACLE_SCRIPT"</span><span class="o">=</span><span class="nb">true</span><span class="p">;</span>
+sqlplus&gt; CREATE USER weblogic IDENTIFIED BY weblogic1<span class="p">;</span>
+sqlplus&gt; ALTER USER weblogic IDENTIFIED BY weblogic1<span class="p">;</span>
+sqlplus&gt; GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW to weblogic<span class="p">;</span>
+sqlplus&gt; DROP USER  weblogic CASCADE<span class="p">;</span>
+sqlplus&gt; REVOKE &lt;권한&gt; FROM weblogic<span class="p">;</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
 <h2 id="9-기본-sql-query">9. 기본 SQL Query</h2>

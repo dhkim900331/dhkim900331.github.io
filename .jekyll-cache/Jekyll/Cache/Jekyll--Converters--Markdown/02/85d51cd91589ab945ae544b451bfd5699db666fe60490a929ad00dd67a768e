@@ -1,4 +1,4 @@
-I"L�<h2 id="1-개요">1. 개요</h2>
+I"��<h2 id="1-개요">1. 개요</h2>
 
 <p><a href="How-to-install-Coherence-Web-14c">How-to-install-Coherence-Web-14c</a> 에서 설치를 완료 했다.</p>
 
@@ -79,7 +79,11 @@
 <h2 id="3-firewall">3. Firewall</h2>
 
 <ul>
-  <li>Cluster Port (Default 7574) 는 Multicast/Unicast 에서 모두 사용되고, UDP/TCP 로 쓰인다. Coherence에 Proxy를 구성하고, Client에서 Naming Service로 Proxy를 이용할 때 Name을 검색하는 Port.</li>
+  <li>Cluster Port (Default 7574) 는 Multicast/Unicast 에서 모두 사용되고, UDP/TCP 로 쓰인다. Coherence에 Proxy를 구성하고, Client에서 Naming Service로 Proxy를 이용할 때 Name을 검색하는 Port.
+    <ul>
+      <li>Cluster Port가 Unicast 에서 사용되는 시기는, WKA(Well-Known-Addresses) 를 사용할 때다. WKA 멤버를 찾을 때, Cluster Port를 사용한다.</li>
+    </ul>
+  </li>
   <li>Death Detection 을 위해 TCP 7 (Echo port)를 사용한다.</li>
   <li>위 외에 메뉴얼상 필요한 Port는 없고, Member간의 통신 방식에 사용하는 Port를 열어주면 된다.</li>
 </ul>
@@ -354,7 +358,7 @@ localMemberId <span class="o">=</span> str<span class="o">(</span>get<span class
 
 <h4 id="2-test-application">(2) Test Application</h4>
 
-<p>Session 을 원하는 Size만큼 생성 시키는 Application은 <a href="http://localhost:4000/Coherence/Coherence-Session-Test-Application">Coherence-Session-Test-Application</a> 을 사용한다.</p>
+<p>Session 을 원하는 Size만큼 생성 시키는 Application은 <a href="http://localhost:4000/coherence/Coherence-Session-Test-Application">Coherence-Session-Test-Application</a> 을 사용한다.</p>
 
 <h4 id="3-apache-jmeter">(3) Apache JMeter</h4>
 
@@ -814,6 +818,8 @@ localMemberId <span class="o">=</span> str<span class="o">(</span>get<span class
 <p><a href="https://dhkim900331.github.io/coherence/How-To-Monitor-Coherence-Web-3#h-32-mbean-%ED%95%AD%EB%AA%A9-%EC%84%A4%EB%AA%85">WLST로 수집되는 MBean 항목 부연 설명 관련 자료</a></p>
 
 <p><a href="http://localhost:4000/programming/Java-Object-Layout">Java-Object-Layout</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/setting-cluster.html#GUID-D3FDEDBF-B97A-4C8D-BEFF-AB54C9D94CB5">Specifying a Cluster’s Multicast Address and Port</a></p>
 
 <p><strong>Recommended Thread-count-min And Thread-count-max Values in Coherence (Doc ID 2294067.1)</strong></p>
 
