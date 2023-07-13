@@ -1,8 +1,8 @@
 ---
 date: 2023-03-27 08:46:20 +0900
 layout: post
-title: "[OHS/WLPlugin] WebLogic Proxy Plugin 12cR2의 Failover 동작"
-tags: [OracleHTTPServer, OHS, Plugin, WLPugin, GET, POST, Failover, Idempotent]
+title: "[WEB/OHSWLPlugin] WebLogic Proxy Plugin 12cR2의 Failover 동작"
+tags: [WEB, OracleHTTPServer, OHS, Plugin, WLPugin, GET, POST, Failover, Idempotent]
 typora-root-url: ..
 ---
 

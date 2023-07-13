@@ -1,8 +1,8 @@
 ---
-date: 2022-04-11 12:00:04 +0900
+date: 2023-07-14 08:50:48 +0900
 layout: post
-title: "[Nginx] Install Nginx"
-tags: [Web, Nginx, Install]
+title: "[WEB/Nginx] Install Nginx"
+tags: [WEB, Nginx, Install]
 typora-root-url: ..
 ---
 

@@ -1,8 +1,8 @@
 ---
 date: 2023-03-10 08:59:30 +0900
 layout: post
-title: "[OHS] All In One Script For 12cR2"
-tags: [OracleHTTPServer, OHS, Apache, Install, WLST, Jython]
+title: "[WEB/OHS] All In One Script For 12cR2"
+tags: [WEB, OracleHTTPServer, OHS, Apache, Install, WLST, Jython]
 typora-root-url: ..
 ---
 

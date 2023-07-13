@@ -1,8 +1,8 @@
 ---
 date: 2023-06-23 08:57:06 +0900
 layout: post
-title: "[OHS/Common] KeepAlive"
-tags: [OracleHTTPServer, OHS, Apache, Common, WLPlugin, Plugin]
+title: "[WEB/Apache] KeepAlive"
+tags: [WEB, OracleHTTPServer, OHS, Apache, Common, WLPlugin, Plugin]
 typora-root-url: ..
 ---
 

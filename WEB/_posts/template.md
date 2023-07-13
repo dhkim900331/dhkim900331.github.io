@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "[OHS/] "
-tags: [OracleHTTPServer, OHS, Apache, ]
+title: "[WEB/] "
+tags: [WEB, ]
 typora-root-url: ..
 ---
 

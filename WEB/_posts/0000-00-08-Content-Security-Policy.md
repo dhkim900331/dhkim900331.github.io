@@ -1,8 +1,8 @@
 ---
 date: 2023-03-03 08:54:19 +0900
 layout: post
-title: "[OHS] Content Security Policy Header"
-tags: [OracleHTTPServer, OHS, Apache, Header, CSP]
+title: "[WEB/Apache] Content Security Policy Header"
+tags: [WEB, OracleHTTPServer, OHS, Apache, Header, CSP]
 typora-root-url: ..
 ---
 

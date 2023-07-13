@@ -1,8 +1,8 @@
 ---
 date: 2023-03-08 08:39:33 +0900
 layout: post
-title: "[OHS] Mutex And Semaphore"
-tags: [OracleHTTPServer, OHS, Apache, Mutex, Semaphore]
+title: "[WEB/Apache] Mutex And Semaphore"
+tags: [WEB, OracleHTTPServer, OHS, Apache, Mutex, Semaphore]
 typora-root-url: ..
 ---
 

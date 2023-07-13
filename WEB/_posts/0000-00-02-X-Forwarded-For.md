@@ -1,8 +1,8 @@
 ---
 date: 2022-05-09 15:45:29 +0900
 layout: post
-title: "[OHS] X-Forwarded-For"
-tags: [OracleHTTPServer, OHS, Apache, XFF, RewriteRule]
+title: "[WEB/Apache] X-Forwarded-For"
+tags: [WEB, OracleHTTPServer, OHS, Apache, XFF, RewriteRule]
 typora-root-url: ..
 ---
 
