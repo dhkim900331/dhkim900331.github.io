@@ -1,0 +1,437 @@
+I"�l<h2 id="1-overview">1. Overview</h2>
+
+<p>WebLogic 12cR2 환경에서 Keep Alive 가 어떻게 동작하는지 살펴본다.
+<!-- by inserted tag-br.sh -->
+<br /><br /></p>
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<p>2023-06-29 기준으로 아래의 Java program으로 HTTP Urlconnection을 통해 hello.jsp 호출</p>
+
+<p>그리고 1분 Sleep 이후 world.jsp 호출을 하도록 했는데,</p>
+
+<p>Managed Server가 기본 30 초 이상의 KeepAlive Timeout이 설정되어 있음에도</p>
+
+<p>대략 10초 안에 ESTABLISHED가 TIME_WAIT으로 변경된다.</p>
+
+<p>HttpUrlConnection 에서 채널이 사라지는 듯한 느낌이다.</p>
+
+<p>크롬 브라우저를 통해 호출 시에는, 크롬 브라우저를 종료하면 바로 사라지는 것을 보아 유추하였다.</p>
+
+<p>소스 프로그램에서 Keep Alive Header가 제대로 들어가지 않은 것인지..</p>
+
+<p>호출 대상을 OHS 등으로 변경해보아야 할 것 같고, 또는 Header에 값이 안들어간 것인지..</p>
+
+<p>아니면 WLS keepAlive 설정이기본값 30초라고 되어있지만, 5초 처럼 동작한 바가 있다.</p>
+
+<p>(기본 설정환경에서)</p>
+
+<p>버그 인지.. PSU 적용 후 해봐야 하는지..</p>
+
+<p>아래는 위 환경에서 쓰인 약간 다른 두 개의 프로그램 코드</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.InputStreamReader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.HttpURLConnection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Java2WAS</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">callCount</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+    
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">callCount</span><span class="o">&gt;</span><span class="n">i</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="n">httpGetConnection</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+        <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">){</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">httpGetConnection</span><span class="o">(</span><span class="nc">String</span> <span class="nc">UrlData</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//http 통신을 하기위한 객체 선언 실시</span>
+    <span class="no">URL</span> <span class="n">url</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="nc">HttpURLConnection</span> <span class="n">conn</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="c1">//http 통신 요청 후 응답 받은 데이터를 담기 위한 변수</span>
+    <span class="nc">String</span> <span class="n">responseData</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">responseCode</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="nc">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="c1">//파라미터로 들어온 url을 사용해 connection 실시</span>
+      <span class="n">url</span> <span class="o">=</span> <span class="k">new</span> <span class="no">URL</span><span class="o">(</span><span class="nc">UrlData</span><span class="o">);</span>
+      <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="nc">HttpURLConnection</span><span class="o">)</span> <span class="n">url</span><span class="o">.</span><span class="na">openConnection</span><span class="o">();</span>
+
+      <span class="c1">//http 요청에 필요한 타입 정의 실시</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestMethod</span><span class="o">(</span><span class="s">"GET"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Accept"</span><span class="o">,</span> <span class="s">"text/plain"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Connection"</span><span class="o">,</span> <span class="s">"keep-alive"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Keep-alive"</span><span class="o">,</span> <span class="s">"timeout=60, max=99"</span><span class="o">);</span>
+
+      <span class="c1">//http 요청 실시</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">connect</span><span class="o">();</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 방식 : "</span><span class="o">+</span><span class="s">"GET"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 타입 : "</span><span class="o">+</span><span class="s">"text/plain"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 타입 : "</span><span class="o">+</span><span class="s">"keep-alive"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 주소 : "</span><span class="o">+</span><span class="nc">UrlData</span><span class="o">);</span>
+
+      <span class="c1">//http 요청 후 응답 받은 데이터를 버퍼에 쌓는다</span>
+      <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">conn</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">(),</span> <span class="s">"UTF-8"</span><span class="o">));</span>
+      <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuffer</span><span class="o">();</span>
+      <span class="k">while</span> <span class="o">((</span><span class="n">responseData</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">responseData</span><span class="o">);</span> <span class="c1">//StringBuffer에 응답받은 데이터 순차적으로 저장 실시</span>
+      <span class="o">}</span>
+
+    <span class="c1">//http 요청 응답 코드 확인 실시</span>
+    <span class="n">responseCode</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">conn</span><span class="o">.</span><span class="na">getResponseCode</span><span class="o">());</span>
+    <span class="n">log</span><span class="o">(</span><span class="s">"http 응답 코드 : "</span><span class="o">+</span><span class="n">responseCode</span><span class="o">);</span>
+    <span class="n">log</span><span class="o">(</span><span class="s">"http 응답 데이터 : "</span><span class="o">+</span><span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+      <span class="c1">//http 요청 및 응답 완료 후 BufferedReader를 닫아줍니다</span>
+      <span class="k">try</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">br</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="nc">String</span> <span class="n">log</span><span class="o">){</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"[INFO] "</span> <span class="o">+</span> <span class="n">log</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<!-- by inserted tag-br.sh -->
+<p><br /><br /></p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.InputStreamReader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.HttpURLConnection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Java2WAS</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">httpGetConnection</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">httpGetConnection</span><span class="o">()</span> <span class="o">{</span>
+    <span class="c1">//http 통신을 하기위한 객체 선언 실시</span>
+    <span class="nc">String</span> <span class="nc">UrlData</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="no">URL</span> <span class="n">url</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="nc">HttpURLConnection</span> <span class="n">conn</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="c1">//http 통신 요청 후 응답 받은 데이터를 담기 위한 변수</span>
+    <span class="nc">String</span> <span class="n">responseData</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="nc">String</span> <span class="n">responseCode</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="nc">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="c1">//파라미터로 들어온 url을 사용해 connection 실시</span>
+      <span class="nc">UrlData</span> <span class="o">=</span> <span class="s">"http://wls.local:8002/SessionApp/hello.jsp"</span><span class="o">;</span>
+      <span class="n">url</span> <span class="o">=</span> <span class="k">new</span> <span class="no">URL</span><span class="o">(</span><span class="nc">UrlData</span><span class="o">);</span>
+      <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="nc">HttpURLConnection</span><span class="o">)</span> <span class="n">url</span><span class="o">.</span><span class="na">openConnection</span><span class="o">();</span>
+
+      <span class="c1">//http 요청에 필요한 타입 정의 실시</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestMethod</span><span class="o">(</span><span class="s">"GET"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Accept"</span><span class="o">,</span> <span class="s">"text/plain"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Connection"</span><span class="o">,</span> <span class="s">"keep-alive"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Keep-alive"</span><span class="o">,</span> <span class="s">"timeout=10, max=99"</span><span class="o">);</span>
+
+      <span class="c1">//http 요청 실시</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">connect</span><span class="o">();</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 방식 : "</span><span class="o">+</span><span class="s">"GET"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 타입 : "</span><span class="o">+</span><span class="s">"text/plain"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 타입 : "</span><span class="o">+</span><span class="s">"keep-alive"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 주소 : "</span><span class="o">+</span><span class="nc">UrlData</span><span class="o">);</span>
+
+      <span class="c1">//http 요청 후 응답 받은 데이터를 버퍼에 쌓는다</span>
+      <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">conn</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">(),</span> <span class="s">"UTF-8"</span><span class="o">));</span>
+      <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuffer</span><span class="o">();</span>
+      <span class="k">while</span> <span class="o">((</span><span class="n">responseData</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">responseData</span><span class="o">);</span> <span class="c1">//StringBuffer에 응답받은 데이터 순차적으로 저장 실시</span>
+      <span class="o">}</span>
+
+    <span class="c1">//http 요청 응답 코드 확인 실시</span>
+    <span class="n">responseCode</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">conn</span><span class="o">.</span><span class="na">getResponseCode</span><span class="o">());</span>
+    <span class="n">log</span><span class="o">(</span><span class="s">"http 응답 코드 : "</span><span class="o">+</span><span class="n">responseCode</span><span class="o">);</span>
+    <span class="n">log</span><span class="o">(</span><span class="s">"http 응답 데이터 : "</span><span class="o">+</span><span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    
+    
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"sleep done..."</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+    
+    
+    <span class="c1">// 같은 Channel에 다른 페이지 호출</span>
+    
+      <span class="c1">//파라미터로 들어온 url을 사용해 connection 실시</span>
+      <span class="nc">UrlData</span> <span class="o">=</span> <span class="s">"http://wls.local:8002/SessionApp/world.jsp"</span><span class="o">;</span>
+      <span class="n">url</span> <span class="o">=</span> <span class="k">new</span> <span class="no">URL</span><span class="o">(</span><span class="nc">UrlData</span><span class="o">);</span>
+      <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="nc">HttpURLConnection</span><span class="o">)</span> <span class="n">url</span><span class="o">.</span><span class="na">openConnection</span><span class="o">();</span>
+
+      <span class="c1">//http 요청에 필요한 타입 정의 실시</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestMethod</span><span class="o">(</span><span class="s">"GET"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Accept"</span><span class="o">,</span> <span class="s">"text/plain"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Connection"</span><span class="o">,</span> <span class="s">"keep-alive"</span><span class="o">);</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Keep-alive"</span><span class="o">,</span> <span class="s">"timeout=10, max=99"</span><span class="o">);</span>
+
+      <span class="c1">//http 요청 실시</span>
+      <span class="n">conn</span><span class="o">.</span><span class="na">connect</span><span class="o">();</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 방식 : "</span><span class="o">+</span><span class="s">"GET"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 타입 : "</span><span class="o">+</span><span class="s">"text/plain"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 타입 : "</span><span class="o">+</span><span class="s">"keep-alive"</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"http 요청 주소 : "</span><span class="o">+</span><span class="nc">UrlData</span><span class="o">);</span>
+
+      <span class="c1">//http 요청 후 응답 받은 데이터를 버퍼에 쌓는다</span>
+      <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">conn</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">(),</span> <span class="s">"UTF-8"</span><span class="o">));</span>
+      <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuffer</span><span class="o">();</span>
+      <span class="k">while</span> <span class="o">((</span><span class="n">responseData</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">responseData</span><span class="o">);</span> <span class="c1">//StringBuffer에 응답받은 데이터 순차적으로 저장 실시</span>
+      <span class="o">}</span>
+
+    <span class="c1">//http 요청 응답 코드 확인 실시</span>
+    <span class="n">responseCode</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">conn</span><span class="o">.</span><span class="na">getResponseCode</span><span class="o">());</span>
+    <span class="n">log</span><span class="o">(</span><span class="s">"http 응답 코드 : "</span><span class="o">+</span><span class="n">responseCode</span><span class="o">);</span>
+    <span class="n">log</span><span class="o">(</span><span class="s">"http 응답 데이터 : "</span><span class="o">+</span><span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    
+    
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">15</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>
+      <span class="n">log</span><span class="o">(</span><span class="s">"sleep done..."</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+      <span class="c1">//http 요청 및 응답 완료 후 BufferedReader를 닫아줍니다</span>
+      <span class="k">try</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">br</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">log</span><span class="o">(</span><span class="nc">String</span> <span class="n">log</span><span class="o">){</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"[INFO] "</span> <span class="o">+</span> <span class="n">log</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<!-- by inserted tag-br.sh -->
+<p><br /><br /></p>
+<h2 id="3-references">3. References</h2>
+
+<p>https://bugs.openjdk.org/browse/JDK-8278067</p>
+:ET

@@ -17,7 +17,7 @@ WLST으로 Thread Dump Client 만들기
 
 ## 2.1 wlfullclient.jar
 
-[여기]({{ site.url }}/weblogic/weblogic_tip_14)참고하여 wlfullclient.jar 준비
+[여기]({{ site.url }}/weblogic/fullclient_jar) 참고하여 wlfullclient.jar 준비
 
 
 
