@@ -10,10 +10,7 @@ typora-root-url: ..
 
 * 커피 브랜드 프로모션 지원 중에, High CPU Thread 추적을 위해 만든 스크립트
 
-
-
-
-# 2. 설명
+<br><br># 2. 설명
 
 ```bash
 #!/bin/bash

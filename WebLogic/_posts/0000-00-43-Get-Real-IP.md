@@ -12,10 +12,7 @@ WebLogic AP 단에서 앞단 WebServer IP 또는 L4, 또는 Client IP를 얻어�
 
 이를 위해 WL-Proxy-Client-IP Header 를 제공한다.
 
-
-
-
-# 2. 설명
+<br><br># 2. 설명
 
 ## 2.1 Client Real IP
 
@@ -25,8 +22,7 @@ WebLogic AP 단에서 앞단 WebServer IP 또는 L4, 또는 Client IP를 얻어�
 
 웹로직에서는 `request.getRemoteAddr();` 메서드로 클라이언트 아이피를 얻을 수 있다.
 
-
-
+<br>
 > 물론 위의 설정은, 앞단 (L4) 에서부터 Client IP를 backend 로 넘겨줄 수 있도록 하는 `X-Forwarded-For` 헤더가 제공되어야 한다.
 >
 > 아무런 Header가 없는 상황에서 WAS나, WEB의 기능만으로 없던 Client IP를 끄집어내는게 아니다.

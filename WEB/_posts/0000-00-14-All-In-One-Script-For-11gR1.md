@@ -10,10 +10,7 @@ typora-root-url: ..
 
 Oracle HTTP Server 11gR1 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
 
-
-
-
-
+<br><br>
 # 2. 설명
 
 All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한다.
@@ -21,10 +18,7 @@ All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한
 - baseInstance
 - Worker 2ea
 
-
-
-
-
+<br><br>
 # 3. Script
 
 ## 3.1 Engine
@@ -52,8 +46,7 @@ COMP_PORT_2=10180
 COMP_SSL_2=10543
 COMP_ADMIN_2=10199
 
-
-# (1) ResponseFile
+<br># (1) ResponseFile
 cat << EOF > ${BASEDIR}/rsp
 [ENGINE]
 Response File Version=1.0.0.0.0
@@ -70,15 +63,13 @@ SECURITY_UPDATES_VIA_MYORACLESUPPORT=true
 SKIP_SOFTWARE_UPDATES=true
 EOF
 
-
-# (2) Inventory
+<br># (2) Inventory
 cat << EOF > ${BASEDIR}/loc
 inventory_loc=${INVENTORY_PATH}
 inst_group=${INVENTORY_GROUP}
 EOF
 
-
-# (3) Installation
+<br># (3) Installation
 cd ${BASEDIR} && jar -xf ${OHS_INSTALL_FILE}
 chmod 700 ${BASEDIR}/Disk1/runInstaller
 chmod 700 ${BASEDIR}/Disk1/install/*/runInstaller
@@ -87,10 +78,7 @@ chmod 700 ${BASEDIR}/Disk1/install/*/unzip
 ${BASEDIR}/Disk1/runInstaller -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
 
-
-
-
-
+<br><br>
 ## 3.2 Instance
 
 ```sh
@@ -98,10 +86,7 @@ ${BASEDIR}/Disk1/runInstaller -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${
 ${ENGINE_PATH}/opmn/bin/opmnctl createinstance -oracleInstance ${INSTANCE_HOME} -instanceName ${INSTANCE_NAME} -adminRegistration OFF
 ```
 
-
-
-
-
+<br><br>
 ## 3.3 Component
 
 ```sh
@@ -114,10 +99,7 @@ ${ENGINE_PATH}/opmn/bin/opmnctl createcomponent -oracleInstance ${INSTANCE_HOME}
 # ${ENGINE_PATH}/opmn/bin/opmnctl deletecomponent -oracleInstance ${INSTANCE_HOME} -componentName <componentName> -componentType OHS
 ```
 
-
-
-
-
+<br><br>
 ## 3.4 Create Component Scripts (start, stop, ps)
 
 ```sh
@@ -128,15 +110,13 @@ BASEDIR=$(realpath $(dirname $0))
 ${BASEDIR}/bin/opmnctl startall
 EOF
 
-
-cat << "EOF" > ${INSTANCE_HOME}/stop.sh
+<br>cat << "EOF" > ${INSTANCE_HOME}/stop.sh
 #!/usr/bin/bash
 BASEDIR=$(realpath $(dirname $0))
 ${BASEDIR}/bin/opmnctl stopall
 EOF
 
-
-cat << "EOF" > ${INSTANCE_HOME}/status.sh
+<br>cat << "EOF" > ${INSTANCE_HOME}/status.sh
 #!/usr/bin/bash
 BASEDIR=$(realpath $(dirname $0))
 ${BASEDIR}/bin/opmnctl status -l

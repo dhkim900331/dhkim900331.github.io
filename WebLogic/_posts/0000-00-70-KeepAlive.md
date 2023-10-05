@@ -10,14 +10,10 @@ typora-root-url: ..
 
 WebLogic 12cR2 환경에서 Keep Alive 가 어떻게 동작하는지 살펴본다.
 
-
-
-
-
+<br><br>
 # 2. Descriptions
 
-
-
+<br>
 2023-06-29 기준으로 아래의 Java program으로 HTTP Urlconnection을 통해 hello.jsp 호출
 
 그리고 1분 Sleep 이후 world.jsp 호출을 하도록 했는데,
@@ -26,14 +22,12 @@ Managed Server가 기본 30 초 이상의 KeepAlive Timeout이 설정되어 있�
 
 대략 10초 안에 ESTABLISHED가 TIME_WAIT으로 변경된다.
 
-
-
+<br>
 HttpUrlConnection 에서 채널이 사라지는 듯한 느낌이다.
 
 크롬 브라우저를 통해 호출 시에는, 크롬 브라우저를 종료하면 바로 사라지는 것을 보아 유추하였다.
 
-
-
+<br>
 소스 프로그램에서 Keep Alive Header가 제대로 들어가지 않은 것인지..
 
 호출 대상을 OHS 등으로 변경해보아야 할 것 같고, 또는 Header에 값이 안들어간 것인지..
@@ -42,12 +36,10 @@ HttpUrlConnection 에서 채널이 사라지는 듯한 느낌이다.
 
 (기본 설정환경에서)
 
-
-
+<br>
 버그 인지.. PSU 적용 후 해봐야 하는지..
 
-
-
+<br>
 아래는 위 환경에서 쓰인 약간 다른 두 개의 프로그램 코드
 
 ```java
@@ -131,10 +123,7 @@ public class Java2WAS {
 }
 ```
 
-
-
-
-
+<br><br>
 ```java
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -258,10 +247,7 @@ public class Java2WAS {
 }
 ```
 
-
-
-
-
+<br><br>
 # 3. References
 
 https://bugs.openjdk.org/browse/JDK-8278067

@@ -10,14 +10,12 @@ typora-root-url: ..
 
 해당 버전에서, Reaper Thread 성능 개선을 위해 Thread Tuning 을 살펴본다.
 
-
-
+<br>
 # 2. 설명
 
 주기적 Session을 Scan하여 Timeout 된 객체는 invalidate 하여 IsValid=False로 변경하는 Reaper Thread에 대해서, 심플한 부하 테스트를 진행하여 성능 개선이 이뤄지는지 살펴본다.
 
-
-
+<br>
 # 3. 테스트 환경
 
 * OS : Oracle Linux Server release 8.7
@@ -25,8 +23,7 @@ typora-root-url: ..
 * WebLogic 11g
 * Coherence 3.7.1.22 * WEB SPI
 
-
-
+<br>
 ## 3.1 Test #1
 
 * Test 기본 조건
@@ -37,8 +34,7 @@ typora-root-url: ..
   * 평균 MBean 데이터가 있기 때문에, 
     120초 동안 부하 인입이 완료된 후, SessionUpdate(생성된 세션 개수)와, ReapedSessionsTotal(Invalidate 된 세션 개수)이 거의 근접한 경우의 통계치를 얻는다.
 
-
-
+<br>
 ### 3.1.1 Case #1
 
 SessionUpdates 13826
@@ -48,8 +44,7 @@ AverageReapedSessions 4608
 MaxReapedSessions 11733
 AverageReapDuration 40136
 
-
-
+<br>
 ### 3.1.2 Case #2
 
 SessionUpdates 15274
@@ -59,8 +54,7 @@ AverageReapedSessions 5091
 MaxReapedSessions 9828
 AverageReapDuration 48317
 
-
-
+<br>
 ### 3.1.3 Case #3
 
 SessionUpdates 14596
@@ -70,8 +64,7 @@ AverageReapedSessions 4865
 MaxReapedSessions 8248
 AverageReapDuration 56418
 
-
-
+<br>
 ## 3.2 Test #2 (테스트 조건 계승)
 
 * Work Manager
@@ -97,8 +90,7 @@ AverageReapDuration 56418
       </self-tuning>
     ```
 
-
-
+<br>
 ### 3.2.1 Case #1
 
 SessionUpdates 15412
@@ -108,8 +100,7 @@ AverageReapedSessions 3855
 MaxReapedSessions 7750
 AverageReapDuration 23510
 
-
-
+<br>
 ### 3.2.2 Case #2
 
 SessionUpdates 15177
@@ -119,8 +110,7 @@ AverageReapedSessions 3794
 MaxReapedSessions 7876
 AverageReapDuration 21855
 
-
-
+<br>
 ### 3.2.3 Case #3
 
 SessionUpdates 16188
@@ -130,8 +120,7 @@ AverageReapedSessions 3237
 MaxReapedSessions 7870
 AverageReapDuration 43719
 
-
-
+<br>
 Case #1, #2와 달리, 수치가 좀 비약적으로 높거나 한데, 당시 시스템에 다음과 같은 에러 메시지가 발생하였다.
 
 ```
@@ -145,8 +134,7 @@ Exception in thread "[ACTIVE] ExecuteThread: '0' for queue: 'weblogic.kernel.Def
         at weblogic.work.ExecuteThread.run(ExecuteThread.java:224)
 ```
 
-
-
+<br>
 확인 결과, `MaxThreadsConstraint-0` 의 최대치에 돌입한 경우, 잔여 작업이 Queue에 8192 만큼 도달하는 경우 경고 메시지가 발생하도록 Design 되었다고 한다. (WorkManager 사용 시 단점..?)
 
 해당 에러가 발생하는 시점마다 통계치가 이상하여, 인스턴스 Shutdown 또한 제대로 되지 않는 등의 side-effect 가 있다.
@@ -164,12 +152,10 @@ _queue-size(16384) 또한 config.xml 적용했으나, Exception 없이 8192 제�
 <Warning> <WorkManager> <BEA-002943> <Maximum Threads Constraint "MaxThreadsConstraint-0" queue for work manager "wm/CoherenceWorkManager" reached maximum capacity of 8,192 elements. Please consider setting a larger queue size for the maximum threads constraint.>
 ```
 
-
-
+<br>
 Case #4~#5은 패치 이후 테스트이다.
 
-
-
+<br>
 ### 3.2.4 Case #4
 
 SessionUpdates 18158
@@ -179,8 +165,7 @@ AverageReapedSessions 4539
 MaxReapedSessions 8306
 AverageReapDuration 48220
 
-
-
+<br>
 ### 3.2.5 Case #5
 
 SessionUpdates 16329
@@ -190,15 +175,13 @@ AverageReapedSessions 5442
 MaxReapedSessions 8284
 AverageReapDuration 96043
 
-
-
+<br>
 ## 3.3 Test #3 (계승)
 
 * Test #2 에서 WorkManager Queue 이슈로 인한 것인지, 간혹 결과, 특히 AverageReapDuration 이 이상한 경우가 발생을 하여, 추가로 MaxThreads를 대폭 늘린 후 테스트 해본다. (queue-size가 늘어지나지 않으므르...)
   * `MaxThreadsConstraint-0 is 10`
 
-
-
+<br>
 ### 3.3.1 Case #1
 
 SessionUpdates 15434
@@ -208,8 +191,7 @@ AverageReapedSessions 5145
 MaxReapedSessions 8117
 AverageReapDuration 17412
 
-
-
+<br>
 ### 3.3.2 Case #2
 
 SessionUpdates 16252
@@ -219,16 +201,14 @@ AverageReapedSessions 5417
 MaxReapedSessions 8363
 AverageReapDuration 32363
 
-
-
+<br>
 아래 메시지 발생을 한 시점이며, AvgReapDuration이 치솟았다.
 
 ```
 <Warning> <WorkManager> <BEA-002943> <Maximum Threads Constraint "MaxThreadsConstraint-0" queue for work manager "wm/CoherenceWorkManager" reached maximum capacity of 8,192 elements. Please consider setting a larger queue size for the maximum threads constraint.>
 ```
 
-
-
+<br>
 이 환경에서, 동일한 테스튼 의미가 없는 것 같다.
 
 Queue-Size를 늘리는 것을 계속 고민하였지만, 위 테스트 시나리오를 보다시피 대략 2분 동안 항시 1만6천개 정도의 세션을 생성했는데, 이는 1초당 133 개의 세션 생성이 되는 것과 같다.
@@ -237,16 +217,14 @@ Queue-Size를 늘리는 것을 계속 고민하였지만, 위 테스트 시나�
 
 오히려 접속되는 사용자를 낮추어 queue 이슈를 제거하여 순수 Reaper Thread 성능만 보는것이 맞는것 같다.
 
-
-
+<br>
 ## 3.4 Test #4 (계승)
 
 * Test 기본 조건
   * Jmeter, 120 Secs, 20 Users
     * 50 Users가 2분간 1만6천개인것을 감안하면, 20 Users는 Queue-Size를 넘지 않도록 반토막이 안될 것이다.
 
-
-
+<br>
 ### 3.4.1 Case #1
 
 SessionUpdates 5484
@@ -256,8 +234,7 @@ AverageReapedSessions 1144
 MaxReapedSessions 3060
 AverageReapDuration 7832
 
-
-
+<br>
 ### 3.4.2 Case #2
 
 SessionUpdates 6437
@@ -267,14 +244,12 @@ AverageReapedSessions 1533
 MaxReapedSessions 2689
 AverageReapDuration 13008
 
-
-
+<br>
 ## 3.5 Test #5 (계승, 변경)
 
 * `MaxThreadsConstraint-0 is 4` 로 복원하여 진행한다.
 
-
-
+<br>
 ### 3.5.1 Case #1
 
 SessionUpdates 5850
@@ -284,8 +259,7 @@ AverageReapedSessions 1634
 MaxReapedSessions 2678
 AverageReapDuration 7244
 
-
-
+<br>
 ### 3.5.2 Case #2
 
 SessionUpdates 6596
@@ -295,10 +269,7 @@ AverageReapedSessions 1973
 MaxReapedSessions 3080
 AverageReapDuration 16475
 
-
-
-
-
+<br><br>
 # 4. Outcome
 
 테스트 환경의 조건이 꽤나 조잡한 것 같다.

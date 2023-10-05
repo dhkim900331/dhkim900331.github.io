@@ -5,8 +5,7 @@ title: "[WebLogic] WLST으로 Thread Dump"
 tags: [Middleware, WebLogic, WLST, ThreadDump]
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 WLST로 Thread dump를 뜨는 스크립트
 

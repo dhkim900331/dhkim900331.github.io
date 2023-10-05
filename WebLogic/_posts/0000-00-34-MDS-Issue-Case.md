@@ -5,12 +5,10 @@ tags: [Middleware, WebLogic, MultiDataSource]
 date: 2022-02-07 17:42:10 +0900
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 Multidatasource 사용 중인 고객사에서 발생한 장애
 
-
-# 2. 현상
+<br># 2. 현상
 데이터소스 이름과 설정 내용
 ```
 ADataSource_1 (MultiDataSource; Failover, DB#1, DB#2)
@@ -40,8 +38,7 @@ ADataSource_2 re-enabled.
 
 (6). 더 이상 재현되지 않고, 의심가는 부분이 발견되지 않아 가진 로그만으로 해결 불가능.
 
-
-# 3. 해결
+<br># 3. 해결
 ## 3.1 해결을 위해 참고한 문서들
 ### (1). MultiDatasource에서 장애를 인지하고, Failover 시키는 메커니즘.
 
@@ -63,8 +60,7 @@ AP(Logic)에서 문제의 Connection을 close(con.close();) 하고 새로운 연
 여전히 No Fail-Over for In-Use Connections 문제는 발생할 수 있다.
 다만 TAF 기능을 통해 DB-tier에서의 Failover(rac) 를 기대해볼 수만 있다.
 
-
-### (2). MultiDataSource 의 Failover 동작 메커니즘
+<br>### (2). MultiDataSource 의 Failover 동작 메커니즘
 
 > _<https://docs.oracle.com/middleware/1213/wls/JDBCA/jdbc_multidatasources.htm#JDBCA220>_
 > Connection Request Routing Enhancements When a Generic Data Source Fails : 일반 데이터소스 실패 시, Disabled 하여 서비스 라우팅 성능 향상이라는 원론적인 설명

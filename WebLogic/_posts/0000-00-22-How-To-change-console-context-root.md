@@ -6,13 +6,11 @@ tags: [Middleware, WebLogic, consoleapp, context, root]
 typora-root-url: ..
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 consoleapp context-root 다르게 변경 방법
 
-
-
+<br>
 # 2. 설명
 
 ## 2.1 consoleapp 다른 이름으로 복제
@@ -21,8 +19,7 @@ consoleapp context-root 다르게 변경 방법
 cp ${WL_HOME}/server/lib/consoleapp ${WL_HOME}/server/lib/consoleapp_gtplus
 ```
 
-
-
+<br>
 ## 2.2 consoleapp_gtplus context-root 변경
 
 ```sh
@@ -40,14 +37,12 @@ cp ${WL_HOME}/server/lib/consoleapp ${WL_HOME}/server/lib/consoleapp_gtplus
 
 > consolehelp 모듈은 지우고, console 모듈의 context-root를 변경.
 
-
-
+<br>
 ## 2.3 consoleapp_gtplus 를 AdminServer에 deploy
 
 http://ip:port/console_gtplus 접속
 
-
-
+<br>
 ## 2.4 기타
 
 어드민 콘솔 페이지가, http://../console  ,  http://../console_gtplus 두개 이므로..

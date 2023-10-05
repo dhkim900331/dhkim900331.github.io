@@ -6,45 +6,39 @@ tags: [Middleware, WebLogic, OPatch, BSU]
 typora-root-url: ..
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 BSU, OPatch, Tool Upgrade 정리
 
-
-
+<br>
 # 2. Patch 전에는 백업이 필수다.
 
 오라클 공식문서에서는 ORACLE_HOME 백업을 권고한다.
 
 아래에서 설명할 예시 환경은 다음과 같이 지정하자.
 
-
-
+<br>
 WLS11gR1 :
 
  \- 오라클 제품 홈 (ORACLE_HOME) : /sw/weblogic/11gR1
 
  \- 웹로직 엔진 홈 (WL_HOME) : /sw/weblogic/11gR1/wlserver_10.3
 
-
-
+<br>
 WLS12cR1 :
 
  \- 오라클 제품 홈 (ORACLE_HOME) : /sw/weblogic/12cR1
 
  \- 웹로직 엔진 홈 (WL_HOME) : /sw/weblogic/12cR1/wlserver
 
-
-
+<br>
 위에서 말한 ORACLE_HOME 백업 하려고 하면,
 
 대게 DOMAIN_HOME (웹로직 도메인) 이 아래에 같이 위치한 경우가 있으므로,
 
 다음의 명령어로 백업을 하자.
 
-
-
+<br>
 예) 12cR1 의 DOMAIN_HOME을 제외한, ORACLE_HOME 백업
 
 ```sh
@@ -52,15 +46,13 @@ mkdir /backupdir
 cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
 ```
 
-
-
+<br>
 # 3. BSU
 
 * bsu.sh 의 최대 Heap Memory는 2GB 이상 늘려주어야 OOME 를 피한다.
 * HP 장비에서는 `MEM_ARGS="-d64"`옵션을 추가한다.
 
-
-
+<br>
 ## 3.1 command
 
 * 패치 설치/삭제/확인 명령어는 다음의 각 줄에 대응한다.
@@ -77,8 +69,7 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
 
 > BSU 패치는 일반적으로 1시간 잡고 진행할 정도로, 느리며 아래에서 BSU 툴을 Patch 하면 빨라진다.
 
-
-
+<br>
 ## 3.2 BSU Tool Patch
 
 * WebLogic 10.3.6 이하의 버전들은 BSU 를 3.3으로 업그레이를 사전에 진행해야 한다.
@@ -118,8 +109,7 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
 
   > 거의 1분 이내에 저 경로 인벤토리를 생성해준다.
 
-
-
+<br>
 ### 4.2 command
 
 * 패치 설치/삭제/확인 명령어는 다음의 각 줄에 대응한다.
@@ -146,8 +136,7 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
 
   이런 사소하지만 발생하면 절대 찾을 수 없을것 같은 이슈를 위해 위 옵션 사용을 습관화 해야 한다.
 
-
-
+<br>
 ### 4.2 OPatch Tool Patch
 
 * 12cR2 psu 17년 중순?? 부터 OPatch 13.9.2.0.0 을 13.9.4.0.0 으로 업그레이드 해야 한다.
@@ -156,14 +145,12 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
 
   > 위 문서 도입 부분에 [Patch 28186730](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?parent=DOCUMENT&sourceId=1587524.1&patchId=28186730) 을 안내하고 있음
 
-
-
+<br>
 # 5. Trouble Shooting
 
 * 아래 트러블 슈팅은, 실제 고객사 OPatch 에러를 정리하였다.
 
-
-
+<br>
 ## 5.1 기존 패치 롤백 시
 
 ```
@@ -185,8 +172,7 @@ ORACLE_HOME/.patch_storage 아래에는 웹로직에 걸려 있는 패치 디렉
 
 > patch_storage 폴더 복구 방법은 없음
 
-
-
+<br>
 ## 5.2 신규 패치 적용 시
 
 ```
@@ -209,6 +195,5 @@ opatch 가 compDef.xml 로 현재 웹로직과 패치 파일 비교를 수행해
 
 문서를 확인한다. (XX저축은 solution 2번에 해당되었음)
 
-
-
+<br>
 OPatch apply or rollback fails with com.oracle.cie.gdr.libraries.LibraryException: com.oracle.cie.gdr.utils.GdrException: Failed to apply xml diff to component definition error in WebLogic PSU (문서 ID 2088228.1)

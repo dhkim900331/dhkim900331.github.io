@@ -13,10 +13,7 @@ typora-root-url: ..
   * 수 많은 덤프의 유연하게 변화하는 내용을 단순 스크립트로 볼 수 없다.
   * 그냥 참고용이다~
 
-
-
-
-# 2. 설명
+<br><br># 2. 설명
 
 ```bash
 # Thread Dump파일명* 으로 일괄 검색
@@ -50,14 +47,10 @@ done
 >
 > Line 18. `catalina-exec` Thread 명 밑에 Thread `State` 가 나오므로 +1 하여 본다.
 
-
-
-
-
+<br><br>
 ---
 
-
-
+<br>
 Thread Dump 를 자동으로 뜨려면...
 
 ```bash

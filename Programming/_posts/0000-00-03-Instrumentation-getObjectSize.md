@@ -12,10 +12,7 @@ Instrumentation 의 getObjectSize를 통해 Object 의 Size를 조사하는 방�
 
 Java bytecode에 개입할 수 있는 Instrumentation Class의 getObjectSize method를 통해서 Object의 Size를 조사하는 방법을 소개한다.
 
-
-
-
-
+<br><br>
 # 2. ObjectSizeAgent
 
 getObjectSize 를 수행하는 ObjectSizeAgent App은 javaagent 로 심어져야 한다.
@@ -32,8 +29,7 @@ $ tree /sw/app/ObjectSizeAgent/
 └── ObjectSizeAgent.java
 ```
 
-
-
+<br>
 ## 2.1 compile.sh
 
 편의를 위해 compile script를 만들었다.
@@ -43,14 +39,10 @@ javac ObjectSizeAgent.java
 jar cvfm ObjectSizeAgent.jar MANIFEST.MF ObjectSizeAgent.class
 ```
 
-
-
+<br>
 java 를 compile 하고 ObjectSizeAgent.jar 에 MANIFEST.MF와 class를 packaging 한다.
 
-
-
-
-
+<br><br>
 ## 2.2 MANIFEST.MF
 
 생략가능하다.
@@ -59,10 +51,7 @@ java 를 compile 하고 ObjectSizeAgent.jar 에 MANIFEST.MF와 class를 packagin
 Premain-Class: ObjectSizeAgent
 ```
 
-
-
-
-
+<br><br>
 ## 2.3 ObjectSizeAgent.java
 
 ```java
@@ -84,18 +73,14 @@ public class ObjectSizeAgent {
 }
 ```
 
-
-
-
-
+<br><br>
 # 3. My App
 
 javaagent로 등록된 ObjectSizeAgent.jar 에서 getObjectSize method를 호출하여 특정 Object의 Size를 알 수 있다.
 
 나에게는 Session을 다루는 Servlet 이 있으며, 여러 Size를 계산할 필요가 있었다.
 
-
-
+<br>
 ## 3.1 SessionServlet.java
 
 Servlet code는 아래와 같다.
@@ -143,8 +128,7 @@ public class SessionServlet extends HttpServlet {
     log += "ObjectSizeAgent.getObjectSize(session) = " + ObjectSizeAgent.getObjectSize(session) + "\r\n";
     System.out.println(log);
 
-
-    final long  MEGABYTE = 1024L * 1024L;
+<br>    final long  MEGABYTE = 1024L * 1024L;
     long heapSize = Runtime.getRuntime().totalMemory() / MEGABYTE;
     long heapMaxSize = Runtime.getRuntime().maxMemory() / MEGABYTE;
     long heapFreeSize = Runtime.getRuntime().freeMemory() / MEGABYTE;
@@ -159,14 +143,10 @@ public class SessionServlet extends HttpServlet {
 }
 ```
 
-
-
+<br>
 ObjectSizeAgent.getObjectSize() method를 통해서 Size를 inspect 하고 있다.
 
-
-
-
-
+<br><br>
 ## 3.2 compile.sh
 
 여기서도 편의를 위해 compile script를 사용하고 있다.
@@ -180,14 +160,10 @@ cd /sw/app/cohSessionApp/WEB-INF
 javac src/*.java -d classes/
 ```
 
-
-
+<br>
 Weblogic 14c에 배포되는 특성이 있으며, classpath에 Agent jar가 있다.
 
-
-
-
-
+<br><br>
 # 4. Weblogic
 
 Weblogic에 javaagent를 등록하여 기동한다.
@@ -196,20 +172,15 @@ Weblogic에 javaagent를 등록하여 기동한다.
 -javaagent:/sw/app/ObjectSizeAgent/ObjectSizeAgent.jar
 ```
 
-
-
+<br>
 이외 별달리 할 것은 없다.
 
-
-
-
-
+<br><br>
 # 5. Test
 
 App을 호출하면 Session에 담기려는 Size, Session data 자체의 Size가 return 된다.
 
-
-
+<br>
 호출 예시
 
 ```
@@ -226,19 +197,16 @@ heapMaxSize (MB) = 2967
 heapSize (MB) = 2307
 ```
 
-
-
+<br>
 특이사항으로는, 나의 App은 반복 호출 시 더 큰 Object를 Session에 저장하는데
 
 getObjectSize로 확인해도 항상 24bytes 를 유지하는 모습이 관찰된다.
 
-
-
+<br>
 이는 getObjectSize는 Object의 [shallow size](https://www.baeldung.com/jvm-measuring-object-sizes)를 return 하기 때문이라며,,
 
 공식자료는 찾지 못했다.
 
-
-
+<br>
 deep size 확인을 위해서는, JOL(Java Object Layout) 3rd library 를 활용해야 될 것으로 보인다.
 

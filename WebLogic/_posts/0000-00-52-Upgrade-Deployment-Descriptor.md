@@ -5,8 +5,7 @@ title: "[WebLogic] WEB-INF(web.xml, weblogic.xml) 의 버전 업그레이드"
 tags: [Middleware, WebLogic, Upgraded, WebInf]
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 WEB-INF(web.xml, weblogic.xml) 의 버전 업그레이드
 
 # 2. 설명

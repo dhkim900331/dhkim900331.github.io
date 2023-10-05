@@ -6,13 +6,11 @@ tags: [Middleware, WebLogic, JSSE, SSL]
 typora-root-url: ..
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 JSSE 및 SSL 관련
 
-
-
+<br>
 # 2. 설명
 
 ~ WebLogic 10.3.2 : Certicom SSL + SHA1 만 가능.

@@ -5,25 +5,21 @@ title: "[RHCSA] Swap 파티셔닝"
 tags: [Linux, RHCSA, Swap, GPT, MBR, parted]
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 RHCSA 과정을 준비하면서, Swap파티셔닝을 정리한다.
 
 fdisk, gdisk 를 먼저 공부했지만, parted 가 너무 편리하여 parted로 정리한다.
 
-
-
+<br>
 _Swap이 아닌 일반 스토리지는 [여기를 클릭]({{ site.url }}/rhcsa/StoragePartitioning)_
 
-
-
+<br>
 # 2. Swap
 
 일반 스토리지 단계에서부터 이어서 진행한다.
 
-
-
+<br>
 ```bash
 # parted /dev/vdb print
 Model: Virtio Block Device (virtblk)
@@ -38,8 +34,7 @@ Number  Start   End     Size    File system  Name    Flags
 
 > 현재 장치 정보는 위와 같은 상태
 
-
-
+<br>
 ## 2.1 파티션 생성
 
 ```bash
@@ -52,8 +47,7 @@ Information: You may need to update /etc/fstab.
 
 > swap1, swap2 이름의 linux-swap 속성, 각각 512MB 크기를 2개 만들었다.
 
-
-
+<br>
 ```bash
 # parted /dev/vdb print                                  
 Model: Virtio Block Device (virtblk)
@@ -70,16 +64,14 @@ Number  Start   End     Size    File system  Name    Flags
 
 > print로 확인
 
-
-
+<br>
 ``` bash
 # udevadm settle 
 ```
 
 > 여기서는 헷갈리지 않고 해당 명령어를 잘 사용했다 ^^
 
-
-
+<br>
 ```bash
 # mkswap /dev/vdb2
 Setting up swapspace version 1, size = 489 MiB (512749568 bytes)
@@ -94,8 +86,7 @@ no label, UUID=00eb7f1a-1082-49cb-bd04-8b1d8a48e7a4
 >
 > 여기도 UUID를 잘 어딘가에 기록해둔다.
 
-
-
+<br>
 ```bash
 # parted /dev/vdb print
 Model: Virtio Block Device (virtblk)
@@ -112,8 +103,7 @@ Number  Start   End     Size    File system     Name    Flags
 
 > print로 swap 까지 잘 확인되는 모습
 
-
-
+<br>
 ## 2.2 Swap 활성화
 
 ```bash
@@ -125,8 +115,7 @@ UUID=00eb7f1a-1082-49cb-bd04-8b1d8a48e7a4 swap swap pri=10 0 0
 >
 > pri=10은 가장 먼저 사용하는 우선순위 개념.
 
-
-
+<br>
 ```bash
 # swapon --show
 # swapon /dev/vdb2
@@ -145,8 +134,7 @@ NAME      TYPE      SIZE USED PRIO
 >
 > /dev/vdb3 의 PRIO는 -3을 나온다. reboot 해야 적용된다.
 
-
-
+<br>
 ```bash
 # systemctl reboot
 ...

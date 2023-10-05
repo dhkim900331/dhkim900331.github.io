@@ -5,15 +5,13 @@ title: "[RHCSA] LVM 확장"
 tags: [Linux, RHCSA]
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 특정 마운트 지점의 공간이 부족하다는 가정하에
 
 확장 방법을 알아본다.
 
-
-
+<br>
 # 2. 설명
 
 ## 2.1 현재 상황
@@ -26,8 +24,7 @@ Filesystem                               Size  Used Avail Use% Mounted on
 
 > /data Total Size가 395MB 이다.
 
-
-
+<br>
 ```bash
 # mount | grep /data
 /dev/mapper/servera_01_vg-servera_01_lv on /data type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
@@ -37,12 +34,10 @@ Filesystem                               Size  Used Avail Use% Mounted on
 >
 > 이 부분은 그냥 쳐본거지, 여기서 얻어야만 하는 정보는 없다.
 
-
-
+<br>
 /data 의 총 크기를 최소 700MB로 만들기 위해서는 **_대략 400MB_**를 추가 할당해주어야 한다.
 
-
-
+<br>
 ## 2.2 볼륨 그룹 확장과 추가 파티셔닝
 
 ```bash
@@ -67,8 +62,7 @@ Filesystem                               Size  Used Avail Use% Mounted on
 
 > /data 가 마운트된 장치의 논리볼륨(LV)은 _servera_01_vg_ 볼륨 그룹에서 할당되었다.
 
-
-
+<br>
 ```bash
 # vgdisplay servera_01_vg
   --- Volume group ---
@@ -99,8 +93,7 @@ Filesystem                               Size  Used Avail Use% Mounted on
 >
 > 여기 Free Size가 충분했다면 볼륨 그룹 확장이 필요 없다.
 
-
-
+<br>
 ```bash
 # parted /dev/vdb print                                 
 Model: Virtio Block Device (virtblk)
@@ -116,8 +109,7 @@ Number  Start   End    Size   File system  Name     Flags
 
 > 디스크 장치 크기는 5369MB로 여유가 있다.
 
-
-
+<br>
 ```bash
 # parted /dev/vdb mkpart primary 540MB 900MB
 # parted /dev/vdb set 3 lvm on
@@ -126,8 +118,7 @@ Number  Start   End    Size   File system  Name     Flags
 
 > 추가로 파티션을 생성하엿다.
 
-
-
+<br>
 ```bash
 # parted /dev/vdb print                                 
 Model: Virtio Block Device (virtblk)
@@ -142,8 +133,7 @@ Number  Start   End    Size   File system  Name     Flags
  3      540MB   900MB  360MB               primary  lvm
 ```
 
-
-
+<br>
 ```bash
 # pvcreate /dev/vdb3
 # vgextend servera_01_vg /dev/vdb3
@@ -151,8 +141,7 @@ Number  Start   End    Size   File system  Name     Flags
 
 > /dev/vdb3 장치를 볼륨으로 만들고, 기존 _servera_01_vg_ 그룹에 할당하였다.
 
-
-
+<br>
 ```bash
 # vgdisplay
   --- Volume group ---
@@ -179,8 +168,7 @@ Number  Start   End    Size   File system  Name     Flags
 
 > Free Size가 444 MB로 크게 늘어났다.
 
-
-
+<br>
 ## 2.3 논리 볼륨 확장
 
 ```bash
@@ -191,8 +179,7 @@ Number  Start   End    Size   File system  Name     Flags
 >
 > 명령어로 가상 디스크 장치(LV)를 확장한다.
 
-
-
+<br>
 ```bash
 # xfs_growfs /data
 ```
@@ -201,8 +188,7 @@ Number  Start   End    Size   File system  Name     Flags
 >
 > _**ext4 의 경우에는 resize2fs 를 사용한다.**_
 
-
-
+<br>
 ```bash
 # df -h /data
 Filesystem                               Size  Used Avail Use% Mounted on

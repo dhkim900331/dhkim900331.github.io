@@ -14,8 +14,7 @@ WebLogic Server 14c 기준에서 Client 측에 TLS Protocol을 어떻게 다루�
 
 [How-To-Enable-TLS-Client ](How-To-Enable-TLS-Client)에서는 WLS가 Client가 되었을 경우를 설명한다.
 
-
-
+<br>
 # 2. Inbound TLS
 
 다음 옵션으로 TLS를 받아들이는 Server측의 Protocol은 TLSv1.2 이상이 된다.
@@ -25,20 +24,17 @@ USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.security.properties=${DOMAIN_HOME}/java.s
 USER_MEM_ARGS="${USER_MEM_ARGS} -Dweblogic.security.SSL.minimumProtocolVersion=TLSv1.2"
 ```
 
-
-
+<br>
 # 3. Outbound TLS
 
 WLS 가 Client가 되어 Outbound TLS 통신은 여러가지 환경에 따라, 살펴보아야 하는것 같다.
 
-
-
+<br>
 ## 3.1 URL openStream
 
 URL class의 openStream으로 Outbound TLS 호출을 할 경우를 살펴본다.
 
-
-
+<br>
 호출 어플리케이션
 
 ```jsp
@@ -46,8 +42,7 @@ URL class의 openStream으로 Outbound TLS 호출을 할 경우를 살펴본다.
 <%@ page import="java.net.URL" %>
 <%@ page import="weblogic.net.http.HttpsURLConnection" %>
 
-
-<%
+<br><%
     String url = "https://wls.local:8442/testApp/index.jsp";
     URL u = new URL(url);
     HttpsURLConnection httpsUrlConnection = (HttpsURLConnection) u.openConnection();
@@ -63,16 +58,14 @@ URL class의 openStream으로 Outbound TLS 호출을 할 경우를 살펴본다.
 
 ```
 
-
-
+<br>
 Outbound TLSv1.2 를 활성화 해야 한다.
 
 ```shell
 USER_MEM_ARGS="${USER_MEM_ARGS} -Djdk.tls.client.protocols=TLSv1.2"
 ```
 
-
-
+<br>
 어플리케이션 호출 시에, 정상적인 경우 아래처럼 표시된다.
 
 ```
@@ -81,8 +74,7 @@ Cipher Suite : TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 Hello World
 ```
 
-
-
+<br>
 `-Djdk.tls.client.protocols=TLSv1.1` 설정 시에는 아래처럼 표시된다.
 
 ```
@@ -96,14 +88,12 @@ javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabl
 
 ```
 
-
-
+<br>
 [weblogic.security.SSL.minimumProtocolVersion 시스템 속성 사용](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/secmg/ssl_version.html#GUID-CAC4495F-B8A1-4F62-A9C2-358DC717A830) 의 아래 메모에 따르면, `weblogic.security.SSL.minimumProtocolVersion`옵션과, `jdk.tls.client.protocols` 옵션은 같이 적용할 수 없다고 나와 있다. 
 
 그렇기 때문에, 인스턴스를 2개로 분리하여 테스트 해야 한다.
 
-
-
+<br>
 [오라클 diagnosing-tls-ssl-and-https 게시물](https://blogs.oracle.com/java/post/diagnosing-tls-ssl-and-https) 의 "**JSSE 조정 매개변수**" 에 따르면,
 
 HttpsURLConnection 클래스, URL 클래스의 openStream 을 사용할 때는 `https.protocols` 옵션을 사용을 안내한다.
@@ -114,28 +104,24 @@ HttpsURLConnection 클래스, URL 클래스의 openStream 을 사용할 때는 `
 
 다시 살펴보니, Java 7 이전 버전에서 Client의 Outbound TLS 통신일 경우에 적용하는 옵션으로 보여진다.
 
-
-
+<br>
 내 테스트 환경에 따른, [JDK 8 Security Enhancements](https://docs.oracle.com/javase/8/docs/technotes/guides/security/enhancements-8.html) 문서를 보면 Java SE 8 부터 `jdk.tls.client.protocols` 옵션을 가이드하고 있다. 그러므로 위 블로그의 내용이 아니라 공식 문서에 의견대로 옵션을 사용하는것이 올바라 보인다.
 
-
-
+<br>
 ## 3.2 HttpsUrlConnection (SSLContext)
 
 해당 부분은 URL openStream과 동일할 것이므로,
 
 SSLContext 부분옵션으로 테스트 한다.
 
-
-
+<br>
 HTTPS URL은 호출 시마다 독립적인 채널(?)이 사용된다고 한다.
 
 이 채널마다 서로 다른 TLS protocol을 적용하기 위하여 SSLContext를 이번 테스트에 녹여보았다.
 
 _다만, 맨 아래에서 설명하겠지만 SSLContext에 원하는 protocol이 사실상 구현되지 않았다._
 
-
-
+<br>
 다음의 [어플리케이션](https://goddaehee.tistory.com/268)을 사용하고,
 
 SSLContext 를 사용하여 특정 TLS version을 강제 지정한다.
@@ -206,22 +192,19 @@ try {
 
 ```
 
-
-
+<br>
 [Java 공식 언급 - Enabling TLSv1.3 by default on the client](https://www.java.com/en/configure_crypto.html) 에 따르면 HttpsUrlConnection과 URL.openStream() 사용 시에 어떤 옵션을 사용해야 하는지를 알려주고 있다.
 
 ~~그러나, 해당 설명과 다르게 정상/비정상 동작을 보이고 있어 더 확인이 필요한 상황이다.~~
 
-
-
+<br>
 위 어플리케이션으로 테스트시에, `url.openConnection()` Return으로 `weblogic.net.http.SOAPHttpsURLConnection`을 반환하여 에러가 발생했다. 
 
 ```
 java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection cannot be cast to javax.net.ssl.HttpsURLConnection
 ```
 
-
-
+<br>
 위 해결책으로 다음의 공식 자료가 Google snipets 으로 나오나
 
 > **java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection을 javax.net.ssl.HttpsURLConnection으로 캐스트할 수 없음(Doc ID 2332805.1)**
@@ -234,8 +217,7 @@ java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection cannot be
 -DUseSunHttpHandler=true
 ```
 
-
-
+<br>
 위 옵션으로 실행 시, 추가로 인증서 옵션이 필요하였다.
 
 아래는 전체 옵션이다.
@@ -248,8 +230,7 @@ java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection cannot be
 -Djavax.net.ssl.keyStoreType=JKS
 ```
 
-
-
+<br>
 `jdk.tls.client.protocols` 값이 Outbound Target인 Server의 TLS Version과 맞지 않으면 다음과 같이 에러가 발생한다.
 
 * Client WAS is TLSv1.1
@@ -259,8 +240,7 @@ java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection cannot be
 javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)
 ```
 
-
-
+<br>
 `jdk.tls.client.protocols` 값이 Outbound Target인 Server의 TLS Version과 교집합으로 설정될 경우.
 
 * Client WAS is TLSv1.1 ~ 1.3
@@ -268,8 +248,7 @@ javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabl
 
 위 상황에서, 어플리케이션을 `https.jsp?protocol=TLSv1.1` 으로 호출할 경우, 현재 URL 호출에 대해서만 특별히 TLSv1.1 으로 강제 지정하길 원하였지만, 어플리케이션 문제인지, 혹은 지금 알지 못하는 다른 환경에 대한 문제인지...
 
-
-
+<br>
 위 어플리케이션 통신 시 정상적인 경우 `javax.net.debug=all` 을 살펴보면
 
 * Client Hello
@@ -283,8 +262,7 @@ javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabl
   "client version"      : "TLSv1.2"
 ```
 
-
-
+<br>
 Client Hello의 지원되는 버전이 확인된다.
 
 `jdk.tls.client.protocols` 값으로 설정한 TLSv1.1 은 안보인다...
@@ -294,8 +272,7 @@ Client Hello의 지원되는 버전이 확인된다.
       "versions": [TLSv1.3, TLSv1.2]
 ```
 
-
-
+<br>
 Server Hello는
 
 ```
@@ -308,8 +285,7 @@ Server Hello는
       "selected version": [TLSv1.3]
 ```
 
-
-
+<br>
 # 4. Outcome
 
 Outbound SSL 통신시, WAS 솔루션마다 지원하는 옵션이 있음이 확인된다.

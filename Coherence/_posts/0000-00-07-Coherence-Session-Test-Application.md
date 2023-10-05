@@ -10,10 +10,7 @@ typora-root-url: ..
 
 Coherence 14.1 기준에서 Test 용 Application
 
-
-
-
-
+<br><br>
 # 2. 어플리케이션
 
 ## 2.1 구조
@@ -32,10 +29,7 @@ $ tree /sw/app/cohSessionApp/
 3 directories, 4 files
 ```
 
-
-
-
-
+<br><br>
 ## 2.2 Servlet
 
 ```jsp
@@ -86,16 +80,12 @@ $ tree /sw/app/cohSessionApp/
 %>
 ```
 
-
-
+<br>
 addedByte 크기의 Bytes Array Object를 addedNum 갯수만큼 ArrayList 로 만들고, listSession 명명의 Session 객체로 저장한다.
 
 재호출 시마다, Session 객체가 동일한 과정으로 점차 커지게 된다.
 
-
-
-
-
+<br><br>
 ## 2.3 Deployment Descriptor
 
 web.xml
@@ -113,8 +103,7 @@ web.xml
 </web-app>
 ```
 
-
-
+<br>
 `wm/CoherenceWorkManager` 를 WebLogic WorkManager로 등록해야 한다.
 
 ```xml
@@ -136,8 +125,7 @@ web.xml
   </self-tuning>
 ```
 
-
-
+<br>
 weblogic.xml
 
 ```xml
@@ -159,10 +147,7 @@ weblogic.xml
 </weblogic-web-app>
 ```
 
-
-
-
-
+<br><br>
 ## 2.4 Cache Config
 
 session-cache-config.xml 파일은 coherence-web.jar 에서 기본값을 Loaded

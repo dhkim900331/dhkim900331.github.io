@@ -16,8 +16,7 @@ OHS 제품에 적용될 수 있는 (`Applies to: Oracle HTTP Server`) 항목만 
 
 Index는 존재하지만 내용은 Empty 할 수 있다.
 
-
-
+<br>
 # 2. Connections
 
 Connect 관련 옵션들에 대해서 살펴본다.
@@ -26,16 +25,14 @@ Connect 관련 옵션들에 대해서 살펴본다.
 
 추후 필요시에 업데이트한다.
 
-
-
+<br>
 # 3. Debugging
 
 ## 3.1 DebugConfigInfo
 
 참고, [6. Proxy Plugin](Configure-OHS-12cR2#h-6-proxy-plugin)
 
-
-
+<br>
 # 4. FileCaching
 
 POST 데이터 전송 시 (보통 파일업로드),
@@ -44,8 +41,7 @@ FileSize가 2048Bytes를 초과하는 경우에 동작을 설정한다.
 
 공식 메뉴얼에 잘 나와 있으나, 실제로 어떻게 동작하는지 Debug Log로 살펴본다.
 
-
-
+<br>
 ## 4.1 FileCaching OFF
 
 Plugin 옵션을 다음과 같이 설정한다.
@@ -55,8 +51,7 @@ FileCaching OFF
 WLTempDir <path>/WLTempDir
 ```
 
-
-
+<br>
 * 100 Bytes 크기의 파일을 POST 전송
 
   ```
@@ -70,16 +65,14 @@ WLTempDir <path>/WLTempDir
 
   **2048 Bytes 보다 작아 `in memory` 로 Plugin 에서 처리한다.**
 
-
-
+<br>
 * 1000 Bytes
 
   ```
   Going to get the post data of size=1197 clength=0
   Post data length: 1197 (in memory)
 
-
-
+<br>
 * 1851 Bytes
 
   ```
@@ -87,8 +80,7 @@ WLTempDir <path>/WLTempDir
   Post data length: 2048 (in memory)
   ```
 
-
-
+<br>
 * 1852 Bytes
 
   ```
@@ -104,8 +96,7 @@ WLTempDir <path>/WLTempDir
 
   Chunk Size인 8192 Bytes로 나누어서 전송한다. (postponing?)
 
-
-
+<br>
 ## 4.2 FileCaching ON
 
 Plugin 옵션을 다음과 같이 설정한다.
@@ -115,8 +106,7 @@ FileCaching ON
 WLTempDir <path>/WLTempDir
 ```
 
-
-
+<br>
 * 1852 Bytes
 
   ```
@@ -131,8 +121,7 @@ WLTempDir <path>/WLTempDir
 
   `_post_674040_0` 파일의 전송과 삭제 주기가 워낙 빨라 파일 확보를 할 수가 없다.
 
-
-
+<br>
 * 16384 Bytes
 
   ```
@@ -147,8 +136,7 @@ WLTempDir <path>/WLTempDir
 
   그렇게 동작하지는 않은 것 같다.
 
-
-
+<br>
 * 10 MB
 
   ```
@@ -174,8 +162,7 @@ FileCaching ON의 경우, WLTempDir에 임시 파일이 생성 된다는 로그�
 
 혹은 [테스트 방식](https://www.theserverside.com/news/1365153/HttpClient-and-FileUpload)이 잘못되었을 수 있다.
 
-
-
+<br>
 # 5. Idemponent
 
 멱등성; 항상 언제든지 결과가 같은 성질을 갖는다는 사전적인 의미가 있다.
@@ -184,8 +171,7 @@ WLIOTimeoutSecs 를 초과하는 작업 또는 READ_ERROR_FROM_SERVER 코드를 
 
 실패한 작업으로 간주하여 다른 Alive instance로 Failover 할 수 있다.
 
-
-
+<br>
 ## 5.1 Idempotent OFF
 
 ```mod_wl_ohs.conf
@@ -193,8 +179,7 @@ Idempotent OFF
 WLIOTimeoutSecs 11
 ```
 
-
-
+<br>
 * Thread.sleep(11000) 실행
 
   ```
@@ -218,8 +203,7 @@ WLIOTimeoutSecs 11
 
   이후 Failover에 대해서는 Idempotent OFF 이므로 Ignored 되었다.
 
-
-
+<br>
 ## 5.2 Idempotent ON
 
 ```mod_wl_ohs.conf
@@ -227,8 +211,7 @@ Idempotent OFF
 WLIOTimeoutSecs 11
 ```
 
-
-
+<br>
 * Thread.sleep(11000) 실행
 
   ```
@@ -273,16 +256,14 @@ WLIOTimeoutSecs 11
 
   또한, 0 of 5 의 의미는 ConnectTimeoutSecs 설정과 관련이 있습니다.
 
-
-
+<br>
 # 6. MaxPostSize
 
 ```
 MaxPostSize 1048576
 ```
 
-
-
+<br>
 * 1MB Post
 
   ```shell
@@ -290,8 +271,7 @@ MaxPostSize 1048576
   HTTP/1.1 100 Continue
   ```
 
-
-
+<br>
 * 10MB Post
 
   ```shell

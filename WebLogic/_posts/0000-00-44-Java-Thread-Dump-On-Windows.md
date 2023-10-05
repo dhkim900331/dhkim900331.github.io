@@ -6,8 +6,7 @@ tags: [Middleware, WebLogic, Java, Thread, Dump, Windows]
 typora-root-url: ..
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 * WebLogic Console 메뉴에서 Thread Dump 생성
 * jdk의 jstack tool 사용하여 Thread Dump 생성
 
@@ -29,34 +28,29 @@ tail -f %LOG_DIR%\%SERVER_NAME%.out
 
 > 일반적인 기동 스크립트의 예시일 뿐
 
-
-
+<br>
 (2). startAdmin.bat (새로운 스크립트 파일)
 
 ```shell
 C:\Windows\System32\cmd.exe /k startAdmin.cmd
 ```
 
-
-
+<br>
 (3). startAdmin.bat 실행
 
 ![JavaThreadDumpOnWindows_1](/../assets/posts/images/01-WebLogic/JavaThreadDumpOnWindows/JavaThreadDumpOnWindows_1.png)
 
-
-
+<br>
 (4). `Ctrl + Break` 일괄 작업을 끝내지 않음. `N`
 
 ![JavaThreadDumpOnWindows_2](/../assets/posts/images/01-WebLogic/JavaThreadDumpOnWindows/JavaThreadDumpOnWindows_2.png)
 
-
-
+<br>
 (5). `tail -f LOG 실행` (startAdmin.bat 으로 실행하지 않은 경우, tail 명령어로 다시 log를 띄울 수 없습니다.)
 
 ![JavaThreadDumpOnWindows_3](/../assets/posts/images/01-WebLogic/JavaThreadDumpOnWindows/JavaThreadDumpOnWindows_3.png)
 
-
-
+<br>
 (6). 위 화면에도 일부 보이듯, log에 Dump가 기록되어 있습니다.
 
 * startAdmin.cmd 의 /B 옵션 : 옵션 다음 명령줄을 백그라운드 실행

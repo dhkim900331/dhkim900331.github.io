@@ -10,10 +10,7 @@ typora-root-url: ..
 
 WLS 8 이상에서 ID/PWD 변경 방법 가이드
 
-
-
-
-# 2. 설명
+<br><br># 2. 설명
 
 ## 2.1 WebLogic 8
 
@@ -35,14 +32,12 @@ WLS 8 이상에서 ID/PWD 변경 방법 가이드
 
 (7). boot.properties 생성 후 적용
 
-
-
+<br>
 [참고 사이트](http://peoplesoft.ittoolbox.com/groups/technical-functional/peopletools-l/weblogic-81-administrator-password-reset-2765106)
 
 * 콘솔에서 비밀번호 변경은 `콘솔 - Realm` 메뉴 이용하면 된다.
 
-
-
+<br>
 ## 2.2 WebLogic 9 <=
 
 (1). 모든 인스턴스 종료

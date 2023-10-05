@@ -10,8 +10,7 @@ typora-root-url: ..
 
 * 고객사 솔루션(대표적으로 WAS) 로그 점검 시, 일괄 점검할 수 있는 스크립트
 
-
-
+<br>
 # 2. Scripts
 
 ## 2.1 run.sh
@@ -46,8 +45,7 @@ find ${LOG_HOME} -type f -name "*out*" ! -name "*.gz" \
 >
 > 여기서 `out` 은, 표준출력 로그를 의미하였지만, 공통된 단어를 넣어서 적절히 사용한다.
 
-
-
+<br>
 ## 2.2 grep.list
 
 ```
@@ -61,8 +59,7 @@ Too many open files
 >
 > OutOfMemoryError, Dumping heap to는 관련된 하나의 메시지다.
 
-
-
+<br>
 ## 2.3 ignore.list
 
 ```
@@ -89,5 +86,4 @@ at .*java.*)
 > ... 등등 ...
 > [INFO] ~~ 관련 메시지 들
 
-
-
+<br>

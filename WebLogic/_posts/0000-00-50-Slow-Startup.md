@@ -10,10 +10,7 @@ typora-root-url: ..
 
 기동이 느린 경우
 
-
-
-
-# 2. 설명
+<br><br># 2. 설명
 
 config.xml에 `listen-address`가 blank라면 아이피 주소를 기입한다.
 

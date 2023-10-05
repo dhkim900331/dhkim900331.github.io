@@ -5,12 +5,10 @@ tags: [Ansible, Install, playbook]
 date: 2022-02-15 12:37:56 +0900
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 Ansible installation 후에 Sample Playbook testing.
 
-
-# 2. 테스트
+<br># 2. 테스트
 hosts 파일에 테스트용 VM 을 나열하고,
 /tmp 에 디렉토리 생성 playbook
 /tmp 에 생성한 디렉토리 삭제 playbook

@@ -10,10 +10,7 @@ typora-root-url: ..
 
 WTC 설정 가이드
 
-
-
-
-# 2. 설명
+<br><br># 2. 설명
 
 ## 2.1 테스트 환경
 
@@ -26,65 +23,56 @@ WTC 설정 가이드
 
 > Tuxedo 입장에서, WDOM02는 Remote Access Point ID 다.
 
-
-
+<br>
 ## 2.2 웹로직 설정
 
 (1). 콘솔 > 상호 운용성 > WTC 서버 > 새로 만들기 > WTC Server-0
 
 ![WTCConfigration_1](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_1.png)
 
-
-
+<br>
 (2). 새로 만든 WTC Server-0 대상 M1 설정
 
 ![WTCConfigration_2](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_2.png)
 
-
-
+<br>
 (3). WTC Server-0 > 로컬 AP
 
 ![WTCConfigration_3](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_3.png)
 
 > `netstat -an | grep 8011`으로 할당되지 않은 포트 검증하고 진행
 
-
-
+<br>
 (4). WTC Server-0 > 원격 AP
 
 ![WTCConfigration_4](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_4.png)
 
-
-
+<br>
 (5). WTC Server-0 > Import
 
 ![WTCConfigration_5](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_5.png)
 
 > Tuxedo 에서 WebLogic 쪽 서비스 호출할 때 이름이다.
 
-
-
+<br>
 ## 2.3 턱시도 서비스 호출
 
 (1). 웹로직 기동 시 8001, 8011 port 확인된다.
 
 ![WTCConfigration_6](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_6.png)
 
-
-
+<br>
 (2). 웹로직 Log에서 TDOM 연결 되었음이 확인된다.
 
 ![WTCConfigration_7](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_7.png)
 
-
-
+<br>
 (3). 아래 JSP를 호출 시 TOUPPER 서비스는 잘 호출되나,
 정의되지 않은 `tpcall("LTOUPPER")` 호출하면 에러 발생한다.
 
 ![WTCConfigration_8](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_8.png)
 
-
-
+<br>
 ```jsp
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -106,8 +94,7 @@ public void log(String text){
 	System.out.println(utilDate.toString() + " : " + text);
 }
 
-
-public String Toupper(String toConvert)
+<br>public String Toupper(String toConvert)
 		   throws TPException, TPReplyException
 		{
 		     Context ctx;
@@ -157,16 +144,14 @@ public String Toupper(String toConvert)
 		     return (myData.toString());
 		}
 
-
-%>
+<br>%>
 
 <form name="testform" action="/test/testWTC.jsp" method="post">
   Input Text to convert : <input type="text" size="30" name="aaa" value="lower_case_character">
     <input type="submit" name="submitButton" value="submit">
 </form>
 
-
-<%
+<br><%
 	
 	if ( request.getParameter("aaa") != null) {
 		String toConvert = request.getParameter("aaa");
@@ -176,11 +161,9 @@ public String Toupper(String toConvert)
 
 	
 
-
-</body>
+<br></body>
 </html>
 
 ```
 
-
-
+<br>

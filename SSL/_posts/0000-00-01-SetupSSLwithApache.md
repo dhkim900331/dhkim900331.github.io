@@ -20,22 +20,19 @@ typora-root-url: ..
 
 이러한 상황에 맞닥뜨렸을 때, 기본적으로 어떠한 방법을 통해 SSL 인증서에 문제가 없는지 테스트를 진행해보겠습니다.
 
-
-
+<br>
 * 이슈가 발생한 고객사의 환경은, 우리가 많이 어디선가 접한, 일반적인 REST API 호출 부분에서의 SSL 인증 문제 였습니다.
   * WAS AP(Tomcat) 에서 REST API 를 이용하여 Remote AP(Apache)를 호출합니다.
   * WAS AP(Tomcat) / Remote AP(Apache) 양쪽간의 SSL 인증서가 동일하게 교체 되었지만 API 호출 시 SSL 인증 거부 이슈 발생 했습니다.
 
-
-
+<br>
 * 다음의 Step 을 진행하며, SSL 인증서가 유효하게 적용되고 동작하고 있는지 검증하는 것을 알 수 있습니다.
   * 사설/비-사설 SSL인증서의 검증 방법 등을 확인
   * 사설(Self-Signed) SSL 인증서를 Remote AP(Apache)에 Setup
   * HTTPS 통신을 하며, SSL 인증서 검증
   * WAS AP(Tomcat)에 SSL 클라이언트 인증서를 Setup. HTTPS 연결을 수행.
 
-
-
+<br>
 # 2. SSL 인증서 생성
 
 * 인증서의 생성이 되고, 위치할 `CERT` 디렉토리를 만들어줍니다.
@@ -45,8 +42,7 @@ $ mkdir /tmp/self_signed_cert
 $ CERT=/tmp/self_signed_cert
 ```
 
-
-
+<br>
 ## 2.1 Private Key
 
 ```bash
@@ -63,8 +59,7 @@ Verifying - Enter pass phrase for /tmp/self_signed_cert/private.key: (dhkim)
 >
 > 패스워드를 사용하지 않으려면 `-des3` 옵션을 제거 합니다.
 
-
-
+<br>
 ## 2.2 CSR
 
 * 제가 직접 생성한 (혹은 고객) 인증서는 최상위 기관(root) 에 제출해야 합니다.
@@ -76,16 +71,14 @@ $ openssl req -new -key ${CERT}/private.key -out ${CERT}/root.csr \
 -subj "/C=KR/ST=Seoul/L=Seocho-gu/O=OSCI/OU=Cloud Migration/CN=dhkim.com"
 ```
 
-
-
+<br>
 ## 2.3 Self-Signed
 
 * 우리가 사용하는 Chrome 과 같은 Browser에는 아래에서 언급하는 *신뢰할 수 있는 상위 기관*들의 인증서가 이미 포함되어 있습니다.
 
   자체 서명한 인증서를 사용하면, Browser에 설치되어 있는 인증서로 유효한지 확인을 합니다.
 
-
-
+<br>
 * 위에서 만든 개인키(`private.key`)와 제출하는 인증 요청서(`root.csr`)을 가지고, 직접 서명할 수 있습니다.
 
   내 자신이 최상위 기관이 되어, 스스로를 서명하는 것입니다.
@@ -106,8 +99,7 @@ Getting Private key
 Enter pass phrase for /tmp/self_signed_cert/private.key: (dhkim)
 ```
 
-
-
+<br>
 # 3. 인증서 적용
 
 ```bash
@@ -132,14 +124,12 @@ SSLCertificateKeyFile       ${CERT}/private.key
 
 > PC의 hosts 파일에 `dhkim.com` 을 등록하고, 접속할 수 있습니다.
 
-
-
+<br>
 * 접속 시 아래와 같이 완료되었습니다.
 
 ![SetupSSLwithApache_1](/../assets/posts/images/13-SSL/SetupSSLwithApache/SetupSSLwithApache_1.png)
 
-
-
+<br>
 # 4. HTTS 테스트
 
 ## 4.1 curl
@@ -187,8 +177,7 @@ how to fix it, please visit the web page mentioned above.
 >
 > 어디에도 서명(Signed) 되어 있지 않음을 원인으로 알려준 것입니다.
 
-
-
+<br>
 ### (2). 사설 인증서 사용
 
 * 사설 인증서를 가지고 `curl`을 수행하니, 정상적으로 SSL Handshake가 이루어지고 연결이 되는 것을 확인해봅니다.
@@ -260,8 +249,7 @@ hello world
 >
 > `26~32 Line` subject(보안 대상; 웹서버)와 issuer(발급자; 인증서 증명자)의 정보입니다.
 
-
-
+<br>
 ### (3). 사설 인증서 사용 (download ssl)
 
 * 원격지의 SSL 인증서를 역으로 다운로드 받아, 활용하는 방법도 해볼 수 있습니다. 
@@ -277,8 +265,7 @@ $ ls -rtl ${CERT}/download_dhkim.com.crt
 
 > `openssl` 명령으로, 원격지의 SSL 인증서를 다운로드 받았습니다.
 
-
-
+<br>
 * 기존에 우리가 가지고 있던 원본 SSL 인증서와, 방금 다운로드 받은 SSL 인증서는 무슨 차이가 있길래, 
 
   용량도 내용의 길이면도 차이가 있을까요?
@@ -289,8 +276,7 @@ $ ls -rtl ${CERT}/*crt
 -rw-rw-r--. 1 dhkim dhkim 6220  5월 11 13:15 /tmp/self_signed_cert/download_dhkim.com.crt
 ```
 
-
-
+<br>
 * 용량도, 내용도 달라보이지만 사실상 차이는 없습니다. 
 
   내용을 비교하면 `download_dhkim.com.crt` 파일이 좀 더 방대하지만, 
@@ -298,8 +284,7 @@ $ ls -rtl ${CERT}/*crt
   
   다른 내용은 필요 없고, 암호화된 인증서 정보만을 가지고 SSL 인증을 수행하기 때문입니다.
 
-
-
+<br>
 * 다운로드 받은 인증서로 연결을 수행해봅시다.
 
 ```bash
@@ -361,8 +346,7 @@ hello world
 
 > 전혀 문제 없이, SSL Handshake 수행됩니다.
 
-
-
+<br>
 ## 4.2 openssl
 
 ### (1). 기본 인증서 사용
@@ -519,8 +503,7 @@ closed
 >
 > `Verification error: self signed certificate` 와 같이 경고성 메시지를 출력해주고 있습니다.
 
-
-
+<br>
 ### (2). 사설 인증서 사용
 
 * 위에서 해본 것처럼, SSL 인증서를 지정하여 확인해볼 수 있습니다.
@@ -612,8 +595,7 @@ SSL-Session:
 >
 > `78 Line` `Verification: OK` 정상적으로 키 교환(exchange)이 완료된 것을 알 수 있습니다.
 
-
-
+<br>
 ### (3). 사설 인증서 사용 (download ssl)
 
 * 앞서 진행한것 처럼, `openssl` 으로 원격지의 SSL 인증서를 내려 받습니다.
@@ -622,8 +604,7 @@ SSL-Session:
 $ openssl s_client -servername dhkim.com -connect 192.168.56.2:443 > ${CERT}/download_dhkim.com.crt
 ```
 
-
-
+<br>
 * 받은 인증서로 SSL 연결을 수행해봅니다.
 
 ```bash
@@ -773,8 +754,7 @@ closed
 
 > 원격지의 인증서로, SSL handshake를 시도하였고, `85 Line` 로그를 통해 정상적으로 처리된 것을 알 수 있습니다.
 
-
-
+<br>
 ## 4.3 HttpUrlConnection (JAVA)
 
 * 여기서는 JAVA 기반의 어플리케이션을 통해 원격지 서버와 SSL 통신을 수립해봅니다.
@@ -813,8 +793,7 @@ closed
 
 > 단순히, AP 호출 시 `https://dhkim.com/index.html` 을 호출하는 소스코드 입니다.
 
-
-
+<br>
 ### (1). AP 호출하여 HTTPS 연결
 
 * AP에 배포된 어플리케이션을 호출하면, HttpUrlConnection Class가 `https://dhkim.com/index.html`을 호출합니다.
@@ -827,8 +806,7 @@ Caused by: javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.s
 Caused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
 ```
 
-
-
+<br>
 ### (2). SSL 인증서 to Java Key Store 변환
 
 * AP(Client; 호출자)에 SSL 인증서 Setup을 위해 JKS로 변환하는 과정이 필요합니다.
@@ -841,8 +819,7 @@ $ cat ${CERT}/private.key ${CERT}/dhkim.com.crt ${CERT}/root.csr > ${CERT}/dhkim
 
 > 개인키, 서버 인증서, CSR 인증서를 하나의 `dhkim.com.pem` 파일로 합칩니다.
 
-
-
+<br>
 * 확장자를 pem 으로 만들었다고, 완성되는 것이 아닙니다.
 
   pkcs12 Format으로 변환 해주어야 합니다.
@@ -860,8 +837,7 @@ Verifying - Enter Export Password: (pkcs123456)
 >
 > `pkcs12` Format은 하나의 단일 File에 여러개의 인증서를 묶을 수 있게 해줍니다.
 
-
-
+<br>
 * pkcs12 Format 파일을 JKS에 집어 넣습니다.
 
 ```bash
@@ -881,8 +857,7 @@ JKS 키 저장소는 고유 형식을 사용합니다. "keytool -importkeystore 
 >
 > dhkim.com.p12 암호인 `pkcs123456` 을 차례대로 입력합니다.
 
-
-
+<br>
 ### (3). JKS Setup 후 HTTPS 재연결
 
 * 위에서 생성한 JKS를 AP에 Setup 합니다.
@@ -897,8 +872,7 @@ export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStorePassword=jks123456"
 export JAVA_OPTS
 ```
 
-
-
+<br>
 * AP에서 HttpUrlConnection을 통해 HTTPS WEB을 호출하면 에러가 여전히 발생하고 있습니다.
 
   아까와는 다른 에러 로그가 보입니다.
@@ -917,8 +891,7 @@ java.security.UnrecoverableKeyException: Cannot recover key
 
 > `Cannot recover key` 는, dhkim.com.jks Keystore 에 추가한 개인키 인증서를 `jks123456` 값으로 해독할 수 없어 발생합니다.
 
-
-
+<br>
 * Keystore Password를 변경합니다.
 
 ```bash
@@ -933,8 +906,7 @@ JKS 키 저장소는 고유 형식을 사용합니다. "keytool -importkeystore 
 
 > 생성한 keystore의 password를 `dhkim123456`으로 변경했습니다.
 
-
-
+<br>
 * Keystore 내에 저장된 인증서 Password를 변경합니다.
 
   `dhkim.com.jks` Keystore Password와 Keystore 내에 저장된 인증서의 Password를 동일하게 변경하는 작업입니다.
@@ -952,8 +924,7 @@ JKS 키 저장소는 고유 형식을 사용합니다. "keytool -importkeystore 
 
 > `-alias 1` : 처음에 Keystore 내에 인증서(`dhkim.com.p12`)를 저장할 때, 별칭을 주지 않았으므로 기본값 1이 지정되었습니다.
 
-
-
+<br>
 * 다음과 같이 AP Setup 한 내용 중에, `Password` 를 변경합니다.
 
 ```bash
@@ -966,16 +937,14 @@ export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStorePassword=dhkim123456"
 export JAVA_OPTS
 ```
 
-
-
+<br>
 * AP → HTTPS WEB 호출 시, STDOUT Log 또는, 웹 브라우저에 문제가 없고 결과물이 잘 나오는 것을 확인하였습니다.
 
 ```bash
 Hello world<br>/tmp/htdocs_ssl/index.html
 ```
 
-
-
+<br>
 # 5. 마무리
 
 SSL 인증서를 여러 환경에 적용해보고, `curl` 과 `openssl` 명령으로 검증을 수행해보았습니다.

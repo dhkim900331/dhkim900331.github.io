@@ -5,13 +5,11 @@ title: "[RHCSA] Container 생성"
 tags: [Linux, RHCSA]
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 podman 을 이용한 Container 생성과 비-루트 계정으로 서비스를 등록해본다.
 
-
-
+<br>
 # 2. 컨테이너 생성
 
 ## 2.1 이미지 검색
@@ -30,8 +28,7 @@ docker.io   docker.io/clearlinux/httpd                        httpd HyperText Tr
 >
 > 여기서는 httpd 에서 가장 낮은 버전(아무거나) 을 활용한다.
 
-
-
+<br>
 ```bash
 # skopeo inspect docker://docker.io/library/httpd
 {
@@ -52,16 +49,14 @@ docker.io   docker.io/clearlinux/httpd                        httpd HyperText Tr
 >
 > 우리는 2-alpine3.15 를 아래에서 사용하기로 하자.
 
-
-
+<br>
 ## 2.2 이미지 다운로드
 
 ```bash
 # podman pull docker.io/library/httpd:"2-alpine3.14"
 ```
 
-
-
+<br>
 ## 2.3 컨테이너 실행
 
 ```bash
@@ -71,8 +66,7 @@ docker.io   docker.io/clearlinux/httpd                        httpd HyperText Tr
 
 > 옵션으로, 호스트 디렉토리를 컨테이너에게 전달하기 위한 환경
 
-
-
+<br>
 ```bash
 # podman run --detach --name "myweb" -p "8080:80" -v "/html:/usr/local/apache2/htdocs:Z" -e "BLOGGER=DHKIM" -e "GIT=dhkim900331" docker.io/library/httpd
 ```
@@ -91,8 +85,7 @@ docker.io   docker.io/clearlinux/httpd                        httpd HyperText Tr
 >
 > 마지막 argument는 아까 받은 이미지
 
-
-
+<br>
 ```bash
 # podman ps -a
 CONTAINER ID  IMAGE                           COMMAND           CREATED        STATUS            PORTS                 NAMES
@@ -101,8 +94,7 @@ CONTAINER ID  IMAGE                           COMMAND           CREATED        S
 
 > 컨테이너 실행 중인 상태(STATUS를 보고 판단)
 
-
-
+<br>
 ```bash
 # podman exec -it myweb /bin/bash
 root@3c6ad1ea13e3:/usr/local/apache2# hostname
@@ -111,8 +103,7 @@ root@3c6ad1ea13e3:/usr/local/apache2# hostname
 
 > 컨테이너 내부로 접속하여 hostname 명령을 쳐보았다.
 
-
-
+<br>
 # 3. 비-루트 계정 서비스 등록
 
 * 여기서부터는 비-루트 계정으로 로그인하면서 진행한다.
@@ -130,16 +121,14 @@ root@3c6ad1ea13e3:/usr/local/apache2# hostname
     Failed to connect to bus: 그런 파일이나 디렉터리가 없습니다
     ```
 
-
-
+<br>
 ```bash
 # ssh test@localhost
 ```
 
 > 컨테이너를 일반계정 test 에 서비스 등록하기 위하여 ssh 로그인
 
-
-
+<br>
 ```bash
 # mkdir -p ~/.config/systemd/user
 # podman generate systemd myweb --new > ~/.config/systemd/user/container-myweb.service
@@ -147,8 +136,7 @@ root@3c6ad1ea13e3:/usr/local/apache2# hostname
 
 > 현재 실행중인 myweb 컨테이너를 service 파일로 생성
 
-
-
+<br>
 ```bash
 # podman stop myweb
 # podman rm myweb

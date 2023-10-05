@@ -10,8 +10,7 @@ typora-root-url: ..
 
 WebLogic 12cR1 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
 
-
-
+<br>
 # 2. 설명
 
 All-In-One-Script-For-12cR1.sh 실행으로 다음 환경을 구성하도록 한다.
@@ -22,8 +21,7 @@ All-In-One-Script-For-12cR1.sh 실행으로 다음 환경을 구성하도록 한
 - myCluster (M1, M2)
 - /sw/app/{testApp, PostDataTest} deployed on myCluster
 
-
-
+<br>
 # 3. Script
 
 ## 3.1 Engine
@@ -61,8 +59,7 @@ APP_HOME=/sw/app
 APP_1=testApp
 APP_2=PostDataTest
 
-
-# (1) ResponseFile
+<br># (1) ResponseFile
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/sample-response-files-silent-installation-and-deinstallation.html#GUID-65B11C03-B559-41F1-B9B4-B7276491E580
 
 cat << EOF > ${BASEDIR}/rsp
@@ -76,8 +73,7 @@ DECLINE_SECURITY_UPDATES=true
 SECURITY_UPATES_VIA_MYORACLESUPPORT=false
 EOF
 
-
-# (2) Inventory
+<br># (2) Inventory
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-756E3FD9-4094-412F-9BEB-72C5FD51056B
 # * inventory.loc 파일 샘플은 문서에 없음
 
@@ -86,15 +82,13 @@ inventory_loc=${INVENTORY_PATH}
 inst_group=${INVENTORY_GROUP}
 EOF
 
-
-# (3) Installation
+<br># (3) Installation
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-5F06D02F-6D71-45B9-BF41-5D5759D31958
 
 ${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
 
-
-
+<br>
 ## 3.2 Domain
 
 ```sh
@@ -124,8 +118,7 @@ exit()
 EOF
 ```
 
-
-
+<br>
 ## 3.3 Startup AdminServer
 
 ```sh
@@ -135,8 +128,7 @@ username=${ADM_USERNAME}
 password=${ADM_PASSWORD}
 EOF
 
-
-# (6) Start-up AdminServer
+<br># (6) Start-up AdminServer
 # https://unix.stackexchange.com/questions/405250/passing-and-setting-variables-in-a-heredoc
 
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -158,8 +150,7 @@ done
 EOF
 ```
 
-
-
+<br>
 ## 3.4 Create Managed Server
 
 ```sh
@@ -212,8 +203,7 @@ exit()
 EOF
 ```
 
-
-
+<br>
 ## 3.5 Cluster
 
 ```sh
@@ -249,8 +239,7 @@ exit()
 EOF
 ```
 
-
-
+<br>
 ## 3.6 Deploy App
 
 ```sh
@@ -279,8 +268,7 @@ exit()
 EOF
 ```
 
-
-
+<br>
 ## 3.7. Create Instances Scripts
 
 ```sh
@@ -345,8 +333,7 @@ nohup ${DOMAIN_HOME}/bin/startWebLogic.sh > ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1
 #tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-
-cat << "EOF" > ${DOMAIN_HOME}/stopA.sh
+<br>cat << "EOF" > ${DOMAIN_HOME}/stopA.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_ADDR=#SERVER_ADDR#
@@ -377,8 +364,7 @@ exit()
 INNER_EOF
 EOF
 
-
-cat << "EOF" > ${DOMAIN_HOME}/logA.sh
+<br>cat << "EOF" > ${DOMAIN_HOME}/logA.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_NAME=#SERVER_NAME#
@@ -388,8 +374,7 @@ NOHUP_LOG=${LOG_HOME}/nohup
 tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-
-cat << "EOF" > ${DOMAIN_HOME}/psA.sh
+<br>cat << "EOF" > ${DOMAIN_HOME}/psA.sh
 #!/bin/sh
 SERVER_NAME=#SERVER_NAME#
 ps -ef | grep "java" | grep "weblogic.Server" | grep "D${SERVER_NAME}"
@@ -402,8 +387,7 @@ sed -i "s|#SERVER_NAME#|AdminServer|g" ${DOMAIN_HOME}/*A.sh
 sed -i "s|#SERVER_ADDR#|${ADM_ADDR}|g" ${DOMAIN_HOME}/*A.sh
 sed -i "s|#SERVER_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*A.sh
 
-
-# Managed Server (start, stop, log, ps)
+<br># Managed Server (start, stop, log, ps)
 cat << "EOF" > ${DOMAIN_HOME}/startM.sh
 #!/bin/sh
 DOMAIN_NAME=#DOMAIN_NAME#
@@ -464,8 +448,7 @@ nohup ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${SERVER_NAME} ${ADM_URL}> ${NO
 #tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-
-cat << "EOF" > ${DOMAIN_HOME}/stopM.sh
+<br>cat << "EOF" > ${DOMAIN_HOME}/stopM.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_NAME=#SERVER_NAME#
@@ -497,8 +480,7 @@ exit()
 INNER_EOF
 EOF
 
-
-cat << "EOF" > ${DOMAIN_HOME}/logM.sh
+<br>cat << "EOF" > ${DOMAIN_HOME}/logM.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_NAME=#SERVER_NAME#
@@ -508,15 +490,13 @@ NOHUP_LOG=${LOG_HOME}/nohup
 tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-
-cat << "EOF" > ${DOMAIN_HOME}/psM.sh
+<br>cat << "EOF" > ${DOMAIN_HOME}/psM.sh
 #!/bin/sh
 SERVER_NAME=#SERVER_NAME#
 ps -ef | grep "java" | grep "weblogic.Server" | grep "D${SERVER_NAME}"
 EOF
 
-
-cp ${DOMAIN_HOME}/startM.sh ${DOMAIN_HOME}/start${M1_SVR_NAME}.sh
+<br>cp ${DOMAIN_HOME}/startM.sh ${DOMAIN_HOME}/start${M1_SVR_NAME}.sh
 cp ${DOMAIN_HOME}/stopM.sh ${DOMAIN_HOME}/stop${M1_SVR_NAME}.sh
 cp ${DOMAIN_HOME}/logM.sh ${DOMAIN_HOME}/log${M1_SVR_NAME}.sh
 cp ${DOMAIN_HOME}/psM.sh ${DOMAIN_HOME}/ps${M1_SVR_NAME}.sh

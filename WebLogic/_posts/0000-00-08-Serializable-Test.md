@@ -6,15 +6,13 @@ tags: [Middleware, WebLogic, Serializable]
 typora-root-url: ..
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 세션 복제 될 데이터가 직렬화 되어있는 경우와 그렇지 않은 경우를 테스트해보았습니다.
 
 이때 세션 데이터는 직렬화 구현이 필요한 클래스 객체로 구현해보았습니다.
 
-
-
+<br>
 # 2. 테스트 어플리케이션
 
 [webapp.zip](/assets/upload/webapp.zip)
@@ -35,8 +33,7 @@ typora-root-url: ..
 >
 > 윈도우 로컬에서 테스트하였는데, C:\Windows\System32\drivers\etc\hosts 파일에 m1.main.com과 m2.main.com을 등록하였습니다.
 
-
-
+<br>
 # 3. Serializable 가 구현되지 않았을 때
 
 * 웹로직 인스턴스 m1, m2는 이중화 구성이며 클러스터 되었습니다.
@@ -44,8 +41,7 @@ typora-root-url: ..
   * -> Debug -> weblogic -> servlet -> internal -> **session 을 체크하고 Enable** 하였습니다.
   * [참고사이트](https://community.oracle.com/thread/1123562?tstart=0) // 2021.12.20 일 기준 404
 
-
-
+<br>
 ```bash
 <Debug> <HttpSessions> <BEA-000000> <Session attribute with name:sessionObject class:kdh.sessionObject is not serializable ane will  not be replicated or persisted>
 
@@ -60,8 +56,7 @@ typora-root-url: ..
 
 > Serializable 구현되지 않았을 때 로그
 
-
-
+<br>
 # 4. Serializable 구현되었을 때
 
 ```bash
@@ -87,5 +82,4 @@ typora-root-url: ..
 <Debug> <HttpSessions> <BEA-000000> <Replicating session : -4561296442252280984 and weblogic.servlet.internal.session.ReplicatedSessionData@49221aa7 >
 ```
 
-
-
+<br>

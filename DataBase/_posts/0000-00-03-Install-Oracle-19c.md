@@ -12,12 +12,10 @@ Oracle DB가 필요하게 되어, 19c 설치를 하며 작성을 한다.
 
 정확도가 떨어지는 가이드의 문서가 될 수 있겠다.
 
-
-
+<br>
 [다음의 게시물](https://fliedcat.tistory.com/106)을 기초로 하였다.
 
-
-
+<br>
 # 2. 문서 작성 기준이 되는 테스트 환경
 
 ```shell
@@ -45,26 +43,21 @@ Red Hat Enterprise Linux release 8.7 (Ootpa)
 Oracle Linux Server release 8.7
 ```
 
-
-
-
-
+<br><br>
 # 3. 사전 준비사항
 
 ## 3.1 설치 파일
 
 [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle-database-software-downloads.html)에서 `Linux x86-64 (ZIP, 2.8GB)` 를 받았다.
 
-
-
+<br>
 ## 3.2 Packages
 
 [Operating System Checklist for Oracle Database Installation on Linux](https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/operating-system-checklist-for-oracle-database-installation-on-linux.html#GUID-E5C0A90E-7750-45D9-A8BC-C7319ED934F0) 참고
 
 > 본인은, 위 문서를 보았지만 기존 시스템에 WLS, OHS 등 다양한 설치를 진행해왔던 터라 실제 Yum 을 진행하지 않고 넘어갔다.
 
-
-
+<br>
 # 4. 소프트웨어 설치
 
 ## 4.1 기본 환경 구성
@@ -77,16 +70,14 @@ export ORACLE_SID=ORCL
 export PATH=$ORACLE_HOME/bin:$PATH
 ```
 
-
-
+<br>
 ```shell
 $ mkdir -p $ORACLE_HOME
 $ mv LINUX.X64_193000_db_home.zip ${ORACLE_HOME}
 $ cd ${ORACLE_HOME} && unzip ${ORACLE_HOME}/LINUX.X64_193000_db_home.zip
 ```
 
-
-
+<br>
 ## 4.2 응답 파일 작성
 
 기본적으로 `$ORACLE_HOME/inventory/response/db_install.rsp` 위치한 기본 응답파일을 사용하면 된다.
@@ -95,8 +86,7 @@ $ cd ${ORACLE_HOME} && unzip ${ORACLE_HOME}/LINUX.X64_193000_db_home.zip
 
 `oracle.install.responseFileVersion` 은 그대로 사용해야 되는것으로 보인다.
 
-
-
+<br>
 ```shell
 $ cat $ORACLE_HOME/install/response/db_install.rsp
 
@@ -130,8 +120,7 @@ oracle.install.db.config.starterdb.password.DBSNMP=<Password of OS Account that 
 oracle.install.db.config.starterdb.password.PDBADMIN=<Password of OS Account that run installer>
 ```
 
-
-
+<br>
 ## 4.3 설치 실행
 
 ```shell
@@ -145,8 +134,7 @@ Launching Oracle Database Setup Wizard...
        - java.lang.NullPointerException
 ```
 
-
-
+<br>
 내 환경과 같이 OS Pass에 실패할 경우, 다음과 같이 진행한다. [참고](https://positivemh.tistory.com/486)
 
 ```shell
@@ -167,8 +155,7 @@ You can find the log of this install session at:
 Successfully Setup Software.
 ```
 
-
-
+<br>
 ## 4.4 설치 확인
 
 ```shell
@@ -184,8 +171,7 @@ Connected to an idle instance.
 SQL>
 ```
 
-
-
+<br>
 # 5. 리스너 구성 및 확인
 
 ```shell
@@ -206,8 +192,7 @@ Listener configuration complete.
 Oracle Net Services configuration successful. The exit code is 0
 ```
 
-
-
+<br>
 ```shell
 $ lsnrctl status
 
@@ -234,8 +219,7 @@ The listener supports no services
 The command completed successfully
 ```
 
-
-
+<br>
 # 6. 데이터베이스 생성 및 확인
 
 ```shell
@@ -259,8 +243,7 @@ databaseType=MULTIPURPOSE
 totalMemory=1024
 ```
 
-
-
+<br>
 ```shell
 $ dbca -silent -createDatabase -responsefile $ORACLE_HOME/assistants/dbca/dbca.rsp
 
@@ -279,8 +262,7 @@ System Identifier(SID):ORCL
 Look at the log file "/sw/databases/oracle-19c/cfgtoollogs/dbca/GLOBAL_ORCL/GLOBAL_ORCL.log" for further details.
 ```
 
-
-
+<br>
 ```shell
 $ sqlplus / as sysdba
 
@@ -289,24 +271,20 @@ NAME      CDB
 --------- ---
 GLOBAL_O  YES
 
-
-SQL> show con_name;
+<br>SQL> show con_name;
 CON_NAME
 ------------------------------
 CDB$ROOT
 
-
-SQL> alter session set container=ORCLPDB;
+<br>SQL> alter session set container=ORCLPDB;
 Session altered.
 
-
-SQL> show con_name;
+<br>SQL> show con_name;
 CON_NAME
 ------------------------------
 ORCLPDB
 
-
-! lsnrctl status
+<br>! lsnrctl status
 
 LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 30-DEC-2022 10:25:00
 
@@ -339,14 +317,10 @@ Service "orclpdb" has 1 instance(s).
 The command completed successfully
 ```
 
-
-
-
-
+<br><br>
 _**데이터베이스 삭제는 `dbca -silent -deleteDatabase -sourceDB ORCL`**_
 
-
-
+<br>
 # 7. DB & Listener Startup
 
 ```sh
@@ -364,8 +338,7 @@ Database mounted.
 Database opened.
 ```
 
-
-
+<br>
 # 8. User 관리
 
 ```sh
@@ -377,8 +350,7 @@ sqlplus> DROP USER  weblogic CASCADE;
 sqlplus> REVOKE <권한> FROM weblogic;
 ```
 
-
-
+<br>
 # 9. 기본 SQL Query
 
 ```sql

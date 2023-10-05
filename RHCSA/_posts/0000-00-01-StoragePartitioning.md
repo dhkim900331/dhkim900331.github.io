@@ -5,15 +5,13 @@ title: "[RHCSA] Storage 파티셔닝"
 tags: [Linux, RHCSA, Storage, GPT, MBR, parted]
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 RHCSA 과정을 준비하면서, Storage 파티셔닝을 정리한다.
 
 fdisk, gdisk 를 먼저 공부했지만, parted 가 너무 편리하여 parted로 정리한다.
 
-
-
+<br>
 # 2. MBR / GPT
 
 MBR과 GPT의 차이점 등은 다른 구글링으로 쉽게 찾아볼 수 있다.
@@ -29,8 +27,7 @@ MBR과 GPT의 차이점 등은 다른 구글링으로 쉽게 찾아볼 수 있�
 >
 > _너무 편리하다.._
 
-
-
+<br>
 # 3. GPT 파티셔닝
 
 > MBR 파티셔닝은 msdos 로 label 만 주면 되므로, GPT 로 설명한다.
@@ -51,8 +48,7 @@ vdd
 
 > 새로운 디스크(HDD or SDD 등)를 붙이면 /dev/vd{a~...z} 으로 추가 된다.
 
-
-
+<br>
 ```bash
 # parted /dev/vdb print
 Error: /dev/vdb: unrecognised disk label
@@ -65,8 +61,7 @@ Disk Flags:
 
 > /dev/vdb 를 확인해보니 disk label 이 없다는 error와, Partion table이 unknown 이라는 것이 확인된다.
 
-
-
+<br>
 ## 3.2 디스크 라벨링
 
 ```
@@ -78,8 +73,7 @@ Information: You may need to update /etc/fstab.
 >
 > _MBR일 경우 gpt -> msdos_
 
-
-
+<br>
 ```bash
 # parted /dev/vdb print                                  
 Model: Virtio Block Device (virtblk)
@@ -94,8 +88,7 @@ Number  Start  End  Size  File system  Name  Flags
 
 > print 명령으로 GPT 라벨링 여부도 확인된다.
 
-
-
+<br>
 ## 3.3 파티션 생성
 
 ```bash
@@ -124,8 +117,7 @@ Information: You may need to update /etc/fstab.
 >
 > __MBR일 경우 backup -> primary(경우에 따라 extended)_
 
-
-
+<br>
 ```bash
 # parted /dev/vdb print                                  
 Model: Virtio Block Device (virtblk)
@@ -142,8 +134,7 @@ Number  Start   End     Size    File system  Name    Flags
 >
 > _1s = 512B 라 예상되지만, 시스템은 최소 크기가 17.4kB 인듯 하다_
 
-
-
+<br>
 ```bash
 # mkfs.xfs /dev/vdb1
 meta-data=/dev/vdb1              isize=512    agcount=4, agsize=122070 blks
@@ -170,8 +161,7 @@ Number  Start   End     Size    File system  Name    Flags
 
 > 파티션의 파일 시스템 유형을 xfs로 선언하고 print로 확인한 모습
 
-
-
+<br>
 ```bash
 # udevadm settle
 ```
@@ -179,8 +169,7 @@ Number  Start   End     Size    File system  Name    Flags
 > /dev/vda1 장치가 준비되는 것을 기다려주는 명령어
 > 원래 윗부분(mkfs)보다 일찍 사용해야 하는데.. 자꾸 이렇게 외워버렸다.
 
-
-
+<br>
 ## 3.4 파일시스템 마운트
 
 실제 디렉토리로 마운트 지점을 할당해야 쓸 수 있다.
@@ -191,8 +180,7 @@ Number  Start   End     Size    File system  Name    Flags
 
 > 마운트 지점 디렉토리를 생성한다.
 
-
-
+<br>
 ```bash
 # lsblk --fs
 NAME   FSTYPE LABEL UUID                                 MOUNTPOINT
@@ -208,24 +196,21 @@ vdd
 
 > /dev/vdb1 파티션의 UUID를 확인한다.
 
-
-
+<br>
 ```bash
 UUID=3b1e73fa-409b-459c-aeaf-8866cef00f32 /backup xfs defaults 0 0
 ```
 
 > /etc/fstab 파일에 위 내용을 추가한다.
 
-
-
+<br>
 ```bash
 # systemctl daemon-reload 
 ```
 
 > /etc/fstab 파일을 시스템이 다시 읽도록 한다.
 
-
-
+<br>
 ```bash
 # mount /backup
 # mount | grep vdb1

@@ -11,10 +11,7 @@ typora-root-url: ..
 * SR 3-18602337531 : [XXXX] How to get Permgen Space info of Weblogic Server on Windows Service
 * 윈도우 서비스 항목으로 등록된 JVM 의 Heap Usage 항목 확인 방법
 
-
-
-
-# 2. 설명
+<br><br># 2. 설명
 
 ```shell
 d:\sw\domains\Domain_10.3.6>sc queryex WLS_10.3.6_Admin
@@ -33,8 +30,7 @@ PID : 2448
 
 > sc 명령어를 활용하여, 기동중인 서비스의 JVM PID 추출
 
-
-
+<br>
 ```shell
 d:\sw\domains\Domain_10.3.6>jmap -heap 2448
 Attaching to process ID 2448, please wait..

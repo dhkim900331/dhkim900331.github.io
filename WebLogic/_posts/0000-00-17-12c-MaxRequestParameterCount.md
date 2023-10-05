@@ -6,13 +6,11 @@ tags: [Middleware, WebLogic, Parameter]
 typora-root-url: ..
 ---
 
-
-# 1. 개요
+<br># 1. 개요
 
 12c max request parameter count 최대값 변경
 
-
-
+<br>
 # 2. 설명
 
 * HTTP request의 parameter 최대 개수는 기본값으로 10,000개 입니다.
@@ -34,8 +32,7 @@ typora-root-url: ..
 
   아래의 가이드로 수치를 변경할 수 있습니다.
 
-
-
+<br>
 ```bash
 cd /weblogic/wls
 cd oracle_common/common/bin
