@@ -62,17 +62,21 @@ struct {
  - CipherSuite : 클라이언트가 선호하고, 지원할 수 있는 알고리즘 리스트 (가장 좋아하는 것부터 순서대로 정렬되어)
  - CompressionMethod : 클라이언트가 지원하는 압축 알고리즘 목록이 포함되고, 클라이언트 기본 설정에 따라 정렬된다.
  - Random 은 다음의 구조체를 갖는다.
-    
+   
      ```
      struct {
-  uint32 gmt_unix_time;
-  opaque random_bytes[28];
+    uint32 gmt_unix_time;
+    opaque random_bytes[28];
     } Random;
-  ```
-  
-  - gmt_unix_time : 현재 일자 및 시각
-  - random_bytes : Secure Random Generator에 의해 생성된 28바이트 길이의 데이터
-  
+    ```
+    
+    
+      - gmt_unix_time : 현재 일자 및 시각
+    
+    
+      - random_bytes : Secure Random Generator에 의해 생성된 28바이트 길이의 데이터
+    
+
 
 
 
@@ -97,6 +101,7 @@ struct {
     };
 } ServerHello;
 ```
+
 
  - 기본적으로 ClientHello와 같으며, Client가 제공한 값에서 선택하여 채워넣는다.
 
