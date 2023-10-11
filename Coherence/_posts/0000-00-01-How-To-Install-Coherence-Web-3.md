@@ -37,14 +37,14 @@ Oracle Support의 Patches에서 Coherence를 다운로드 받는다.
         <member-identity>
             <cluster-name system-property="tangosol.coherence.cluster">MyCluster</cluster-name>
         </member-identity>
-​
+
         <unicast-listener>
             <address system-property="tangosol.coherence.localhost">wls.local</address>
-            <port system-property="tangosol.coherence.localport">10000<port>
+            <port system-property="tangosol.coherence.localport">10000</port>
             <port-auto-adjust system-property="tangosol.coherence.localport.adjust">true</port-auto-adjust>
         </unicast-listener>
     </cluster-config>
-​
+
     <license-config>
         <edition-name systemproperty="tangosol.coherence.edition">GE</edition-name>
         <license-mode systemproperty="tangosol.coherence.mode">prod</license-mode>
@@ -76,6 +76,7 @@ export COHERENCE_HOME=/sw/coherence/3.7.1.22
 export JAVAEXEC=$JAVA_HOME/bin/java
 export PREFIX=`date +"%Y%m%d_%H%M%S"`
 export SERVER_NAME=CacheServer1
+export LOG_DIR=${COHERENCE_HOME}/logs
 export CLASSPATH="${CLASSPATH}:$COHERENCE_HOME/lib/coherence.jar:$COHERENCE_HOME/lib/coherence-web.jar"
 
 JAVA_OPTS="$JAVA_OPTS -Xms6144m -Xmx6144m"
@@ -86,6 +87,7 @@ JAVA_OPTS="$JAVA_OPTS -Dtangosol.coherence.localhost=wls.local"
 JAVA_OPTS="$JAVA_OPTS -Dtangosol.coherence.localport=10000"
 export JAVA_OPTS
 
+mkdir -p ${LOG_DIR}/backup
 mv ${LOG_DIR}/${SERVER_NAME}.out ${LOG_DIR}/backup/${SERVER_NAME}.out${PREFIX}
 
 $JAVAEXEC -server -Dcoherence_${SERVER_NAME} -showversion $JAVA_OPTS -cp ${CLASSPATH} com.tangosol.net.DefaultCacheServer > ${LOG_DIR}/${SERVER_NAME}.out 2>&1 &

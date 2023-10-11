@@ -1,14 +1,14 @@
 ---
 date: 2023-10-05 14:49:59 +0900
 layout: post
-title: "[WebLogic] Connection Filter"
+title: "[WebLogic] How To Use Connection Filter"
 tags: [Middleware, WebLogic, Connection, Filter]
 typora-root-url: ..
 ---
 
 # 1. Overview
 
-과거에 [Security-Filter]({{ site.url }}/Security-Filter) 를 Post 한 바 있다.
+과거에 [Security-Filter]({{ site.url }}/weblogic/Security-Filter) 를 Post 한 바 있다.
 
 많이들 활용하는 기능은 아닌데 반해, 낮은 이해도로 접근 할시에 많은 위험을 초래할 수 있는 옵션이기에
 
@@ -41,7 +41,7 @@ target을 dest이 Allow/Deny 할 지를 정하는 것은, `Action` 이다.
 <br><br>
 그리고 Rule은, 위에서 부터 아래로 수행된다.
 
-요청이 인입되면, 맨 위의 Rule 부터 판별하고 Allow에 해당되면 더 이상 Rule에 대해 검증되지 않고 종료된다.
+요청이 인입되면, 맨 위의 Rule 부터 판별하고 ~~Allow에 해당되면 더 이상 Rule에 대해 검증되지 않고 종료된다.~~ (뇌피셜)
 
 마지막 까지 Rule이 진행되었지만 해당되는 Rule이 없더라도 Allow와 동일하게 동작한다.
 
