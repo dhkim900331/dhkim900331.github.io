@@ -1,0 +1,123 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>접속 하려는 Port가 방화벽 등의 문제로 접속을 할 수 없다면,</p>
+
+<p>putty.exe 또는 ssh command의 Port Forwarding 기능으로 해결할 수 있다.</p>
+
+<p><br /></p>
+<h2 id="2-puttyexe">2. putty.exe</h2>
+
+<p>Target Server 에 TCP Port Listen 되어 있으나, 방화벽 등으로 직접 TCP Port 에 Access 할 수 없을 때,</p>
+
+<p>putty 의 Port Forwarding 기능을 사용하여 접속할 수 있다.</p>
+
+<p><br />
+TCP 8081 Listen 상태 확인</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>netstat <span class="nt">-an</span> | <span class="nb">grep </span>8081 | <span class="nb">grep </span>LISTEN
+tcp        0      0 192.168.56.2:8081       0.0.0.0:<span class="k">*</span>               LISTEN
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+방화벽으로 인해</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sudo </span>systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded <span class="o">(</span>/usr/lib/systemd/system/firewalld.service<span class="p">;</span> disabled<span class="p">;</span> vendor preset: enabled<span class="o">)</span>
+   Active: active <span class="o">(</span>running<span class="o">)</span> since Thu 2022-10-06 15:47:49 KST<span class="p">;</span> 1s ago
+     Docs: man:firewalld<span class="o">(</span>1<span class="o">)</span>
+ Main PID: 1515 <span class="o">(</span>firewalld<span class="o">)</span>
+   CGroup: /system.slice/firewalld.service
+           └─1515 /usr/bin/python2 <span class="nt">-Es</span> /usr/sbin/firewalld <span class="nt">--nofork</span> <span class="nt">--nopid</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+서버외부에서 TCP 8081 호출할 수 없다.</p>
+
+<p><img src="/../assets/posts/images/12-Linux/PortForwarding/PortForwarding_1.png" alt="PortForwarding_1" /></p>
+
+<p><br />
+putty.exe의 SSH - Tunnels 에서 Target Address 를 설정한다.</p>
+
+<p>(사진에서 Add 버튼 까지 눌러야 설정이 완료.)</p>
+
+<p><img src="/../assets/posts/images/12-Linux/PortForwarding/PortForwarding_2.png" alt="PortForwarding_2" /></p>
+
+<p><br />
+Windows CMD로 localhost:8081 이 LISTENING 되어 있는 것이 확인 된다.</p>
+
+<p>이는, putty.exe가 LISTEN을 하고 있는 것이다.</p>
+
+<p><img src="/../assets/posts/images/12-Linux/PortForwarding/PortForwarding_3.png" alt="PortForwarding_3" /></p>
+
+<p><br />
+localhost:8081 접속 시, putty.exe가 proxy 역할을 수행한다.</p>
+
+<p><img src="/../assets/posts/images/12-Linux/PortForwarding/PortForwarding_4.png" alt="PortForwarding_4" /></p>
+
+<p><br /></p>
+<h2 id="3-ssh">3. ssh</h2>
+
+<p>putty.exe를 사용할 수 있는 구간은, Client가 Target Server 바로 앞일 때이다.</p>
+
+<p>Bastion 환경 등과 같이 단순한 구조가 아닐 때는, ssh command 를 사용해야 한다.</p>
+
+<p><br />
+상황은 다음과 같다고 가정한다.</p>
+
+<ul>
+  <li>
+    <p>Client - Bastion - Target</p>
+  </li>
+  <li>현재 모든 구간은 SSH Port 접근만 가능하다.</li>
+  <li>Target에 8001 TCP Port로 Service 가 Listen 되고 있다.</li>
+  <li>Client도, Bastion도 Target의 8001 TCP Port를 호출할 수 없도록, 방화벽이 설정되어 있다.</li>
+</ul>
+
+<p><br />
+Bastion 에서 다음과 같이 ssh command 를 입력한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>ssh <span class="nt">-L</span> &lt;Bastion IP&gt;:8001:&lt;Target IP&gt;:8001 &lt;Target USER&gt;@&lt;Target IP&gt; <span class="nt">-p</span> &lt;Target SSH Port&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<ul>
+  <li>
+    <p>시작 부분을 반드시 &lt;Bastion IP&gt; 로 지정한다. (Bastion을 Proxy 로 이용하기 때문에, localhost 로 지정하면 안된다.)</p>
+  </li>
+  <li>Bastion 내에  TCP 8001 이 Listen 된다.</li>
+  <li>Bastion 내에 &lt;Bastion IP&gt;:8001 Traffic 은 &lt;Target IP&gt;:8001 으로 Forward 된다.</li>
+  <li>이 과정을 위해, &lt;Target USER&gt;@&lt;Target IP&gt; -p &lt;Target SSH Port&gt; 정보로 ssh 인증을 수행한다.</li>
+</ul>
+
+<p><br />
+여기까지 수행이 되면, Bastion 에서 다음 명령어 수행 시, TCP 8001 Port 에 Access 할 수 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl &lt;Bastion IP&gt;:8001
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+putty.exe 의 Tunnels 기능을 통해, Client - Bastion 구간을 다음과 같이 설정하면, Client의 Browser 를 통해 Target Port에 Access 할 수 있다.</p>
+
+<p><img src="/../assets/posts/images/12-Linux/PortForwarding/PortForwarding_5.png" alt="PortForwarding_5" /></p>
+
+<p><br /></p>
+<ul>
+  <li>putty.exe는 TCP 8001 으로 들어오는 Traffic을 Bastion 의 TCP 8001 으로 Forward 한다.</li>
+  <li>Bastion 은 (위에서 설명한 것과 같이) Target 의 TCP 8001 으로 Forward 한다.</li>
+</ul>
+:ET

@@ -1,0 +1,882 @@
+I"o�<h2 id="1-개요">1. 개요</h2>
+
+<p><a href="How-to-install-Coherence-Web-14c">How-to-install-Coherence-Web-14c</a> 에서 설치를 완료 했다.</p>
+
+<p>여기서는 실제 환경에서 쓰일 수 있게 다음의 항목들을 확인한다.</p>
+
+<ul>
+  <li>Death Detection</li>
+  <li>F/W</li>
+  <li>Session Reaper Thread Tuning</li>
+</ul>
+
+<p><br /></p>
+<h2 id="2-death-detection">2. Death Detection</h2>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/setting-cluster.html#GUID-FE185358-AE38-4436-9179-73E0D4CAAD13">Configuring Death Detection</a> 을 하여, ClusterMember 이탈 여부를 확인한다.</p>
+
+<p><br /></p>
+<h3 id="21-tcp-ring">2.1 TCP-RING</h3>
+
+<p>Member들은 하나의 Ring으로 연결된다.</p>
+
+<p>25초 동안 HeartBeat 응답을 주지 않은 Member를 5회 실시하여, Member를 제거한다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">java.net.InetAddress.isReachable</code> 를 시도하며, 이 Method는 Process가 아니라 Host에 Port 7(Echo)를 전송하여 응답을 받으려고 시도한다.</p>
+
+<p>Port 7(Echo) 가 방화벽에 예외 처리 되어 있어야 한다.</p>
+
+<p>listen-backlog는 이러한 HeartBeat 감지를 받을 때, 최대 backlog 로 보여진다.</p>
+
+<p><br /></p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>    <span class="nt">&lt;tcp-ring-listener&gt;</span>
+      <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+      <span class="nt">&lt;ip-timeout</span> <span class="na">system-property=</span><span class="s">"coherence.ipmonitor.pingtimeout"</span><span class="nt">&gt;</span>25s<span class="nt">&lt;/ip-timeout&gt;</span>
+      <span class="nt">&lt;ip-attempts&gt;</span>5<span class="nt">&lt;/ip-attempts&gt;</span>
+      <span class="nt">&lt;listen-backlog&gt;</span>10<span class="nt">&lt;/listen-backlog&gt;</span>
+    <span class="nt">&lt;/tcp-ring-listener&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+최대 2분 5초 동안 응답을 하지 않은 Member가 발견되면 아래와 같이 Logging 된다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>tmb://10.65.34.245:9003.34707 initiating connection migration with tmb://10.65.34.245:9001.43859 after 2m5s ack timeout health(read=true, write=false), receiptWait=null: peer=tmb://10.65.34.245:9001.43859
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>9003 Port Member가 응답하지 않는다.</p>
+
+<p><br />
+tcp-ring-listener 를 사용하지 않으면, 인스턴스가 Shutdown 될 시에 매우 늦게 감지가 된다.</p>
+
+<p>반드시 사용한다.</p>
+
+<blockquote>
+  <p>tcp-ring-listener false 시에 Member shutdown 을 하면 2분 5초 뒤에 파악이 된다.</p>
+</blockquote>
+
+<p><br /></p>
+<h3 id="22-heartbeat">2.2 HeartBeat</h3>
+
+<p>Cluster Member들 간에는 HeartBeat를 주고 받는다.</p>
+
+<p>이 HeartBeat 간격은 기본값 1초 이며, Member가 많을 경우 Traffic이 증대할 것이며, 평소 Network 신뢰성이 높은 경우, 불필요하게 많은 Traffic을 유발하지 않도록 설정값을 변경하는 것도 고려해볼 만 하다.</p>
+
+<p><br />
+문서 상에는, HeartBeat를 매 간격마다 보내지 않고, 내부 평가 프로세스에 따라 그러하다고 하는데 어떤 프로세스를 가지는지는 문서상에 보이지 않는다.</p>
+
+<p><br /></p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>    <span class="nt">&lt;packet-publisher&gt;</span>
+      <span class="nt">&lt;packet-delivery&gt;</span>
+        <span class="nt">&lt;heartbeat-milliseconds&gt;</span>5000<span class="nt">&lt;/heartbeat-milliseconds&gt;</span>
+      <span class="nt">&lt;/packet-delivery&gt;</span>
+    <span class="nt">&lt;/packet-publisher&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h2 id="3-firewall">3. Firewall</h2>
+
+<ul>
+  <li>Cluster Port (Default 7574) 는 Multicast/Unicast 에서 모두 사용되고, UDP/TCP 로 쓰인다. Coherence에 Proxy를 구성하고, Client에서 Naming Service로 Proxy를 이용할 때 Name을 검색하는 Port.
+    <ul>
+      <li>Cluster Port가 Unicast 에서 사용되는 시기는, WKA(Well-Known-Addresses) 를 사용할 때다. WKA 멤버를 찾을 때, Cluster Port를 사용한다.</li>
+    </ul>
+  </li>
+  <li>Death Detection 을 위해 TCP 7 (Echo port)를 사용한다.</li>
+  <li>위 외에 메뉴얼상 필요한 Port는 없고, Member간의 통신 방식에 사용하는 Port를 열어주면 된다.</li>
+</ul>
+
+<p><br /><br /></p>
+<h2 id="4-mbean-monitoring">4. MBean Monitoring</h2>
+
+<p>다음 옵션을 추가하여, WLST MBean 을 Monitoring 할 수 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nt">-Djavax</span>.management.builder.initial<span class="o">=</span>weblogic.management.jmx.mbeanserver.WLSMBeanServerBuilder
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+MBean Coherence Tree를 찾아가려면, 아래와 같은 핵심코드가 필요하다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="c"># connect to server</span>
+connect<span class="o">(</span>username, password, url<span class="o">)</span>
+    
+<span class="c"># get LocalMemberId</span>
+<span class="nb">cd</span><span class="o">(</span><span class="s1">'custom:/Coherence/Coherence:type=Cluster'</span><span class="o">)</span>
+localMemberId <span class="o">=</span> str<span class="o">(</span>get<span class="o">(</span><span class="s1">'LocalMemberId'</span><span class="o">))</span>
+    
+<span class="c"># change dir to cohSessionApp</span>
+<span class="nb">cd</span><span class="o">(</span><span class="s1">'custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId='</span> + localMemberId + <span class="s1">',appId=&lt;app-name&gt;'</span><span class="o">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /><br /></p>
+<h2 id="5-jmx-monitoring">5. JMX Monitoring</h2>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/manage/using-jmx-manage-oracle-coherence.html#GUID-844DAAE6-6F00-4B15-AA44-47C3F595A6C5">Allowing Remote Access to Oracle Coherence MBeans</a></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="nt">-Dcoherence</span>.management<span class="o">=</span>all
+<span class="nt">-Dcoherence</span>.management.remote<span class="o">=</span><span class="nb">true</span>
+<span class="nt">-Dcom</span>.sun.management.jmxremote.port<span class="o">=</span>&lt;JMX port&gt;
+<span class="nt">-Dcom</span>.sun.management.jmxremote.authenticate<span class="o">=</span><span class="nb">false</span>
+<span class="nt">-Dcom</span>.sun.management.jmxremote.ssl<span class="o">=</span><span class="nb">false</span>
+<span class="nt">-Djava</span>.rmi.server.hostname<span class="o">=</span>wls.local
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+Coherence Cluster를 사용하는 WebApp 이 배포된 Managed Coherence Server에 설정 후 JConsole을 통해 MBean 을 읽을 수 있다.</p>
+
+<p><br />
+<img src="/../assets/posts/images/How-to-use-Coherence-Web-14c/image-20230424145943477.png" alt="image-20230424145943477" style="zoom: 33%;" /></p>
+
+<p><br />
+Coherence - WebLogicHttpSessionManager - &lt;Member ID&gt; - &lt;Web App&gt; - Attributes 에서 처리되는 Session 통계를 알 수 있다.</p>
+
+<p><br />
+Member ID는 Node의 각 Attributes 에서 MemberName이나 ProcessName 으로 획득하면 수월하겠다.</p>
+
+<p><img src="/../assets/posts/images/How-to-use-Coherence-Web-14c/image-20230424151956264.png" alt="image-20230424151956264" /></p>
+
+<p><br />
+예시 화면에서는 Unique 하게 되어 있지 않은데, Operational Override File에서 지정하면 된다.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>      <span class="nt">&lt;process-name</span> <span class="na">system-property=</span><span class="s">"coherence.process"</span><span class="nt">&gt;</span>process_base_domain<span class="nt">&lt;/process-name&gt;</span>
+      <span class="nt">&lt;member-name</span>  <span class="na">system-property=</span><span class="s">"coherence.member"</span><span class="nt">&gt;</span>member_base_domain<span class="nt">&lt;/member-name&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /><br /></p>
+<h2 id="6-session-reaper-thread">6. Session Reaper Thread</h2>
+
+<p>App 에서 생성된 HTTP Session은 timeout-secs 만큼 유효하다.</p>
+
+<p>invalidation-internal-secs 마다 All HTTP Session을 Scan하여 invalid 한 session을 삭제하여 Memory를 확보한다.</p>
+
+<p><br /><br /></p>
+<h3 id="61-ready-for-test">6.1 Ready For Test</h3>
+
+<h4 id="1-wlst">(1) WLST</h4>
+
+<p><a href="#h-4-mbean-monitoring">4. MBean Monitoring</a> 을 이용하여 아래의 Code를 작성하고,</p>
+
+<p>Session 부하를 발생 시킬 때, Reaper Thread가 어떻게 동작하는지 알아본다.</p>
+
+<p><br />
+WLST MBean code</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+</pre></td><td class="rouge-code"><pre><span class="n">java</span> <span class="o">-</span><span class="n">Djava</span><span class="p">.</span><span class="n">security</span><span class="p">.</span><span class="n">egd</span><span class="o">=</span><span class="nb">file</span><span class="p">:</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">urandom</span> <span class="n">weblogic</span><span class="p">.</span><span class="n">WLST</span> <span class="o">&lt;&lt;</span> <span class="n">EOF</span>
+<span class="c1"># import
+</span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># log file
+</span><span class="n">fo</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">"/tmp/coh.log"</span><span class="p">,</span> <span class="s">"wb+"</span><span class="p">)</span>
+
+<span class="c1"># connection information
+</span><span class="n">username</span> <span class="o">=</span> <span class="s">'weblogic'</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s">'weblogic1'</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">'wls.local:8002'</span>
+
+<span class="c1"># connect to server
+</span><span class="n">connect</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+<span class="c1"># get LocalMemberId
+</span><span class="n">cd</span><span class="p">(</span><span class="s">'custom:/Coherence/Coherence:type=Cluster'</span><span class="p">)</span>
+<span class="n">localMemberId</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'LocalMemberId'</span><span class="p">))</span>
+
+<span class="c1"># change dir to cohSessionApp
+</span><span class="n">cd</span><span class="p">(</span><span class="s">'custom:/Coherence/Coherence:type=WebLogicHttpSessionManager,nodeId='</span> <span class="o">+</span> <span class="n">localMemberId</span> <span class="o">+</span> <span class="s">',appId=cohSessionAppcohSessionApp'</span><span class="p">)</span>
+
+<span class="n">sleep_in_ms</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">):</span>
+  <span class="c1">###### print MBeans ######
+</span>  <span class="c1">### Attr to Var ###
+</span>  <span class="c1"># Reaper Cycle
+</span>  <span class="n">LastReapCycle</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'LastReapCycle'</span><span class="p">))</span>
+  <span class="n">NextReapCycle</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'NextReapCycle'</span><span class="p">))</span>
+  
+  <span class="c1"># Reap Duration
+</span>  <span class="n">AverageReapDuration</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'AverageReapDuration'</span><span class="p">))</span>
+  <span class="n">LastReapDuration</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'LastReapDuration'</span><span class="p">))</span>
+  <span class="n">MaxReapDuration</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'MaxReapDuration'</span><span class="p">))</span>
+  
+  <span class="c1"># Reaped Sessions
+</span>  <span class="n">AverageReapedSessions</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'AverageReapedSessions'</span><span class="p">))</span>
+  <span class="n">MaxReapedSessions</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'MaxReapedSessions'</span><span class="p">))</span>
+  <span class="n">ReapedSessions</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'ReapedSessions'</span><span class="p">))</span>
+  <span class="n">ReapedSessionsTotal</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'ReapedSessionsTotal'</span><span class="p">))</span>
+  
+  <span class="c1"># Sessions
+</span>  <span class="n">SessionUpdates</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'SessionUpdates'</span><span class="p">))</span>
+  <span class="n">OverflowUpdates</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">'OverflowUpdates'</span><span class="p">))</span>
+  
+  <span class="c1">### Var to Log ###
+</span>  <span class="n">dm</span> <span class="o">=</span> <span class="s">" | "</span>
+  <span class="n">writeLogData</span> <span class="o">=</span> <span class="s">""</span>
+  
+  <span class="c1"># Print Init Header
+</span>  <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"LastReapCycle"</span> <span class="o">+</span> <span class="n">dm</span>
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"NextReapCycle"</span> <span class="o">+</span> <span class="n">dm</span>
+    
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"AverageReapDuration"</span> <span class="o">+</span> <span class="n">dm</span>
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"LastReapDuration"</span> <span class="o">+</span> <span class="n">dm</span>
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"MaxReapDuration"</span> <span class="o">+</span> <span class="n">dm</span>
+    
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"AverageReapedSessions"</span> <span class="o">+</span> <span class="n">dm</span>
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"MaxReapedSessions"</span> <span class="o">+</span> <span class="n">dm</span>
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"ReapedSessions"</span> <span class="o">+</span> <span class="n">dm</span>
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"ReapedSessionsTotal"</span> <span class="o">+</span> <span class="n">dm</span>
+    
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"SessionUpdates"</span> <span class="o">+</span> <span class="n">dm</span>
+    <span class="n">writeLogData</span> <span class="o">+=</span> <span class="s">"OverflowUpdates"</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span>
+  
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">+</span> <span class="n">dm</span>
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">LastReapCycle</span> <span class="o">+</span> <span class="n">dm</span>
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">NextReapCycle</span> <span class="o">+</span> <span class="n">dm</span>
+  
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">AverageReapDuration</span> <span class="o">+</span> <span class="n">dm</span>
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">LastReapDuration</span> <span class="o">+</span> <span class="n">dm</span>
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">MaxReapDuration</span> <span class="o">+</span> <span class="n">dm</span>
+  
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">AverageReapedSessions</span> <span class="o">+</span> <span class="n">dm</span>
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">MaxReapedSessions</span> <span class="o">+</span> <span class="n">dm</span>
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">ReapedSessions</span> <span class="o">+</span> <span class="n">dm</span>
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">ReapedSessionsTotal</span> <span class="o">+</span> <span class="n">dm</span>
+  
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">OverflowUpdates</span> <span class="o">+</span> <span class="n">dm</span>
+  <span class="n">writeLogData</span> <span class="o">+=</span> <span class="n">SessionUpdates</span>
+  
+  <span class="n">fo</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">writeLogData</span><span class="o">+</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+  <span class="n">fo</span><span class="p">.</span><span class="n">flush</span><span class="p">()</span>
+  <span class="k">print</span><span class="p">(</span><span class="n">writeLogData</span><span class="p">)</span>
+  <span class="n">Thread</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_in_ms</span><span class="p">)</span>
+
+<span class="n">fo</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+<span class="nb">exit</span><span class="p">()</span>
+<span class="n">EOF</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /><br /></p>
+<h4 id="2-test-application">(2) Test Application</h4>
+
+<p>Session 을 원하는 Size만큼 생성 시키는 Application은 <a href="http://localhost:4000/coherence/Coherence-Session-Test-Application">Coherence-Session-Test-Application</a> 을 사용한다.</p>
+
+<p><br /><br /></p>
+<h4 id="3-apache-jmeter">(3) Apache JMeter</h4>
+
+<p>Apache JMeter는 다음과 같이 설정했다.</p>
+
+<ul>
+  <li>Thread Group
+    <ul>
+      <li>Number of Threads (users): 50</li>
+      <li>Ramp-up period (seconds): 1</li>
+      <li>Loop Count: Infinite</li>
+      <li>Use KeepAlive: X (No)</li>
+      <li>Specify Thread lifetime
+        <ul>
+          <li>Duration(Seconds) : 300</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>1초 이내에 50명의 사용자가 준비되며, 지속적으로 신규 사용자처럼 유입된다.</p>
+
+<p>이 작업은 300 secs 동안 지속된다. TPS로 환산할 수 없으나, 성능이 좋지 않은 Local 에서 작업하기에는 꽤 클 것이다.</p>
+
+<p><br />
+성능이 좋지 않은 Local Test System 에서 작업하니, 사용자를 더 크게 늘릴 수 없었다.</p>
+
+<p>늘리는 경우, Coherence에 쌓이는 Cache 가 매우 많아 Reaper가 동작하지 않는 문제가 있었다.</p>
+
+<p><br /><br /></p>
+<h4 id="4-cache-serverclient">(4) Cache Server/Client</h4>
+
+<p>Cache Server(Coherence Web), Cache Client(WebLogic Server; MCS)는 물리적으로 같은 Node이며</p>
+
+<p>기본적으로 다음의 초기 환경을 구성하였다.</p>
+
+<p><br /></p>
+<ul>
+  <li>
+    <p>RHEL 8.7, 2 physical core (4 logic core with hyperthreading), JDK 1.8.0_351</p>
+  </li>
+  <li>Coherence Server 1 EA
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-Xms2048m -Xmx2048m</code></li>
+    </ul>
+  </li>
+  <li>Managed Coherence Server 1 EA
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-Xms3096m -Xmx3096m</code></li>
+      <li><code class="language-plaintext highlighter-rouge">coherence.session.localstorage=false</code></li>
+      <li><code class="language-plaintext highlighter-rouge">coherence.reaperdaemon.parallel=true</code></li>
+      <li><code class="language-plaintext highlighter-rouge">wm/CoherenceWorkManager</code> : Min(2) / Max(2)</li>
+      <li>Deployed ‘cohSessionApp’
+        <ul>
+          <li>Session Timeout Secs : 30</li>
+          <li>Invalidation Interval Secs : 60</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /><br /></p>
+<h3 id="62-50-users">6.2 50 Users</h3>
+
+<p>기본 환경 구성한대로, 50 Users 반복 요청 시에 쌓이는 Session Data와,</p>
+
+<p>30 Secs 마다 Session은 Invalid 된다.</p>
+
+<p>Invalid 된 Session을 정리하는 Reaper Thread가 어떻게 작업을 이루어 냈는지 Data를 뽑아내었다.</p>
+
+<p><br />
+JMeter로 부하를 인입하고, WLST로 Coherence에 Session이 적재된 것이 관측된 최초 지점부터 Data를 Grep해보면 대략 아래와 같이 쌓인다.</p>
+
+<p><br /></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre>LastReapCycle | NextReapCycle | AverageReapDuration | LastReapDuration | MaxReapDuration | AverageReapedSessions | MaxReapedSessions | ReapedSessions | ReapedSessionsTotal | SessionUpdates | OverflowUpdates
+
+...
+
+1 | Tue May 30 16:02:33 KST 2023 | Tue May 30 16:03:33 KST 2023 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 278 | 275
+2 | Tue May 30 16:02:33 KST 2023 | Tue May 30 16:03:33 KST 2023 | 0 | 0 | 0 | 0 | 0 | 0 | 
+
+...
+
+71 | Tue May 30 16:08:43 KST 2023 | Tue May 30 16:09:43 KST 2023 | 11485 | 5898 | 20649 | 6243 | 9865 | 5381 | 37458 | 37303 | 37289
+
+...
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+JMeter로 300 Secs 동안 요청이 인입되고 난뒤에는 종료될 것이다.</p>
+
+<p>초기, Session Data가 관측되지 않는 (SessionUpdates 가 0) Data는 제외.</p>
+
+<p>말기, Session Data가 더 이상 정리될 것이 없는 (ReapedSessionsTotal이 SessionUpdates 에 가까움) Data 까지만 수집한다.</p>
+
+<p><br />
+평균 또는 수집된 데이터를 보면,</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>AverageReapDuration</th>
+      <th>LastReapDuration</th>
+      <th>MaxReapDuration</th>
+      <th>AverageReapedSessions</th>
+      <th>MaxReapedSessions</th>
+      <th>ReapedSessions</th>
+      <th>ReapedSessionsTotal</th>
+      <th>SessionUpdates</th>
+      <th>OverflowUpdates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>4520.352113</td>
+      <td>9164.901408</td>
+      <td>12129</td>
+      <td>2680.43662</td>
+      <td>9631</td>
+      <td>6347.28169</td>
+      <td>38257</td>
+      <td>38123</td>
+      <td>38078</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+AverageReapDuration : Reap에 소요된 평균 시간 (평균값)</p>
+
+<p>LastReapDuration : 가장 마지막 Reap에 소요된 시간 (평균값)</p>
+
+<p>MaxReapDuration : Reap에 소요된 최대 시간 (최대값)</p>
+
+<p>AverageReapedSessions : Reaped Session의 평균 갯수, 평균적으로 Reap 1 Cycle 당 몇개의 Session이 Reaped 되는지를 나타냄 (평균값)</p>
+
+<p>MaxReapedSessions : Reaped Session의 최대 갯수, 한번에 최대 몇개의 Session이 Reaped 되었는지를 나타냄 (최대값)</p>
+
+<p>ReapedSessions : Reap 1 Cycle 당 한번에 몇개의 Session이 Reaped 되었는지 나타냄 (평균값)</p>
+
+<p>ReapedSessionTotal : 지금까지 총합 Reaped Session 갯수 (최대값)</p>
+
+<p>SessionUpdates : Session이 만들어지거나, Touched 되었을 때 집계 됨 (최대값)</p>
+
+<p>OverflowUpdates : Overflow는 큰 Session Data를 저장할 때 사용되는 Model이며, OverflowThreshold(default 1024) 크기를 넘어서는 Session의 총 Updates 갯수가 집계됨. (최대값)</p>
+
+<p><br />
+평균에 의미가 없는 값들은, 최대값으로 수집했다.</p>
+
+<p><br /><br /></p>
+<h3 id="63-50-users--4-threads">6.3 50 Users / 4 Threads</h3>
+
+<p>앞서, WebLogic WorkManager에 의해 Min/Max가 2 Threads로 환경을 구성하여 테스트했다면,</p>
+
+<p>이번에는 4 Threads로 구성하여 개선되는지 살펴본다.</p>
+
+<p><br /></p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre>  <span class="nt">&lt;self-tuning&gt;</span>
+    <span class="nt">&lt;min-threads-constraint&gt;</span>
+      <span class="nt">&lt;name&gt;</span>MinThreadsConstraint-0<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;target&gt;</span>myCluster<span class="nt">&lt;/target&gt;</span>
+      <span class="nt">&lt;count&gt;</span>4<span class="nt">&lt;/count&gt;</span>
+    <span class="nt">&lt;/min-threads-constraint&gt;</span>
+    <span class="nt">&lt;max-threads-constraint&gt;</span>
+      <span class="nt">&lt;name&gt;</span>MaxThreadsConstraint-0<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;target&gt;</span>myCluster<span class="nt">&lt;/target&gt;</span>
+      <span class="nt">&lt;count&gt;</span>4<span class="nt">&lt;/count&gt;</span>
+    <span class="nt">&lt;/max-threads-constraint&gt;</span>
+    <span class="nt">&lt;work-manager&gt;</span>
+      <span class="nt">&lt;name&gt;</span>wm/CoherenceWorkManager<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;target&gt;</span>myCluster<span class="nt">&lt;/target&gt;</span>
+    <span class="nt">&lt;/work-manager&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+평균은,</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>AverageReapDuration</th>
+      <th>LastReapDuration</th>
+      <th>MaxReapDuration</th>
+      <th>AverageReapedSessions</th>
+      <th>MaxReapedSessions</th>
+      <th>ReapedSessions</th>
+      <th>ReapedSessionsTotal</th>
+      <th>SessionUpdates</th>
+      <th>OverflowUpdates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>4446.315068</td>
+      <td>8821.205479</td>
+      <td>13252</td>
+      <td>2884.260274</td>
+      <td>9754</td>
+      <td>6474.520548</td>
+      <td>37743</td>
+      <td>37582</td>
+      <td>37551</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+검증을 위해, 동일하게 한번 더 테스트하였는데 아래와 같다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>AverageReapDuration</th>
+      <th>LastReapDuration</th>
+      <th>MaxReapDuration</th>
+      <th>AverageReapedSessions</th>
+      <th>MaxReapedSessions</th>
+      <th>ReapedSessions</th>
+      <th>ReapedSessionsTotal</th>
+      <th>SessionUpdates</th>
+      <th>OverflowUpdates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>3637.561644</td>
+      <td>10007.67123</td>
+      <td>14751</td>
+      <td>2068.520548</td>
+      <td>9829</td>
+      <td>6447.589041</td>
+      <td>38384</td>
+      <td>38203</td>
+      <td>38255</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+이외에도 여러번의 테스트를 해보았는데, 결과마다 편차가 조금 심한 편이지만 대체적으로 Reaper Thread를 늘려 개선이 되는 것은 확인이 된다.</p>
+
+<p><br /><br /></p>
+<h3 id="64-50-users--8-threads">6.4 50 Users / 8 Threads</h3>
+
+<p>평균은,</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>AverageReapDuration</th>
+      <th>LastReapDuration</th>
+      <th>MaxReapDuration</th>
+      <th>AverageReapedSessions</th>
+      <th>MaxReapedSessions</th>
+      <th>ReapedSessions</th>
+      <th>ReapedSessionsTotal</th>
+      <th>SessionUpdates</th>
+      <th>OverflowUpdates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>4944.534247</td>
+      <td>9499.547945</td>
+      <td>13958</td>
+      <td>2801.657534</td>
+      <td>9838</td>
+      <td>6346.931507</td>
+      <td>37692</td>
+      <td>37577</td>
+      <td>37579</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+재차 테스트 시에,</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>AverageReapDuration</th>
+      <th>LastReapDuration</th>
+      <th>MaxReapDuration</th>
+      <th>AverageReapedSessions</th>
+      <th>MaxReapedSessions</th>
+      <th>ReapedSessions</th>
+      <th>ReapedSessionsTotal</th>
+      <th>SessionUpdates</th>
+      <th>OverflowUpdates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>6347.72</td>
+      <td>9040.72</td>
+      <td>16162</td>
+      <td>3886.213333</td>
+      <td>9784</td>
+      <td>6437.76</td>
+      <td>38259</td>
+      <td>38072</td>
+      <td>38081</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+오히려 감소하기도 하고, 특별히 드라마틱한 변화가 없다.</p>
+
+<p><br /><br /></p>
+<h3 id="65-50-users--12-threads">6.5 50 Users / 12 Threads</h3>
+
+<p>평균은,</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>AverageReapDuration</th>
+      <th>LastReapDuration</th>
+      <th>MaxReapDuration</th>
+      <th>AverageReapedSessions</th>
+      <th>MaxReapedSessions</th>
+      <th>ReapedSessions</th>
+      <th>ReapedSessionsTotal</th>
+      <th>SessionUpdates</th>
+      <th>OverflowUpdates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>3344.381579</td>
+      <td>8949.065789</td>
+      <td>22647</td>
+      <td>1913.447368</td>
+      <td>9654</td>
+      <td>6253.592105</td>
+      <td>38098</td>
+      <td>37919</td>
+      <td>37915</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br />
+재차 테스트,</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>AverageReapDuration</th>
+      <th>LastReapDuration</th>
+      <th>MaxReapDuration</th>
+      <th>AverageReapedSessions</th>
+      <th>MaxReapedSessions</th>
+      <th>ReapedSessions</th>
+      <th>ReapedSessionsTotal</th>
+      <th>SessionUpdates</th>
+      <th>OverflowUpdates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>6243.068493</td>
+      <td>9646.287671</td>
+      <td>13999</td>
+      <td>3526.219178</td>
+      <td>9837</td>
+      <td>6268.753425</td>
+      <td>37427</td>
+      <td>37278</td>
+      <td>37320</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br /><br /></p>
+<h3 id="66-overflowupdates">6.6 OverflowUpdates</h3>
+
+<p>OverflowUpdates : Overflow는 큰 Session Data를 저장할 때 사용되는 Model이며, OverflowThreshold(default 1024) 크기를 넘어서는 Session의 총 Updates 갯수가 집계됨.</p>
+
+<p><br />
+Test App에서 생성하는 Session Data의 Size를 1024 bytes 보다 작게 만들 경우,</p>
+
+<p>SessionUpdates는 증가하되, OverflowUpdates는 증가하지 않을 것으로 보이는데,</p>
+
+<p>이 부분을 검증하기 위해서 Session Data 의 정확한 Size를 Inspect 해야 한다.</p>
+
+<p><br />
+JFR, Heap Dump, Instrumentation.getObjectSize 등등 여러가지를 확인해보고 있으나,</p>
+
+<p>껍데기 Size만 확인되는 등 정확한 수치가 나오질 않아 좀 더 확인해봐야 하는 부분이다.</p>
+
+<p><br />
+이후에, 여러날에 걸쳐 확인을 해보았는데 openjdk 의 JOL(Java Object Layout) Library 를 활용하여 Object Size를 측정할 수 있었다.</p>
+
+<p><a href="http://localhost:4000/programming/Java-Object-Layout">Java-Object-Layout</a> Post 에서 다루었다.</p>
+
+<p><br />
+Post에 따르면, _obj Byte Array를 정확히 실제 크기 1024 Bytes에 맞추기 위해서는</p>
+
+<ul>
+  <li>Header bytes 16 를 빼고</li>
+  <li>Gap 8bytes 의 배수에 맞게끔</li>
+</ul>
+
+<p>설정하면 된다고 했다.</p>
+
+<p><br />
+그러므로 _obj Byte Array 갯수는 정확히 1008 개를 만들면, 실제 JVM Heap Memory에 올라가는 Object Size는 1024 Bytes가 된다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">byte[] _obj = new byte[1008];</code></p>
+
+<p><br />
+이제 Coherence Session Data를 Update 하고 MBean을 살펴보면</p>
+
+<ul>
+  <li>OverflowThreshold : 1024</li>
+  <li>OverflowUpdates : 0</li>
+  <li>OverflowMaxSize : 0</li>
+</ul>
+
+<p>Session Data가 1024 bytes 보다 작기 때문에, 1회 호출 시에는 Overflow cache 가 아닌 것이 확인된다.</p>
+
+<p><br />
+연속 2회 호출하여, Session Data 크기를 증분 시키면,</p>
+
+<ul>
+  <li>OverflowThreshold : 1024</li>
+  <li>OverflowUpdates : 1</li>
+  <li>OverflowMaxSize : 2019</li>
+</ul>
+
+<p>예상값 2032 Bytes 보다 작은 2019 Bytes로 확인되며, Overflow 가 update 되었다.</p>
+
+<p><br />
+연속 호출을 더 여러번 해보았는데, 항상 JVM Heap memory 에 적재되는 실제 Size보다 항상 13 Bytes가 적게 측정되었다.</p>
+
+<p>Coherence 의 Session을 다루는 Object를 JOL로 확인해보고 싶으나, Object 를 특정짓지 못하였다.</p>
+
+<p><br /><br /></p>
+<h2 id="7-outcomes">7. Outcomes</h2>
+
+<p>성능이 좋지 않은 Local Test 환경에서는 4 Reaper Thread 환경 부터 그나마 Tuning 의 결과가 확인이 된다.</p>
+
+<p>그럼에도 반복 수행 시 Local Test 환경의 영향인지, 들쑥 날쑥하고 드라마틱한 결과를 보여주지는 않는다.</p>
+
+<p><br />
+Test 결과 또한 좋았으면 했지만 그렇지 않았으므로</p>
+
+<p>MBean 항목에 대한 이해를 얻은 것으로 마무리 해야 할 듯 싶다.</p>
+
+<p><br />
+그 외에도, JOL 을 이용하여 Overflowupdate 기준을 실제 추적하는 Test도 진행할 수 있었다.</p>
+
+<p><br /><br /></p>
+<h2 id="8-references">8. References</h2>
+
+<p><a href="https://docs.oracle.com/en//middleware/standalone/coherence/14.1.1.0/administer-http-sessions/monitoring-applications.html#GUID-93AB0B53-6335-4E55-B66C-8CA566EEE8A0">Overflow 관련</a></p>
+
+<p><a href="https://dhkim900331.github.io/coherence/How-To-Monitor-Coherence-Web-3#h-32-mbean-%ED%95%AD%EB%AA%A9-%EC%84%A4%EB%AA%85">WLST로 수집되는 MBean 항목 부연 설명 관련 자료</a></p>
+
+<p><a href="http://localhost:4000/programming/Java-Object-Layout">Java-Object-Layout</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/develop-applications/setting-cluster.html#GUID-D3FDEDBF-B97A-4C8D-BEFF-AB54C9D94CB5">Specifying a Cluster’s Multicast Address and Port</a></p>
+
+<p><strong>Recommended Thread-count-min And Thread-count-max Values in Coherence (Doc ID 2294067.1)</strong></p>
+
+<p><strong>Explanation Of Meaning For Coherence Threadpool Error Message (Doc ID 2728051.1)</strong></p>
+:ET

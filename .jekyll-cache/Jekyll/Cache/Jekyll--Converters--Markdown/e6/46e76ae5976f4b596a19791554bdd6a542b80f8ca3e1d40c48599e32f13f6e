@@ -1,0 +1,12 @@
+I"�<p><br /># 1. 개요
+Ansible installation 후에 Sample Playbook testing.</p>
+
+<p><br /># 2. 테스트
+hosts 파일에 테스트용 VM 을 나열하고,
+/tmp 에 디렉토리 생성 playbook
+/tmp 에 생성한 디렉토리 삭제 playbook
+위 playbook 을 all-in-one 으로 만드는 import playbook
+총 3가지 테스트한 파일</p>
+
+<p><a href="/assets/upload/20210803.tar.gz">20210803.tar.gz</a></p>
+:ET

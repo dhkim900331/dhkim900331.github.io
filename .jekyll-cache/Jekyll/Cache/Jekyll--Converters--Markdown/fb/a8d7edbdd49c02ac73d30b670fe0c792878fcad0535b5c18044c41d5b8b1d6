@@ -1,0 +1,172 @@
+I"8<h2 id="1-개요">1. 개요</h2>
+
+<p>Oracle HTTP Server 12cR2 Configurations</p>
+
+<p><br /></p>
+<h2 id="2-performance">2. Performance</h2>
+
+<p>Performance에 직접적으로 연관된 설정을 살펴본다.</p>
+
+<p><br /></p>
+<h3 id="21-mpm">2.1 MPM</h3>
+
+<p>ohs.plugins.nodemanager.properties 파일에서 변경한다.</p>
+
+<pre><code class="language-ohs.plugins.nodemanager.properties">#   mpm                   whether to use prefork or worker or event MPM
+#       valid values:     "prefork" and "worker" and "event"
+#       default:          "event"
+
+mpm = worker
+</code></pre>
+
+<p><br />
+httpd.conf 파일에서 변경한다. (예시로 mpm_worker 방식)</p>
+
+<pre><code class="language-httpd.conf">&lt;IfModule mpm_worker_module&gt;
+    StartServers              1
+    ServerLimit               4
+    MinSpareThreads         256
+    MaxSpareThreads         768
+    ThreadsPerChild         256
+    ThreadLimit             256
+    MaxRequestWorkers      1024
+    MaxConnectionsPerChild    0
+    Mutex fcntl:${ORACLE_INSTANCE}/servers/${COMPONENT_NAME}/logs
+&lt;/IfModule&gt;
+</code></pre>
+
+<p><br /></p>
+<h3 id="22-keep-alive">2.2 Keep Alive</h3>
+
+<p>Client 와 Web 간의 Keepalive는 httpd.conf에 설정한다.</p>
+
+<pre><code class="language-httpd.conf">KeepAlive On
+KeepAliveTimeout 5
+</code></pre>
+
+<p><br />
+Web-ProxyPlugin과 WAS는 <a href="#h-6-proxy-plugin">6. Proxy Plugin</a> 과 같이 설정한다.</p>
+
+<pre><code class="language-mod_wl_ohs.conf">     KeepAliveEnabled ON
+     KeepAliveSecs 5
+</code></pre>
+
+<p><br /></p>
+<h2 id="3-security">3. Security</h2>
+
+<h3 id="31-http-method">3.1 HTTP Method</h3>
+
+<pre><code class="language-httpd.conf">DocumentRoot "..."
+&lt;Directory "..."&gt;
+	...
+    &lt;LimitExcept POST GET&gt;
+       Require all denied
+    &lt;/LimitExcept&gt;
+&lt;/Directory&gt;
+</code></pre>
+
+<p><br />
+Require method 지시어로 올바른 동작이 되지 않아 LimitExcept 지시어를 사용하였다.</p>
+
+<p><br /></p>
+<h3 id="32-options">3.2 Options</h3>
+
+<pre><code class="language-httpd.conf">DocumentRoot "..."
+&lt;Directory "..."&gt;
+	...
+    Options None
+&lt;/Directory&gt;
+</code></pre>
+
+<p><br /></p>
+<h2 id="4-logging">4. Logging</h2>
+
+<p>%D LogFormat을 추가하였다.</p>
+
+<pre><code class="language-httpd.conf">LogFormat "%h %l %u %t %E \"%r\" %&gt;s %b \"%{Referer}i\" \"%{User-Agent}i\" (%D)" combined
+</code></pre>
+
+<p><br />
+access_log Rotation (KST 00~24)</p>
+
+<pre><code class="language-httpd.conf">CustomLog "||${PRODUCT_HOME}/bin/odl_rotatelogs -u:32400 ${ORACLE_INSTANCE}/servers/${COMPONENT_NAME}/logs/access_log 86400" combined
+</code></pre>
+
+<p><br />
+error_log Rotation (KST 00~24)</p>
+
+<pre><code class="language-httpd.conf">ErrorLog "||${PRODUCT_HOME}/bin/odl_rotatelogs -u:32400 ${ORACLE_INSTANCE}/servers/${COMPONENT_NAME}/logs/error_log 86400"
+
+...
+OraLogMode apache
+...
+</code></pre>
+
+<p><br /></p>
+<h2 id="5-monitoring">5. Monitoring</h2>
+
+<h3 id="51-server-status">5.1 server-status</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>&lt;Location /server-status&gt;
+    SetHandler server-status
+    Require ip 127
+&lt;/Location&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+/server-status 페이지를 접근하는 Client IP가 127 으로 시작하는 경우에만 허가한다.</p>
+
+<p><br /></p>
+<h3 id="52-debugconfiginfo">5.2 DebugConfigInfo</h3>
+
+<p>Proxy Plugin에서 다음의 옵션을 활성화 할 경우, Query String <code class="language-plaintext highlighter-rouge">__WebLogicBridgeConfig</code> 으로 접근 할 수 있다.</p>
+
+<pre><code class="language-mod_wl_ohs.conf">DebugConfigInfo On
+</code></pre>
+
+<p><br />
+<a href="https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/develop-plugin/plugin_params.html#GUID-2C0354F4-218A-4EBF-8BFD-B3140F7FE736">공식 문서</a>에서는, <code class="language-plaintext highlighter-rouge">keep this parameter turned OFF in production systems</code> 으로 권장하고 있다.</p>
+
+<p>혹은, 다음과 같이 설정하여 특정 접근만 허용할 수 있으므로 Debug 시에는 활용 할 수 있겠다.</p>
+
+<pre><code class="language-mod_wl_ohs.conf">&lt;Location /serverSide&gt;
+     WLSRequest On
+
+     &lt;If "%{QUERY_STRING} =~ /__WebLogicBridgeConfig/"&gt;
+          Require ip 127
+     &lt;/If&gt;
+&lt;/Location&gt;
+</code></pre>
+
+<p><br /><br /></p>
+<h2 id="6-proxy-plugin">6. Proxy Plugin</h2>
+
+<pre><code class="language-mod_wl_ohs.conf">&lt;IfModule weblogic_module&gt;
+     WebLogicCluster wls.local:8003,wls.local:8004
+     ConnectRetrySecs 1
+     WLSocketTimeoutSecs 2
+     ConnectTimeoutSecs 5
+     MaxSkipTime 10
+     WLIOTimeoutSecs 300
+     DynamicServerList OFF
+     Idempotent OFF
+     FileCaching OFF
+     KeepAliveEnabled ON
+     KeepAliveSecs 5
+     WLCookieName JSESSIONID
+
+     MatchExpression *.jsp
+&lt;/IfModule&gt;
+
+&lt;Location /serverSide&gt;
+     WLSRequest On
+&lt;/Location&gt;
+</code></pre>
+
+<p><br />
+/serverSide 호출 시 WLS으로 응답한다.</p>
+:ET

@@ -1,0 +1,283 @@
+I"�+<h2 id="1-개요">1. 개요</h2>
+
+<p>Apache에서 Back-end Server에서 return 받은 Error code를 다루어 보자.</p>
+
+<p><br /></p>
+<h2 id="2-tomcat의-error-page">2. Tomcat의 Error Page</h2>
+
+<p>여기서 말하는 Back-end Server로 Tomcat을 사용하고,</p>
+
+<p>Tomcat에서 발생하는 Error Code는 다음과 같이 자체 처리할 수 있다.</p>
+
+<p><br /></p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;web-app&gt;</span>
+  <span class="nt">&lt;error-page&gt;</span>
+    <span class="nt">&lt;error-code&gt;</span>404<span class="nt">&lt;/error-code&gt;</span>
+    <span class="nt">&lt;location&gt;</span>/error.jsp<span class="nt">&lt;/location&gt;</span>
+  <span class="nt">&lt;/error-page&gt;</span>
+ <span class="nt">&lt;error-page&gt;</span>
+    <span class="nt">&lt;error-code&gt;</span>500<span class="nt">&lt;/error-code&gt;</span>
+    <span class="nt">&lt;location&gt;</span>/error.jsp<span class="nt">&lt;/location&gt;</span>
+  <span class="nt">&lt;/error-page&gt;</span>
+<span class="nt">&lt;/web-app&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+Tomcat 어플리케이션 내에서 발생한 HTTP Code 404와 500은 error.jsp 를 호출한다.</p>
+
+<p><br /></p>
+<h2 id="3-apache의-error-document">3. Apache의 Error Document</h2>
+
+<p>Apache WEB에서는 다음의 설정을 한다.</p>
+
+<p><br /></p>
+<pre><code class="language-httpd.conf">ErrorDocument 404 /error.html
+ErrorDocument 500 /error.html
+ErrorDocument 502 /error.html
+ErrorDocument 503 /error.html
+</code></pre>
+
+<p>순수게, 위 옵션만으로 기동되는 Apache의 경우 404~503 Code는 Apache/htdocs/error.html 을 호출한다.</p>
+
+<p><br /></p>
+<h2 id="4-webwas-tier-에서의-error-handling">4. WEB/WAS Tier 에서의 Error Handling</h2>
+
+<h3 id="41-proxyerroroverride-off">4.1 ProxyErrorOverride Off</h3>
+
+<p>아래의 설정은 Apache WEB - Tomcat WAS 구조에서 흔히 사용한다.</p>
+
+<pre><code class="language-httpd.conf">ErrorDocument 404 /error.html
+ErrorDocument 500 /error.html
+ErrorDocument 502 /error.html
+ErrorDocument 503 /error.html
+
+ProxyPassMatch ^(/.*\.html)$ !
+ProxyErrorOverride Off
+ProxyPass        /      http://192.168.56.2:8081/
+ProxyPassReverse /      http://192.168.56.2:8081/
+</code></pre>
+
+<p><code class="language-plaintext highlighter-rouge">http://192.168.56.2:8081</code> 은 Back-end Tomcat 이다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">ProxyErrorOverride Off</code> 옵션으로 인하여 Tomcat에서 발생한 HTTP Error Code는 Apache 까지 도달하지만</p>
+
+<p>Apache 에서 해석하지 않아 Apache의 error.html을 호출하지 않는다.</p>
+
+<p><br />
+Apache 에 없는 NoExistPage를 호출해 보면,</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl <span class="nt">-v</span> <span class="si">$(</span><span class="nb">hostname</span> <span class="nt">-i</span><span class="si">)</span>:80/NoExistPage
+<span class="k">*</span> About to connect<span class="o">()</span> to 192.168.56.2 port 80 <span class="o">(</span><span class="c">#0)</span>
+<span class="k">*</span>   Trying 192.168.56.2...
+<span class="k">*</span> Connected to 192.168.56.2 <span class="o">(</span>192.168.56.2<span class="o">)</span> port 80 <span class="o">(</span><span class="c">#0)</span>
+<span class="o">&gt;</span> GET /NoExistPage HTTP/1.1
+<span class="o">&gt;</span> User-Agent: curl/7.29.0
+<span class="o">&gt;</span> Host: 192.168.56.2
+<span class="o">&gt;</span> Accept: <span class="k">*</span>/<span class="k">*</span>
+<span class="o">&gt;</span>
+&lt; HTTP/1.1 404
+&lt; Date: Tue, 11 Oct 2022 01:39:49 GMT
+&lt; Server: Apache
+&lt; Content-Type: text/html<span class="p">;</span><span class="nv">charset</span><span class="o">=</span>ISO-8859-1
+&lt; Content-Length: 13
+&lt; Set-Cookie: <span class="nv">SCOUTER</span><span class="o">=</span>z269a2bov57hva<span class="p">;</span> Max-Age<span class="o">=</span>2147483647<span class="p">;</span> <span class="nv">Expires</span><span class="o">=</span>Sun, 29-Oct-2090 04:53:56 GMT<span class="p">;</span> <span class="nv">Path</span><span class="o">=</span>/
+&lt; Set-Cookie: <span class="nv">SCOUTER</span><span class="o">=</span>x1rrsg9iei3mls<span class="p">;</span> Max-Age<span class="o">=</span>2147483647<span class="p">;</span> <span class="nv">Expires</span><span class="o">=</span>Sun, 29-Oct-2090 04:53:56 GMT<span class="p">;</span> <span class="nv">Path</span><span class="o">=</span>/
+&lt; Set-Cookie: <span class="nv">JSESSIONID</span><span class="o">=</span>D156EF815B53F401D74189ACC6D9E14A.tomcat_8.5.82<span class="p">;</span> <span class="nv">Path</span><span class="o">=</span>/<span class="p">;</span> HttpOnly
+&lt;
+tomcat error
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>HTTP Status Code 404는 Apache 까지 전달되지만, Contents는 Tomcat의 Error page가 보여진다.</p>
+
+<p><br /></p>
+<h3 id="42-proxyerroroverride-on">4.2 ProxyErrorOverride On</h3>
+
+<p>ProxyErrorOverride On 으로 변경 후,</p>
+
+<pre><code class="language-httpd.conf">ErrorDocument 404 /error.html
+ErrorDocument 500 /error.html
+ErrorDocument 502 /error.html
+ErrorDocument 503 /error.html
+
+ProxyPassMatch ^(/.*\.html)$ !
+ProxyErrorOverride On
+ProxyPass        /      http://192.168.56.2:8081/
+ProxyPassReverse /      http://192.168.56.2:8081/
+</code></pre>
+
+<p><br />
+없는 페이지 NoExistPage 를 다시 호출한다면</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl <span class="nt">-v</span> <span class="si">$(</span><span class="nb">hostname</span> <span class="nt">-i</span><span class="si">)</span>:80/NoExistPage
+<span class="k">*</span> About to connect<span class="o">()</span> to 192.168.56.2 port 80 <span class="o">(</span><span class="c">#0)</span>
+<span class="k">*</span>   Trying 192.168.56.2...
+<span class="k">*</span> Connected to 192.168.56.2 <span class="o">(</span>192.168.56.2<span class="o">)</span> port 80 <span class="o">(</span><span class="c">#0)</span>
+<span class="o">&gt;</span> GET /NoExistPage HTTP/1.1
+<span class="o">&gt;</span> User-Agent: curl/7.29.0
+<span class="o">&gt;</span> Host: 192.168.56.2
+<span class="o">&gt;</span> Accept: <span class="k">*</span>/<span class="k">*</span>
+<span class="o">&gt;</span>
+&lt; HTTP/1.1 404 Not Found
+&lt; Date: Tue, 11 Oct 2022 01:42:41 GMT
+&lt; Server: Apache
+&lt; Last-Modified: Tue, 11 Oct 2022 01:22:38 GMT
+&lt; ETag: <span class="s2">"19-5eab81c966288"</span>
+&lt; Accept-Ranges: bytes
+&lt; Content-Length: 25
+&lt; Content-Type: text/html
+&lt;
+apache_2.4.54/error.html
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>HTTP Status Code 404 Not Found (<em>아까와 조금 다르지만</em>) 가 전달되고, Apache의 Error page가 보여진다.</p>
+
+<p><br /></p>
+<h3 id="43-was-down-상황에서의-error-handling">4.3 WAS Down 상황에서의 Error Handling</h3>
+
+<p><code class="language-plaintext highlighter-rouge">ProxyErrorOverride Off</code> 설정을 하면 Tomcat의 Error는 Tomcat에서 처리된다.</p>
+
+<p>Tomcat이 Shutdown 상태에서는,</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl <span class="nt">-v</span> <span class="si">$(</span><span class="nb">hostname</span> <span class="nt">-i</span><span class="si">)</span>:80/NoExistPage
+<span class="k">*</span> About to connect<span class="o">()</span> to 192.168.56.2 port 80 <span class="o">(</span><span class="c">#0)</span>
+<span class="k">*</span>   Trying 192.168.56.2...
+<span class="k">*</span> Connected to 192.168.56.2 <span class="o">(</span>192.168.56.2<span class="o">)</span> port 80 <span class="o">(</span><span class="c">#0)</span>
+<span class="o">&gt;</span> GET /NoExistPage HTTP/1.1
+<span class="o">&gt;</span> User-Agent: curl/7.29.0
+<span class="o">&gt;</span> Host: 192.168.56.2
+<span class="o">&gt;</span> Accept: <span class="k">*</span>/<span class="k">*</span>
+<span class="o">&gt;</span>
+&lt; HTTP/1.1 503 Service Unavailable
+&lt; Date: Tue, 11 Oct 2022 01:56:33 GMT
+&lt; Server: Apache
+&lt; Last-Modified: Tue, 11 Oct 2022 01:22:38 GMT
+&lt; ETag: <span class="s2">"19-5eab81c966288"</span>
+&lt; Accept-Ranges: bytes
+&lt; Content-Length: 25
+&lt; Connection: close
+&lt; Content-Type: text/html
+&lt;
+apache_2.4.54/error.html
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+mod_proxy 모듈이 Tomcat 연결이 되지 않아 자체적으로 HTTP 503 Service Unavailable 를 생산하며,</p>
+
+<p>Apache의 Error page를 호출하였다.</p>
+
+<p><br /></p>
+<h3 id="44-lb-환경에서의-error-handling">4.4 LB 환경에서의 Error Handling</h3>
+
+<p>WEB → LB → WAS 환경에서, WAS Down 시에 LB는 HTTP 502 또는 503 를 Return 할 수 있겠다.</p>
+
+<p><br />
+LB는 해당 이슈 재현시에 Apache 를 사용했지만, 다음과 같이 최대한 LB와 유사하게 하기 위해 설정하였다.</p>
+
+<pre><code class="language-LB"> &lt;IfDefine Multi-Line-Comments&gt;
+   ErrorDocument 404 /error.html
+   ErrorDocument 500 /error.html
+   ErrorDocument 502 /error.html
+   ErrorDocument 503 /error.html
+ &lt;/IfDefine&gt;
+ 
+ ProxyPassMatch ^(/.*\.html)$ !
+ ProxyErrorOverride Off
+ ProxyPass        /      http://192.168.56.2:8081/
+ ProxyPassReverse /      http://192.168.56.2:8081/
+</code></pre>
+
+<blockquote>
+  <p>IfDefine 허수 변수값을 선언하여 범위 주석을 하였다.</p>
+</blockquote>
+
+<p><br />
+최전선 WEB은 다음 설정을 하였다.</p>
+
+<pre><code class="language-httpd.conf">ErrorDocument 404 /error.html
+ErrorDocument 500 /error.html
+ErrorDocument 502 /error.html
+ErrorDocument 503 /error.html
+
+ProxyPassMatch ^(/.*\.html)$ !
+ProxyErrorOverride On 502 503
+ProxyPass        /      http://192.168.56.2:180/
+ProxyPassReverse /      http://192.168.56.2:180/
+</code></pre>
+
+<p>HTTP Status Code <code class="language-plaintext highlighter-rouge">502, 503</code> 에 대해서만 Apache WEB에서 ErrorDocument 처리한다.</p>
+
+<p><br />
+여기 내용에서는 <code class="language-plaintext highlighter-rouge">ProxyErrorOverride</code> 의 3번째 Arguments를 통해 특정 HTTP Status Code를 직접 Handling 할 수 있다는 것을 살펴보기 위함이다.</p>
+
+<p>굳이 LB 를 예시로 든것이다.</p>
+
+<p>특별한 사정이 있는 것은 아니다</p>
+:ET

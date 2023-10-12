@@ -1,0 +1,111 @@
+I".<h2 id="1-개요">1. 개요</h2>
+
+<p>DB 상태 출력하는 WLST Script</p>
+
+<p><br /><br /># 2. 설명</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+</pre></td><td class="rouge-code"><pre><span class="n">출처</span><span class="p">:</span>  <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">middlewaremagic</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">weblogic</span><span class="o">/</span><span class="err">?</span><span class="n">p</span><span class="o">=</span><span class="mi">4917</span>
+
+<span class="c1">#############################################################################
+#
+# @author Copyright (c) 2010 - 2011 by Middleware Magic, All Rights Reserved.
+#
+#############################################################################
+</span> 
+<span class="n">connect</span><span class="p">(</span><span class="s">'weblogic'</span><span class="p">,</span><span class="s">'weblogic'</span><span class="p">,</span><span class="s">'t3://localhost:7001'</span><span class="p">)</span>
+<span class="n">allServers</span><span class="o">=</span><span class="n">domainRuntimeService</span><span class="p">.</span><span class="n">getServerRuntimes</span><span class="p">();</span>
+<span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">allServers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+  <span class="k">for</span> <span class="n">tempServer</span> <span class="ow">in</span> <span class="n">allServers</span><span class="p">:</span>
+    <span class="n">jdbcServiceRT</span> <span class="o">=</span> <span class="n">tempServer</span><span class="p">.</span><span class="n">getJDBCServiceRuntime</span><span class="p">();</span>
+    <span class="n">dataSources</span> <span class="o">=</span> <span class="n">jdbcServiceRT</span><span class="p">.</span><span class="n">getJDBCDataSourceRuntimeMBeans</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataSources</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">dataSource</span> <span class="ow">in</span> <span class="n">dataSources</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">'ActiveConnectionsAverageCount      '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getActiveConnectionsAverageCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'ActiveConnectionsCurrentCount      '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getActiveConnectionsCurrentCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'ActiveConnectionsHighCount         '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getActiveConnectionsHighCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'ConnectionDelayTime                '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getConnectionDelayTime</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'ConnectionsTotalCount              '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getConnectionsTotalCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'CurrCapacity                       '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getCurrCapacity</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'CurrCapacityHighCount              '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getCurrCapacityHighCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'DeploymentState                    '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getDeploymentState</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'FailedReserveRequestCount          '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getFailedReserveRequestCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'FailuresToReconnectCount           '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getFailuresToReconnectCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'HighestNumAvailable                '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getHighestNumAvailable</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'HighestNumUnavailable              '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getHighestNumUnavailable</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'LeakedConnectionCount              '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getLeakedConnectionCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'ModuleId                           '</span>  <span class="p">,</span>  <span class="n">dataSource</span><span class="p">.</span><span class="n">getModuleId</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'Name                               '</span>  <span class="p">,</span>  <span class="n">dataSource</span><span class="p">.</span><span class="n">getName</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'NumAvailable                       '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getNumAvailable</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'NumUnavailable                     '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getNumUnavailable</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'Parent                             '</span>  <span class="p">,</span>  <span class="n">dataSource</span><span class="p">.</span><span class="n">getParent</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'PrepStmtCacheAccessCount           '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getPrepStmtCacheAccessCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'PrepStmtCacheAddCount              '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getPrepStmtCacheAddCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'PrepStmtCacheCurrentSize           '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getPrepStmtCacheCurrentSize</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'PrepStmtCacheDeleteCount           '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getPrepStmtCacheDeleteCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'PrepStmtCacheHitCount              '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getPrepStmtCacheHitCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'PrepStmtCacheMissCount             '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getPrepStmtCacheMissCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'Properties                         '</span>  <span class="p">,</span>  <span class="n">dataSource</span><span class="p">.</span><span class="n">getProperties</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'ReserveRequestCount                '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getReserveRequestCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'State                              '</span>  <span class="p">,</span>  <span class="n">dataSource</span><span class="p">.</span><span class="n">getState</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'Type                               '</span>  <span class="p">,</span>  <span class="n">dataSource</span><span class="p">.</span><span class="n">getType</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'VersionJDBCDriver                  '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getVersionJDBCDriver</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'WaitingForConnectionCurrentCount   '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getWaitingForConnectionCurrentCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'WaitingForConnectionFailureTotal   '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getWaitingForConnectionFailureTotal</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'WaitingForConnectionHighCount      '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getWaitingForConnectionHighCount</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'WaitingForConnectionSuccessTotal   '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getWaitingForConnectionSuccessTotal</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'WaitingForConnectionTotal          '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getWaitingForConnectionTotal</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">'WaitSecondsHighCount               '</span>  <span class="p">,</span> <span class="n">dataSource</span><span class="p">.</span><span class="n">getWaitSecondsHighCount</span><span class="p">()</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

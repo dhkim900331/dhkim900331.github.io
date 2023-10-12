@@ -1,0 +1,243 @@
+I"9<h2 id="1-개요">1. 개요</h2>
+
+<p>Coherence Web 3.X 설치를 다룬다.</p>
+
+<p>이 버전은 WebLogic 11g 에 호환된다.</p>
+
+<p><br />
+<a href="https://docs.oracle.com/cd/E18686_01/coh.37/e18690.pdf">공식 가이드</a></p>
+
+<p><br /></p>
+<h2 id="2-download-install">2. Download (Install)</h2>
+
+<p>Oracle Support의 Patches에서 Coherence를 다운로드 받는다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Patch 32973233: Coherence 3.7.1 Patch 22 (3.7.1.22) Full Distribution</code></p>
+
+<p><br />
+<code class="language-plaintext highlighter-rouge">/sw/coherence/3.7.1.22</code>와 같은 경로 안에 압축을 해제하여 구성한다.</p>
+
+<p><br /></p>
+<h2 id="3-configurations">3. Configurations</h2>
+
+<h3 id="31-runxml">3.1 run.xml</h3>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="cp">&lt;?xml version='1.0'?&gt;</span>
+<span class="nt">&lt;coherence&gt;</span>
+    <span class="nt">&lt;cluster-config&gt;</span>
+        <span class="nt">&lt;member-identity&gt;</span>
+            <span class="nt">&lt;cluster-name</span> <span class="na">system-property=</span><span class="s">"tangosol.coherence.cluster"</span><span class="nt">&gt;</span>MyCluster<span class="nt">&lt;/cluster-name&gt;</span>
+        <span class="nt">&lt;/member-identity&gt;</span>
+
+        <span class="nt">&lt;unicast-listener&gt;</span>
+            <span class="nt">&lt;address</span> <span class="na">system-property=</span><span class="s">"tangosol.coherence.localhost"</span><span class="nt">&gt;</span>wls.local<span class="nt">&lt;/address&gt;</span>
+            <span class="nt">&lt;port</span> <span class="na">system-property=</span><span class="s">"tangosol.coherence.localport"</span><span class="nt">&gt;</span>10000<span class="nt">&lt;/port&gt;</span>
+            <span class="nt">&lt;port-auto-adjust</span> <span class="na">system-property=</span><span class="s">"tangosol.coherence.localport.adjust"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/port-auto-adjust&gt;</span>
+        <span class="nt">&lt;/unicast-listener&gt;</span>
+    <span class="nt">&lt;/cluster-config&gt;</span>
+
+    <span class="nt">&lt;license-config&gt;</span>
+        <span class="nt">&lt;edition-name</span> <span class="na">systemproperty=</span><span class="s">"tangosol.coherence.edition"</span><span class="nt">&gt;</span>GE<span class="nt">&lt;/edition-name&gt;</span>
+        <span class="nt">&lt;license-mode</span> <span class="na">systemproperty=</span><span class="s">"tangosol.coherence.mode"</span><span class="nt">&gt;</span>prod<span class="nt">&lt;/license-mode&gt;</span>
+    <span class="nt">&lt;/license-config&gt;</span>
+<span class="nt">&lt;/coherence&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+run.xml 구성 내용은 [[Coherence 3.7] run.xml 설명]](https://blog.naver.com/ks900331/221497889161) 을 참고한다.</p>
+
+<p><br /></p>
+<h3 id="32-session-cache-configxml">3.2 session-cache-config.xml</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>jar <span class="nt">-xvf</span> coherence-web.jar session-cache-config.xml
+ inflated: session-cache-config.xml
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h3 id="33-shell-scripts">3.3 Shell Scripts</h3>
+
+<h4 id="331-start">3.3.1 start</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="c">#!/bin/sh</span>
+
+<span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/sw/jdk/jdk1.7.0_80
+<span class="nb">export </span><span class="nv">COHERENCE_HOME</span><span class="o">=</span>/sw/coherence/3.7.1.22
+<span class="nb">export </span><span class="nv">JAVAEXEC</span><span class="o">=</span><span class="nv">$JAVA_HOME</span>/bin/java
+<span class="nb">export </span><span class="nv">PREFIX</span><span class="o">=</span><span class="sb">`</span><span class="nb">date</span> +<span class="s2">"%Y%m%d_%H%M%S"</span><span class="sb">`</span>
+<span class="nb">export </span><span class="nv">SERVER_NAME</span><span class="o">=</span>CacheServer1
+<span class="nb">export </span><span class="nv">LOG_DIR</span><span class="o">=</span><span class="k">${</span><span class="nv">COHERENCE_HOME</span><span class="k">}</span>/logs
+<span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="nv">$COHERENCE_HOME</span><span class="s2">/lib/coherence.jar:</span><span class="nv">$COHERENCE_HOME</span><span class="s2">/lib/coherence-web.jar"</span>
+
+<span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Xms6144m -Xmx6144m"</span>
+<span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Dtangosol.coherence.override=</span><span class="k">${</span><span class="nv">COHERENCE_HOME</span><span class="k">}</span><span class="s2">/lib/run.xml"</span>
+<span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Dtangosol.coherence.cacheconfig=</span><span class="k">${</span><span class="nv">COHERENCE_HOME</span><span class="k">}</span><span class="s2">/lib/session-cache-config.xml"</span>
+<span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Dtangosol.coherence.session.localstorage=true"</span>
+<span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Dtangosol.coherence.localhost=wls.local"</span>
+<span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Dtangosol.coherence.localport=10000"</span>
+<span class="nb">export </span>JAVA_OPTS
+
+<span class="nb">mkdir</span> <span class="nt">-p</span> <span class="k">${</span><span class="nv">LOG_DIR</span><span class="k">}</span>/backup
+<span class="nb">mv</span> <span class="k">${</span><span class="nv">LOG_DIR</span><span class="k">}</span>/<span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span>.out <span class="k">${</span><span class="nv">LOG_DIR</span><span class="k">}</span>/backup/<span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span>.out<span class="k">${</span><span class="nv">PREFIX</span><span class="k">}</span>
+
+<span class="nv">$JAVAEXEC</span> <span class="nt">-server</span> <span class="nt">-Dcoherence_</span><span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span> <span class="nt">-showversion</span> <span class="nv">$JAVA_OPTS</span> <span class="nt">-cp</span> <span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span> com.tangosol.net.DefaultCacheServer <span class="o">&gt;</span> <span class="k">${</span><span class="nv">LOG_DIR</span><span class="k">}</span>/<span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span>.out 2&gt;&amp;1 &amp;
+
+<span class="nb">sleep </span>1
+<span class="nb">tail</span> <span class="nt">-f</span> <span class="k">${</span><span class="nv">LOG_DIR</span><span class="k">}</span>/<span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span>.out
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+<code class="language-plaintext highlighter-rouge">tangosol.coherence.localhost</code>, <code class="language-plaintext highlighter-rouge">tangosol.coherence.localport</code> 옵션은 run.xml 에도 정의가 되어 있다.</p>
+
+<p>Cache Server를 다중화 하는 경우, 각 Cache Server별로 다르게 설정하는 것을 run.xml이 아닌, 가장 우선순위가 높은 JVM Argument로 지정한다.</p>
+
+<p>즉, Cache Server를 추가로 셋업하려면 위 옵션을 변경하면 된다.</p>
+
+<p>그리고 run.xml 의 Well Known Address를 설정해야 한다. (참고: [[Coherence 3.7] run.xml 설명]](https://blog.naver.com/ks900331/221497889161))</p>
+
+<p><br /></p>
+<h4 id="332-stop">3.3.2 stop</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="c">#! /bin/sh</span>
+
+<span class="nb">export </span><span class="nv">SERVER_NAME</span><span class="o">=</span>CacheServer1
+<span class="nb">kill</span> <span class="nt">-9</span> <span class="sb">`</span>ps <span class="nt">-ef</span> | <span class="nb">grep</span> <span class="k">${</span><span class="nv">SERVER_NAME</span><span class="k">}</span> | <span class="nb">grep</span> <span class="nt">-v</span> <span class="nb">grep</span> | <span class="nb">awk</span> <span class="s1">'{print $2}'</span><span class="sb">`</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h3 id="4-weblogic">4. WebLogic</h3>
+
+<p>WebLogic 인스턴스에 Coherence 3.7 을 Setup하기 위한 설명이다.</p>
+
+<p><br /></p>
+<h3 id="41-coherencejar">4.1 coherence.jar</h3>
+
+<p>${COHERENCE_HOME}/coherence.jar를 lib 디렉토리에 복제한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cp</span> <span class="k">${</span><span class="nv">COHERENCE_HOME</span><span class="k">}</span>/lib/coherence.jar <span class="k">${</span><span class="nv">WEBLOGIC_DOMAIN_HOME</span><span class="k">}</span>/lib/
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-al</span> /sw/weblogic/11g/domains/base_domain/lib/coherence.jar
+<span class="nt">-rw-r--r--</span> 1 wasadm wasadm 7452777 Jan 23 15:53 /sw/weblogic/11g/domains/base_domain/lib/coherence.jar
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h3 id="42-coherence-web-spiwar">4.2 coherence-web-spi.war</h3>
+
+<p>${COHERENCE_HOME}/coherence-web-spi.war 파일은 Shared Library이다.</p>
+
+<p>WLS Admin Console을 통해서 Library로 배포한다.</p>
+
+<p><br />
+https://docs.oracle.com/cd/E24290_01/coh.371/e22620/cweb_wls.htm#CHDDHJHG</p>
+
+<p><br />
+config.xml 에서는 …</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>  <span class="nt">&lt;library&gt;</span>
+    <span class="nt">&lt;name&gt;</span>coherence-web-spi#1.0.0.0@1.0.0.0<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;target&gt;</span>M1,M2<span class="nt">&lt;/target&gt;</span>
+    <span class="nt">&lt;module-type&gt;</span>war<span class="nt">&lt;/module-type&gt;</span>
+    <span class="nt">&lt;source-path&gt;</span>${COHERENCE_HOME}/lib/coherence-web-spi.war<span class="nt">&lt;/source-path&gt;</span>
+    <span class="nt">&lt;security-dd-model&gt;</span>DDOnly<span class="nt">&lt;/security-dd-model&gt;</span>
+    <span class="nt">&lt;staging-mode&gt;</span>nostage<span class="nt">&lt;/staging-mode&gt;</span>
+  <span class="nt">&lt;/library&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h3 id="43-instance-script">4.3 Instance Script</h3>
+
+<p>WLS 기동 스크립트에는…</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nb">export </span><span class="nv">USER_MEM_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$USER_MEM_ARGS</span><span class="s2"> -Dtangosol.coherence.session.localstorage=false"</span>
+<span class="nb">export </span><span class="nv">USER_MEM_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$USER_MEM_ARGS</span><span class="s2"> -Dtangosol.coherence.distributed.localstorage=false"</span>
+<span class="nb">export </span><span class="nv">USER_MEM_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$USER_MEM_ARGS</span><span class="s2"> -Dtangosol.coherence.cacheconfig=</span><span class="k">${</span><span class="nv">COHERENCE_HOME</span><span class="k">}</span><span class="s2">/lib/session-cache-config.xml"</span>
+<span class="nb">export </span><span class="nv">USER_MEM_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$USER_MEM_ARGS</span><span class="s2"> -Dtangosol.coherence.override=</span><span class="k">${</span><span class="nv">COHERENCE_HOME</span><span class="k">}</span><span class="s2">/lib/run.xml"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+Cache Server와 다르게, localstorage=false를 설정하였다.</p>
+
+<p><br /></p>
+<h3 id="44-web-application">4.4 Web Application</h3>
+
+<p>어플리케이션의 weblogic.xml 에 Shared Library를 선언한다.</p>
+
+<p><br /></p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;weblogic-web-app&gt;</span>
+    <span class="nt">&lt;library-ref&gt;</span>
+     <span class="nt">&lt;library-name&gt;</span>coherence-web-spi<span class="nt">&lt;/library-name&gt;</span>
+    <span class="nt">&lt;/library-ref&gt;</span>
+<span class="nt">&lt;/weblogic-web-app&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

@@ -1,0 +1,239 @@
+I"�.<h2 id="1-개요">1. 개요</h2>
+
+<p>Coherence 14.1 기준에서 Test 용 Application</p>
+
+<p><br /><br /></p>
+<h2 id="2-어플리케이션">2. 어플리케이션</h2>
+
+<h3 id="21-구조">2.1 구조</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>tree /sw/app/cohSessionApp/
+/sw/app/cohSessionApp/
+├── META-INF
+├── session.jsp
+└── WEB-INF
+    ├── classes
+    │   └── session-cache-config.xml
+    ├── weblogic.xml
+    └── web.xml
+
+3 directories, 4 files
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /><br /></p>
+<h3 id="22-servlet">2.2 Servlet</h3>
+
+<div class="language-jsp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"java.util.ArrayList"</span> <span class="nt">%&gt;</span>
+
+<span class="nt">&lt;%</span>
+  <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]</span><span class="err">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]</span><span class="err">&gt;</span><span class="o">();</span>
+  <span class="kt">int</span> <span class="n">addedNum</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">addedByte</span> <span class="o">=</span> <span class="mi">512</span><span class="o">;</span>
+
+  <span class="kt">byte</span><span class="o">[]</span> <span class="n">objectInSession</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">addedByte</span><span class="o">];</span>
+  <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">addedNum</span><span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
+    <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">objectInSession</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="n">session</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+  <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]</span><span class="err">&gt;</span> <span class="n">sList</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ArrayList</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]</span><span class="err">&gt;</span><span class="o">)</span><span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">"listSession"</span><span class="o">);</span>
+
+  <span class="k">if</span> <span class="o">(</span><span class="n">sList</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+    <span class="n">sList</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="k">else</span><span class="o">{</span>
+    <span class="cm">/*for(int i=0; i&lt;addedNum; i++){
+      sList.add(objectInSession);
+    }*/</span>
+    <span class="n">sList</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="n">session</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"listSession"</span><span class="o">,</span> <span class="n">sList</span><span class="o">);</span>
+  <span class="nc">String</span> <span class="n">log</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+  <span class="n">log</span> <span class="o">+=</span> <span class="s">"list.size() = "</span> <span class="o">+</span> <span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">+</span> <span class="err">"</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;</span><span class="s">";
+  log += "</span><span class="n">sList</span><span class="o">.</span><span class="na">size</span> <span class="o">=</span> <span class="s">" + sList.size() + "</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;</span><span class="s">";
+  log += "</span><span class="n">session</span><span class="o">.</span><span class="na">getMaxInactiveInterval</span><span class="o">()</span> <span class="o">=</span> <span class="s">" + session.getMaxInactiveInterval() + "</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;</span><span class="s">";
+  log += "</span><span class="n">session</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">=</span> <span class="s">" + session.getClass().getName() + "</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;</span><span class="s">";
+  out.println(log);
+
+  final long  MEGABYTE = 1024L * 1024L;
+  long heapSize = Runtime.getRuntime().totalMemory() / MEGABYTE;
+  long heapMaxSize = Runtime.getRuntime().maxMemory() / MEGABYTE;
+  long heapFreeSize = Runtime.getRuntime().freeMemory() / MEGABYTE;
+
+  log = "";
+  log += "</span><span class="n">heapSize</span> <span class="o">(</span><span class="no">MB</span><span class="o">)</span> <span class="o">=</span> <span class="s">" + heapSize + "</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;</span><span class="s">";
+  log += "</span><span class="n">heapMaxSize</span> <span class="o">(</span><span class="no">MB</span><span class="o">)</span> <span class="o">=</span> <span class="s">" + heapMaxSize + "</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;</span><span class="s">";
+  log += "</span><span class="n">heapSize</span> <span class="o">(</span><span class="no">MB</span><span class="o">)</span> <span class="o">=</span> <span class="s">" + heapFreeSize + "</span><span class="o">&lt;</span><span class="n">br</span><span class="err">&gt;"</span><span class="o">;</span>
+  <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">log</span><span class="o">);</span>
+
+<span class="nt">%&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+addedByte 크기의 Bytes Array Object를 addedNum 갯수만큼 ArrayList 로 만들고, listSession 명명의 Session 객체로 저장한다.</p>
+
+<p>재호출 시마다, Session 객체가 동일한 과정으로 점차 커지게 된다.</p>
+
+<p><br /><br /></p>
+<h3 id="23-deployment-descriptor">2.3 Deployment Descriptor</h3>
+
+<p>web.xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;web-app&gt;</span>
+
+<span class="nt">&lt;resource-ref&gt;</span>
+    <span class="nt">&lt;res-ref-name&gt;</span>wm/CoherenceWorkManager<span class="nt">&lt;/res-ref-name&gt;</span>
+    <span class="nt">&lt;res-type&gt;</span>commonj.work.WorkManager<span class="nt">&lt;/res-type&gt;</span>
+    <span class="nt">&lt;res-auth&gt;</span>Container<span class="nt">&lt;/res-auth&gt;</span>
+    <span class="nt">&lt;res-sharing-scope&gt;</span>Shareable<span class="nt">&lt;/res-sharing-scope&gt;</span>
+<span class="nt">&lt;/resource-ref&gt;</span>
+
+<span class="nt">&lt;/web-app&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+<code class="language-plaintext highlighter-rouge">wm/CoherenceWorkManager</code> 를 WebLogic WorkManager로 등록해야 한다.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre>  <span class="nt">&lt;self-tuning&gt;</span>
+    <span class="nt">&lt;min-threads-constraint&gt;</span>
+      <span class="nt">&lt;name&gt;</span>MinThreadsConstraint-0<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;target&gt;</span>myCluster<span class="nt">&lt;/target&gt;</span>
+      <span class="nt">&lt;count&gt;</span>2<span class="nt">&lt;/count&gt;</span>
+    <span class="nt">&lt;/min-threads-constraint&gt;</span>
+    <span class="nt">&lt;max-threads-constraint&gt;</span>
+      <span class="nt">&lt;name&gt;</span>MaxThreadsConstraint-0<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;target&gt;</span>myCluster<span class="nt">&lt;/target&gt;</span>
+      <span class="nt">&lt;count&gt;</span>2<span class="nt">&lt;/count&gt;</span>
+    <span class="nt">&lt;/max-threads-constraint&gt;</span>
+    <span class="nt">&lt;work-manager&gt;</span>
+      <span class="nt">&lt;name&gt;</span>wm/CoherenceWorkManager<span class="nt">&lt;/name&gt;</span>
+      <span class="nt">&lt;target&gt;</span>myCluster<span class="nt">&lt;/target&gt;</span>
+    <span class="nt">&lt;/work-manager&gt;</span>
+  <span class="nt">&lt;/self-tuning&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+weblogic.xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;weblogic-web-app&gt;</span>
+        <span class="nt">&lt;container-descriptor&gt;</span>
+                <span class="nt">&lt;servlet-reload-check-secs&gt;</span>1<span class="nt">&lt;/servlet-reload-check-secs&gt;</span>
+                <span class="nt">&lt;resource-reload-check-secs&gt;</span>1<span class="nt">&lt;/resource-reload-check-secs&gt;</span>
+        <span class="nt">&lt;/container-descriptor&gt;</span>
+
+        <span class="nt">&lt;jsp-descriptor&gt;</span>
+                <span class="nt">&lt;page-check-seconds&gt;</span>1<span class="nt">&lt;/page-check-seconds&gt;</span>
+        <span class="nt">&lt;/jsp-descriptor&gt;</span>
+
+    <span class="nt">&lt;session-descriptor&gt;</span>
+        <span class="nt">&lt;timeout-secs&gt;</span>30<span class="nt">&lt;/timeout-secs&gt;</span>
+        <span class="nt">&lt;invalidation-interval-secs&gt;</span>60<span class="nt">&lt;/invalidation-interval-secs&gt;</span>
+        <span class="nt">&lt;persistent-store-type&gt;</span>coherence-web<span class="nt">&lt;/persistent-store-type&gt;</span>
+    <span class="nt">&lt;/session-descriptor&gt;</span>
+<span class="nt">&lt;/weblogic-web-app&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /><br /></p>
+<h3 id="24-cache-config">2.4 Cache Config</h3>
+
+<p>session-cache-config.xml 파일은 coherence-web.jar 에서 기본값을 Loaded</p>
+:ET

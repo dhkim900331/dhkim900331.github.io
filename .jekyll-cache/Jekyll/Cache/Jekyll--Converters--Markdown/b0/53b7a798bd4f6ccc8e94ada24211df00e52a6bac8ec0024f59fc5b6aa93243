@@ -1,0 +1,129 @@
+I"O<h2 id="1-개요">1. 개요</h2>
+
+<p>Content Security Policy Header를 테스트한다.</p>
+
+<p>default-src 개념만 알면, 나머지 XXX-src 는 동일하므로 default/script-src 만 테스트한다.</p>
+
+<p><br /></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<h3 id="21-default-src">2.1 default-src</h3>
+
+<p>아래와 같이 설정 시에, 모든 동작(img, css, media, script, connect)이 수행되지 않는다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>&lt;IfModule mod_headers.c&gt;
+Header always set Content-Security-Policy: "default-src 'none';"
+&lt;/IfModule&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+예시로 Javascript 동작 과정에서 default-src를 살펴보자.</p>
+
+<p>다음의 Inline Script , HTML 로 구성된 경우,</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;html&gt;</span>
+	<span class="nt">&lt;head&gt;</span>
+		<span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;title&gt;</span>Welcome<span class="nt">&lt;/title&gt;</span>
+	<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+	<span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">"alert('Hello World')"</span><span class="nt">&gt;</span>Button<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+Button 이 동작하지 않으며 Browser Console에 log가 있다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-biLFinpqYMtWHmXfkA1BPeCY0/fNt46SAZ+BBk5YUog='), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /><br />
+self(나 자신 허용, 하위 도메인은 아님) 설정을 하거나, <code class="language-plaintext highlighter-rouge">wls.local:80</code> 도메인은 허용 설정 할 수 있다.</p>
+
+<p>그러나 아래와 같은 설정에도, script 는 동작하지 않는다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>Header always set Content-Security-Policy: "default-src 'self';"
+또는
+Header always set Content-Security-Policy: "default-src wls.local:80;"
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+그 이유는, 위 Browser Console log에도 나와 있는데,</p>
+
+<p>최소한 아래와 같이 <code class="language-plaintext highlighter-rouge">unsafe-inline</code> 으로 inline javascript 허용을 해야 한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>Header always set Content-Security-Policy: "default-src 'self' 'unsafe-inline';"
+또는
+Header always set Content-Security-Policy: "default-src 'none' 'unsafe-inline';"
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h3 id="22-script-src">2.2 script-src</h3>
+
+<p>script-src를 self(나 자신 허용, 하위 도메인 불가) 설정 시에는 <code class="language-plaintext highlighter-rouge">unsafe-inline</code> 등의 설정이 없어도 된다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>Header always set Content-Security-Policy: "default-src 'none'; script-src 'self';"
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+다음과 같이 외부 도메인의 External Script 설정이 있다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;title&gt;</span>Welcome<span class="nt">&lt;/title&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://child.wls.local/scripts/button.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;button&gt;</span>Button<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+아래와 같이 <code class="language-plaintext highlighter-rouge">self</code> 뿐만 아니라 하위 도메인도 별개로 추가 해야 한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>Header always set Content-Security-Policy: "default-src 'none'; script-src 'self' child.wls.local;"
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h2 id="3-참고">3. 참고</h2>
+
+<ul>
+  <li>https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP</li>
+  <li>https://cyberx.tistory.com/171</li>
+  <li>https://velog.io/@taylorkwon92/%EC%98%A4%EB%8A%98%EC%9D%98-TIL</li>
+</ul>
+:ET

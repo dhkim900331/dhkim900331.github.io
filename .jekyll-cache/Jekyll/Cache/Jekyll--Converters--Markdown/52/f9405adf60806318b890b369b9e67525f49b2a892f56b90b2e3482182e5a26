@@ -1,0 +1,36 @@
+I"[<h2 id="1-개요">1. 개요</h2>
+
+<p>스레드 풀 사이즈 튜닝(조절)</p>
+
+<p><br /><br /># 2. 설명</p>
+
+<p>(1). 콘솔 설정</p>
+
+<p><code class="language-plaintext highlighter-rouge">Environment - Servers - select instance - Configuration - Tuning - Self Tuning Thread Minimum/Maximum Pool Size</code></p>
+
+<blockquote>
+  <p>적용 후 재시작</p>
+</blockquote>
+
+<p><br />
+(2). config.xml 설정</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;server&gt;</span>
+     <span class="nt">&lt;name&gt;</span>서버이름<span class="nt">&lt;/name&gt;</span>
+          <span class="nt">&lt;self-tuning-thread-pool-size-min&gt;</span>50<span class="nt">&lt;/self-tuning-thread-pool-size-min&gt;</span>
+          <span class="nt">&lt;self-tuning-thread-pool-size-max&gt;</span>100<span class="nt">&lt;/self-tuning-thread-pool-size-max&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>적용 후 재시작</p>
+</blockquote>
+
+<p><br />
+(3). 스크립트 설정</p>
+
+<p><code class="language-plaintext highlighter-rouge">USER_MEM_ARGS="-Dweblogic.threadpool.MinPoolSize=50 -Dweblogic.threadpool.MaxPoolSize=100"</code></p>
+:ET

@@ -1,0 +1,106 @@
+I"�,<h2 id="1-개요">1. 개요</h2>
+
+<p>Oracle GCS 업무를 수행하면서, 고객이 SR에 업로드한 파일을 내려 받아보면 <code class="language-plaintext highlighter-rouge">&lt;Filename&gt;_SR-Number.&lt;zip&gt;</code> 과 같은 형식으로 되어 있다.</p>
+
+<p>Bandizip 으로 압축을 일괄 해제하면, 각기 디렉토리에 분리되어 풀리는 등, 하나의 디렉토리에 모아서 보기가 여간 쉬운 일이 아니다.</p>
+
+<p>Bandizip 에서 제공하는 CLI 와 Window batch script를 이용하여 편리하게 만들어 본다.</p>
+
+<p><br /></p>
+<h2 id="2-준비물">2. 준비물</h2>
+
+<h3 id="21-batch-script">2.1 Batch Script</h3>
+
+<p>다음의 Script를 MySR.bat 으로 생성한다.</p>
+
+<p>EXE, OUT variable 은 환경에 맞게 설정한다.</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="rouge-code"><pre><span class="err">@</span><span class="n">echo</span><span class="w"> </span><span class="nx">off</span><span class="w">
+
+</span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="nx">Bandizip</span><span class="w"> </span><span class="err">실행</span><span class="w"> </span><span class="err">경로</span><span class="w">
+</span><span class="n">set</span><span class="w"> </span><span class="nx">EXE</span><span class="o">=</span><span class="n">C:\PROGRA~1\Bandizip\Bandizip.exe</span><span class="w">
+</span><span class="err">@</span><span class="nx">rem</span><span class="w"> </span><span class="nx">Bandizip</span><span class="w"> </span><span class="err">이</span><span class="w"> </span><span class="nx">SR</span><span class="w"> </span><span class="err">파일</span><span class="w"> </span><span class="err">압축</span><span class="w"> </span><span class="err">해제하는</span><span class="w"> </span><span class="err">경로</span><span class="w">
+</span><span class="n">set</span><span class="w"> </span><span class="nx">OUT</span><span class="o">=</span><span class="n">C:\Users\Dong-Hyun.KIM\Downloads</span><span class="w">
+
+</span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="nx">File</span><span class="err">에서</span><span class="w"> </span><span class="nx">underscope</span><span class="p">(</span><span class="err">_</span><span class="p">)</span><span class="w"> </span><span class="err">몇개</span><span class="w"> </span><span class="err">인지</span><span class="w"> </span><span class="err">카운팅</span><span class="w"> </span><span class="err">한다</span><span class="o">.</span><span class="w">
+</span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="nx">count</span><span class="w"> </span><span class="err">결과는</span><span class="w"> </span><span class="err">하나</span><span class="w"> </span><span class="err">더</span><span class="w"> </span><span class="err">많은</span><span class="w"> </span><span class="err">결과를</span><span class="w"> </span><span class="err">보여준다</span><span class="o">.</span><span class="w">
+</span><span class="n">set</span><span class="w"> </span><span class="nx">FILE</span><span class="o">=%</span><span class="mi">1</span><span class="w">
+</span><span class="n">set</span><span class="w"> </span><span class="nx">count</span><span class="o">=</span><span class="mi">0</span><span class="w">
+</span><span class="kr">for</span><span class="w"> </span><span class="o">%%</span><span class="n">a</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="p">(</span><span class="o">%</span><span class="n">FILE:_</span><span class="o">=</span><span class="w"> </span><span class="o">%</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="nx">/a</span><span class="w"> </span><span class="nx">count</span><span class="o">+=</span><span class="nx">1</span><span class="w">
+
+</span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="nx">File</span><span class="w"> </span><span class="err">명에서</span><span class="w"> </span><span class="nx">underscope</span><span class="p">(</span><span class="err">_</span><span class="p">)</span><span class="w"> </span><span class="err">로</span><span class="w"> </span><span class="err">구획을</span><span class="w"> </span><span class="err">나누어</span><span class="p">,</span><span class="w"> </span><span class="err">총</span><span class="w"> </span><span class="err">몇개의</span><span class="w"> </span><span class="err">컬럼이</span><span class="w"> </span><span class="err">있는지</span><span class="w"> </span><span class="err">확인한다</span><span class="o">.</span><span class="w">
+</span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="nx">count</span><span class="w"> </span><span class="err">값의</span><span class="w"> </span><span class="err">컬럼을</span><span class="w"> </span><span class="err">추출한다</span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="nx">SR-Number.zip</span><span class="p">)</span><span class="w">
+</span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="err">하나</span><span class="w"> </span><span class="err">더</span><span class="w"> </span><span class="err">많은</span><span class="w"> </span><span class="err">갯수를</span><span class="w"> </span><span class="err">가리키는</span><span class="w"> </span><span class="nx">count</span><span class="w"> </span><span class="err">변수가</span><span class="w"> </span><span class="err">여기서는</span><span class="w"> </span><span class="err">제대로</span><span class="w"> </span><span class="err">쓰인다</span><span class="o">.</span><span class="w">
+</span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="err">코드</span><span class="w"> </span><span class="err">참고</span><span class="p">,</span><span class="w"> </span><span class="nx">https://stackoverflow.com/questions/44502909/batch-file-count-all-occurrences-of-a-character-within-a-string</span><span class="w">
+</span><span class="kr">for</span><span class="w"> </span><span class="n">/f</span><span class="w"> </span><span class="s2">"delims=_ tokens=%count%"</span><span class="w"> </span><span class="o">%%</span><span class="nx">n</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="p">(</span><span class="s1">'echo %FILE%'</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="p">(</span><span class="w">
+
+  </span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="nx">SR-Number.zip</span><span class="w"> </span><span class="err">에서</span><span class="w"> </span><span class="err">확장자를</span><span class="w"> </span><span class="err">제거한다</span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="nx">SR-Number</span><span class="p">)</span><span class="w">
+  </span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="nx">Bandizip</span><span class="w"> </span><span class="err">을</span><span class="w"> </span><span class="err">실행하여</span><span class="w"> </span><span class="err">압축을</span><span class="w"> </span><span class="nx">SR-Number</span><span class="err">에</span><span class="w"> </span><span class="err">해제한다</span><span class="o">.</span><span class="w">
+  </span><span class="kr">for</span><span class="w"> </span><span class="n">/f</span><span class="w"> </span><span class="s2">"delims=. tokens=1"</span><span class="w"> </span><span class="o">%%</span><span class="nx">m</span><span class="w"> </span><span class="nx">in</span><span class="w"> </span><span class="p">(</span><span class="s1">'echo %%~n'</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="p">(</span><span class="w">
+
+	</span><span class="err">@</span><span class="n">rem</span><span class="w"> </span><span class="err">코드</span><span class="w"> </span><span class="err">참고</span><span class="p">,</span><span class="w"> </span><span class="nx">https://kr.bandisoft.com/bandizip/help/parameter/</span><span class="w">
+	</span><span class="o">%</span><span class="n">EXE</span><span class="o">%</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="nt">-aos</span><span class="w"> </span><span class="nt">-o</span><span class="p">:</span><span class="o">%</span><span class="nx">OUT</span><span class="o">%</span><span class="nx">\</span><span class="o">%%</span><span class="nx">m</span><span class="w"> </span><span class="o">%</span><span class="nx">FILE</span><span class="o">%</span><span class="w">
+  </span><span class="p">)</span><span class="w">
+
+</span><span class="p">)</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h3 id="22-registry">2.2 Registry</h3>
+
+<p>다음의 내용을 임의의 이름으로 저장하여 실행하면 Registry가 추가된다.</p>
+
+<p>MySR.bat 을 마우스 우클릭 시에 실행할 수 있게 한다.</p>
+
+<p>아래 경로는 예시이다.</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="n">Windows</span><span class="w"> </span><span class="nx">Registry</span><span class="w"> </span><span class="nx">Editor</span><span class="w"> </span><span class="nx">Version</span><span class="w"> </span><span class="nx">5.00</span><span class="w">
+
+</span><span class="p">[</span><span class="n">HKEY_CLASSES_ROOT\</span><span class="o">*</span><span class="nx">\shell\MySRDC\command</span><span class="p">]</span><span class="w">
+</span><span class="err">@</span><span class="o">=</span><span class="s2">"\"</span><span class="n">C:\\Users\\Dong-Hyun.KIM\\Desktop\\GoodMorning\\1.</span><span class="w"> </span><span class="nx">GCS\\9.</span><span class="w"> </span><span class="nx">Auto-Bandizip\\MyDC.bat\</span><span class="s2">" %1"</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br />
+Registry 등록을 하면 마우스 우클릭에 MySRDC 메뉴가 보인다.</p>
+
+<p><img src="/../assets/posts/images/How-to-make-Bandizip-Batch/image-20230426122458147.png" alt="image-20230426122458147" style="zoom:50%;" /></p>
+
+<p><br />
+아래처럼, 서로 다른 SR에서 가져온 압축 파일을 MySRDC로 일괄 해제할 수 있다.</p>
+
+<p><img src="/../assets/posts/images/How-to-make-Bandizip-Batch/image-20230426122855928.png" alt="image-20230426122855928" /></p>
+
+<p><br /></p>
+:ET

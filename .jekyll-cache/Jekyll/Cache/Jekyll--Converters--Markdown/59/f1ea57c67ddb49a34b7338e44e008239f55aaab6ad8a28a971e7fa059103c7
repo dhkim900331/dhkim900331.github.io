@@ -1,0 +1,1662 @@
+I"6<h2 id="1-개요">1. 개요</h2>
+
+<p>안녕하세요.</p>
+
+<p>오늘은, WEB/WAS 에서 자주 언급되고 사용되는 SSL 인증서의 기본 학습을 위한 테스트를 진행해볼까 합니다.</p>
+
+<p>최근에 고객사에서 사용하던 SSL 인증서가 만료시점이 되어, 파일 교체를 하였다고 합니다.</p>
+
+<p>교체한 인증서와 기존에 사용하고 있던 인증서 내용이 다르지 않고, Expire (만료기간)만 갱신된 동일한 인증서라면</p>
+
+<p>별다른 트러블이 발생하지 않겠지만, 어떠한 문제가 발생을 하였는지 SSL 인증 거부로 통신이 되지 않는 이슈가 있었습니다.</p>
+
+<p>이러한 상황에 맞닥뜨렸을 때, 기본적으로 어떠한 방법을 통해 SSL 인증서에 문제가 없는지 테스트를 진행해보겠습니다.</p>
+
+<p><br /></p>
+<ul>
+  <li>이슈가 발생한 고객사의 환경은, 우리가 많이 어디선가 접한, 일반적인 REST API 호출 부분에서의 SSL 인증 문제 였습니다.
+    <ul>
+      <li>WAS AP(Tomcat) 에서 REST API 를 이용하여 Remote AP(Apache)를 호출합니다.</li>
+      <li>WAS AP(Tomcat) / Remote AP(Apache) 양쪽간의 SSL 인증서가 동일하게 교체 되었지만 API 호출 시 SSL 인증 거부 이슈 발생 했습니다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+<ul>
+  <li>다음의 Step 을 진행하며, SSL 인증서가 유효하게 적용되고 동작하고 있는지 검증하는 것을 알 수 있습니다.
+    <ul>
+      <li>사설/비-사설 SSL인증서의 검증 방법 등을 확인</li>
+      <li>사설(Self-Signed) SSL 인증서를 Remote AP(Apache)에 Setup</li>
+      <li>HTTPS 통신을 하며, SSL 인증서 검증</li>
+      <li>WAS AP(Tomcat)에 SSL 클라이언트 인증서를 Setup. HTTPS 연결을 수행.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+<h2 id="2-ssl-인증서-생성">2. SSL 인증서 생성</h2>
+
+<ul>
+  <li>인증서의 생성이 되고, 위치할 <code class="language-plaintext highlighter-rouge">CERT</code> 디렉토리를 만들어줍니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">mkdir</span> /tmp/self_signed_cert
+<span class="nv">$ CERT</span><span class="o">=</span>/tmp/self_signed_cert
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h3 id="21-private-key">2.1 Private Key</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl genrsa <span class="nt">-des3</span> <span class="nt">-out</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/private.key
+Generating RSA private key, 2048 bit long modulus <span class="o">(</span>2 primes<span class="o">)</span>
+.......+++++
+..............................................................+++++
+e is 65537 <span class="o">(</span>0x010001<span class="o">)</span>
+Enter pass phrase <span class="k">for</span> /tmp/self_signed_cert/private.key: <span class="o">(</span>dhkim<span class="o">)</span>
+Verifying - Enter pass phrase <span class="k">for</span> /tmp/self_signed_cert/private.key: <span class="o">(</span>dhkim<span class="o">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>개인키의 패스워드로 <code class="language-plaintext highlighter-rouge">dhkim</code> 을 사용했습니다.</p>
+
+  <p>패스워드를 사용하지 않으려면 <code class="language-plaintext highlighter-rouge">-des3</code> 옵션을 제거 합니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h3 id="22-csr">2.2 CSR</h3>
+
+<ul>
+  <li>
+    <p>제가 직접 생성한 (혹은 고객) 인증서는 최상위 기관(root) 에 제출해야 합니다.</p>
+
+    <p>최상위 기관(root Certificate Authority; root CA)에서 서명(제출한 인증서를 유효하다고 인증과 같은 절차)을 받기 위해 필요합니다.</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl req <span class="nt">-new</span> <span class="nt">-key</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/private.key <span class="nt">-out</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/root.csr <span class="se">\</span>
+<span class="nt">-subj</span> <span class="s2">"/C=KR/ST=Seoul/L=Seocho-gu/O=OSCI/OU=Cloud Migration/CN=dhkim.com"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h3 id="23-self-signed">2.3 Self-Signed</h3>
+
+<ul>
+  <li>
+    <p>우리가 사용하는 Chrome 과 같은 Browser에는 아래에서 언급하는 <em>신뢰할 수 있는 상위 기관</em>들의 인증서가 이미 포함되어 있습니다.</p>
+
+    <p>자체 서명한 인증서를 사용하면, Browser에 설치되어 있는 인증서로 유효한지 확인을 합니다.</p>
+  </li>
+</ul>
+
+<p><br /></p>
+<ul>
+  <li>
+    <p>위에서 만든 개인키(<code class="language-plaintext highlighter-rouge">private.key</code>)와 제출하는 인증 요청서(<code class="language-plaintext highlighter-rouge">root.csr</code>)을 가지고, 직접 서명할 수 있습니다.</p>
+
+    <p>내 자신이 최상위 기관이 되어, 스스로를 서명하는 것입니다.</p>
+
+    <p>이것을 말 그대로 Self-Signed 라고 하며, 해당 인증서를 사용하여 HTTPS 연결을 시도하면</p>
+
+    <p>상위 기관(rootCA or intermediate ca) 에서 인증되지 않아 경고가 나타납니다.</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl x509 <span class="nt">-req</span> <span class="nt">-days</span> 365 <span class="se">\</span>
+<span class="nt">-in</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/root.csr <span class="se">\</span>
+<span class="nt">-signkey</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/private.key <span class="se">\</span>
+<span class="nt">-out</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.crt
+<span class="nt">---stdout</span> below---
+Signature ok
+<span class="nv">subject</span><span class="o">=</span>C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+Getting Private key
+Enter pass phrase <span class="k">for</span> /tmp/self_signed_cert/private.key: <span class="o">(</span>dhkim<span class="o">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h2 id="3-인증서-적용">3. 인증서 적용</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre>Listen 443
+Define CERT <span class="s2">"/tmp/self_signed_cert"</span>
+SSLPassPhraseDialog  <span class="nb">exec</span>:<span class="k">${</span><span class="nv">SRVROOT</span><span class="k">}</span>/bin/sslpass.sh
+SSLCertificateFile          <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.crt
+SSLCertificateKeyFile       <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/private.key
+
+&lt;VirtualHost <span class="k">*</span>:443&gt;
+    SSLEngine on
+    ServerName dhkim.com
+
+    DocumentRoot <span class="s2">"/tmp/htdocs_ssl"</span>
+    &lt;Directory <span class="s2">"/tmp/htdocs_ssl"</span><span class="o">&gt;</span>
+        Options None
+        AllowOverride None
+        Require all granted
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>PC의 hosts 파일에 <code class="language-plaintext highlighter-rouge">dhkim.com</code> 을 등록하고, 접속할 수 있습니다.</p>
+</blockquote>
+
+<p><br /></p>
+<ul>
+  <li>접속 시 아래와 같이 완료되었습니다.</li>
+</ul>
+
+<p><img src="/../assets/posts/images/13-SSL/SetupSSLwithApache/SetupSSLwithApache_1.png" alt="SetupSSLwithApache_1" /></p>
+
+<p><br /></p>
+<h2 id="4-htts-테스트">4. HTTS 테스트</h2>
+
+<h3 id="41-curl">4.1 curl</h3>
+
+<h4 id="1-기본-인증서-사용">(1). 기본 인증서 사용</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl <span class="nt">-v</span> https://dhkim.com
+<span class="k">*</span> Rebuilt URL to: https://dhkim.com/
+<span class="k">*</span>   Trying 192.168.56.2...
+<span class="k">*</span> TCP_NODELAY <span class="nb">set</span>
+<span class="k">*</span> Connected to dhkim.com <span class="o">(</span>192.168.56.2<span class="o">)</span> port 443 <span class="o">(</span><span class="c">#0)</span>
+<span class="k">*</span> ALPN, offering h2
+<span class="k">*</span> ALPN, offering http/1.1
+<span class="k">*</span> successfully <span class="nb">set </span>certificate verify locations:
+<span class="k">*</span>   CAfile: /etc/pki/tls/certs/ca-bundle.crt
+  CApath: none
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS handshake, Client hello <span class="o">(</span>1<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Server hello <span class="o">(</span>2<span class="o">)</span>:
+<span class="k">*</span> TLSv1.2 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Certificate <span class="o">(</span>11<span class="o">)</span>:
+<span class="k">*</span> TLSv1.2 <span class="o">(</span>OUT<span class="o">)</span>, TLS alert, unknown CA <span class="o">(</span>560<span class="o">)</span>:
+<span class="k">*</span> SSL certificate problem: self signed certificate
+<span class="k">*</span> Closing connection 0
+curl: <span class="o">(</span>60<span class="o">)</span> SSL certificate problem: self signed certificate
+More details here: https://curl.haxx.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">CAfile: /etc/pki/tls/certs/ca-bundle.crt</code> 인증서 파일을 사용하여 <code class="language-plaintext highlighter-rouge">dhkim.com</code> 인증을 하려고 합니다.</p>
+
+  <p>앞서 우리가 만든 SSL 인증서는, 어떠한 공증된 상위 기관에서 인증해준 것이 아니라</p>
+
+  <p>자체 서명(Self-Signed) 하였기 때문에 CA를 알 수 없습니다. 아래가 그 로그입니다.</p>
+
+  <p><code class="language-plaintext highlighter-rouge">TLSv1.2 (OUT), TLS alert, unknown CA (560):</code></p>
+
+  <p><code class="language-plaintext highlighter-rouge">SSL certificate problem: self signed certificate</code></p>
+
+  <p>SSL 인증 문제의 원인으로 자체 서명된 인증서로 로그가 출력되었습니다.</p>
+
+  <p>정확히는 curl 이 사설 인증서 인지를 알고 있는 것이 아니라,</p>
+
+  <p>어디에도 서명(Signed) 되어 있지 않음을 원인으로 알려준 것입니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h4 id="2-사설-인증서-사용">(2). 사설 인증서 사용</h4>
+
+<ul>
+  <li>
+    <p>사설 인증서를 가지고 <code class="language-plaintext highlighter-rouge">curl</code>을 수행하니, 정상적으로 SSL Handshake가 이루어지고 연결이 되는 것을 확인해봅니다.</p>
+
+    <p>우리가 원격지의 Server와 SSL 통신을 수행해야 할 때, 가지고 있는 인증서가 유효한지 <code class="language-plaintext highlighter-rouge">curl</code> 의 간단한 명령으로도 확인이 가능하다는 것을 알 수 있습니다.</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl <span class="nt">-v</span> https://dhkim.com <span class="nt">--cacert</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.crt
+<span class="k">*</span> Rebuilt URL to: https://dhkim.com/
+<span class="k">*</span>   Trying 192.168.56.2...
+<span class="k">*</span> TCP_NODELAY <span class="nb">set</span>
+<span class="k">*</span> Connected to dhkim.com <span class="o">(</span>192.168.56.2<span class="o">)</span> port 443 <span class="o">(</span><span class="c">#0)</span>
+<span class="k">*</span> ALPN, offering h2
+<span class="k">*</span> ALPN, offering http/1.1
+<span class="k">*</span> successfully <span class="nb">set </span>certificate verify locations:
+<span class="k">*</span>   CAfile: /tmp/self_signed_cert/dhkim.com.crt
+  CApath: none
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS handshake, Client hello <span class="o">(</span>1<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Server hello <span class="o">(</span>2<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Encrypted Extensions <span class="o">(</span>8<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Certificate <span class="o">(</span>11<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, CERT verify <span class="o">(</span>15<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Finished <span class="o">(</span>20<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS change cipher, Change cipher spec <span class="o">(</span>1<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS handshake, Finished <span class="o">(</span>20<span class="o">)</span>:
+<span class="k">*</span> SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+<span class="k">*</span> ALPN, server accepted to use http/1.1
+<span class="k">*</span> Server certificate:
+<span class="k">*</span>  subject: <span class="nv">C</span><span class="o">=</span>KR<span class="p">;</span> <span class="nv">ST</span><span class="o">=</span>Seoul<span class="p">;</span> <span class="nv">L</span><span class="o">=</span>Seocho-gu<span class="p">;</span> <span class="nv">O</span><span class="o">=</span>OSCI<span class="p">;</span> <span class="nv">OU</span><span class="o">=</span>Cloud Migration<span class="p">;</span> <span class="nv">CN</span><span class="o">=</span>dhkim.com
+<span class="k">*</span>  start <span class="nb">date</span>: May 10 09:48:47 2022 GMT
+<span class="k">*</span>  expire <span class="nb">date</span>: May 10 09:48:47 2023 GMT
+<span class="k">*</span>  common name: dhkim.com <span class="o">(</span>matched<span class="o">)</span>
+<span class="k">*</span>  issuer: <span class="nv">C</span><span class="o">=</span>KR<span class="p">;</span> <span class="nv">ST</span><span class="o">=</span>Seoul<span class="p">;</span> <span class="nv">L</span><span class="o">=</span>Seocho-gu<span class="p">;</span> <span class="nv">O</span><span class="o">=</span>OSCI<span class="p">;</span> <span class="nv">OU</span><span class="o">=</span>Cloud Migration<span class="p">;</span> <span class="nv">CN</span><span class="o">=</span>dhkim.com
+<span class="k">*</span>  SSL certificate verify ok.
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS app data, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="o">&gt;</span> GET / HTTP/1.1
+<span class="o">&gt;</span> Host: dhkim.com
+<span class="o">&gt;</span> User-Agent: curl/7.61.1
+<span class="o">&gt;</span> Accept: <span class="k">*</span>/<span class="k">*</span>
+<span class="o">&gt;</span>
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Newsession Ticket <span class="o">(</span>4<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Newsession Ticket <span class="o">(</span>4<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS app data, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+&lt; HTTP/1.1 200 OK
+&lt; Date: Wed, 11 May 2022 04:08:14 GMT
+&lt; Server: Apache
+&lt; Last-Modified: Wed, 11 May 2022 03:47:47 GMT
+&lt; ETag: <span class="s2">"c-5deb44dfe095d"</span>
+&lt; Accept-Ranges: bytes
+&lt; Content-Length: 12
+&lt; Content-Type: text/html
+&lt;
+hello world
+<span class="k">*</span> Connection <span class="c">#0 to host dhkim.com left intact</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">CAfile: /tmp/self_signed_cert/dhkim.com.crt</code> 인증서를 지정할 수 있습니다.</p>
+
+  <p><code class="language-plaintext highlighter-rouge">11~23 Line</code> SSL handshake 가 정상적으로 문제없이 일어났습니다.</p>
+
+  <p><code class="language-plaintext highlighter-rouge">24 Line</code> TLSv1.4 버전 프로토콜 / 암호화 알고리즘 로그가 확인됩니다.</p>
+
+  <p><code class="language-plaintext highlighter-rouge">26~32 Line</code> subject(보안 대상; 웹서버)와 issuer(발급자; 인증서 증명자)의 정보입니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h4 id="3-사설-인증서-사용-download-ssl">(3). 사설 인증서 사용 (download ssl)</h4>
+
+<ul>
+  <li>
+    <p>원격지의 SSL 인증서를 역으로 다운로드 받아, 활용하는 방법도 해볼 수 있습니다.</p>
+
+    <p>굳이 접속을 하기 위해 SSL 인증서를 손에 쥐고 있을 필요가 없습니다.</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-servername</span> dhkim.com <span class="nt">-connect</span> 192.168.56.2:443 <span class="nt">-showcerts</span> <span class="o">&gt;</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/download_dhkim.com.crt
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-rtl</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/download_dhkim.com.crt
+<span class="nt">-rw-rw-r--</span><span class="nb">.</span> 1 dhkim dhkim 6220  5월 11 13:15 /tmp/self_signed_cert/download_dhkim.com.crt
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">openssl</code> 명령으로, 원격지의 SSL 인증서를 다운로드 받았습니다.</p>
+</blockquote>
+
+<p><br /></p>
+<ul>
+  <li>
+    <p>기존에 우리가 가지고 있던 원본 SSL 인증서와, 방금 다운로드 받은 SSL 인증서는 무슨 차이가 있길래,</p>
+
+    <p>용량도 내용의 길이면도 차이가 있을까요?</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-rtl</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/<span class="k">*</span>crt
+<span class="nt">-rw-rw-r--</span><span class="nb">.</span> 1 dhkim dhkim 1237  5월 10 18:48 /tmp/self_signed_cert/dhkim.com.crt
+<span class="nt">-rw-rw-r--</span><span class="nb">.</span> 1 dhkim dhkim 6220  5월 11 13:15 /tmp/self_signed_cert/download_dhkim.com.crt
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<ul>
+  <li>
+    <p>용량도, 내용도 달라보이지만 사실상 차이는 없습니다.</p>
+
+    <p>내용을 비교하면 <code class="language-plaintext highlighter-rouge">download_dhkim.com.crt</code> 파일이 좀 더 방대하지만, 
+<code class="language-plaintext highlighter-rouge">BEGIN CERTIFICATE</code> 으로 시작하여 <code class="language-plaintext highlighter-rouge">END CERTIFICATE</code> 으로 끝나는 사이의 암호화된 인증서 정보는 같습니다.</p>
+
+    <p>다른 내용은 필요 없고, 암호화된 인증서 정보만을 가지고 SSL 인증을 수행하기 때문입니다.</p>
+  </li>
+</ul>
+
+<p><br /></p>
+<ul>
+  <li>다운로드 받은 인증서로 연결을 수행해봅시다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>curl <span class="nt">-v</span> https://dhkim.com <span class="nt">--cacert</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/download_dhkim.com.crt
+<span class="k">*</span> Rebuilt URL to: https://dhkim.com/
+<span class="k">*</span>   Trying 192.168.56.2...
+<span class="k">*</span> TCP_NODELAY <span class="nb">set</span>
+<span class="k">*</span> Connected to dhkim.com <span class="o">(</span>192.168.56.2<span class="o">)</span> port 443 <span class="o">(</span><span class="c">#0)</span>
+<span class="k">*</span> ALPN, offering h2
+<span class="k">*</span> ALPN, offering http/1.1
+<span class="k">*</span> successfully <span class="nb">set </span>certificate verify locations:
+<span class="k">*</span>   CAfile: /tmp/self_signed_cert/download_dhkim.com.crt
+  CApath: none
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS handshake, Client hello <span class="o">(</span>1<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Server hello <span class="o">(</span>2<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Encrypted Extensions <span class="o">(</span>8<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Certificate <span class="o">(</span>11<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, CERT verify <span class="o">(</span>15<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Finished <span class="o">(</span>20<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS change cipher, Change cipher spec <span class="o">(</span>1<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS handshake, Finished <span class="o">(</span>20<span class="o">)</span>:
+<span class="k">*</span> SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+<span class="k">*</span> ALPN, server accepted to use http/1.1
+<span class="k">*</span> Server certificate:
+<span class="k">*</span>  subject: <span class="nv">C</span><span class="o">=</span>KR<span class="p">;</span> <span class="nv">ST</span><span class="o">=</span>Seoul<span class="p">;</span> <span class="nv">L</span><span class="o">=</span>Seocho-gu<span class="p">;</span> <span class="nv">O</span><span class="o">=</span>OSCI<span class="p">;</span> <span class="nv">OU</span><span class="o">=</span>Cloud Migration<span class="p">;</span> <span class="nv">CN</span><span class="o">=</span>dhkim.com
+<span class="k">*</span>  start <span class="nb">date</span>: May 10 09:48:47 2022 GMT
+<span class="k">*</span>  expire <span class="nb">date</span>: May 10 09:48:47 2023 GMT
+<span class="k">*</span>  common name: dhkim.com <span class="o">(</span>matched<span class="o">)</span>
+<span class="k">*</span>  issuer: <span class="nv">C</span><span class="o">=</span>KR<span class="p">;</span> <span class="nv">ST</span><span class="o">=</span>Seoul<span class="p">;</span> <span class="nv">L</span><span class="o">=</span>Seocho-gu<span class="p">;</span> <span class="nv">O</span><span class="o">=</span>OSCI<span class="p">;</span> <span class="nv">OU</span><span class="o">=</span>Cloud Migration<span class="p">;</span> <span class="nv">CN</span><span class="o">=</span>dhkim.com
+<span class="k">*</span>  SSL certificate verify ok.
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>OUT<span class="o">)</span>, TLS app data, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="o">&gt;</span> GET / HTTP/1.1
+<span class="o">&gt;</span> Host: dhkim.com
+<span class="o">&gt;</span> User-Agent: curl/7.61.1
+<span class="o">&gt;</span> Accept: <span class="k">*</span>/<span class="k">*</span>
+<span class="o">&gt;</span>
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Newsession Ticket <span class="o">(</span>4<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS handshake, Newsession Ticket <span class="o">(</span>4<span class="o">)</span>:
+<span class="k">*</span> TLSv1.3 <span class="o">(</span>IN<span class="o">)</span>, TLS app data, <span class="o">[</span>no content] <span class="o">(</span>0<span class="o">)</span>:
+&lt; HTTP/1.1 200 OK
+&lt; Date: Wed, 11 May 2022 04:16:06 GMT
+&lt; Server: Apache
+&lt; Last-Modified: Wed, 11 May 2022 03:47:47 GMT
+&lt; ETag: <span class="s2">"c-5deb44dfe095d"</span>
+&lt; Accept-Ranges: bytes
+&lt; Content-Length: 12
+&lt; Content-Type: text/html
+&lt;
+hello world
+<span class="k">*</span> Connection <span class="c">#0 to host dhkim.com left intact</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>전혀 문제 없이, SSL Handshake 수행됩니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h3 id="42-openssl">4.2 openssl</h3>
+
+<h4 id="1-기본-인증서-사용-1">(1). 기본 인증서 사용</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-servername</span> dhkim.com <span class="nt">-connect</span> 192.168.56.2:443
+CONNECTED<span class="o">(</span>00000003<span class="o">)</span>
+<span class="nv">depth</span><span class="o">=</span>0 C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+verify error:num<span class="o">=</span>18:self signed certificate
+verify <span class="k">return</span>:1
+<span class="nv">depth</span><span class="o">=</span>0 C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+verify <span class="k">return</span>:1
+<span class="nt">---</span>
+Certificate chain
+ 0 s:C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+   i:C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+<span class="nt">---</span>
+Server certificate
+<span class="nt">-----BEGIN</span> CERTIFICATE-----
+MIIDYzCCAksCFDfIh7j8xqsFYz9suq3XIC9rAG6PMA0GCSqGSIb3DQEBCwUAMG4x
+CzAJBgNVBAYTAktSMQ4wDAYDVQQIDAVTZW91bDESMBAGA1UEBwwJU2VvY2hvLWd1
+MQ0wCwYDVQQKDARPU0NJMRgwFgYDVQQLDA9DbG91ZCBNaWdyYXRpb24xEjAQBgNV
+BAMMCWRoa2ltLmNvbTAeFw0yMjA1MTAwOTQ4NDdaFw0yMzA1MTAwOTQ4NDdaMG4x
+CzAJBgNVBAYTAktSMQ4wDAYDVQQIDAVTZW91bDESMBAGA1UEBwwJU2VvY2hvLWd1
+MQ0wCwYDVQQKDARPU0NJMRgwFgYDVQQLDA9DbG91ZCBNaWdyYXRpb24xEjAQBgNV
+BAMMCWRoa2ltLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALYY
+RPC8/lh6TPsWmhqgtpb5GUAfODUahfkkklR0pUafCPpVyfAoBKzMcYgEU8kK0ETf
+T8jF9LrforRAa6rrm7e2I3N93TzUgypRAdJeoFC1Eg1YpchHGHkoDVrMqMZdCjVZ
++2QR0E8B16RedzCY55ctb0dCHckoD4nnzwvm6HInpFK6DrZBxdbEh1Dr8hiEsWtH
+bYeHGFWc/ugmAlVzuQLNevInKS9pUFglb7yxYpkVI4wf6C/Hyf0Wba34yBcGLtbr
+cF32TJrp12wAq1D16jUX1fDwiiq6P9mo0Xxw2bza17PyzeV++i2DszRjhgh9A1RE
+6A/ZX15gtgYY4Bsp4e8CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAgwp7vJb24g6r
+78VPi3UwEkgSRbSnc9yK2KlObc2xtwK5TbibeIPdbkw5vPj9tieCgNyvKfpWnIni
+/CvDILdaRnAMcCbP2O3cNBK/xQDvL1pw3GMzWaZvPgqGNNQ1GOD5FzPnBXniOG8T
+OsY54KG31zLp7/JslJ7CmtfFFXRRMMYIRXBMJdNNZE4n4j6+SNOdhFlxAqGevrzE
+qKAndFkRsr//le62ddeegVZdiZiEZfbPNx3ebfs98VXV7HyvsDt3H/oRGXsBF1gl
+DyqobfbdovazynOi/NHZN2JJEaZREVM7itozp26cIfmgEXwWkGEocPZOGMAQYDo2
+<span class="nv">5fq8KSWaKg</span><span class="o">==</span>
+<span class="nt">-----END</span> CERTIFICATE-----
+<span class="nv">subject</span><span class="o">=</span>C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+
+<span class="nv">issuer</span><span class="o">=</span>C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+
+<span class="nt">---</span>
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature <span class="nb">type</span>: RSA-PSS
+Server Temp Key: X25519, 253 bits
+<span class="nt">---</span>
+SSL handshake has <span class="nb">read </span>1431 bytes and written 387 bytes
+Verification error: self signed certificate
+<span class="nt">---</span>
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify <span class="k">return </span>code: 18 <span class="o">(</span>self signed certificate<span class="o">)</span>
+<span class="nt">---</span>
+<span class="nt">---</span>
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 9EF9BB21AB914D0155A71BC146167828D773705EFF8B04608CC9C7EAD688C656
+    Session-ID-ctx:
+    Resumption PSK: 96F5690C7A6D733E7CB1A0F5DD595908F8A50F1D7209D831FBF5F198228DB4689EE7097958AAA599527BA18883A45E46
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 <span class="o">(</span>seconds<span class="o">)</span>
+    TLS session ticket:
+    0000 - 1f be 43 bb 42 73 6a cf-2a cb cc 05 <span class="nb">fc </span>02 6d aa   ..C.Bsj.<span class="k">*</span>.....m.
+    0010 - c7 68 0c b6 bc 20 ae e4-96 38 a0 82 3c 36 a3 96   .h... ...8..&lt;6..
+    0020 - 7a 2f 7b 92 b2 ce 7c 68-ad b1 3a b3 6d 6f 7e 09   z/<span class="o">{</span>...|h..:.mo~.
+    0030 - 56 61 c5 65 e4 91 0c e3-b0 47 58 c4 e8 95 f7 6b   Va.e.....GX....k
+    0040 - 0a f2 4e e1 b4 bf 9b 71-6d 10 c7 21 99 6d 94 62   ..N....qm..!.m.b
+    0050 - 02 b9 b7 34 5e 5c <span class="nb">dd </span>55-69 95 de 3c 5f bd 81 e2   ...4^<span class="se">\.</span>Ui..&lt;_...
+    0060 - f9 06 29 bf f4 85 0c 96-e3 87 d5 0a 08 14 9d b2   ..<span class="o">)</span>.............
+    0070 - 72 2c 22 40 b2 4e ad 12-55 82 4a 70 35 cf 76 cb   r,<span class="s2">"@.N..U.Jp5.v.
+    0080 - d8 ac 34 d3 c5 ce fe 04-9b d3 31 66 0b 55 3b b3   ..4.......1f.U;.
+    0090 - 40 e1 33 45 2e ac 95 da-9d 60 a1 78 f5 62 f4 3a   @.3E.....</span><span class="sb">`</span>.x.b.:
+    00a0 - 8d 67 2f 3a de 55 cc 40-08 81 <span class="nb">df </span>2f 2c 57 4f 89   .g/:.U.@.../,WO.
+    00b0 - 6b 7b 45 8b 0a <span class="nb">df </span>e4 11-c6 db f0 b2 9f 82 76 4c   k<span class="o">{</span>E...........vL
+    00c0 - c0 53 7f 6a 23 7d 23 b3-73 c4 41 4d f6 98 5a 43   .S.j#<span class="o">}</span><span class="c">#.s.AM..ZC</span>
+    00d0 - 31 <span class="nb">dd </span>58 31 d2 0b ab 81-90 5c 67 44 70 ec 19 a0   1.X1.....<span class="se">\g</span>Dp...
+    00e0 - 99 cc 07 99 5b e1 7d 11-a1 5f bf f5 4f e8 b3 2a   ....[.<span class="o">}</span>.._..O..<span class="k">*</span>
+
+    Start Time: 1652242972
+    Timeout   : 7200 <span class="o">(</span>sec<span class="o">)</span>
+    Verify <span class="k">return </span>code: 18 <span class="o">(</span>self signed certificate<span class="o">)</span>
+    Extended master secret: no
+    Max Early Data: 0
+<span class="nt">---</span>
+<span class="nb">read </span>R BLOCK
+<span class="nt">---</span>
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 9FFF3FB5D62CB380CC9836ED892D93A84B4D11B64B25A100DBFA5E44612B20F2
+    Session-ID-ctx:
+    Resumption PSK: AE2689A89A2E0F14B5041F9CDA86E749663469A000ACD4D834BA40772D3A25B9D887F6C12672B251A906F4CC0D7D67AC
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 <span class="o">(</span>seconds<span class="o">)</span>
+    TLS session ticket:
+    0000 - 1f be 43 bb 42 73 6a cf-2a cb cc 05 <span class="nb">fc </span>02 6d aa   ..C.Bsj.<span class="k">*</span>.....m.
+    0010 - 3f fb af c5 b8 3e 39 1f-b7 a5 48 85 e4 cc ae 36   ?....&gt;9...H....6
+    0020 - 66 22 f8 <span class="nb">fc </span>25 e7 38 c7-2f 1d 8b 0a ba 8c 92 <span class="nb">cd   </span>f<span class="s2">"..%.8./.......
+    0030 - af 02 55 3d 02 29 ea 1a-cb a4 7e bc b4 21 74 82   ..U=.)....~..!t.
+    0040 - 6a 41 45 67 a9 1c 4f eb-a2 02 81 bd 65 cf da 59   jAEg..O.....e..Y
+    0050 - 25 bc 99 3e 0e aa 1e 6c-de 7a 77 0a 5d 98 96 96   %..&gt;...l.zw.]...
+    0060 - 39 85 18 df dc 8d 53 52-73 c6 0b 40 f1 4f 23 fa   9.....SRs..@.O#.
+    0070 - ab df 68 da 09 84 2f 1e-47 13 3f ba 4b c6 c1 a4   ..h.../.G.?.K...
+    0080 - dd 23 bb ce 83 35 98 a1-3e 3d 6e dc 2e cb 71 fe   .#...5..&gt;=n...q.
+    0090 - 98 51 63 ce aa 61 98 38-ee 82 84 8a a3 97 28 a1   .Qc..a.8......(.
+    00a0 - 22 88 08 53 cb 3d 59 78-09 c6 ea 8a 71 c0 ee cc   "</span>..S.<span class="o">=</span>Yx....q...
+    00b0 - a0 6c 71 bc 0b 26 5a 52-65 3e 77 9e b3 3c b6 80   .lq..&amp;ZRe&gt;w..&lt;..
+    00c0 - d4 fb 98 9b c2 e9 a4 e0-14 49 c1 ae 42 8d a2 5f   .........I..B.._
+    00d0 - 6b 0d b7 94 f3 42 50 5d-6f 98 33 e8 1f 8a e7 2e   k....BP]o.3.....
+    00e0 - 75 cc a8 52 64 <span class="nb">cd </span>d7 bd-c2 59 c9 b5 a5 ac ea e1   u..Rd....Y......
+
+    Start Time: 1652242972
+    Timeout   : 7200 <span class="o">(</span>sec<span class="o">)</span>
+    Verify <span class="k">return </span>code: 18 <span class="o">(</span>self signed certificate<span class="o">)</span>
+    Extended master secret: no
+    Max Early Data: 0
+<span class="nt">---</span>
+<span class="nb">read </span>R BLOCK
+
+HTTP/1.1 400 Bad Request
+Date: Wed, 11 May 2022 04:22:52 GMT
+Server: Apache
+Content-Length: 226
+Connection: close
+Content-Type: text/html<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>iso-8859-1
+
+&lt;<span class="o">!</span>DOCTYPE HTML PUBLIC <span class="s2">"-//IETF//DTD HTML 2.0//EN"</span><span class="o">&gt;</span>
+&lt;html&gt;&lt;<span class="nb">head</span><span class="o">&gt;</span>
+&lt;title&gt;400 Bad Request&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Bad Request&lt;/h1&gt;
+&lt;p&gt;Your browser sent a request that this server could not understand.&lt;br /&gt;
+&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;
+closed
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">openssl</code> 을 이용하면, 기본적으로 SSL 연결은 정상적으로 수행되지만,</p>
+
+  <p><code class="language-plaintext highlighter-rouge">Verification error: self signed certificate</code> 와 같이 경고성 메시지를 출력해주고 있습니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h4 id="2-사설-인증서-사용-1">(2). 사설 인증서 사용</h4>
+
+<ul>
+  <li>위에서 해본 것처럼, SSL 인증서를 지정하여 확인해볼 수 있습니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-servername</span> dhkim.com <span class="nt">-connect</span> 192.168.56.2:443 <span class="nt">-CAfile</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.crt
+CONNECTED<span class="o">(</span>00000003<span class="o">)</span>
+<span class="nv">depth</span><span class="o">=</span>0 C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+verify <span class="k">return</span>:1
+<span class="nt">---</span>
+Certificate chain
+ 0 s:C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+   i:C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+<span class="nt">---</span>
+Server certificate
+<span class="nt">-----BEGIN</span> CERTIFICATE-----
+MIIDYzCCAksCFDqFd/R0+wGNaqN2fIJQ9l6IYXjKMA0GCSqGSIb3DQEBCwUAMG4x
+CzAJBgNVBAYTAktSMQ4wDAYDVQQIDAVTZW91bDESMBAGA1UEBwwJU2VvY2hvLWd1
+MQ0wCwYDVQQKDARPU0NJMRgwFgYDVQQLDA9DbG91ZCBNaWdyYXRpb24xEjAQBgNV
+BAMMCWRoa2ltLmNvbTAeFw0yMjA0MjYwNjQ2NDNaFw0yMzA0MjYwNjQ2NDNaMG4x
+CzAJBgNVBAYTAktSMQ4wDAYDVQQIDAVTZW91bDESMBAGA1UEBwwJU2VvY2hvLWd1
+MQ0wCwYDVQQKDARPU0NJMRgwFgYDVQQLDA9DbG91ZCBNaWdyYXRpb24xEjAQBgNV
+BAMMCWRoa2ltLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANDN
+judmmqf88NP6KSWMkdrZzPUZpY6I2vqtzHDf0pxBvEcHyhwA76LYl5xfPL76USef
+xgM7etNaRJ5sre3Rr1V3AaH2VWl9ERq2EPcMY1YSvodHmyPYIQxzRIF08sofoCdY
+kQjpMcIkuGXdRuL8K7stlArpaYo0Urvkt0JOZSJGuxm2u7F+RrnXGpsC2s2U/A7X
+DG43chRy93okuSXtL/9WlQjMiPxE4vuK7EUXGCD862vAmfN+sxiZfZLUBji3g88z
+AY4He0PYnEakqdPtcTLXRi1K2i7KjIf5YOLKjOXXUHYAcRUGUe7J9FgW4Waq+L5j
+HCHI3VULUoOqTwN18zECAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAoWVuIY3jCcWg
+fGAT2quhcL570d/VFKusOOriuUdijN1fQGgud8I1zs/KddIDhRtFAozXJJMmBJAa
+Z7PytRifOMbe4DkJtHFOJOHJdrA5OVDIAgrFhDy44rZvUBMRvbAfw1aDhJKkp7Ie
+Anibtz+WFc3W9ys8BJ9T1utFnaU2k0V1Bj2d39fx114POpkAxOqY1PSZJVavuxPB
+EM4FYb5DSeglYGZJUkUadC768YVpIZH0Sbitdk3qM9WLPh0ur2GIn5hRzdGrBYUz
+kQOWdC1g/4y1wkGlaCn5TNtHdyrEfbI7Oer6uraCm24XpqhTFaYS0SJ9iz4zSC8X
+<span class="nv">5CU9g6AP9g</span><span class="o">==</span>
+<span class="nt">-----END</span> CERTIFICATE-----
+<span class="nv">subject</span><span class="o">=</span>C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+
+<span class="nv">issuer</span><span class="o">=</span>C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+
+<span class="nt">---</span>
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature <span class="nb">type</span>: RSA-PSS
+Server Temp Key: X25519, 253 bits
+<span class="nt">---</span>
+SSL handshake has <span class="nb">read </span>1548 bytes and written 400 bytes
+Verification: OK
+<span class="nt">---</span>
+New, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+SSL-Session:
+    Protocol  : TLSv1.2
+    Cipher    : ECDHE-RSA-AES256-GCM-SHA384
+    Session-ID: 2AB8B353A394D3FB1E6F0945DBA7939C5DBC2B0047FE43DDB607A7AE9F232900
+    Session-ID-ctx:
+    Master-Key: 37CE046D9DC270224D50D6644E1838F1CC44346B16AF5C6073C9F546DC753AB30BC06E20C13757B2676B31A28FBBCEEC
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 <span class="o">(</span>seconds<span class="o">)</span>
+    TLS session ticket:
+    0000 - 03 e5 eb fb 09 37 45 c8-9d 42 c5 8d a0 9c da 04   .....7E..B......
+    0010 - 53 fa b5 8e bb d0 d2 2f-d2 90 11 b9 67 28 af 51   S....../....g<span class="o">(</span>.Q
+    0020 - f8 92 b3 25 af 3b 43 98-78 42 af 89 1e 6c b7 d8   ...%.<span class="p">;</span>C.xB...l..
+    0030 - ee bc d2 c5 <span class="nb">cd </span>60 e3 ef-3c 8b 96 a2 83 57 2d f0   .....<span class="sb">`</span>..&lt;....W-.
+    0040 - 72 6a aa 03 9b ac ca bc-bf cc b8 2f ba d6 31 e9   rj........./..1.
+    0050 - 74 37 90 d0 84 6c f8 2e-0d 20 46 1a 0c <span class="nb">df </span>ab a9   t7...l... F.....
+    0060 - e0 be 5c 9a 44 e0 66 6a-60 b1 8d 82 55 2e 38 c7   ..<span class="se">\.</span>D.fj<span class="sb">`</span>...U.8.
+    0070 - 5c 7c 66 54 47 0d fe f2-54 18 4e 78 90 aa ac 11   <span class="se">\|</span>fTG...T.Nx....
+    0080 - 82 5c 00 42 46 10 88 23-4d f4 ce 6e db 1b 81 d2   .<span class="se">\.</span>BF..#M..n....
+    0090 - 45 45 95 18 35 f9 80 80-25 2d 43 4b b8 81 5c 8a   EE..5...%-CK..<span class="se">\.</span>
+    00a0 - 45 2d 16 32 84 f1 47 92-c0 46 c4 6a d2 3e f7 ad   E-.2..G..F.j.&gt;..
+    00b0 - d2 64 17 a4 2b 62 7d cf-e2 29 bd 98 7e 21 9f ca   .d..+b<span class="o">}</span>..<span class="o">)</span>..~!..
+    00c0 - 42 c6 a7 3f 57 c4 b4 92-9a a0 d6 1f 21 3a 8d 15   B..?W.......!:..
+
+    Start Time: 1651027020
+    Timeout   : 7200 <span class="o">(</span>sec<span class="o">)</span>
+    Verify <span class="k">return </span>code: 0 <span class="o">(</span>ok<span class="o">)</span>
+    Extended master secret: <span class="nb">yes</span>
+<span class="nt">---</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>인증서를 Server측 handshake 에 사용되도록 지정하여,</p>
+
+  <p><code class="language-plaintext highlighter-rouge">78 Line</code> <code class="language-plaintext highlighter-rouge">Verification: OK</code> 정상적으로 키 교환(exchange)이 완료된 것을 알 수 있습니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h4 id="3-사설-인증서-사용-download-ssl-1">(3). 사설 인증서 사용 (download ssl)</h4>
+
+<ul>
+  <li>앞서 진행한것 처럼, <code class="language-plaintext highlighter-rouge">openssl</code> 으로 원격지의 SSL 인증서를 내려 받습니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-servername</span> dhkim.com <span class="nt">-connect</span> 192.168.56.2:443 <span class="o">&gt;</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/download_dhkim.com.crt
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<ul>
+  <li>받은 인증서로 SSL 연결을 수행해봅니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl s_client <span class="nt">-servername</span> dhkim.com <span class="nt">-connect</span> 192.168.56.2:443 <span class="nt">-CAfile</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/download_dhkim.com.crt
+CONNECTED<span class="o">(</span>00000003<span class="o">)</span>
+<span class="nv">depth</span><span class="o">=</span>0 C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+verify <span class="k">return</span>:1
+<span class="nt">---</span>
+Certificate chain
+ 0 s:C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+   i:C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+<span class="nt">---</span>
+Server certificate
+<span class="nt">-----BEGIN</span> CERTIFICATE-----
+MIIDYzCCAksCFDfIh7j8xqsFYz9suq3XIC9rAG6PMA0GCSqGSIb3DQEBCwUAMG4x
+CzAJBgNVBAYTAktSMQ4wDAYDVQQIDAVTZW91bDESMBAGA1UEBwwJU2VvY2hvLWd1
+MQ0wCwYDVQQKDARPU0NJMRgwFgYDVQQLDA9DbG91ZCBNaWdyYXRpb24xEjAQBgNV
+BAMMCWRoa2ltLmNvbTAeFw0yMjA1MTAwOTQ4NDdaFw0yMzA1MTAwOTQ4NDdaMG4x
+CzAJBgNVBAYTAktSMQ4wDAYDVQQIDAVTZW91bDESMBAGA1UEBwwJU2VvY2hvLWd1
+MQ0wCwYDVQQKDARPU0NJMRgwFgYDVQQLDA9DbG91ZCBNaWdyYXRpb24xEjAQBgNV
+BAMMCWRoa2ltLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALYY
+RPC8/lh6TPsWmhqgtpb5GUAfODUahfkkklR0pUafCPpVyfAoBKzMcYgEU8kK0ETf
+T8jF9LrforRAa6rrm7e2I3N93TzUgypRAdJeoFC1Eg1YpchHGHkoDVrMqMZdCjVZ
++2QR0E8B16RedzCY55ctb0dCHckoD4nnzwvm6HInpFK6DrZBxdbEh1Dr8hiEsWtH
+bYeHGFWc/ugmAlVzuQLNevInKS9pUFglb7yxYpkVI4wf6C/Hyf0Wba34yBcGLtbr
+cF32TJrp12wAq1D16jUX1fDwiiq6P9mo0Xxw2bza17PyzeV++i2DszRjhgh9A1RE
+6A/ZX15gtgYY4Bsp4e8CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAgwp7vJb24g6r
+78VPi3UwEkgSRbSnc9yK2KlObc2xtwK5TbibeIPdbkw5vPj9tieCgNyvKfpWnIni
+/CvDILdaRnAMcCbP2O3cNBK/xQDvL1pw3GMzWaZvPgqGNNQ1GOD5FzPnBXniOG8T
+OsY54KG31zLp7/JslJ7CmtfFFXRRMMYIRXBMJdNNZE4n4j6+SNOdhFlxAqGevrzE
+qKAndFkRsr//le62ddeegVZdiZiEZfbPNx3ebfs98VXV7HyvsDt3H/oRGXsBF1gl
+DyqobfbdovazynOi/NHZN2JJEaZREVM7itozp26cIfmgEXwWkGEocPZOGMAQYDo2
+<span class="nv">5fq8KSWaKg</span><span class="o">==</span>
+<span class="nt">-----END</span> CERTIFICATE-----
+<span class="nv">subject</span><span class="o">=</span>C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+
+<span class="nv">issuer</span><span class="o">=</span>C <span class="o">=</span> KR, ST <span class="o">=</span> Seoul, L <span class="o">=</span> Seocho-gu, O <span class="o">=</span> OSCI, OU <span class="o">=</span> Cloud Migration, CN <span class="o">=</span> dhkim.com
+
+<span class="nt">---</span>
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature <span class="nb">type</span>: RSA-PSS
+Server Temp Key: X25519, 253 bits
+<span class="nt">---</span>
+SSL handshake has <span class="nb">read </span>1431 bytes and written 387 bytes
+Verification: OK
+<span class="nt">---</span>
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify <span class="k">return </span>code: 0 <span class="o">(</span>ok<span class="o">)</span>
+<span class="nt">---</span>
+<span class="nt">---</span>
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: A03B5C0C44A33E76139812885A5DA3FB2D93D30DAEB1FDD43573D441623E0D9E
+    Session-ID-ctx:
+    Resumption PSK: B6B80C4EAC340F04EE6DC74A4A24734B991646EFF0800527D5F2FDCA6EB0162F37B9864B22A1256497B024E97882B7B6
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 <span class="o">(</span>seconds<span class="o">)</span>
+    TLS session ticket:
+    0000 - 1f be 43 bb 42 73 6a cf-2a cb cc 05 <span class="nb">fc </span>02 6d aa   ..C.Bsj.<span class="k">*</span>.....m.
+    0010 - c2 55 52 b8 15 1e a9 f7-bf bb 83 3d 92 9e 8d 9c   .UR........<span class="o">=</span>....
+    0020 - 04 74 0c 58 11 17 42 94-1b 1f 46 78 85 64 f2 69   .t.X..B...Fx.d.i
+    0030 - 90 8c 77 3d e0 f0 0a 28-1e aa 82 2a 66 26 07 3a   ..w<span class="o">=</span>...<span class="o">(</span>...<span class="k">*</span>f&amp;.:
+    0040 - 2d b1 4b 69 5e a2 32 e0-2e 4e 6c fe 3e f0 55 64   -.Ki^.2..Nl.&gt;.Ud
+    0050 - 1f 12 e8 <span class="nb">df </span>93 75 2e 3b-5f 53 b2 d4 0b ce 7b c0   .....u.<span class="p">;</span>_S....<span class="o">{</span><span class="nb">.</span>
+    0060 - 28 a6 1a 93 a7 b8 73 44-2f 04 6a f1 38 ab a9 0e   <span class="o">(</span>.....sD/.j.8...
+    0070 - e0 a3 ef 16 1a a1 07 f4-6f e1 37 ca 8f d2 9d a8   ........o.7.....
+    0080 - 11 31 0a 4c 8b 68 38 f1-7a 76 94 14 ba ed cb 1d   .1.L.h8.zv......
+    0090 - a2 9e bc 2e ac 2a 6b f9-e1 67 f3 9a 78 c3 6f 89   .....<span class="k">*</span>k..g..x.o.
+    00a0 - 18 6a f6 ed 48 92 28 06-36 ec 31 e5 f6 ed e9 45   .j..H.<span class="o">(</span>.6.1....E
+    00b0 - a5 9b 81 f6 10 3a 11 77-00 e9 0c 02 51 e8 e7 39   .....:.w....Q..9
+    00c0 - 4b b7 07 0c 67 ad 06 e8-90 ff 4d 39 d2 20 23 43   K...g.....M9. <span class="c">#C</span>
+    00d0 - c2 c6 f9 a0 44 66 f6 08-66 13 69 6c 8b ab 38 d8   ....Df..f.il..8.
+    00e0 - a6 a2 76 b2 2d 3b 7e 11-8a b8 fe 86 6c 8d 9a d7   ..v.-<span class="p">;</span>~.....l...
+
+    Start Time: 1652243552
+    Timeout   : 7200 <span class="o">(</span>sec<span class="o">)</span>
+    Verify <span class="k">return </span>code: 0 <span class="o">(</span>ok<span class="o">)</span>
+    Extended master secret: no
+    Max Early Data: 0
+<span class="nt">---</span>
+<span class="nb">read </span>R BLOCK
+<span class="nt">---</span>
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: CEA4F8BF660A26FDA72552816D2D050AE8252ADC5D2D9E2771811AE98AB70FEF
+    Session-ID-ctx:
+    Resumption PSK: D0E73731976C0FF9F7A1A2FD6AAFB03470E1F9D75E4D5B263105448ABD589D1DCA7E71C64F7FC2CB2C510FF5D6136EB9
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 <span class="o">(</span>seconds<span class="o">)</span>
+    TLS session ticket:
+    0000 - 1f be 43 bb 42 73 6a cf-2a cb cc 05 <span class="nb">fc </span>02 6d aa   ..C.Bsj.<span class="k">*</span>.....m.
+    0010 - 0a d4 b9 4d 53 d8 ab 95-34 49 ae 07 72 ae 7e 8f   ...MS...4I..r.~.
+    0020 - 2b c7 a9 db 65 61 58 23-78 27 3a 61 92 97 82 49   +...eaX#x<span class="s1">':a...I
+    0030 - d8 f2 0d b8 34 b8 62 07-a7 53 1c 2c 66 2b bb 91   ....4.b..S.,f+..
+    0040 - ad e2 21 dd 3d f6 69 cf-68 f2 2f c0 2f a5 c4 f8   ..!.=.i.h././...
+    0050 - ab fe 26 7c 4c 3d 78 31-6f 24 dd 11 7e 45 85 cc   ..&amp;|L=x1o$..~E..
+    0060 - 2b 95 f5 21 8f 9c 04 b0-93 6b ba b1 e5 a5 ea 12   +..!.....k......
+    0070 - 1d a5 37 d6 eb b0 d1 76-61 c2 34 6d 28 06 41 99   ..7....va.4m(.A.
+    0080 - 92 e7 ad 59 ab a3 22 1d-9d 6a a9 f3 fa 92 da 32   ...Y.."..j.....2
+    0090 - 4a 49 4a 11 87 0c a9 00-a3 83 74 2a 53 d4 46 36   JIJ.......t*S.F6
+    00a0 - 95 45 5c e9 18 1c 45 c3-83 bf 65 5a e5 45 07 08   .E\...E...eZ.E..
+    00b0 - e9 00 3f 49 ed 22 cf d2-78 46 6b a2 e7 fd d4 9e   ..?I."..xFk.....
+    00c0 - 63 09 ce f1 05 f8 48 90-07 7e 41 c7 4b 80 cb 48   c.....H..~A.K..H
+    00d0 - ab ed 29 35 c7 25 b1 09-80 b1 9e 6c 36 25 15 5d   ..)5.%.....l6%.]
+    00e0 - 01 24 ee 24 00 62 10 e7-9b dd 22 3d 54 f0 01 19   .$.$.b...."=T...
+
+    Start Time: 1652243552
+    Timeout   : 7200 (sec)
+    Verify return code: 0 (ok)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+
+HTTP/1.1 400 Bad Request
+Date: Wed, 11 May 2022 04:32:34 GMT
+Server: Apache
+Content-Length: 226
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"&gt;
+&lt;html&gt;&lt;head&gt;
+&lt;title&gt;400 Bad Request&lt;/title&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Bad Request&lt;/h1&gt;
+&lt;p&gt;Your browser sent a request that this server could not understand.&lt;br /&gt;
+&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;
+closed
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>원격지의 인증서로, SSL handshake를 시도하였고, <code class="language-plaintext highlighter-rouge">85 Line</code> 로그를 통해 정상적으로 처리된 것을 알 수 있습니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h3 id="43-httpurlconnection-java">4.3 HttpUrlConnection (JAVA)</h3>
+
+<ul>
+  <li>여기서는 JAVA 기반의 어플리케이션을 통해 원격지 서버와 SSL 통신을 수립해봅니다.</li>
+  <li>테스트를 위해 다음의 어플리케이션이 AP에 배포된다고 가정합니다.</li>
+</ul>
+
+<div class="language-jsp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;%@ page </span><span class="na">contentType=</span><span class="s">"text/html; charset=UTF-8"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"java.io.*"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%@ page </span><span class="na">import=</span><span class="s">"java.net.*"</span> <span class="nt">%&gt;</span>
+<span class="nt">&lt;%</span>
+    <span class="no">URL</span> <span class="n">url</span> <span class="o">=</span> <span class="k">new</span> <span class="no">URL</span><span class="o">(</span><span class="s">"https://dhkim.com/index.html"</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="nc">HttpURLConnection</span> <span class="n">connection</span> <span class="o">=</span> <span class="o">(</span><span class="nc">HttpURLConnection</span><span class="o">)</span> <span class="n">url</span><span class="o">.</span><span class="na">openConnection</span><span class="o">();</span>
+    <span class="n">connection</span><span class="o">.</span><span class="na">setDoOutput</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="nc">OutputStreamWriter</span> <span class="n">osw</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OutputStreamWriter</span><span class="o">(</span><span class="n">connection</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">());</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">osw</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">""</span><span class="o">);</span>
+        <span class="n">osw</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">osw</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">osw</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nc">BufferedReader</span> <span class="n">brin</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="n">connection</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()));</span>
+    <span class="nc">String</span> <span class="n">resStr</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="nc">StringBuffer</span> <span class="n">resStrBuff</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuffer</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+          <span class="k">while</span> <span class="o">((</span><span class="n">resStr</span> <span class="o">=</span> <span class="n">brin</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+              <span class="n">resStrBuff</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">resStr</span><span class="o">);</span>
+          <span class="o">}</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">brin</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">brin</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">resStrBuff</span><span class="o">);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">resStrBuff</span><span class="o">);</span>
+<span class="nt">%&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>단순히, AP 호출 시 <code class="language-plaintext highlighter-rouge">https://dhkim.com/index.html</code> 을 호출하는 소스코드 입니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h4 id="1-ap-호출하여-https-연결">(1). AP 호출하여 HTTPS 연결</h4>
+
+<ul>
+  <li>
+    <p>AP에 배포된 어플리케이션을 호출하면, HttpUrlConnection Class가 <code class="language-plaintext highlighter-rouge">https://dhkim.com/index.html</code>을 호출합니다.</p>
+
+    <p>그러나, 원격지(requested target)와 SSL Handshake에 필요한 유효한 인증서가 없어(unable to find valid certi..) Exception 이 발생하였습니다.</p>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>Caused by: javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+
+Caused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h4 id="2-ssl-인증서-to-java-key-store-변환">(2). SSL 인증서 to Java Key Store 변환</h4>
+
+<ul>
+  <li>
+    <p>AP(Client; 호출자)에 SSL 인증서 Setup을 위해 JKS로 변환하는 과정이 필요합니다.</p>
+
+    <p>JAVA 기반에서는 SSL 인증서를 JKS로 감싸주어야 이해할 수 있기 때문입니다.</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/private.key <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.crt <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/root.csr <span class="o">&gt;</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.pem
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>개인키, 서버 인증서, CSR 인증서를 하나의 <code class="language-plaintext highlighter-rouge">dhkim.com.pem</code> 파일로 합칩니다.</p>
+</blockquote>
+
+<p><br /></p>
+<ul>
+  <li>
+    <p>확장자를 pem 으로 만들었다고, 완성되는 것이 아닙니다.</p>
+
+    <p>pkcs12 Format으로 변환 해주어야 합니다.</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>openssl pkcs12 <span class="nt">-export</span> <span class="nt">-in</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.pem <span class="nt">-out</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.p12
+Enter pass phrase <span class="k">for</span> /tmp/self_signed_cert/dhkim.com.pem: <span class="o">(</span>dhkim<span class="o">)</span>
+Enter Export Password: <span class="o">(</span>pkcs123456<span class="o">)</span>
+Verifying - Enter Export Password: <span class="o">(</span>pkcs123456<span class="o">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>private.key 암호인 <code class="language-plaintext highlighter-rouge">dhkim</code> 와</p>
+
+  <p>p12 파일의 암호인 <code class="language-plaintext highlighter-rouge">pkcs123456</code> 을 차례대로 입력합니다.</p>
+
+  <p><code class="language-plaintext highlighter-rouge">pkcs12</code> Format은 하나의 단일 File에 여러개의 인증서를 묶을 수 있게 해줍니다.</p>
+</blockquote>
+
+<p><br /></p>
+<ul>
+  <li>pkcs12 Format 파일을 JKS에 집어 넣습니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>keytool <span class="nt">-importkeystore</span> <span class="nt">-srcstoretype</span> pkcs12 <span class="nt">-srckeystore</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.p12 <span class="nt">-deststoretype</span> jks <span class="nt">-destkeystore</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.jks
+키 저장소 /tmp/self_signed_cert/dhkim.com.p12을<span class="o">(</span>를<span class="o">)</span> /tmp/self_signed_cert/dhkim.com.jks<span class="o">(</span>으<span class="o">)</span>로 임포트하는 중...
+대상 키 저장소 비밀번호 입력: <span class="o">(</span>jks123456<span class="o">)</span>
+새 비밀번호 다시 입력: <span class="o">(</span>jks123456<span class="o">)</span>
+소스 키 저장소 비밀번호 입력: <span class="o">(</span>pkcs123456<span class="o">)</span>
+1 별칭에 대한 항목이 성공적으로 임포트되었습니다.
+임포트 명령 완료: 성공적으로 임포트된 항목은 1개, 실패하거나 취소된 항목은 0개입니다.
+
+Warning:
+JKS 키 저장소는 고유 형식을 사용합니다. <span class="s2">"keytool -importkeystore -srckeystore /tmp/self_signed_cert/dhkim.com.jks -destkeystore /tmp/self_signed_cert/dhkim.com.jks -deststoretype pkcs12"</span>를 사용하는 산업 표준 형식인 PKCS12로 이전하는 것이 좋습니다.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>dhkim.com.jks 암호인 <code class="language-plaintext highlighter-rouge">jks123456</code>와</p>
+
+  <p>dhkim.com.p12 암호인 <code class="language-plaintext highlighter-rouge">pkcs123456</code> 을 차례대로 입력합니다.</p>
+</blockquote>
+
+<p><br /></p>
+<h4 id="3-jks-setup-후-https-재연결">(3). JKS Setup 후 HTTPS 재연결</h4>
+
+<ul>
+  <li>위에서 생성한 JKS를 AP에 Setup 합니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nv">CERT</span><span class="o">=</span>/tmp/self_signed_cert
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.keyStoreType=JKS"</span>
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.keyStore=</span><span class="k">${</span><span class="nv">CERT</span><span class="k">}</span><span class="s2">/dhkim.com.jks"</span>
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.keyStorePassword=jks123456"</span>
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.trustStore=</span><span class="k">${</span><span class="nv">CERT</span><span class="k">}</span><span class="s2">/dhkim.com.jks"</span>
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.trustStorePassword=jks123456"</span>
+<span class="nb">export </span>JAVA_OPTS
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<ul>
+  <li>
+    <p>AP에서 HttpUrlConnection을 통해 HTTPS WEB을 호출하면 에러가 여전히 발생하고 있습니다.</p>
+
+    <p>아까와는 다른 에러 로그가 보입니다.</p>
+
+    <p><code class="language-plaintext highlighter-rouge">Cannot recover key</code>는 대게, SSL 인증서를 제공된 패스워드로 해독할 수 없어 발생합니다.</p>
+  </li>
+  <li>
+    <p>위에서 JKS, PKCS12 각기 다른 패스워드로 관리하기 위해 지정하였는데 에러가 발생했습니다.</p>
+
+    <p>이 부분에서는 도움이 될 만한 힌트 등을 구글링으로 알 수가 없었습니다.</p>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>java.net.SocketException: java.security.NoSuchAlgorithmException: Error constructing implementation (algorithm: Default, provider: SunJSSE, class: sun.security.ssl.SSLContextImpl$DefaultSSLContext)
+...
+java.security.UnrecoverableKeyException: Cannot recover key
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">Cannot recover key</code> 는, dhkim.com.jks Keystore 에 추가한 개인키 인증서를 <code class="language-plaintext highlighter-rouge">jks123456</code> 값으로 해독할 수 없어 발생합니다.</p>
+</blockquote>
+
+<p><br /></p>
+<ul>
+  <li>Keystore Password를 변경합니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>keytool <span class="nt">-storepasswd</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.jks
+키 저장소 비밀번호 입력: <span class="o">(</span>jks123456<span class="o">)</span>
+새 keystore password: <span class="o">(</span>dhkim123456<span class="o">)</span>
+새 keystore password 다시 입력: <span class="o">(</span>dhkim123456<span class="o">)</span>
+
+Warning:
+JKS 키 저장소는 고유 형식을 사용합니다. <span class="s2">"keytool -importkeystore -srckeystore /tmp/self_signed_cert/dhkim.com.jks -destkeystore /tmp/self_signed_cert/dhkim.com.jks -deststoretype pkcs12"</span>를 사용하는 산업 표준 형식인 PKCS12로 이전하는 것이 좋습니다.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>생성한 keystore의 password를 <code class="language-plaintext highlighter-rouge">dhkim123456</code>으로 변경했습니다.</p>
+</blockquote>
+
+<p><br /></p>
+<ul>
+  <li>
+    <p>Keystore 내에 저장된 인증서 Password를 변경합니다.</p>
+
+    <p><code class="language-plaintext highlighter-rouge">dhkim.com.jks</code> Keystore Password와 Keystore 내에 저장된 인증서의 Password를 동일하게 변경하는 작업입니다.</p>
+  </li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>keytool <span class="nt">-keypasswd</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">CERT</span><span class="k">}</span>/dhkim.com.jks <span class="nt">-alias</span> 1
+키 저장소 비밀번호 입력: <span class="o">(</span>dhkim123456<span class="o">)</span>
+&lt;1&gt;에 대한 키 비밀번호를 입력하십시오. <span class="o">(</span>pkcs123456<span class="o">)</span>
+새 &lt;1&gt;에 대한 키 비밀번호: <span class="o">(</span>dhkim123456<span class="o">)</span>
+새 &lt;1&gt;에 대한 키 비밀번호 다시 입력: <span class="o">(</span>dhkim123456<span class="o">)</span>
+
+Warning:
+JKS 키 저장소는 고유 형식을 사용합니다. <span class="s2">"keytool -importkeystore -srckeystore /tmp/self_signed_cert/dhkim.com.jks -destkeystore /tmp/self_signed_cert/dhkim.com.jks -deststoretype pkcs12"</span>를 사용하는 산업 표준 형식인 PKCS12로 이전하는 것이 좋습니다.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">-alias 1</code> : 처음에 Keystore 내에 인증서(<code class="language-plaintext highlighter-rouge">dhkim.com.p12</code>)를 저장할 때, 별칭을 주지 않았으므로 기본값 1이 지정되었습니다.</p>
+</blockquote>
+
+<p><br /></p>
+<ul>
+  <li>다음과 같이 AP Setup 한 내용 중에, <code class="language-plaintext highlighter-rouge">Password</code> 를 변경합니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nv">CERT</span><span class="o">=</span>/tmp/self_signed_cert
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.keyStoreType=JKS"</span>
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.keyStore=</span><span class="k">${</span><span class="nv">CERT</span><span class="k">}</span><span class="s2">/dhkim.com.jks"</span>
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.keyStorePassword=dhkim123456"</span>
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.trustStore=</span><span class="k">${</span><span class="nv">CERT</span><span class="k">}</span><span class="s2">/dhkim.com.jks"</span>
+<span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$JAVA_OPTS</span><span class="s2"> -Djavax.net.ssl.trustStorePassword=dhkim123456"</span>
+<span class="nb">export </span>JAVA_OPTS
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<ul>
+  <li>AP → HTTPS WEB 호출 시, STDOUT Log 또는, 웹 브라우저에 문제가 없고 결과물이 잘 나오는 것을 확인하였습니다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>Hello world&lt;br&gt;/tmp/htdocs_ssl/index.html
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><br /></p>
+<h2 id="5-마무리">5. 마무리</h2>
+
+<p>SSL 인증서를 여러 환경에 적용해보고, <code class="language-plaintext highlighter-rouge">curl</code> 과 <code class="language-plaintext highlighter-rouge">openssl</code> 명령으로 검증을 수행해보았습니다.</p>
+
+<p>이 테스트를 하게 된 계기는, 고객사의 SSL 인증서 교체 이후 검증 방식을 제대로 알고 있지 않아 준비해보게 되었습니다.</p>
+
+<p>물론, 고객사의 이슈와는 전혀 다른 상황이 펼쳐지더라도. 때때로 SSL 인증 과정에 문제가 없는지를 확인할 필요성이 많기 때문에</p>
+
+<p>저에게는 유용한 시간이 되었습니다.</p>
+
+<p>이것으로 글을 마무리 하며, 다음 시간에는 Spring Security의 Session Fixation 을 이슈로 겪었던 사례를 가지고 찾아뵙도록 하겠습니다.</p>
+:ET

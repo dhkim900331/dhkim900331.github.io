@@ -1,0 +1,18 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>포스트하기에도 매우 심플한 내용… 고객사 등등 여러 호스트에 접속을 시도할 때마다,</p>
+
+<p>Putty.exe 에 세션을 저장하는 등의 불편한 환경이라면 사용할만 하다.</p>
+
+<p><br /></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>putty.exe <span class="nt">-ssh</span> <span class="nt">-P</span> port user@host <span class="nt">-pw</span> <span class="nb">pwd</span>
+<span class="c"># putty.exe -ssh -P 22 dhkim@192.168.56.2 -pw dhkim</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>바로가기.exe 를 활용하거나, cmd 내에서 바로 명령만 입력하여도 자동 접속을 수행한다.</p>
+
+:ET
