@@ -11,6 +11,9 @@ typora-root-url: ..
 WebLogic 12cR2 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
 
 <br>
+
+<br>
+
 # 2. 설명
 
 All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한다.
@@ -22,6 +25,9 @@ All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한
 - /sw/app/{testApp, PostDataTest} deployed on myCluster
 
 <br>
+
+<br>
+
 # 3. Script
 
 ## 3.1 Engine
@@ -72,7 +78,7 @@ ORACLE_HOME=${WLS_INSTALL_PATH}
 INSTALL_TYPE=WebLogic Server
 EOF
 
-<br># (2) Inventory
+# (2) Inventory
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-756E3FD9-4094-412F-9BEB-72C5FD51056B
 # * inventory.loc 파일 샘플은 문서에 없음
 
@@ -81,13 +87,16 @@ inventory_loc=${INVENTORY_PATH}
 inst_group=${INVENTORY_GROUP}
 EOF
 
-<br># (3) Installation
+# (3) Installation
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-5F06D02F-6D71-45B9-BF41-5D5759D31958
 
 ${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
 
 <br>
+
+<br>
+
 ## 3.2 Domain
 
 ```sh
@@ -118,6 +127,9 @@ EOF
 ```
 
 <br>
+
+<br>
+
 ## 3.3 Startup AdminServer
 
 ```sh
@@ -127,7 +139,7 @@ username=${ADM_USERNAME}
 password=${ADM_PASSWORD}
 EOF
 
-<br># (6) Start-up AdminServer
+# (6) Start-up AdminServer
 # https://unix.stackexchange.com/questions/405250/passing-and-setting-variables-in-a-heredoc
 
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -203,6 +215,9 @@ EOF
 ```
 
 <br>
+
+<br>
+
 ## 3.5 Cluster
 
 ```sh
@@ -239,6 +254,9 @@ EOF
 ```
 
 <br>
+
+<br>
+
 ## 3.6 Deploy App
 
 ```sh
@@ -268,6 +286,9 @@ EOF
 ```
 
 <br>
+
+<br>
+
 ## 3.7. Create Instances Scripts
 
 ```sh
@@ -332,7 +353,7 @@ nohup ${DOMAIN_HOME}/bin/startWebLogic.sh > ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1
 #tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/stopA.sh
+cat << "EOF" > ${DOMAIN_HOME}/stopA.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_ADDR=#SERVER_ADDR#
@@ -363,7 +384,7 @@ exit()
 INNER_EOF
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/logA.sh
+cat << "EOF" > ${DOMAIN_HOME}/logA.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_NAME=#SERVER_NAME#
@@ -373,7 +394,7 @@ NOHUP_LOG=${LOG_HOME}/nohup
 tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/psA.sh
+cat << "EOF" > ${DOMAIN_HOME}/psA.sh
 #!/bin/sh
 SERVER_NAME=#SERVER_NAME#
 ps -ef | grep "java" | grep "weblogic.Server" | grep "D${SERVER_NAME}"
@@ -386,7 +407,7 @@ sed -i "s|#SERVER_NAME#|AdminServer|g" ${DOMAIN_HOME}/*A.sh
 sed -i "s|#SERVER_ADDR#|${ADM_ADDR}|g" ${DOMAIN_HOME}/*A.sh
 sed -i "s|#SERVER_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*A.sh
 
-<br># Managed Server (start, stop, log, ps)
+# Managed Server (start, stop, log, ps)
 cat << "EOF" > ${DOMAIN_HOME}/startM.sh
 #!/bin/sh
 DOMAIN_NAME=#DOMAIN_NAME#
@@ -447,7 +468,7 @@ nohup ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${SERVER_NAME} ${ADM_URL}> ${NO
 #tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/stopM.sh
+cat << "EOF" > ${DOMAIN_HOME}/stopM.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_NAME=#SERVER_NAME#
@@ -479,7 +500,7 @@ exit()
 INNER_EOF
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/logM.sh
+cat << "EOF" > ${DOMAIN_HOME}/logM.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_NAME=#SERVER_NAME#
@@ -489,13 +510,13 @@ NOHUP_LOG=${LOG_HOME}/nohup
 tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/psM.sh
+cat << "EOF" > ${DOMAIN_HOME}/psM.sh
 #!/bin/sh
 SERVER_NAME=#SERVER_NAME#
 ps -ef | grep "java" | grep "weblogic.Server" | grep "D${SERVER_NAME}"
 EOF
 
-<br>cp ${DOMAIN_HOME}/startM.sh ${DOMAIN_HOME}/start${M1_SVR_NAME}.sh
+cp ${DOMAIN_HOME}/startM.sh ${DOMAIN_HOME}/start${M1_SVR_NAME}.sh
 cp ${DOMAIN_HOME}/stopM.sh ${DOMAIN_HOME}/stop${M1_SVR_NAME}.sh
 cp ${DOMAIN_HOME}/logM.sh ${DOMAIN_HOME}/log${M1_SVR_NAME}.sh
 cp ${DOMAIN_HOME}/psM.sh ${DOMAIN_HOME}/ps${M1_SVR_NAME}.sh
@@ -527,4 +548,3 @@ chmod 700 ${DOMAIN_HOME}/*.sh
 rm ${DOMAIN_HOME}/*M.sh
 ```
 
-<br>
