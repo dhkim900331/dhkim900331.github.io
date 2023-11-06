@@ -52,28 +52,29 @@ Private Const SND_ASYNC = &H1
 Private Const SND_LOOP = &H8
 
 Private Sub Application_NewMail()
-    Check_NewMail Application.Session.GetDefaultFolder(olFolderInbox)
+    'Check_NewMail Application.Session.GetDefaultFolder(olFolderInbox)
     Check_NewMail Application.Session.GetDefaultFolder(olFolderInbox).Folders("TAS")
 End Sub
 
 Private Sub Check_NewMail(objInBox As Outlook.MAPIFolder)
     Dim objMail As Object
-    Dim receivedDate As Date
-    Dim daysAgo As Date
-    Dim daysFuture As Date
+    Dim receivedHour As Integer
+    Dim receivedDay As Integer
     
     For Each objMail In objInBox.Items ' 최근 메일부터 가져옴
                
         ' 안읽은 이메일만 체크
         If objMail.UnRead = True Then
-            
-            ' 최근 3일 이내의 날짜 계산
-            daysAgo = Format(DateAdd("d", -3, Date), "yyyy-mm-dd")
-            daysFuture = Format(DateAdd("d", 0, Date), "yyyy-mm-dd")
-            receivedDate = Format(objMail.ReceivedTime, "yyyy-mm-dd")
+        
+            ' 도착한 메일의 요일
+            receivedDay = Weekday(objMail.ReceivedTime)
+            ' 도착한 메일의 시간
+            receivedHour = CInt(Format(objMail.ReceivedTime, "HH"))
 
-            ' 최근 3일간의 메일만 확인
-            If (daysAgo <= receivedDate) And (daysFuture >= receivedDate) Then
+            ' 금요일 18시 이후, 토/일 전체 시간대, 월요일 09시 이전 메일인지 확인
+            If (receivedDay = vbFriday And receivedHour >= 18) _
+            Or (receivedDay = vbMonday And receivedHour <= 9) _
+            Or (receivedDay = vbSaturday Or receivedDay = vbSunday) Then
                     ' Body 에서 "status: new" 텍스트를 확인
                     If InStr(1, LCase(objMail.Body), "status: new") > 0 Then
                         PlaySoundLoop
@@ -113,6 +114,12 @@ End Sub
 
 
 `For Each objMail In objInBox.Items` 기본적으로 메일의 최근 목록부터 과거로 가져온다고 하지만, 그렇지 않은 것 같다.
+
+
+
+`If (receivedDay = vbFriday And receivedHour >= 18) _
+Or (receivedDay = vbMonday And receivedHour <= 9) _
+Or (receivedDay = vbSaturday Or receivedDay = vbSunday) Then`  추적하려는 메일은 평일이 아닌, 금요일 18시 이후 월요일 09시 이전 사이에 도착하는 메일이다.
 
 
 
