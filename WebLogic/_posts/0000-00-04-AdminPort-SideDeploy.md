@@ -6,11 +6,13 @@ tags: [Middleware, WebLogic, Deploy]
 typora-root-url: ..
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 
 Administration Port, Side-By-Side Deploy 기능을 알아보자.
 
-<br>
+
+
 # 2. Administration Port
 
 - SSL 을 사용하여 웹로직 콘솔에 접근 하도록 한다.
@@ -18,7 +20,8 @@ Administration Port, Side-By-Side Deploy 기능을 알아보자.
   (원래 7001포트 -> 7200포트 등.. 사용자 정의에 의함)
 - 매니지드 서버도 Administration Port를 해서 관리해야되는 단점이 있다.
 
-<br>
+
+
 ## 2.1 설정 방법
 
 ### 2.1.1 Admin Server
@@ -31,7 +34,8 @@ Administration Port, Side-By-Side Deploy 기능을 알아보자.
 
 ![AdminPort_SideDeploy_1](/../assets/posts/images/01-WebLogic/AdminPort_SideDeploy/AdminPort_SideDeploy_1.png)
 
-<br>
+
+
 ### 2.1.2 Managed Server
 
 Configuration - General - Advanced - Local Administration Port Override : Administration Port가 Managed Server 마다 Unique해야 된다.
@@ -50,12 +54,14 @@ Configuration - General - Advanced - Local Administration Port Override : Admini
 
 > \* DemoTrust 말고도... 다양하게 설정할 방법이 있을텐데...
 
-<br>
+
+
 # 3. Side-By-Side Deploy
 
 어플리케이션을 서비스 중지없이 업데이트하여 버전 관리가 가능하다.
 
-<br>
+
+
 ## 3.1 배포된 어플리케이션의 상태와 커맨드
 
 ### 3.1.1 Active State
@@ -66,7 +72,8 @@ Configuration - General - Advanced - Local Administration Port Override : Admini
 
 기동 중이면 Activice state
 
-<br>
+
+
 ```bash
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3://adminServer_Address -user weblogic -password weblogic1 -deploy -name webapp -source D:\weblogic\WLS1036\domains\dm1036\webapp -targets m1 -appversion v1
 ```
@@ -75,12 +82,14 @@ java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3:
 
 > appversion 파라메터가 버전 관리를 위해 잘 관리해줘야 한다.
 
-<br>
+
+
 ### 3.1.2 Stop Running State
 
 구 버전 어플리케이션과 신 버전 어플리케이션의 관리
 
-<br>
+
+
 ```bash
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3://adminServer_Address -user weblogic -password weblogic1 -deploy -name webapp -source D:\weblogic\WLS1036\domains\dm1036\webapp -targets m1 -appversion v2
 ```
@@ -91,7 +100,8 @@ java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3:
 >
 > webapp(v2)로 이후 신규 사용자가 접속된다.
 
-<br>
+
+
 ### 3.1.3 ADMIN State
 
 administration port를 사용 중인 admin server 환경에서 어플리케이션의 오픈전 테스트를 위해 사용한다.
@@ -100,7 +110,8 @@ ADMIN state 어플리케이션은 웹로직 'myrealm'에 허가된 유저&그룹
 
 administration port를 사용하여 접근하는 행위가 허가된 유저&그룹 인증 절차이기 때문이다.
 
-<br>
+
+
 ```bash
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3s://adminServerIP:administrationPORT -user weblogic -password weblogic1 -adminmode -name webapp -deploy -upload -remote D:\weblogic\WLS1036\domains\dm1036\webapp
 ```

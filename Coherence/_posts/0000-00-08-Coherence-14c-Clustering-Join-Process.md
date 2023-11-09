@@ -14,14 +14,16 @@ Log Message의 불필요할 수 있다고 판단되는 부분은 `...` 으로 sk
 
 Log Message에서 Date/Time Prefix 또한 불필요한 부분은, 임의 삭제한다.
 
-<br>
+
+
 # 2. Environments
 
 OS, Oracle Linux Server release 8.7
 
 JVM, java version "1.8.0_351"
 
-<br>
+
+
 그리고 다음의 Arguments로 구성된 여러 Instances 를 갖고 있다.
 
 ```
@@ -31,7 +33,8 @@ JVM, java version "1.8.0_351"
 -Dcoherence.override=tangosol-coherence-${DOMAIN_NAME}.xml
 ```
 
-<br>
+
+
 Operational Override
 
 ```xml
@@ -62,10 +65,14 @@ Operational Override
   </cluster-config>
 ```
 
-<br>
+
+
 Cluster Port는 기본값으로 7574를 사용하고 있다.
 
-<br><br>
+
+
+
+
 # 3. Joining
 
 **최초 Cache Server(이하 #1) 기동 시, TCMP(Tangosol Cluster Management Protocol) 로 Listen을 위해 Bound한 Address 가 확인된다.**
@@ -83,7 +90,8 @@ Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
 <Info> (thread=Transport:TransportService, member=n/a): Service TransportService joined the cluster with senior service member 1
 <Info> (thread=main, member=n/a): Started cluster Name=cluster_base_domain, ClusterPort=7574
 
-<br>WellKnownAddressList(
+
+WellKnownAddressList(
   10.65.34.245
   )
 
@@ -93,7 +101,10 @@ Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
 
 Cluster Port (Default 7574) Log도 확인된다.
 
-<br><br>
+
+
+
+
 **#1 - 정상 구성된 Member에 대한 Information 확인**
 
 ```
@@ -118,7 +129,10 @@ ActualMemberSet을 통해 현재 실제 구성을 알 수 있겠다.
 
 Join 된 시점과 Coherence Version을 알 수 있다.
 
-<br><br>
+
+
+
+
 **#1 - TcpRing**
 
 ```
@@ -130,14 +144,20 @@ Timeout은 ip-timeout * ip-attempts 정의한 대로, 2m5s 이며
 
 TcpRing은 Cluster Member들을 엮는 것이나 Single 이므로 값이 없는 것으로 보인다.
 
-<br><br>
+
+
+
+
 **Second Cache Server(이하 #2) Startup**
 
 ```
 <Info> (thread=main, member=n/a): TCMP bound to /10.65.34.245:9002 using TCPDatagramSocketProvider[Delegate: DemultiplexedSocketProvider(com.oracle.common.internal.net.MultiplexedSocketProvider@30b6ffe0)]
 ```
 
-<br><br>
+
+
+
+
 **#2 - Latency 보정**
 
 ```
@@ -149,7 +169,10 @@ TcpRing은 Cluster Member들을 엮는 것이나 Single 이므로 값이 없는 
 
 [Failed to satisfy the variance: allowed=%n1 actual=%n2](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer/log-message-glossary.html#GUID-EA76C216-0977-44D5-92D1-E9561FF0D44B)
 
-<br><br>
+
+
+
+
 **#2 - Cluster 합류**
 
 ```
@@ -159,7 +182,8 @@ TcpRing은 Cluster Member들을 엮는 것이나 Single 이므로 값이 없는 
 
 기존 Member, 그리고 현재 합류하는 신규 Member Log가 확인된다.
 
-<br>
+
+
 ```
 <Info> (thread=Transport:TransportService, member=n/a): Service TransportService joined the cluster with senior service member 1
 <Info> (thread=SelectionService(channels=5, selector=MultiplexedSelector(sun.nio.ch.EPollSelectorImpl@471a9022), id=231311211), member=n/a): Connection established with tmb://10.65.34.245:9000.39212
@@ -167,7 +191,8 @@ TcpRing은 Cluster Member들을 엮는 것이나 Single 이므로 값이 없는 
 
 Senior  (Leader Member) 와 ESTABLISHED 되어, Cluster에 Joined
 
-<br>
+
+
 ```
 MasterMemberSet(
   ThisMember=Member(Id=2, Timestamp=2023-06-14 15:55:26.448, Address=10.65.34.245:9002, ...)
@@ -192,7 +217,10 @@ IpMonitor{Addresses=0, Timeout=2m5s}
 
 TcpRing의 Array.Length 와 같이 확인된다.
 
-<br><br>
+
+
+
+
 **#1과 #2 - Socket LISTEN**
 
 ```sh
@@ -209,7 +237,10 @@ tcp        0      0 10.65.34.245:9002       0.0.0.0:*               LISTEN      
 
 이는, **Coherence Process Listens On All Interfaces Of The Machine, Why? (Doc ID 2143520.1)** 참고하여 Discovery-Address 를 지정해야 한다.
 
-<br><br>
+
+
+
+
 **#1과 #2 - Socket ESTABLISHED**
 
 ```sh
@@ -222,14 +253,16 @@ tcp        0      0 10.65.34.245:29850      10.65.34.245:9000       ESTABLISHED 
 tcp        0      0 10.65.34.245:9000       10.65.34.245:29852      ESTABLISHED <#1 PID>/java
 tcp        0      0 10.65.34.245:29852      10.65.34.245:9000       ESTABLISHED <#2 PID>/java
 
-<br>--- below is connected #2 to #1 ---
+
+--- below is connected #2 to #1 ---
 tcp        0      0 10.65.34.245:9002       10.65.34.245:58602      ESTABLISHED <#2 PID>/java
 tcp        0      0 10.65.34.245:58602      10.65.34.245:9002       ESTABLISHED <#1 PID>/java
 
 tcp        0      0 10.65.34.245:9002       10.65.34.245:58614      ESTABLISHED <#2 PID>/java
 tcp        0      0 10.65.34.245:58614      10.65.34.245:9002       ESTABLISHED <#1 PID>/java
 
-<br>tcp        0      0 10.65.34.245:9002       10.65.34.245:58628      ESTABLISHED <#2 PID>/java
+
+tcp        0      0 10.65.34.245:9002       10.65.34.245:58628      ESTABLISHED <#2 PID>/java
 tcp        0      0 10.65.34.245:58628      10.65.34.245:9002       ESTABLISHED <#1 PID>/java
 
 tcp        0      0 10.65.34.245:9002       10.65.34.245:58636      ESTABLISHED <#2 PID>/java
@@ -240,7 +273,10 @@ Understanding TCMP 의 Protocol Resource Utilization Section에 따라 TCP/IP �
 
 **Observing High Number of Unicast Connections in Coherence (Doc ID 2799453.1)** 참고
 
-<br><br>
+
+
+
+
 **Third Cache Server(이하 #3) Startup**
 
 ```
@@ -259,7 +295,10 @@ IpMonitor{Addresses=0, Timeout=2m5s}
 
 익숙한 Log 중에 하나로써, #1 ~ #3 Member Listup 을 알 수 있다.
 
-<br><br>
+
+
+
+
 **#1 - TcpRing Disconnected to maintain ring**
 
 ```
@@ -270,24 +309,37 @@ TcpRing 은 이름 그대로, Member의 첫 부분부터 끝까지 Ring 형태�
 
 이후 #4에 해당하는 Fourth 기동을 해보니, 구조가 변경된다. TcpRing 의 Array Alignment는 위 Table 과 같다.
 
-<br><br>
+
+
+
+
 # 3. HeartBeat
 
 HeartBeat 통신이 진행될 때 남는 로그들, 잘 안될때 로그들
 
-<br><br>
+
+
+
+
 # 4. TcpRing
 
 TcpRing 메시지를 log 살피고,, 통신에 어떤 문제가 있을 때 어떻게 되는지?
 
-<br><br>
+
+
+
+
 # 5. GC
 
 짧은/매우 긴/혹은 짧더라도 자주 반복되는? GC 와 같은 상황이 발생하면 어떤 변화가? Leader 에 문제가 생기는 경우? Leader는 어떤 패턴으로 누가 후임자가 되는지?
 
-<br><br>
 
-<br># 5. References
+
+
+
+
+
+# 5. References
 
 **How to Specify Unicast WKA Address and WKA Port in Coherence 12.2.1.4 or 14c Cluster Operational Override File (Doc ID 2820437.1)**
 

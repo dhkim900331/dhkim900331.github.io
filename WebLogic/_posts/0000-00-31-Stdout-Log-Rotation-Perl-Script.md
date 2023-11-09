@@ -6,7 +6,8 @@ tags: [Middleware, WebLogic, Log, Perl, Stdout]
 typora-root-url: ..
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 
 Stdout Log Rotation (perl script)
 
@@ -39,7 +40,8 @@ while($aLine = <STDIN>){
 }
 ```
 
-<br>
+
+
 ```sh
 # 시작 방법
 nohup ${DOMAIN_HOME}/bin/startWebLogic.sh 2>&1 | ./rotateLOG.pl &
@@ -49,4 +51,5 @@ nohup ${DOMAIN_HOME}/bin/startWebLogic.sh 2>&1 | ./rotateLOG.pl &
 >
 > %02d%02d%02d%02d -> 한 시간 단위로 로테이션
 
-<br>
+
+

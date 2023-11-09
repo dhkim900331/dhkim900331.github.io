@@ -6,11 +6,13 @@ tags: [Middleware, WebLogic, Serializable]
 typora-root-url: ..
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 
 Serializable 란 무엇인가?
 
-<br>
+
+
 # 2. 바이트 스트림(Byte Stream)
 
 통신(네트워크, 입출력I/O)은 바이트 단위로 이루어 집니다.
@@ -19,7 +21,8 @@ Serializable 란 무엇인가?
 
 즉, 통신은 바이트 스트림으로 이루어진다고 할 수 있습니다.
 
-<br>
+
+
 # 3. 고수준과 저수준
 
 그리고 이때 통신은 하드웨어적인 저수준과, 소프트웨어적인 고수준으로 구분할 수 있습니다.
@@ -28,7 +31,8 @@ Serializable 란 무엇인가?
 
 여기서 하드웨어는 이더넷 케이블이나 랜카드, 라우터 등을 의미합니다.
 
-<br>
+
+
 # 4. 객체는 그래프
 
 integer, byte, long, boolean, string, char 와 같은 데이터들은 바이트 단위로 이루어져 있기 때문에 통신에서 걱정할 필요가 없습니다.
@@ -41,7 +45,8 @@ integer, byte, long, boolean, string, char 와 같은 데이터들은 바이트 
 
 예로 아래 클래스 gtplus는 몇개의 변수들과 메서드를 가지고 있습니다.
 
-<br>
+
+
 ```java
 class gtplus{
      string ...;
@@ -54,14 +59,16 @@ class gtplus{
 }
 ```
 
-<br>
+
+
 그래프는 다음과 같습니다.
 
 ![WhatIsSerializable_1](/../assets/posts/images/01-WebLogic/WhatIsSerializable/WhatIsSerializable_1.png)
 
 클래스 내의 string, int 등은 통신에서 보낼 수 있지만, 클래스 객체는 연결고리(레퍼런스)가 그래프 형식이기 때문에 정리할 필요가 있습니다.
 
-<br>
+
+
 # 5. Serializable
 
 여기서 정리를 위해 바이트 단위처럼 일렬로 만드는 직렬화가 필요합니다.
@@ -74,10 +81,12 @@ JDK 1.1에서 나온 직렬화는 단순히 인터페이스를 구현(implements
 
 직렬화를 요약하자면, 객체를 전송(파일 저장, 네트워크 통신)하기 위해 그래프를 일렬로 줄 세운다고 할 수 있습니다.
 
-<br>
+
+
 ![WhatIsSerializable_2](/../assets/posts/images/01-WebLogic/WhatIsSerializable/WhatIsSerializable_2.png)
 
-<br>
+
+
 # 6. RMI
 
 직렬화 하면, RMI 통신과 연관되어 있습니다.
@@ -86,7 +95,8 @@ Remote Method Invocation은 원격 메소드 호출으로써, 자바 환경에�
 
 EJB에서 사용되는 RMI통신은 직렬화가 되어 있는 객체여야 합니다.
 
-<br>
+
+
 통신은 바이트 단위입니다.
 
 객체는 바이트 단위가 아닙니다.

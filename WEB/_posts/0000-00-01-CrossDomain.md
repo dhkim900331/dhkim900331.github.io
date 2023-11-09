@@ -10,7 +10,8 @@ typora-root-url: ..
 
 CORS 설정 방법.
 
-<br>
+
+
 # 2. 설명
 
 ```bash

@@ -5,10 +5,12 @@ tags: [Middleware, WebLogic, XAConnection, SQLException]
 date: 2022-02-07 17:40:10 +0900
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 2019년 02월 고객사 일부 장애 건 정리.
 
-<br># 2. 현상
+
+# 2. 현상
 웹로직 서버로그에는 나오지 않으나...
 어플리케이션 노헙 로그에서는 아래와 같은게 발견된 적이 있다.
 
@@ -16,7 +18,8 @@ date: 2022-02-07 17:40:10 +0900
 XAConnection java.sql.SQLException: XA error: XAResource.XAER_RMFAIL start() failed on resource
 ```
 
-<br># 3. 해결
+
+# 3. 해결
 오라클 문서에서 가이드 하는 내용은.
 
 - DB 쪽에 maximum process 확인.
@@ -34,7 +37,8 @@ _DB를 insert,delete,update 등으로 사용자가 점유하고 있으면, table
     XA --> DB[DB Lockout Timeout];
 </div>
 
-<br>>  JTA timeout : 웹로직에서 트랜잭션 전체 크기에 해당하는 time만큼 지정해야 한다. 클라이언트가 결과를 받을 때까지를 의미하기 때문에, DB단까지 포함해야 한다.
+
+>  JTA timeout : 웹로직에서 트랜잭션 전체 크기에 해당하는 time만큼 지정해야 한다. 클라이언트가 결과를 받을 때까지를 의미하기 때문에, DB단까지 포함해야 한다.
 
 > XA timeout : XA 로직 실행 타임아웃.
 

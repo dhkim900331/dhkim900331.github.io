@@ -6,7 +6,8 @@ tags: [Middleware, JBoss, EAP, Patch]
 typora-root-url: ..
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 
 JBOSS EAP 대상으로, Patch 명령어 가이드
 
@@ -14,7 +15,8 @@ JBOSS EAP 대상으로, Patch 명령어 가이드
 >
 > 7.3.10 , 7(major), 3(minor), 10(micro release) 를 의미한다.
 
-<br>
+
+
 # 2. Patch 구문별 명령어 설명
 
 ## 2.1 patch apply
@@ -23,7 +25,8 @@ JBOSS EAP 대상으로, Patch 명령어 가이드
 ./jboss-cli.sh "patch apply /tmp/jboss-eap-7.3.10-patch.zip"
 ```
 
-<br>
+
+
 ## 2.1 patch info
 
 ```bash

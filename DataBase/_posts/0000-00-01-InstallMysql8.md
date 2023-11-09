@@ -12,12 +12,14 @@ typora-root-url: ..
 
 여튼, `rpm`은 차후, 기록하고, 폐쇄망 타겟으로 `source build` 를 진행해본다.
 
-<br>
+
+
 # 2. 문서 작성 기준이 되는 테스트 환경
 
 1core/8gb mem/CentOS Stream release 8
 
-<br>
+
+
 # 3. 사전 준비사항
 
 ## 3.1 설치 파일
@@ -28,16 +30,19 @@ MySQL Build 하기 위해서 Boost 라는 C++ Library 집합이 필요하다.
 
 작성일 기준 1.79.0 이 최신이나, MySQL 최신버전 8.0.29 설치시에는 Boost 1.77.0 을 필요로 한다.
 
-<br>
+
+
 https://www.boost.org 에서 boost_1_77_0.tar.gz 을 다운로드 한다.
 
 URL : https://sourceforge.net/projects/boost/files/boost/1.77.0
 
-<br>
+
+
 다운로드 받은 파일은, 특정 경로에 압축을 해제한다.
 `Path : /usr/ssw/mysql/installFiles/boost_1_77_0`
 
-<br>
+
+
 ### 3.1.2 MySQL
 
 https://dev.mysql.com/downloads/mysql ->
@@ -50,12 +55,14 @@ Compressed TAR Archive, Includes Boost Headers
 
 - mysql-boost-8.0.29.tar.gz 파일을 다운로드 받는다.
 
-<br>
+
+
 다운로드 받은 파일은, 특정 경로에 압축을 해제한다.
 
 `Path : /usr/ssw/mysql/installFiles/mysql-8.0.29`
 
-<br>
+
+
 ## 3.2 Compiler & Packages
 
  - cmake
@@ -70,20 +77,23 @@ rpcgen은 CentOS 8 Default Repository 에서 찾을 수 없고,
 
 URL : https://centos.pkgs.org/8/centos-powertools-x86_64/rpcgen-1.3.1-4.el8.x86_64.rpm.html
 
-<br>
+
+
 ```bash
 $ sudo yum install -y cmake.x86_64 make.x86_64 gcc.x86_64 ncurses-devel.x86_64 
 $ sudo yum localinstall -y rpcgen-1.3.1-4.el8.x86_64.rpm
 ```
 
-<br>
+
+
 공식 가이드로 요구하는 위 목록 외에, 설치 시 에러로 다음을 요구한다.
 
 ```bash
 $ sudo yum install -y gcc-toolset-11-gcc gcc-toolset-11-gcc-c++ gcc-toolset-11-binutils libtirpc-devel.x86_64
 ```
 
-<br>
+
+
 # 4. 설치
 
 ## 4.1 MySQL
@@ -107,7 +117,8 @@ $ make clean && make && make install
 >
 > 2~4시간 소요
 
-<br>
+
+
 # 5. 환경 구성
 
 ## 5.1 데이터 디렉토리 초기화
@@ -118,7 +129,8 @@ $ make clean && make && make install
 
 기본값은, `CMAKE_INSTALL_PREFIX/mysql-files` 이고, `mysqld --initialize --secure_file_priv=...path...` 와 같이 변경할 수 있다.
 
-<br>
+
+
 ```bash
 $ mysqld --initialize --user=dhkim
 2022-05-31T00:27:32.156756Z 0 [System] [MY-013169] [Server] /usr/ssw/mysql/bin/mysqld (mysqld 8.0.29) initializing of server in progress as process 2378
@@ -131,10 +143,12 @@ $ mysqld --initialize --user=dhkim
 
 > A temporary password is generated for root@localhost: SP12Kr.a7K*_
 
-<br>
+
+
 위 작업을 다시 수행하려면, `-DMYSQL_DATADIR` 모든 파일을 삭제해야 한다.
 
-<br>
+
+
 ## 5.2 패스워드 정책 변경
 
 아래 단계에서 root로 로그인 시에 위에서 확인된 임시 패스워드를 입력하면 root 패스워드를 변경 할 수 있다.
@@ -143,7 +157,8 @@ $ mysqld --initialize --user=dhkim
 
 작성한다.
 
-<br>
+
+
 임시 패스워드로 로그인 후 패스워드 정책 확인
 
 ```mysql
@@ -164,7 +179,8 @@ mysql> SHOW VARIABLES LIKE 'validate_password%';
 
 > 결과가 위와 유사하게 출력된다.
 
-<br>
+
+
 /etc/my.cnf 에 옵션을 추가하고 재기동한다.
 
 ```
@@ -177,7 +193,8 @@ validate_password.mixed_case_count=0
 validate_password.number_count=0
 ```
 
-<br>
+
+
 패스워드 정책이 변경되었다.
 
 ```mysql
@@ -195,7 +212,8 @@ mysql> SHOW VARIABLES LIKE 'validate_password%';
 +--------------------------------------+-------+
 ```
 
-<br>
+
+
 패스워드 정책에서 길이제한만 '3' 로 있고, 모두 풀렸다.
 
 ```mysql
@@ -208,7 +226,10 @@ Query OK, 0 rows affected (0.06 sec)
 
 > 패스워드 길이 정책이 동작하지 않은 듯하지만.. 원인을 구글링으로 찾을 수 없었다.
 
-<br><br>
+
+
+
+
 # 6. 실행 및 종료
 
 ### 6.1 실행
@@ -222,7 +243,8 @@ dhkim       2477    1727  0 09:33 pts/0    00:00:00 /bin/sh bin/mysqld_safe --us
 dhkim       2565    2477  0 09:33 pts/0    00:00:01 /usr/ssw/mysql/bin/mysqld --basedir=/usr/ssw/mysql --datadir=/logs/mysql --plugin-dir=/usr/ssw/mysql/lib/plugin --log-error=dhkim.err --pid-file=dhkim.pid
 ```
 
-<br>
+
+
 초기 로그인에는, `5.1 데이터 디렉토리 초기화` 시에 생성된 임시 패스워드(`SP12Kr.a7K*_`)로 로그인하고 앞으로 사용할 패스워드로 변경해야 한다.
 
 ```bash
@@ -235,7 +257,8 @@ Query OK, 0 rows affected (0.01 sec)
 mysql> quit;
 ```
 
-<br>
+
+
 패스워드는 프롬프트로 입력하고, version 확인하는 예시.
 
 ```bash
@@ -257,7 +280,10 @@ Uptime:                 1 min 12 sec
 Threads: 2  Questions: 5  Slow queries: 0  Opens: 117  Flush tables: 3  Open tables: 36  Queries per second avg: 0.069
 ```
 
-<br><br>
+
+
+
+
 ## 6.2 종료
 
 ```bash
@@ -267,7 +293,8 @@ Enter password: (root)
 [1]+  Done                    bin/mysqld_safe --user=dhkim
 ```
 
-<br>
+
+
 # 7. 참고 문헌
 
 [지원 플랫폼](https://www.mysql.com/support/supportedplatforms/database.html)

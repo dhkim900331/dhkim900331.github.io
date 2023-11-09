@@ -10,7 +10,10 @@ typora-root-url: ..
 
 DB 상태 출력하는 WLST Script
 
-<br><br># 2. 설명
+
+
+
+# 2. 설명
 
 ```python
 출처:  http://middlewaremagic.com/weblogic/?p=4917

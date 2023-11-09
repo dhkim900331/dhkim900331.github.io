@@ -12,7 +12,8 @@ typora-root-url: ..
 
 Putty.exe 에 세션을 저장하는 등의 불편한 환경이라면 사용할만 하다.
 
-<br>
+
+
 # 2. 설명
 
 ```shell

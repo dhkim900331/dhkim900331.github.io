@@ -1,26 +1,28 @@
 ---
 date: 2023-02-10 08:06:28 +0900
 layout: post
-title: "[WebLogic] All In One Script For 14c"
+title: "[WebLogic] All In One Script For 12cR2"
 tags: [Middleware, WebLogic, Install, WLST, Python]
 typora-root-url: ..
 ---
 
-# 1. ê°œìš”
+# 1. °³¿ä
 
-WebLogic 14c í…ŒìŠ¤íŠ¸ í™˜ê²½ì„ ìë™ ì¬êµ¬ì¶•ì„ ìœ„í•´ ëª¨ë“  ê¸°ë³¸ ì„¤ì¹˜ í™˜ê²½ì„ ì§‘ì•½í•œë‹¤.
+WebLogic 12cR2 Å×½ºÆ® È¯°æÀ» ÀÚµ¿ Àç±¸ÃàÀ» À§ÇØ ¸ğµç ±âº» ¼³Ä¡ È¯°æÀ» Áı¾àÇÑ´Ù.
+<br><br>
 
 
 
-# 2. ì„¤ëª…
+# 2. ¼³¸í
 
-All-In-One-Script-For-14c.sh ì‹¤í–‰ìœ¼ë¡œ ë‹¤ìŒ í™˜ê²½ì„ êµ¬ì„±í•˜ë„ë¡ í•œë‹¤.
+All-In-One-Script-For-12cR2.sh ½ÇÇàÀ¸·Î ´ÙÀ½ È¯°æÀ» ±¸¼ºÇÏµµ·Ï ÇÑ´Ù.
 
 - AdminServer (TCP 8001 , console account : weblogic, weblogic1)
 - Managed M1 (TCP 8002)
 - Managed M2 (TCP 8003)
 - myCluster (M1, M2)
 - /sw/app/{testApp, PostDataTest} deployed on myCluster
+<br><br>
 
 
 
@@ -33,11 +35,11 @@ BASEDIR=/sw/installFiles
 OS_USERNAME=$(id --user --name)
 OS_GROUPNAME=$(id --group --name)
 
-WLS_INSTALL_FILE=${BASEDIR}/fmw_14.1.1.0.0_wls.jar
+WLS_INSTALL_FILE=${BASEDIR}/fmw_12.2.1.4.0_wls.jar
 JAVA_HOME=/sw/jdk/jdk1.8.0_351
 
-WLS_INSTALL_PATH=/sw/weblogic/14c
-INVENTORY_PATH=/sw/weblogic/inventories/14c
+WLS_INSTALL_PATH=/sw/weblogic/12cR2
+INVENTORY_PATH=/sw/weblogic/inventories/12cR2
 INVENTORY_GROUP=${OS_GROUPNAME}
 
 DOMAIN_NAME=base_domain
@@ -78,7 +80,7 @@ EOF
 
 # (2) Inventory
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-756E3FD9-4094-412F-9BEB-72C5FD51056B
-# * inventory.loc íŒŒì¼ ìƒ˜í”Œì€ ë¬¸ì„œì— ì—†ìŒ
+# * inventory.loc ÆÄÀÏ »ùÇÃÀº ¹®¼­¿¡ ¾øÀ½
 
 cat << EOF > ${BASEDIR}/loc
 inventory_loc=${INVENTORY_PATH}
@@ -91,6 +93,8 @@ EOF
 
 ${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
+
+
 
 
 
@@ -125,6 +129,8 @@ EOF
 
 
 
+
+
 ## 3.3 Startup AdminServer
 
 ```sh
@@ -156,6 +162,8 @@ do
 done
 EOF
 ```
+
+
 
 
 
@@ -213,6 +221,8 @@ EOF
 
 
 
+
+
 ## 3.5 Cluster
 
 ```sh
@@ -250,6 +260,8 @@ EOF
 
 
 
+
+
 ## 3.6 Deploy App
 
 ```sh
@@ -277,6 +289,8 @@ disconnect()
 exit()
 EOF
 ```
+
+
 
 
 
@@ -546,3 +560,5 @@ sed -i "s|#ADM_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
 chmod 700 ${DOMAIN_HOME}/*.sh
 rm ${DOMAIN_HOME}/*M.sh
 ```
+
+

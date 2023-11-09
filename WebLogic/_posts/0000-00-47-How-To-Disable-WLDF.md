@@ -10,7 +10,8 @@ typora-root-url: ..
 
 WLDF (WebLogic Diagnostics Framework) Off
 
-<br>
+
+
 # 2. 활성화
 
 ## 2.1 기동 스크립트
@@ -29,7 +30,8 @@ WLDF (WebLogic Diagnostics Framework) Off
   >
   > 위 옵션들을 주석해제하게 되면, WLDF 로 생성하는 .DAT 진단 파일의 최적화(인덱싱 등) 기능을 Off 하게 됩니다.
 
-<br>
+
+
 ## 2.2 Console
 
 * 웹로직 도메인 Console Page를 열어,
@@ -50,7 +52,8 @@ WLDF (WebLogic Diagnostics Framework) Off
   그러므로, `None` 또는 `Low` 으로 기능 비활성화/활성화를 할 수 있습니다.
   [Docs 참고](https://docs.oracle.com/middleware/1212/wls/WLDFC/using_builtin_diag_modules.htm#WLDF)
 
-<br>
+
+
 # 3. 비활성화
 
 ## 3.1 기동 스크립트
@@ -67,7 +70,8 @@ WLDF (WebLogic Diagnostics Framework) Off
   >
   > WLDF 파일의 인덱싱 관리 등에 의해 High CPU 현상이 발생하는 사례가 있기 때문입니다.
 
-<br>
+
+
 ## 3.2 Console
 
 * "2.2 Console" 설정에서 `활성화`를 `비활성화`로 변경합니다.

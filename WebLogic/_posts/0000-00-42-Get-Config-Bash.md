@@ -10,7 +10,8 @@ typora-root-url: ..
 
 고객사 시스템 정보 추출을 위해 만든 스크립트
 
-<br>
+
+
 # 2. 인스턴스 정보
 
 ## 2.1 인스턴스명
@@ -29,7 +30,8 @@ $ egrep "<server>|<\/server>" config.xml -n
 213:  </server>
 ```
 
-<br>
+
+
 ### (2). sed 명령으로 범위 출력
 
 ```bash
@@ -69,7 +71,8 @@ $ sed -n 44,76p config.xml
   </server>
 ```
 
-<br>
+
+
 ### (3).  인스턴스명은 범위의 항상 두번째에 이름을 갖는다.
 
 ```bash
@@ -77,7 +80,8 @@ $ sed -n 44,76p config.xml | sed -n -e 2p
     <name>AdminServer</name>
 ```
 
-<br>
+
+
 ### (4). 인스턴스명만 끄집어 내도록 name tag 걸러내기
 
 ```bash
@@ -85,7 +89,8 @@ $ sed -n 44,76p config.xml | sed -n -e 2p | sed -s "s/<name>//" | sed -s "s/<\/n
     AdminServer
 ```
 
-<br>
+
+
 ## 2.2 인스턴스 주소
 
 ### (1). listen-address와 listen-port만 검색하면 된다.
@@ -96,12 +101,14 @@ $ sed -n 44,76p config.xml | egrep "listen-address|listen-port"
     <listen-address>was.test.com</listen-address>
 ```
 
-<br>
+
+
 ## 2.3 (통합) 서버 정보 출력하기
 
 * "1. server tag 범위 검색" 에 head, tail 조합하여 검색 범위를 특정시킨다.
 
-<br>
+
+
 ```bash
 PAGE_RANGE=$(egrep "<server>|<\/server>" config.xml -n | cut -d ':' -f1)
 PAGE_COUNT=$(echo "${PAGE_RANGE}" | wc -l)
@@ -125,7 +132,8 @@ done
 
 ![GetConfigBash_1](/../assets/posts/images/01-WebLogic/GetConfigBash/GetConfigBash_1.png)
 
-<br>
+
+
 # 3. 배포 App 정보
 
 ## 3.1 App 이름
@@ -140,7 +148,8 @@ $ egrep "<app-deployment>|<\/app-deployment>" config.xml -n
 256:  </app-deployment>
 ```
 
-<br>
+
+
 ### (2). sed 명령으로 범위 출력
 
 ```bash
@@ -157,7 +166,8 @@ $ sed -n 237,246p config.xml
   </app-deployment>
 ```
 
-<br>
+
+
 ### (3). 어플리케이션명은 범위의 항상 두번째에 이름을 갖는다.
 
 ```bash
@@ -165,7 +175,8 @@ $ sed -n 237,246p config.xml | sed -n -e 2p
     <name>webapp</name>
 ```
 
-<br>
+
+
 ## 3.2 App 배포 Target
 
 ```bash
@@ -173,7 +184,8 @@ $ sed -n 237,246p config.xml | grep "target"
     <target>myCluster_1</target>
 ```
 
-<br>
+
+
 ## 3.3 App Source Path
 
 ```bash
@@ -181,7 +193,8 @@ $ sed -n 237,246p config.xml | grep "source-path"
     <source-path>/usr/ssw/Applications/webapp</source-path>
 ```
 
-<br>
+
+
 ## 3.4 (통합) App 정보 출력하기
 
 ```bash
@@ -213,7 +226,8 @@ done
 
 ![GetConfigBash_2](/../assets/posts/images/01-WebLogic/GetConfigBash/GetConfigBash_2.png)
 
-<br>
+
+
 # 4. Datasource 정보
 
 ## 4.1 Datasource 이름
@@ -228,7 +242,8 @@ $ egrep "<jdbc-system-resource>|<\/jdbc-system-resource>" config.xml -n
 279:  </jdbc-system-resource>
 ```
 
-<br>
+
+
 ### (2). sed 명령으로 범위 출력
 
 ```bash
@@ -240,7 +255,8 @@ $ sed -n 270,274p config.xml
   </jdbc-system-resource>
 ```
 
-<br>
+
+
 ### (3). 데이터소스명은 범위의 항상 두번째에 이름을 갖는다.
 
 ```bash
@@ -248,7 +264,8 @@ $ sed -n 270,274p config.xml | sed -n -e 2p
     <name>myDataSource_1</name>
 ```
 
-<br>
+
+
 ## 4.2 Datasource 배포 Target
 
 ```bash
@@ -256,7 +273,8 @@ $ sed -n 270,274p config.xml | grep "target"
     <target>M1,myManaged_1</target>
 ```
 
-<br>
+
+
 ## 4.3 데이터소스 JDBC xml 파일명 출력
 
 ```bash
@@ -264,7 +282,8 @@ $ sed -n 270,274p config.xml | grep "descriptor-file-name"
     <descriptor-file-name>jdbc/myDataSource_1-2365-jdbc.xml</descriptor-file-name>
 ```
 
-<br>
+
+
 ## 4.4 (통합) Datasource 정보 출력하기
 
 * XML 파일 안의 USERNAME, URL STRING, JNDI 정보 출력

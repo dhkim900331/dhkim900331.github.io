@@ -6,13 +6,17 @@ tags: [Typora, Shell, Bash, Script, Image, Assets, Remove]
 typora-root-url: ..
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 
 Post (md) 파일에서 link 되지 않아
 
 사용되고 있지 않는 image 를 일괄 제거해본다.
 
-<br><br>
+
+
+
+
 # 2. ImageGC.sh
 
 ```shell

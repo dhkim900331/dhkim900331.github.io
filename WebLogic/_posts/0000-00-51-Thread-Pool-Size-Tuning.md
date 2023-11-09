@@ -10,7 +10,10 @@ typora-root-url: ..
 
 스레드 풀 사이즈 튜닝(조절)
 
-<br><br># 2. 설명
+
+
+
+# 2. 설명
 
 (1). 콘솔 설정
 
@@ -18,7 +21,8 @@ typora-root-url: ..
 
 >  적용 후 재시작
 
-<br>
+
+
 (2). config.xml 설정
 
 ```xml
@@ -30,7 +34,8 @@ typora-root-url: ..
 
 > 적용 후 재시작
 
-<br>
+
+
 (3). 스크립트 설정
 
 `USER_MEM_ARGS="-Dweblogic.threadpool.MinPoolSize=50 -Dweblogic.threadpool.MaxPoolSize=100"`

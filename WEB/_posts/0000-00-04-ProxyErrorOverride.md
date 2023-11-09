@@ -10,14 +10,16 @@ typora-root-url: ..
 
 Apache에서 Back-end Server에서 return 받은 Error code를 다루어 보자.
 
-<br>
+
+
 # 2. Tomcat의 Error Page
 
 여기서 말하는 Back-end Server로 Tomcat을 사용하고,
 
 Tomcat에서 발생하는 Error Code는 다음과 같이 자체 처리할 수 있다.
 
-<br>
+
+
 ```xml
 <web-app>
   <error-page>
@@ -31,15 +33,18 @@ Tomcat에서 발생하는 Error Code는 다음과 같이 자체 처리할 수 �
 </web-app>
 ```
 
-<br>
+
+
 Tomcat 어플리케이션 내에서 발생한 HTTP Code 404와 500은 error.jsp 를 호출한다.
 
-<br>
+
+
 # 3. Apache의 Error Document
 
 Apache WEB에서는 다음의 설정을 한다.
 
-<br>
+
+
 ```httpd.conf
 ErrorDocument 404 /error.html
 ErrorDocument 500 /error.html
@@ -49,7 +54,8 @@ ErrorDocument 503 /error.html
 
 순수게, 위 옵션만으로 기동되는 Apache의 경우 404~503 Code는 Apache/htdocs/error.html 을 호출한다.
 
-<br>
+
+
 # 4. WEB/WAS Tier 에서의 Error Handling
 
 ## 4.1 ProxyErrorOverride Off
@@ -74,7 +80,8 @@ ProxyPassReverse /      http://192.168.56.2:8081/
 
 Apache 에서 해석하지 않아 Apache의 error.html을 호출하지 않는다.
 
-<br>
+
+
 Apache 에 없는 NoExistPage를 호출해 보면,
 
 ```sh
@@ -101,7 +108,8 @@ tomcat error
 
 HTTP Status Code 404는 Apache 까지 전달되지만, Contents는 Tomcat의 Error page가 보여진다.
 
-<br>
+
+
 ## 4.2 ProxyErrorOverride On
 
 ProxyErrorOverride On 으로 변경 후,
@@ -118,7 +126,8 @@ ProxyPass        /      http://192.168.56.2:8081/
 ProxyPassReverse /      http://192.168.56.2:8081/
 ```
 
-<br>
+
+
 없는 페이지 NoExistPage 를 다시 호출한다면
 
 ```sh
@@ -145,7 +154,8 @@ apache_2.4.54/error.html
 
 HTTP Status Code 404 Not Found (_아까와 조금 다르지만_) 가 전달되고, Apache의 Error page가 보여진다.
 
-<br>
+
+
 ## 4.3 WAS Down 상황에서의 Error Handling
 
 `ProxyErrorOverride Off` 설정을 하면 Tomcat의 Error는 Tomcat에서 처리된다.
@@ -175,17 +185,20 @@ $ curl -v $(hostname -i):80/NoExistPage
 apache_2.4.54/error.html
 ```
 
-<br>
+
+
 mod_proxy 모듈이 Tomcat 연결이 되지 않아 자체적으로 HTTP 503 Service Unavailable 를 생산하며,
 
 Apache의 Error page를 호출하였다.
 
-<br>
+
+
 ## 4.4 LB 환경에서의 Error Handling
 
 WEB &rarr; LB &rarr; WAS 환경에서, WAS Down 시에 LB는 HTTP 502 또는 503 를 Return 할 수 있겠다.
 
-<br>
+
+
 LB는 해당 이슈 재현시에 Apache 를 사용했지만, 다음과 같이 최대한 LB와 유사하게 하기 위해 설정하였다.
 
  ```LB
@@ -204,7 +217,8 @@ LB는 해당 이슈 재현시에 Apache 를 사용했지만, 다음과 같이 �
 
 > IfDefine 허수 변수값을 선언하여 범위 주석을 하였다.
 
-<br>
+
+
 최전선 WEB은 다음 설정을 하였다.
 
 ```httpd.conf
@@ -221,7 +235,8 @@ ProxyPassReverse /      http://192.168.56.2:180/
 
 HTTP Status Code `502, 503` 에 대해서만 Apache WEB에서 ErrorDocument 처리한다.
 
-<br>
+
+
 여기 내용에서는 `ProxyErrorOverride` 의 3번째 Arguments를 통해 특정 HTTP Status Code를 직접 Handling 할 수 있다는 것을 살펴보기 위함이다.
 
 굳이 LB 를 예시로 든것이다.

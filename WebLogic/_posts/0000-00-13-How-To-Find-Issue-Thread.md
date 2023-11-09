@@ -6,11 +6,13 @@ tags: [Middleware, WebLogic, Thread]
 typora-root-url: ..
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 
 웹로직에 부하를 주는 스레드 찾기(Linux, AIX, Windows7)
 
-<br>
+
+
 # 2. 다음의 JSP를 배포하여 실행
 
 ```jsp
@@ -32,7 +34,8 @@ for (int i=0; i < 3; i++)
 %>
 ```
 
-<br>
+
+
 ## 3. OS별 확인 방법
 
 ### 3.1 Linux
@@ -43,7 +46,8 @@ for (int i=0; i < 3; i++)
 
 > instance PID를 찾는다. **찾은 PID: 22384**
 
-<br>
+
+
 ```bash
 # watch "ps -eLo pid,ppid,tid,pcpu,comm | grep 22384"
 ```
@@ -52,21 +56,24 @@ for (int i=0; i < 3; i++)
 >
 > _**문서에는 watch가 cpu 사용량을 게더링하기 유용하지 않은 명령어라고 한다.**_
 
-<br>
+
+
 ```bash
 # ps -eLo pid,ppid,tid,pcpu,comm | grep 22384 > 22384.out
 ```
 
 > 현재 cpu 사용량 게더링 결과를 22384.out으로 저장 한다.
 
-<br>
+
+
 ```bash
 # cat 22384.out | awk '{ print "pccpu: "$4" pid: "$1" ppid: "$2" ttid: "$3" comm: "$5}' |sort -n
 ```
 
 > 게더링 결과의 cpu 사용량을 기준으로 내림차순하여 본다.
 
-<br>
+
+
 ```bash
 # ps -eLo pid,ppid,tid,pcpu,comm | grep 22384 | awk '{ print "pccpu: "$4" pid: "$1" ppid: "$2" ttid: "$3" comm: "$5}' |sort -n
 ```
@@ -79,7 +86,8 @@ for (int i=0; i < 3; i++)
 >
 > 22557, 22558, 22559를 헥사값(16진수)로 변환하면 각각 **0x581d, 0x581e, 0x581f** 다.
 
-<br>
+
+
 ```bash
 # kill -3 22384
 ```
@@ -88,7 +96,8 @@ for (int i=0; i < 3; i++)
 >
 > jsp에서 Thread 3개를 생성 하고, 각각 Math.atan 메소드 실행 부분을 덤프에서도 확인할 수 있다.
 
-<br>
+
+
 ```찾은결과
 "Thread-36" daemon prio=10 tid=0x00007f43d0059800 nid=0x581f runnable [0x00007f43cf8f7000]
    java.lang.Thread.State: RUNNABLE
@@ -112,14 +121,16 @@ for (int i=0; i < 3; i++)
      at java.lang.Thread.run(Thread.java:745)
 ```
 
-<br>
+
+
 ### 3.2 Windows 7
 
 [여기](https://technet.microsoft.com/en-us/sysinternals/bb896682) 에서 프로세스 리스트를 확인할 수 있는 pslist 툴을 설치한다.
 
 > 압축을 해제하고 cmd로 해당 디렉토리에서 다음 작업을 이어간다.
 
-<br>
+
+
 ```bash
 # pslist java
 ```
@@ -130,7 +141,8 @@ for (int i=0; i < 3; i++)
 >
 > 각 파라메타 설명은 pslist 툴을 다운로드 받은 홈페이지에 있다.
 
-<br>
+
+
 ```bash
 # pslist -d 7820
 8604   8    138786          Running  0:03:25.999   0:00:00.000    0:03:30.540
@@ -152,7 +164,8 @@ for (int i=0; i < 3; i++)
 >
 > 7384: **1CD8**, 5712: **1650**, 8604: 219C 각각을 찾아보니 다음과 같다.
 
-<br>
+
+
 ```찾은결과
 "Thread-15" daemon prio=6 tid=0x0000000007729800 nid=0x219c runnable [0x000000000cdaf000]
    java.lang.Thread.State: RUNNABLE
@@ -176,7 +189,8 @@ for (int i=0; i < 3; i++)
      at java.lang.Thread.run(Thread.java:662)
 ```
 
-<br>
+
+
 ### 3.3 AIX
 
 ```bash
@@ -185,14 +199,16 @@ for (int i=0; i < 3; i++)
 
 > instance PID를 찾는다. **찾은 PID: 16908684**
 
-<br>
+
+
 ```bash
 # ps -mp 16908684 -o THREAD
 ```
 
 > instance PID의 스레드 목록을 출력한다.
 
-<br>
+
+
 ```위명령의결과
     USER      PID     PPID        TID S  CP PRI SC    WCHAN        F     TT BND COMMAND
 
@@ -321,7 +337,8 @@ for (int i=0; i < 3; i++)
 >
 > 스레드 덤프에서 16진수로 변환한 TID를 검색해보니, 실행한 jsp 정보를 볼 수 있었다.
 
-<br>
+
+
 ```찾은결과
 3XMTHREADINFO      "Thread-33" J9VMThread:0x00000000524AEB00, j9thread_t:0x00000100151EC5C0, java/lang/Thread:0x00000000498A4898, s
 

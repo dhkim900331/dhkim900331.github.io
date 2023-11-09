@@ -10,7 +10,8 @@ typora-root-url: ..
 
 * Scouter APM에서 Method Profiling 방법
 
-<br>
+
+
 # 2. 설명
 
 * 가령, 다음과 같은 구조를 갖는 Application이 있다고 해보자.
@@ -19,7 +20,8 @@ typora-root-url: ..
   * org.infinispan 아래에도 수두룩~
   * com.example.parent Class 아래에는 child 라는 method 1개
 
-<br>
+
+
 ## 2.1 hook_method_patterns
 
 * 특정 Method만 Profiling
@@ -34,7 +36,8 @@ typora-root-url: ..
   org.apache.catalina.session.<Class
   ```
 
-<br>* 특정 Pkg 아래 모든 Class 및 모든 Method Profiling
+
+* 특정 Pkg 아래 모든 Class 및 모든 Method Profiling
 
   ```
   com.athena.dolly.*.*
@@ -67,7 +70,10 @@ typora-root-url: ..
     hook_method_patterns=org.apache.catalina.session.*.*,com.athena.dolly.*.*,org.infinispan.client.hotrod.*.*,java.*.*
     ```
 
-<br><br>
+
+
+
+
 ## 2.2 hook_method_access
 
 * 기본값은 아래처럼 적용된다.

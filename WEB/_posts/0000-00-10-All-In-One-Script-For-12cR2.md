@@ -10,7 +10,8 @@ typora-root-url: ..
 
 Oracle HTTP Server 12cR2 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
 
-<br>
+
+
 # 2. 설명
 
 All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한다.
@@ -19,7 +20,8 @@ All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한
 - NodeManager (SecureListner=false, TCP 5556)
 - Worker 2ea
 
-<br>
+
+
 # 3. Script
 
 ## 3.1 Engine
@@ -55,7 +57,8 @@ WORKER_SSL_2=10543
 WORKER_ADMIN_ADDR_2=127.0.0.1
 WORKER_ADMIN_PORT_2=10199
 
-<br># (1) ResponseFile
+
+# (1) ResponseFile
 # https://docs.oracle.com/middleware/1213/core/WTINS/standalone_domain.htm
 # https://docs.oracle.com/middleware/1212/core/OUIRF/response_file.htm#OUIRF390
 # https://dhkim900331.github.io/14-webserver/Install-OHS-12cR2
@@ -79,7 +82,8 @@ DECLINE_SECURITY_UPDATES=true
 SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
 EOF
 
-<br># (2) Inventory
+
+# (2) Inventory
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-756E3FD9-4094-412F-9BEB-72C5FD51056B
 # * inventory.loc 파일 샘플은 문서에 없음
 
@@ -88,18 +92,21 @@ inventory_loc=${INVENTORY_PATH}
 inst_group=${INVENTORY_GROUP}
 EOF
 
-<br># (3) Installation
+
+# (3) Installation
 # Ref 찾을 수 없음
 
 ${BASEDIR}/${OHS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
 
-<br>
+
+
 ADMIN_ADDR을 127.0.0.1 으로만 해야 되는 것으로 테스트상 확인되는데,
 
 구체적인 이유는 확인되지 않는다.
 
-<br>
+
+
 ## 3.2 Domain
 
 ```sh
@@ -115,7 +122,8 @@ exit()
 EOF
 ```
 
-<br>
+
+
 ## 3.3 NodeManager
 
 ```sh
@@ -138,12 +146,14 @@ updateDomain()
 exit()
 EOF
 
-<br># (6) NodeManager SSL disabled
+
+# (6) NodeManager SSL disabled
 # WLST 으로 update 되지 않아 추가로 해야 한다. 실질적으로 아래가 필수
 sed -i 's/SecureListener=true/SecureListener=false/g' ${DOMAIN_HOME}/nodemanager/nodemanager.properties
 ```
 
-<br>
+
+
 ## 3.4 Component
 
 ```sh
@@ -181,7 +191,8 @@ exit()
 EOF
 ```
 
-<br>
+
+
 ## 3.5 Create NodeManager Scripts (start, stop, log, ps)
 
 ```sh
@@ -215,7 +226,8 @@ mv ${LOG_HOME}/${SERVER_NAME}.out ${LOG_HOME}/${SERVER_NAME}.out.${LOG_TIME}
 nohup ${BASEDIR}/bin/startNodeManager.sh >> ${LOG_HOME}/${SERVER_NAME}.out 2>&1 &
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/stopNM.sh
+
+cat << "EOF" > ${DOMAIN_HOME}/stopNM.sh
 #!/usr/bin/bash
 BASEDIR=$(realpath $(dirname $0))
 SERVER_NAME=nodemanager
@@ -243,7 +255,8 @@ sleep 1
 tail -5 ${LOG_HOME}/${SERVER_NAME}.out
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/logNM.sh
+
+cat << "EOF" > ${DOMAIN_HOME}/logNM.sh
 #!/usr/bin/bash
 BASEDIR=$(realpath $(dirname $0))
 SERVER_NAME=nodemanager
@@ -252,7 +265,8 @@ LOG_HOME=${DOMAIN_HOME}/logs/${SERVER_NAME}
 tail -10f ${LOG_HOME}/${SERVER_NAME}.out
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/psNM.sh
+
+cat << "EOF" > ${DOMAIN_HOME}/psNM.sh
 #!/usr/bin/bash
 BASEDIR=$(realpath $(dirname $0))
 DOMAIN_HOME=${BASEDIR}
@@ -260,7 +274,8 @@ ps -ef | grep "java" | grep "weblogic.NodeManager -v" | grep "${DOMAIN_HOME}"
 EOF
 ```
 
-<br>
+
+
 ## 3.6 Create Component Scripts (start, stop, ps)
 
 ```sh
@@ -302,7 +317,8 @@ exit()
 INNER_EOF
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/stop-worker.sh
+
+cat << "EOF" > ${DOMAIN_HOME}/stop-worker.sh
 #!/usr/bin/bash
 BASEDIR=$(realpath $(dirname $0))
 DOMAIN_HOME=${BASEDIR}
@@ -339,7 +355,8 @@ exit()
 INNER_EOF
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/ps-worker.sh
+
+cat << "EOF" > ${DOMAIN_HOME}/ps-worker.sh
 #!/usr/bin/bash
 BASEDIR=$(realpath $(dirname $0))
 DOMAIN_HOME=${BASEDIR}
@@ -347,7 +364,8 @@ WORKER=#WORKER_NAME#
 ps -ef | grep "httpd" | grep "${WORKER}" | grep "${DOMAIN_HOME}"
 EOF
 
-<br>cp ${DOMAIN_HOME}/start-worker.sh ${DOMAIN_HOME}/start-${WORKER_NAME_1}.sh
+
+cp ${DOMAIN_HOME}/start-worker.sh ${DOMAIN_HOME}/start-${WORKER_NAME_1}.sh
 cp ${DOMAIN_HOME}/stop-worker.sh ${DOMAIN_HOME}/stop-${WORKER_NAME_1}.sh
 cp ${DOMAIN_HOME}/ps-worker.sh ${DOMAIN_HOME}/ps-${WORKER_NAME_1}.sh
 

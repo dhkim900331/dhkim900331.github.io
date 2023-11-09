@@ -6,7 +6,8 @@ typora-root-url: ..
 date: 2021-12-08 12:41:57 +0900
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 
 blog post 작성 시 이미지 업로드를 위해 Typora 에 PicGo 를 활용했었는데,
 
@@ -14,7 +15,8 @@ blog post 작성 시 이미지 업로드를 위해 Typora 에 PicGo 를 활용�
 
 포스트별 디렉토리를 생성하고, 그 안에 이미지를 업로드 하도록 설정한다.
 
-<br>
+
+
 # 2. Typora
 
 ## 2.1 이미지의 시작지점 (root) 지정
@@ -23,12 +25,16 @@ Format > Image > Use Image Root Path 메뉴
 
 ![UploadImageForTypora_1](/../assets/posts/images/07-Typora/UploadImageForTypora/UploadImageForTypora_1.png)
 
-<br><br>
+
+
+
+
 디렉토리는 다음 이미지처럼 최상단을 지정한다.
 
 ![UploadImageForTypora_2](/../assets/posts/images/07-Typora/UploadImageForTypora/UploadImageForTypora_2.png)
 
-<br>
+
+
 이렇게 설정하거나, 다음과 같이 YAML Front Matter typora-root-url 를 집어넣는다.
 
 ```markdown
@@ -44,7 +50,8 @@ typora-root-url: ..
 
 > .md 파일이 _posts 에 있으니, image를 상단(..) 에서 상대경로로 읽으라고 지정하는 것이다.
 
-<br>
+
+
 ## 2.2 Typora Image 메뉴 설정
 
 환경 설정에서 Image를 다음과 같이 설정한다.
@@ -53,7 +60,8 @@ typora-root-url: ..
 
 ![UploadImageForTypora_3](/../assets/posts/images/07-Typora/UploadImageForTypora/UploadImageForTypora_3.png)
 
-<br>
+
+
 실제로 이미지는 md 파일명을 디렉토리로 삼고, 그 안에 들어간다.
 
 ![UploadImageForTypora_4](/../assets/posts/images/07-Typora/UploadImageForTypora/UploadImageForTypora_4.png)
@@ -62,7 +70,8 @@ typora-root-url: ..
 >
 > 현재 이 게시믈 typora_1.md 는 아직 포스팅 하지 않은 상태로 작성 중이다.
 
-<br>
+
+
 ## 2.3 포스팅 후 게시글 확인
 
 포스팅 후 확인해보면 이미지가 잘 나타나고, 이미지 별로 다음과 같이 URL이 생성된다.

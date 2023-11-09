@@ -10,7 +10,10 @@ typora-root-url: ..
 
 Outlook 에 내장된 VBA 를 이용하여, 자동으로 이메일을 보내는 Macro를 개발해본다.
 
-<br><br>
+
+
+
+
 # 2. 설명
 
 Win Object를 잘 다루지 못하므로, Googling 을 통해서 많은 도움을 얻고자 했는데.. Chat GPT를 통해서 뚝딱 완성이 되어 버렸다.
@@ -22,7 +25,8 @@ Win Object를 잘 다루지 못하므로, Googling 을 통해서 많은 도움�
 - can you change TimerLoop to other method with user32 library ?
 ```
 
-<br>
+
+
 토대로 완성된 코드는,
 
 ```vb
@@ -63,8 +67,10 @@ Private Sub SendEmail()
     Set objMail = Nothing
 End Sub
 
-<br>
+
+
 ```
 
-<br>
+
+
 Outlook Macro run에서 StartEmailSending 를 통해 X분마다 user32 의 SetTimer background 동작으로 mail 을 보낸다.

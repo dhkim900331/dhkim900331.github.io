@@ -214,6 +214,8 @@ permalink: /:categories/:title
 
 
 # my custom variables
+# https://www.ayush.nz/2021/08/using-variables-in-jekyll-to-define-custom-content
+# {{ site.content.br_small }}
 content:
-  br: "<p style='height:20px;'></p>"
-  br: "<p style='height:40px;'></p>"
+  br_small: "<p style='height:20px;'></p>"
+  br_big: "<p style='height:40px;'></p>"

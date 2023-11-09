@@ -14,7 +14,8 @@ NGINX 기본 설치 및 튜닝을 진행한다.
 
 은연히 Apache 템플릿에 맞추어질 수 있다.
 
-<br>
+
+
 # 2. 설치
 
 ## 2.1 다운로드
@@ -25,7 +26,8 @@ NGINX 기본 설치 및 튜닝을 진행한다.
 
 > Mainline Version nginx-1.21.6 으로 진행한다.
 
-<br>
+
+
 ## 2.2 설치
 
 * 설치 스크립트화를 위해 만들어두었다.
@@ -95,12 +97,14 @@ make && make install
 >
 > http_image_filter_module 을 위해 `gd-devel.x86_64` 을 설치했다.
 
-<br>
+
+
 ## 2.3 실행 커맨드
 
 [여기](https://nginx.org/en/docs/beginners_guide.html#control)에 실행 커맨드.
 
-<br>
+
+
 ```bash
 $ pwd
 /usr/ssw/nginx-1.21.6/sbin
@@ -113,7 +117,8 @@ $ mkdir /usr/ssw/nginx-1.21.6/tmp
 
 > nginx 기동 시 설치 옵션으로 준 tmp 디렉토리가 없다는 에러가 발생하였다.
 
-<br>
+
+
 ```bash
 $ ./nginx
 nginx: [emerg] bind() to 0.0.0.0:80 failed (13: Permission denied)
@@ -124,7 +129,8 @@ $ sudo chmod 4770 ./nginx
 
 > 1024 이하 privileged port 이므로 권한 부여가 필요하다.
 
-<br>
+
+
 ```bash
 $ ./nginx
 $ ps -ef | grep nginx
@@ -138,7 +144,8 @@ tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN
 
 > 잘 기동이 되었다.
 
-<br>
+
+
 # 3. 튜닝
 
 ## 3.1 기본 튜닝
@@ -233,12 +240,14 @@ http {
 }
 ```
 
-<br>
+
+
 ## 3.2 Log Rotation
 
 [링크](https://www.nginx.com/resources/wiki/start/topics/examples/logrotation/)를 참고하여 스크립트화.
 
-<br>
+
+
 ```bash
 #!/bin/bash
 
@@ -261,7 +270,8 @@ done
 >
 > ___이후 해당 스크립트를 고도화하고, 크론탭으로 설정하면 되겠다___
 
-<br>
+
+
 ## 3.3 mod_proxy
 
 작성이 필요하나~ 외부 일정으로 인해 차후 기입.

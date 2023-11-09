@@ -6,21 +6,25 @@ tags: [Middleware, WebLogic, Thread, Dump, WLST]
 typora-root-url: ..
 ---
 
-<br># 1. 개요
+
+# 1. 개요
 
 WLST으로 Thread Dump Client 만들기
 
-<br>
+
+
 # 2. Tool 개발
 
 ## 2.1 wlfullclient.jar
 
 [여기]({{ site.url }}/weblogic/fullclient_jar) 참고하여 wlfullclient.jar 준비
 
-<br>
+
+
 위 jar 외에도 수많은 라이브러리를 classpath 로 잡아야 하나, 어떤것이 특정적으로 필요한지 몰라서 아래와 같이 모든 라이브러리를 사용했다.
 
-<br>
+
+
 ```
 weblogic.jar
 wlfullclient.jar
@@ -39,7 +43,8 @@ com.bea.core.xml.xmlbeans_1.0.0.0_2-6-0.jar
 com.oracle.cie.config-wls-schema_12.1.3.0.jar
 ```
 
-<br>
+
+
 ## 2.2 autoThreadDump_wlst.cmd
 
 ```bash
@@ -74,7 +79,8 @@ del %LOG_DIR%\cfgfwk_*.log
 
 > 모든 파일앞에는 절대 경로 또는 상대경로가 반드시 들어가야 한다.
 
-<br>
+
+
 ## 2.3 autoThreadDump_wlst.py
 
 ```python
@@ -90,7 +96,8 @@ threadDump(writeToFile='true', fileName=sys.argv[2]+"_3.txt")
 
 > 5초 간격으로 3번의 덤프를 생성한다.
 
-<br>
+
+
 # 3. 실행
 
 실행 방법에는 두가지가 있을 수 있다.
@@ -99,7 +106,8 @@ threadDump(writeToFile='true', fileName=sys.argv[2]+"_3.txt")
 
 두번째는,  다른 자바 프로그램에 코드로 삽입하여 자동화 방식(?) 등..
 
-<br>
+
+
 ### 3.1 직접 실행
 
 ```
@@ -108,7 +116,8 @@ autoThreadDump_wlst.cmd AdminServer 192.168.56.2 8001
 
 > AdminServer_<년월일시분초>_1.txt ~ 3.txt 파일이 생성된다.
 
-<br>
+
+
 ### 3.2 자바 코드에 심기
 
 #### (1). autoThreadDump() 메서드 생성
@@ -136,7 +145,8 @@ private void autoThreadDump(String cmd, String instanceName, String ip, String p
 }
 ```
 
-<br>
+
+
 #### (2). 메서드 호출
 
 ```java

@@ -10,7 +10,8 @@ typora-root-url: ..
 
 Coherence 14c 테스트 환경을 위해 기본 설치 환경을 집약한다.
 
-<br>
+
+
 # 2. 설명
 
 다음 환경을 구성하도록 한다.
@@ -19,13 +20,17 @@ Coherence 14c 테스트 환경을 위해 기본 설치 환경을 집약한다.
   - Coherence Server, TCP 9000 ~ 9100
   - Managed Coherence Server, TCP 9000
 
-<br><br>아래 문서에서는 Coherence-Server를 Cache-Server,
+
+
+
+아래 문서에서는 Coherence-Server를 Cache-Server,
 
 Managed Coherence Server(WLS+Coherence Module)를 Cache-Client 라고 표현하기도 했다.
 
 WLS 또한 자기 자신이 Cache-Server가 될 수 있으나, Coherence을 사용하는 목적은 WLS 에서는 Data를 처리하지 않는 것이기 때문이다.
 
-<br>
+
+
 # 3. Script
 
 ## 3.1 Engine
@@ -49,7 +54,8 @@ CS_ADDR=wls.local
 CS_PORT=9000
 CS_PORT_ADJUST=100
 
-<br># (1) ResponseFile
+
+# (1) ResponseFile
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/sample-response-files-silent-installation-and-deinstallation.html#GUID-65B11C03-B559-41F1-B9B4-B7276491E580
 # INSTALL_TYPE is one of fmw_14.1.1.0.0_coherence.jar:/Disk1/stage/distributions/Coherence_14.1.1.0.0.xml
 
@@ -63,7 +69,8 @@ ORACLE_HOME=${COH_INSTALL_PATH}
 INSTALL_TYPE=Typical
 EOF
 
-<br># (2) Inventory
+
+# (2) Inventory
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-756E3FD9-4094-412F-9BEB-72C5FD51056B
 # * inventory.loc 파일 샘플은 문서에 없음
 
@@ -72,13 +79,15 @@ inventory_loc=${INVENTORY_PATH}
 inst_group=${INVENTORY_GROUP}
 EOF
 
-<br># (3) Installation
+
+# (3) Installation
 # https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/ouirf/using-oracle-universal-installer-silent-mode.html#GUID-5F06D02F-6D71-45B9-BF41-5D5759D31958
 
 ${JAVA_HOME}/bin/java -jar ${COH_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
 
-<br>
+
+
 ## 3.2 Cache Configuration
 
 Cluster 내에서 유지할 Cache 에 대한 기본 속성을 정의할 수 있다.
@@ -91,7 +100,8 @@ XML 파일은 한 번만 정의되고 쓰이면 모두가 만족해야 될 것�
 
 App에서 생성하는 Cache는 Cache-Server에서도, Cache-Client에서도 모두 유지되기 위해서 기본 Cache 구성에 대한 정의가 있어야 되기 때문에 양쪽에 동일한 파일이 있어야 하는 것으로 ~~그냥~~ 이해했다.
 
-<br>
+
+
 * [Overview of Coherence*Web](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer-http-sessions/using-coherenceweb-weblogic-server.html#GUID-24BDEA82-1E53-47F2-BD2B-E573639DADB5)
 
   * coherence.jar, coherence-web.jar 파일이 공유 라이브러리로 배포되거나, Web application lib에 위치해야 한다.
@@ -127,7 +137,8 @@ App에서 생성하는 Cache는 Cache-Server에서도, Cache-Client에서도 모
     coherence.session.localstorage=true
     ````
 
-<br>
+
+
 여기서 언급한 coherence.jar, coherence-web.jar, session-cache-config.xml 파일은 Cache-Server, Cache-Client 에서 모두 사용되므로 각 디렉토리로 적절히 복사가 되어야 한다.
 
 아래는, 앞으로 우리가 구축할 WLS와 Coherence Domain 디렉토리에 복제될 파일 목록들이다.
@@ -149,17 +160,20 @@ $ ls -al coherence.jar coherence-web.jar session-cache-config.xml
 -rw-rw-r-- 1 wasadm wasadm     4337 Apr 20 15:24 session-cache-config.xml
 ```
 
-<br>
+
+
 ## 3.2 Cache-Server
 
 ### 3.2.1 Cluster
 
 Coherence 구성을 위해서는 많은 설정 값이 필요하지만, [Using the Default Operational Override File](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/understanding-configuration.html#GUID-8387E29A-EE03-4075-B4E7-D92779335965) 방식을 사용하여, 일부분 설정값만 override 하도록 한다.
 
-<br>
+
+
 [Specifying an Operational Override File](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/understanding-configuration.html#GUID-1C518560-021D-4F55-ACC4-C0E10133D45A) 에 설명된 `-Dcoherence.override` 옵션으로 아래 설정 파일을 사용할 것이다.
 
-<br>
+
+
 ```sh
 # (4) Cluster Member
 # Cache Server에는 WLS Domain과 같은 개념이 없으나, 임의로 만듬
@@ -213,7 +227,8 @@ cat << EOF > ${DOMAIN_HOME}/lib/tangosol-coherence-${DOMAIN_NAME}.xml
 EOF
 ```
 
-<br>
+
+
 [3.2.2 Startup Cache-Server](#h-322-startup-cache-server)에서 설명하듯이, 우리가 생성한 `tangosol-coherence-${DOMAIN_NAME}.xml` 파일은 다음 처럼 Option이 설정되어야 한다.
 
 ```sh
@@ -221,16 +236,19 @@ EOF
 CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib
 ```
 
-<br>
+
+
 CLASSPATH 에 있는 xml 파일을 override 할 수 있다.
 
-<br>
+
+
 ### 3.2.2 Startup Cache-Server
 
 * [Start a Cache Server](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer-http-sessions/using-coherenceweb-weblogic-server.html#GUID-D8120C85-FCD3-491E-8618-03B691279797)
   * Coherence 는 기본적으로 WLS 하위 subsystem으로 (즉 같은 JVM) 유지되면, WLS와 같은 lifecycle을 공유한다. 이러한 경우 Managed Coherence Server 라고 부른다.
 
-<br>
+
+
 * [To Start a Standalone Coherence Cache Server](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer-http-sessions/using-coherenceweb-weblogic-server.html#GUID-E65D5FAC-B517-4F59-8AF7-8458AE1216C1)
 
   * Cache Server를 독립 실행, 아래에서 이 방식을 사용하는 Script를 설명했다.
@@ -314,7 +332,8 @@ mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
 nohup ${JAVA_HOME}/bin/java ${USER_MEM_ARGS} ${COHERENCE_ARGS} -cp ${CLASSPATH} com.tangosol.net.DefaultCacheServer > ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/psCS.sh
+
+cat << "EOF" > ${DOMAIN_HOME}/psCS.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_NAME=#SERVER_NAME#
@@ -322,7 +341,8 @@ SERVER_NAME=#SERVER_NAME#
 ps -ef | grep "java" | grep "com.tangosol.net.DefaultCacheServer" | grep "${DOMAIN_HOME}" | grep "D${SERVER_NAME}"
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/stopCS.sh
+
+cat << "EOF" > ${DOMAIN_HOME}/stopCS.sh
 #!/bin/sh
 DOMAIN_HOME=#DOMAIN_HOME#
 SERVER_NAME=#SERVER_NAME#
@@ -346,7 +366,8 @@ fi
 kill -9 $(${DOMAIN_HOME}/ps${SERVER_NAME}.sh | awk '{print $2}')
 EOF
 
-<br>cat << "EOF" > ${DOMAIN_HOME}/logCS.sh
+
+cat << "EOF" > ${DOMAIN_HOME}/logCS.sh
 #!/bin/sh
 DOMAIN_NAME=#DOMAIN_NAME#
 DOMAIN_HOME=#DOMAIN_HOME#
@@ -357,7 +378,8 @@ NOHUP_LOG=${LOG_HOME}/nohup
 tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
 EOF
 
-<br>cp ${DOMAIN_HOME}/startCS.sh ${DOMAIN_HOME}/startCS1.sh
+
+cp ${DOMAIN_HOME}/startCS.sh ${DOMAIN_HOME}/startCS1.sh
 cp ${DOMAIN_HOME}/stopCS.sh ${DOMAIN_HOME}/stopCS1.sh
 cp ${DOMAIN_HOME}/logCS.sh ${DOMAIN_HOME}/logCS1.sh
 cp ${DOMAIN_HOME}/psCS.sh ${DOMAIN_HOME}/psCS1.sh
@@ -383,7 +405,8 @@ chmod 700 ${DOMAIN_HOME}/*.sh
 rm ${DOMAIN_HOME}/*CS.sh
 ```
 
-<br>
+
+
 Cache-Server를 기동하면, 표준출력 log에서 몇가지를 확인할 수 있다. 우리가 커스텀한 설정 파일대로 생성이 된다.
 
 * Loaded operational configuration from "jar:file:/sw/coherence/14c/domains/base_domain/lib/coherence.jar!/tangosol-coherence.xml"
@@ -394,14 +417,16 @@ Cache-Server를 기동하면, 표준출력 log에서 몇가지를 확인할 수 
 * Created a new cluster "cluster_base_domain" with Member(Id=1, Timestamp=2023-04-24 11:43:24.509, Address=**10.65.34.245:9000**, MachineId=7674, Location=site:site_base_domain,rack:rack_base_domain,machine:machine_base_domain,process:process_base_domain,member:member_base_domain, Role=CoherenceServer, Edition=Grid Edition, **Mode=Production**, CpuCount=4, SocketCount=1)
 * PartitionedCache{Name=oracle.coherence.web:**DistributedSessions**, State=(SERVICE_STARTED), Id=4, OldestMemberId=1, **LocalStorage=enabled**, PartitionCount=257, BackupCount=1, AssignedPartitions=0, BackupPartitions=0, CoordinatorId=1}
 
-<br>
+
+
 ## 3.3 Cache-Client
 
 Cache-Client로 WebLogic Managed Server를 사용할 것이다.
 
 사실상, WebLogic 또한 Cache Server로 띄우는 것이므로 위에서 언급한 Managed Coherence Server가 된다.
 
-<br>
+
+
 다음의 옵션을 WLS Instance에서 사용한다.
 
 ```sh
@@ -410,26 +435,31 @@ Cache-Client로 WebLogic Managed Server를 사용할 것이다.
 -Dcoherence.session.localstorage=false
 -Dcoherence.management.remote=true
 
-<br># lib 아래 jar는 자동 등록되므로 필요 없다, xml 을 위해 사용한다.
+
+# lib 아래 jar는 자동 등록되므로 필요 없다, xml 을 위해 사용한다.
 CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib
 #CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib/coherence-web.jar
 #CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib/coherence.jar
 ```
 
-<br>
+
+
 `-Dcoherence.cacheconfig=session-cache-config.xml` 옵션은 제거하였고, 해당 파일은 앞으로 배포할 Web App/WEB-INF/classes 아래에 직접 넣었다.
 
 Application 마다 Cache 구성이 다를 수 있기 때문이다.
 
-<br>
+
+
 그리고 `coherence.override` 으로 읽어들이는 파일은, 위에서 언급하였는데, CLASSPATH 에서 읽으므로 `Web App/WEB-INF/lib` 에 넣을 경우, 검색하는 CLASSLOAD와 관련된 문제 인지 읽을 수 없다, 어차피 Server 배포 파일이므로 App에 넣는 경우도 없을 것이다.
 
-<br>
+
+
 인스턴스 기동 시에, 별다른 Log가 기록되지 않는다.
 
 [3.4 Web-App 배포](#h-34-web-app-배포) 시에 Log가 출력되었다.
 
-<br>
+
+
 ## 3.4 Web-App 배포
 
 * session-cache-config.xml 배치 구성도.
@@ -468,7 +498,8 @@ Application 마다 Cache 구성이 다를 수 있기 때문이다.
 </weblogic-web-app>
 ```
 
-<br>
+
+
 App을 Deploy 시에 Log
 
 ```sh
@@ -487,7 +518,8 @@ Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
 ... Loaded cache configuration from "file:/sw/app/coh14cApp/WEB-INF/classes/session-cache-config.xml"
 ```
 
-<br>
+
+
 App을 Runtime Service로 시작시에 Log.
 
 기존(Senior) Member으로 Joined 되는 과정
@@ -506,7 +538,8 @@ App을 Runtime Service로 시작시에 Log.
 ... Connection established with tmb://10.65.34.245:9000.44385
 ```
 
-<br>
+
+
 Cache Config가 구성 되었다는 Log
 
 ```sh
@@ -537,7 +570,8 @@ Cache Config가 구성 되었다는 Log
   Session Reaping Mechanism=Default>
 ```
 
-<br>
+
+
 MBean 에 등록된다.
 
 ```sh

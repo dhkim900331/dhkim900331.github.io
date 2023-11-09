@@ -12,7 +12,10 @@ typora-root-url: ..
 
 사실 기능이라고 하기에는 단순한 문자열 치환이다...
 
-<br><br># 2. 설명
+
+
+
+# 2. 설명
 
 startA.sh 과 같이 사용자 스크립트에 `export USER_MEM_ARGS` 한다면
 
@@ -22,10 +25,12 @@ startWeblogic.sh에서는 하위 프로세스로 실행되므로 앞에서 expor
 
 echo 등으로 찍히진 않는다. (물론 startWeblogic.sh을 실행시키면 찍힌다)
 
-<br>
+
+
 여튼 프로그래밍하여 startWeblogic.sh 하단쯤에 `if USER_MEM_ARGS != ""` 등 조건을 부여하여 `MEM_ARGS = USER_MEM_ARGS` 하자.
 
-<br>
+
+
 ```bash
 if [ "${USER_MEM_ARGS}" != "" ]; then
 	MEM_ARGS="${USER_MEM_ARGS}"

@@ -10,7 +10,10 @@ typora-root-url: ..
 
 JOL(Java Layout Object) Library 사용법
 
-<br><br>
+
+
+
+
 # 2. Description
 
 Java 객체의 실제 크기를 Inspect 하기 위해서는 Instrumentation 을 활용할 수 있으나,
@@ -19,12 +22,18 @@ Java 객체의 실제 크기를 Inspect 하기 위해서는 Instrumentation 을 
 
 실제 Size를 Heap dump보다 정확하게 추적할 수 있다고 소개하는 JOL 을 사용해보자.
 
-<br><br>
+
+
+
+
 # 3. Use
 
 [최신버전을 다운로드](https://builds.shipilev.net/jol/) 하여 WEB-INF/lib 에 위치시킨다.
 
-<br><br>
+
+
+
+
 ## 3.1 My App
 
 아래와 같은 Business Java code 가 있다고 가정한다.
@@ -52,10 +61,14 @@ Java 객체의 실제 크기를 Inspect 하기 위해서는 Instrumentation 을 
     session.setAttribute("listSession", sList);
 ```
 
-<br>
+
+
 App 반복 요청 시, 매회 ArrayList로 이루어진 500 bytes data를 누적하여 Session에 저장한다.
 
-<br><br>
+
+
+
+
 ## 3.2 Import JOL
 
 이때, Session 에 저장되는 실제 size를 추적하기 위해,
@@ -68,7 +81,10 @@ import org.openjdk.jol.info.GraphLayout;
 import org.openjdk.jol.vm.VM;
 ```
 
-<br><br>
+
+
+
+
 ### 3.3 Specified Field Size in VM
 
 `System.out.println(VM.current().details());` 호출 시
@@ -89,7 +105,10 @@ import org.openjdk.jol.vm.VM;
 
 byte가 memory에서 1 byte를 차지한다고 알 수 있다.
 
-<br><br>
+
+
+
+
 ## 3.4 Shallow Size of ArrayList
 
 `System.out.println(ClassLayout.parseInstance(sList).toPrintable());` 호출 시
@@ -111,7 +130,10 @@ Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
 
 ClassLayout은 Object 또는 Class 자체의 Size(Shallow size)만을 계산한다고 하기 때문에, ArrayList.size=500 임에도 매우 작은 24 bytes 로 보여진다.
 
-<br><br>
+
+
+
+
 ## 3.5 Shallow Size of Array in ArrayList
 
 `System.out.println(ClassLayout.parseInstance(sList.toArray()).toPrintable());` 호출 시
@@ -128,7 +150,10 @@ Instance size: 2016 bytes
 
 toArray() 를 조사한 결과, Shallow Size 임에도 2016 bytes 라는 전체 실제 Size로 보인는 결과가 나온다.
 
-<br><br>
+
+
+
+
 ## 3.6 Shallow Size of Single Object in ArrayList
 
 `System.out.println(ClassLayout.parseInstance(sList.toArray()[0]).toPrintable());` 호출 시
@@ -147,19 +172,24 @@ Space losses: 0 bytes internal + 7 bytes external = 7 bytes total
 
 `byte[] objectInSession` Object의 Size는 24 bytes 이며, 내부에 `new byte[addedByte];` 으로 생성한 1 byte 가 확인된다.
 
-<br>
+
+
 여기까지의 내용으로는 모든 Object의 Size를 추적하여, 실제 Session data size를 확인할 수 있을 것 같았지만 난해하였고,
 
 ClassLayout은 조사하는 Object 자체만의 Shallow Size를 보여준다.
 
-<br><br>
+
+
+
+
 ## 3.7 Retained Size of ArrayList
 
 GraphLayout을 이용하면, 첫 진입점부터 닿을 수 있는 Deep 한 곳까지의 모든 Size를 조사할 수 있다고 한다.
 
 ClassLayout을 이용하면 Accurate Size를 얻을 수 없다.
 
-<br>
+
+
 `System.out.println(GraphLayout.parseInstance(sList).toPrintable());` 호출 시
 
 ```
@@ -175,27 +205,34 @@ java.util.ArrayList@4513a2d0d object externals:
 
 최소한 App에서 생성한 Session data size는 2216 bytes 이상이 아닐까?
 
-<br>
+
+
 우리가 Session에 넣은 Object가 아니라 Session 자체를 조사하면 어떻게 되나?
 
-<br><br>
+
+
+
+
 ## 3.8 Retained Size of HttpSession
 
 `System.out.println(GraphLayout.parseInstance(session).toPrintable());` 호출 시
 
 OOME 으로 죽었다.
 
-<br>
+
+
 `System.out.println(GraphLayout.parseInstance(session).totalSize());` 호출 시
 
 92958432 , 즉 88 Mbytes 로 확인된다.
 
-<br>
+
+
 1 User가 생성한 1 Session의 순수 크기를 알고 싶지만, Retained 는 연결된 모든 Object를 추적하여서 그런지, 매우 큰 MB Size가 나왔다.
 
 이 어플리케이션의 ArrayList를 걷어내고, 좀 더 단순한 구조에서 확인해보는 테스트가 필요해보인다.
 
-<br>
+
+
 그리하여, 다음과 같이 My App을 수정하였다.
 
 ```java
@@ -284,10 +321,14 @@ public class SessionServlet extends HttpServlet {
 }
 ```
 
-<br>
+
+
 ArrayList 등을 걷어내고, 순수 Byte Array 로만 Session에 'byteSession' Key 의 Value 로 값을 저장한다.
 
-<br><br>
+
+
+
+
 ## 3.9 Shallow Size of Byte Array
 
 반복 호출 시마다 Session에 `byte[] _obj = new byte[500];` 만큼의 Data를 증분시킨다.
@@ -302,10 +343,12 @@ ArrayList 등을 걷어내고, 순수 Byte Array 로만 Session에 'byteSession'
     System.out.println(et);
 ```
 
-<br>
+
+
 > `_obj` 자체의 입장에서는, 더 이상 닿을 곳이 없는 root 그 자체이기 때문에 `520 bytes` 로 항상 동일하게 측정된다.
 
-<br>
+
+
 ```
 --- Layout : _obj ---
 Shallow : [B object internals:
@@ -321,7 +364,8 @@ Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 Retained : 520
 ```
 
-<br>
+
+
 캡슐화를 위한 header(8+4=12 bytes)
 
 _obj 배열 크기 Data 4 bytes
@@ -332,7 +376,10 @@ _obj 배열 Data 자체 500 bytes
 
 _obj 객체 자체의 총크기는 520 bytes 가 된다.
 
-<br><br>
+
+
+
+
 ## 3.10 What is ObjectAlignmentInBytes?
 
 여기서 잠깐, **ObjectAlignmentInBytes** 를 살펴보면,
@@ -346,12 +393,14 @@ $ java -XX:+PrintFlagsFinal | grep "ObjectAlignmentInBytes"
      intx ObjectAlignmentInBytes                    = 8                                   {lp64_product}
 ```
 
-<br>
+
+
 Heap Memory에 Data가 올라갈 때, 8의 배수를 유지하도록 한다는 것이다.
 
 이 값이, 더 커질 경우 어떤 장/단점이 있는지는 구글링 자료에 많으나 이해가 되지 않았다.
 
-<br>
+
+
 가령 위에서 살펴본 _obj Object 의 Size는 header + length + Data = 12 + 4 + 500 = 516 bytes 이다.
 
 Heap 에 저장될 때, 8 bytes 의 배수 단위로 Data의 정렬이 이루어져야 하므로,
@@ -360,7 +409,10 @@ Heap 에 저장될 때, 8 bytes 의 배수 단위로 Data의 정렬이 이루어
 
 그리하여, **Data 정렬을 위한 gap 으로 4 bytes 를 마저 추가**한 것이다.
 
-<br><br>
+
+
+
+
 ## 3.11 Shallow Size of byteSession
 
 App에서 생성(_obj) 하여 Session에 집어넣을 때, byteSession (Session에 저장된 byte Array) 의 크기를 추적해본다.
@@ -375,7 +427,8 @@ App에서 생성(_obj) 하여 Session에 집어넣을 때, byteSession (Session�
     System.out.println(et);
 ```
 
-<br>
+
+
 1회 호출 시에는, _obj Data와 다르지 않다.
 
 ```
@@ -393,7 +446,8 @@ Space losses: 0 bytes internal + 4 bytes external = 4 bytes total
 Retained : 520
 ```
 
-<br>
+
+
 2회 연속 호출 시에는,
 
 ```
@@ -412,7 +466,8 @@ Retained : 1016
 
 `8 X 127 = 1016 Bytes`, 8의 127 배수로 정렬이 완료되므로 추가 Gap data가 없다.
 
-<br>
+
+
 3회 연속 호출 시에는,
 
 ```
@@ -432,14 +487,20 @@ Retained : 1520
 
 다시금 4 bytes Gap 이 추가되었다.
 
-<br><br>
+
+
+
+
 # 4. Outcome
 
 JOL Library 를 사용하여, 특정 또는 Class 자체가 JVM Heap Memory에 차지하는 실제 Size를 추적할 수 있음을 확인했다.
 
 또한, Object Alignment Gap 에 대해서 알 수 있었다.
 
-<br><br>
+
+
+
+
 # 5. References
 
 https://www.baeldung.com/jvm-measuring-object-sizes

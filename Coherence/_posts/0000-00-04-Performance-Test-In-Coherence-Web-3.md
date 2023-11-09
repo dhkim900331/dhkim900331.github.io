@@ -10,12 +10,14 @@ typora-root-url: ..
 
 [How-To-Thread-Tuning-Coherence-Web-3](How-To-Thread-Tuning-Coherence-Web-3) 에서 몇가지 간단한 부하테스트와 함께, 튜닝에 효과가 있는지 살펴보았는데, 테스트 방식이 조잡하여 이번에 좀 더 정규화 과정으로 스크립트를 사용해본다.
 
-<br>
+
+
 # 2. 설명
 
 주기적 Session을 Scan하여 Timeout 된 객체는 invalidate 하여 IsValid=False로 변경하는 Reaper Thread에 대해서, 오랜시간 부하 테스트를 진행하여 성능 개선이 이뤄지는지 살펴본다.
 
-<br>
+
+
 # 3. 테스트 환경
 
 * OS : Oracle Linux Server release 8.7
@@ -23,11 +25,13 @@ typora-root-url: ..
 * WebLogic 11g
 * Coherence 3.7.1.22 * WEB SPI
 
-<br>
+
+
 * JMeter
   * 지속적으로 20 Users 부하를 주며, 빠르게 New Sessoin 생성
 
-<br>
+
+
 * Monitoring Script
 
   * 다음의 Script로 데이터를 추출하여 통계를 내본다.
@@ -107,18 +111,22 @@ typora-root-url: ..
     
     ```
 
-<br>
+
+
 # 4. Performance Test
 
 Jmeter 20 Users 가 지속적으로 세션을 생성하는 과정에서, 위 스크립트로 자료를 모아 엑셀로 평균을 뽑아 보았다.
 
-<br>
+
+
 ![Performance-Test-In-Coherence-Web-3_1](/../assets/posts/images/20-Coherence/Performance-Test-In-Coherence-Web-3/Performance-Test-In-Coherence-Web-3_1.png)
 
-<br>
+
+
 Row 순서대로, `wm/CoherenceWorkManager` 의 Min/MaxThreads를 4, 8, 16 순으로 유사하게 테스트한 결과의 평균치이다.
 
-<br>
+
+
 AverageReapDuraton, Threads가 증가할 수록 전체적으로 Reap Duration이 감소되었다.
 
 LastReapDuration, 가장 최근의 Reap Duration
@@ -135,7 +143,8 @@ ReapedSessionsTotal, 지금까지 총 Reaped 된 Session 수, Threads가 늘었�
 
 SessionUpdates, Jmeter로 총 밀어넣은 Session 수
 
-<br>
+
+
 # 5. Outcome
 
 위 스크립트는 5sec마다 수집하고, Reaper Thread의 주기(cycle)은 40초로, 약간 Missmatch 로 보여지는 테스트긴 하지만, Thread가 늘어남에 따라 Reap Duration이 상당히 개선되는 것이 확인된다.
@@ -144,7 +153,8 @@ SessionUpdates, Jmeter로 총 밀어넣은 Session 수
 
 또한, 매 테스트 시마다 거의 동일한 Jmeter의 부하량이 들어가므로, `Threads가 늘었음에도 변화가 없다.` 라는 메시지는 정당성이 부여될 수 있을 것 같다.
 
-<br>
+
+
 # 6. References
 
 * **Coherence Web Cache Montoring (Doc ID 2547017.1)**
