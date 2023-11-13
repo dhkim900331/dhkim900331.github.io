@@ -7,7 +7,7 @@ import sys
 #sys.stdout = open('NUL', 'w')
 
 # 파일 경로를 슬래시로 표시하거나 역슬래시를 이스케이프 문자로 사용
-filePath = "C:\\Users\\Dong-Hyun.KIM\\Desktop\\GoodMorning\\2.-Blog\\dhkim900331.github.io\\WebLogic\\_posts\\test.md"
+filePath = "C:\\Users\\Dong-Hyun.KIM\\Desktop\\GoodMorning\\2.-Blog\\dhkim900331.github.io\\WebLogic\\_posts\\0000-00-75-test.md"
 
 # 파일을 읽는다.
 with open(filePath, "r", encoding="euc-kr") as f:
@@ -74,6 +74,7 @@ with open(filePath, "r", encoding="euc-kr") as f:
         print("\n")
         print("[DEBUG] Frontmatter 시작점 이후 더 있는지 찾기 위한 loop")
         print("[DEBUG] loop는 %d 부터 %d 까지 실행된다." % (ii, fileTotalLine-1))
+        print("[DEBUG} 현재 loop가 가리키는 배열 원소 값(lines[ii]) : ", lines[ii])
         print("\n")
         
         # 연이어 Frontmatter이 발견되었다.
@@ -179,13 +180,15 @@ with open(filePath, "r", encoding="euc-kr") as f:
       
         # lines 배열에서 maxNewLine 만큼의 개행 원소를 제거한다.
         for ii in range(0, maxNewLine):
-          # 지우면 뒤의 배열이 앞으로 당겨지므로, 동일한 위치(offset)를 반복하여 지운다.
-          # 또한, 현재 offset은 마지막 개행 원소 위치를 가리키므로 앞(-maxNewLine) 으로 이동하여 지운다.
-          lines.pop(offset-maxNewLine)
+
+          print("\n")
+          print("[DEBUG] 배열에서 %d 원소 삭제" % (offset-maxNewLine+1))
+          print("[DEBUG] 삭제하려는 배열 원소 값(lines[(offset-maxNewLine+1)].strip()) : ", lines[(offset-maxNewLine+1)].strip())
+          print("\n")
           
-          print("\n")
-          print("[DEBUG] 배열에서 %d 원소 삭제" % (offset-maxNewLine))
-          print("\n")
+          # 지우면 뒤의 배열이 앞으로 당겨지므로, 동일한 위치(offset)를 반복하여 지운다.
+          # 또한, 현재 offset은 마지막 개행 원소 위치를 가리키므로 앞(-maxNewLine+1) 으로 이동하여 지운다.
+          lines.pop(offset-maxNewLine+1)
           
         # tagBR 삽입
         lines.insert(offset, tagBR)
