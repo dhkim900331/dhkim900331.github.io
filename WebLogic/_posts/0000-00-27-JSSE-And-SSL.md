@@ -10,9 +10,7 @@ typora-root-url: ..
 # 1. 개요
 
 JSSE 및 SSL 관련
-
-
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ~ WebLogic 10.3.2 : Certicom SSL + SHA1 만 가능.

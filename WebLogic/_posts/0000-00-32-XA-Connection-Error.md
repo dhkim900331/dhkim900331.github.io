@@ -8,7 +8,7 @@ date: 2022-02-07 17:40:10 +0900
 
 # 1. 개요
 2019년 02월 고객사 일부 장애 건 정리.
-
+{{ site.content.br_big }}
 
 # 2. 현상
 웹로직 서버로그에는 나오지 않으나...
@@ -17,9 +17,9 @@ date: 2022-02-07 17:40:10 +0900
 ```
 XAConnection java.sql.SQLException: XA error: XAResource.XAER_RMFAIL start() failed on resource
 ```
-
-
+{{ site.content.br_big }}
 # 3. 해결
+
 오라클 문서에서 가이드 하는 내용은.
 
 - DB 쪽에 maximum process 확인.

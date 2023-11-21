@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 WebLogic 12cR2 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
-
-
-
+{{ site.content.br_small }}
 
 
 # 2. 설명
@@ -23,9 +21,7 @@ All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한
 - Managed M2 (TCP 8003)
 - myCluster (M1, M2)
 - /sw/app/{testApp, PostDataTest} deployed on myCluster
-
-
-
+{{ site.content.br_small }}
 
 
 # 3. Script
@@ -95,9 +91,7 @@ EOF
 
 ${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
-
-
-
+{{ site.content.br_small }}
 
 
 ## 3.2 Domain
@@ -128,9 +122,7 @@ closeTemplate()
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_small }}
 
 
 ## 3.3 Startup AdminServer
@@ -164,9 +156,7 @@ do
 done
 EOF
 ```
-
-
-
+{{ site.content.br_small }}
 
 
 ## 3.4 Create Managed Server
@@ -220,9 +210,7 @@ disconnect()
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_small }}
 
 
 ## 3.5 Cluster
@@ -259,9 +247,7 @@ disconnect()
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_small }}
 
 
 ## 3.6 Deploy App
@@ -291,9 +277,7 @@ disconnect()
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_small }}
 
 
 ## 3.7. Create Instances Scripts
@@ -562,10 +546,6 @@ sed -i "s|#ADM_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*${M2_SVR_NAME}.sh
 chmod 700 ${DOMAIN_HOME}/*.sh
 rm ${DOMAIN_HOME}/*M.sh
 ```
-
-
-
-
-
-
+{{ site.content.br_small }}
+{{ site.content.br_small }}
 

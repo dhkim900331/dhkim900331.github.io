@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 기동이 느린 경우
-
-
-
+{{ site.content.br_small }}
 
 # 2. 설명
 

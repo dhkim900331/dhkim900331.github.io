@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 WebLogic 11gR1 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
-
-
-
+{{ site.content.br_big }}
 # 2. 설명
 
 All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한다.
@@ -21,9 +19,7 @@ All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한
 - Managed M2 (TCP 8003)
 - myCluster (M1, M2)
 - /sw/app/{testApp, PostDataTest} deployed on myCluster
-
-
-
+{{ site.content.br_big }}
 # 3. Script
 
 ## 3.1 Engine
@@ -91,9 +87,7 @@ EOF
 
 ${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -mode=silent -silent_xml=${BASEDIR}/silent.xml
 ```
-
-
-
+{{ site.content.br_big }}
 ## 3.2 Domain
 
 ```sh
@@ -122,9 +116,7 @@ closeTemplate()
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_big }}
 ## 3.3 Startup AdminServer
 
 ```sh
@@ -155,9 +147,7 @@ do
 done
 EOF
 ```
-
-
-
+{{ site.content.br_big }}
 ## 3.4 Create Managed Server
 
 ```sh
@@ -209,9 +199,7 @@ disconnect()
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_big }}
 ## 3.5 Cluster
 
 ```sh
@@ -246,9 +234,7 @@ disconnect()
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_big }}
 ## 3.6 Deploy App
 
 ```sh
@@ -277,11 +263,7 @@ disconnect()
 exit()
 EOF
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ## 3.7. Create Instances Scripts
 
 ```sh

@@ -10,9 +10,7 @@ typora-root-url: ..
 # 1. 개요
 
 enforce-valid-basic-auth-credentials
-
-
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ## 2.1 enforce-valid-basic-auth-credentials
@@ -42,26 +40,20 @@ authentication인증 방식을 사용할 수 있습니다.
 어플리케이션에서 자체 인증방식을 구현 할 수도 있고, 웹로직의 HTTP BASIC 
 
 authentication을 사용 할 수도 있습니다. 
-
-
-
+{{ site.content.br_big }}
 ## 2.2 적용 방법
 
 config.xml 파일에서 `</security-configuration> `태그 위에 아래 옵션 추가하시고, 웹로직 재기동을 하시면 되겠습니다.
 
 config.xml 에 설정하였기 때문에, 해당 도메인 전체에 적용되는 설정입니다.
-
-
-
+{{ site.content.br_small }}
 ```xml
 ...skip...
 <enforce-valid-basic-auth-credentials>false</enforce-valid-basic-auth-credentials>
  </security-configuration>
 ...skip...
 ```
-
-
-
+{{ site.content.br_big }}
 ## 2.3 보안 이슈
 
 오라클 공식 답변에 의하면,

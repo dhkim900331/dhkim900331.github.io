@@ -9,7 +9,7 @@ tags: [Middleware, WebLogic, WLST, ThreadDump]
 # 1. 개요
 
 WLST로 Thread dump를 뜨는 스크립트
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ```bash

@@ -25,27 +25,19 @@ WL Proxy Plugin을 사용하는 Web server에서는 기본적으로 다음의 �
 - Post data 전송 이후 장애가 발생하여도, Cached Post data로 Failover 가능
 - Web과 WAS간의 SSL 구현 가능
 - 기타(Websocket, Monitoring, Keepalive, Debugging)
-
-
-
+{{ site.content.br_small }}
 이처럼, Plugin을 쓰는 경우에 얻는 이점이 많으며 Plugin을 쓰지 않더라도 기본적인 Round Robin 또는 Session Sticky 는 구현할 수 있다.
 
 `mod_proxy` 또는 기타 LoadBalancer 기능을 제공하는 소프트웨어/하드웨어를 통해서 Weblogic Instances를 대상으로 Round Robin 및 Session Sticky 를 수행할 수 있다는 것이다.
-
-
-
+{{ site.content.br_small }}
 다만, Plugin의 DynamicServerList와 같은 기능이 없기 때문에 잦은 Weblogic Instance의 System Down이 발생하면 가용 가능한 Instances 인식이 느리다.
 
 DynamicServerList는 Plugin의 재시작(프로세스 재기동) 없이도 Weblogic Instance를 추가/삭제 할 수 있는 역동적인 기능을 제공하는 이점 또한 가지고 있다. (Weblogic Clustering 구현을 해야 가능한 부분)
-
-
-
+{{ site.content.br_small }}
 또한 도중에 중단된 Post 요청 서비스를 다시 다른 Instance에서 재개할 수 있도록 FileCaching 기능 또한 제공한다.
 
 Plugin이 없다면, 다시 처음부터 Post data를 전송해야 한다는 것이다.
-
-
-
+{{ site.content.br_small }}
 결론은, JSP/Servlet 요청들에 대해서는 Proxy Plugin 또는 유사 기능을 수행하는 환경이 반드시 있어야 Load Balancing이 가능하다.
 
 <br><br>

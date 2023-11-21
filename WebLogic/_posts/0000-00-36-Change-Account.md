@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 WLS 8 이상에서 ID/PWD 변경 방법 가이드
-
-
-
+{{ site.content.br_small }}
 
 # 2. 설명
 
@@ -34,15 +32,11 @@ WLS 8 이상에서 ID/PWD 변경 방법 가이드
 > "(5)"번 항목을 실행하면 도메인/DefaultAuthenticatormyrealmInit이 생성되고, 서버 재시작 할 때 이 파일을 참조로 각각 서버/ldap 디렉토리가 재 생성된다.
 
 (7). boot.properties 생성 후 적용
-
-
-
+{{ site.content.br_small }}
 [참고 사이트](http://peoplesoft.ittoolbox.com/groups/technical-functional/peopletools-l/weblogic-81-administrator-password-reset-2765106)
 
 * 콘솔에서 비밀번호 변경은 `콘솔 - Realm` 메뉴 이용하면 된다.
-
-
-
+{{ site.content.br_small }}
 ## 2.2 WebLogic 9 <=
 
 (1). 모든 인스턴스 종료

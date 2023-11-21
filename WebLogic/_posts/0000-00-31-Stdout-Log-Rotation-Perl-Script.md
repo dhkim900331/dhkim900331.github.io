@@ -10,6 +10,8 @@ typora-root-url: ..
 # 1. 개요
 
 Stdout Log Rotation (perl script)
+{{ site.content.br_small }}
+
 
 # 2. 설명
 
@@ -39,9 +41,7 @@ while($aLine = <STDIN>){
 	close(logH); 
 }
 ```
-
-
-
+{{ site.content.br_small }}
 ```sh
 # 시작 방법
 nohup ${DOMAIN_HOME}/bin/startWebLogic.sh 2>&1 | ./rotateLOG.pl &
@@ -50,6 +50,4 @@ nohup ${DOMAIN_HOME}/bin/startWebLogic.sh 2>&1 | ./rotateLOG.pl &
 > perl script의 sprintf 안의 %02d 가 늘어날수록, 시간단위가 작아진다. %02d%02d%02d -> 년월일, 하루 단위로 로테이션
 >
 > %02d%02d%02d%02d -> 한 시간 단위로 로테이션
-
-
-
+{{ site.content.br_small }}

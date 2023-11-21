@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 사용 가능한 커넥션 풀의 갯수가 어떤 조건보다 적을 때 얼마 만큼의 커넥션을 강제로 풀로 반납시킬 수 있다.
-
-
-
+{{ site.content.br_small }}
 
 # 2. 설명
 
@@ -20,9 +18,7 @@ typora-root-url: ..
 * Connection Harvest Max Count: 5
 
 * Connection Harvest Trigger Count: 8
-
-
-
+{{ site.content.br_small }}
 (2). Test
 
 * 현재 Connection Pool 은 10개
