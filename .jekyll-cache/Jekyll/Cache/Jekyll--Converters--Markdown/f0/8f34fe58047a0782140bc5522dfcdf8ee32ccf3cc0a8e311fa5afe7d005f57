@@ -1,0 +1,137 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>JBOSS Log는 기본적으로, LogLevel 에 따른 Color Pattern 기능이 적용되어 있다.</p>
+
+<p>해당 부분을 vi 에디터 등으로 보면, escape character 가 보여지는 현상이 있다.</p>
+
+<p>어떤 내용인지 자세히 알아보고, 제거해보자.</p>
+<p style="height:20px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<ul>
+  <li>
+    <p>Log Pattern은 logging.properties와 standalone-ha.xml 에 속성 정의 되어 있다.</p>
+
+    <p>기본적으로 <code class="language-plaintext highlighter-rouge">COLOR-PATTERN</code> 을 사용하는 Log 파일은 tail , cat 으로 보면 왜 그러한지 문제가 없지만</p>
+
+    <p>vi 에디터 등으로 보면 다음과 같이 escape character가 눈에 띈다.</p>
+
+    <p>제거 하고 싶다.</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>^[[0m^[[0m14:05:58,463 INFO ...
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>configuration/logging.properties</p>
+  </li>
+</ul>
+
+<div class="language-properties highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="py">formatter.PATTERN</span><span class="p">=</span><span class="s">org.jboss.logmanager.formatters.PatternFormatter</span>
+<span class="py">formatter.PATTERN.properties</span><span class="p">=</span><span class="s">pattern</span>
+<span class="py">formatter.PATTERN.pattern</span><span class="p">=</span><span class="s">%d{yyyy-MM-dd HH</span><span class="se">\:</span><span class="s">mm</span><span class="se">\:</span><span class="s">ss,SSS} %-5p [%c] (%t) %s%e%n</span>
+
+<span class="py">formatter.COLOR-PATTERN</span><span class="p">=</span><span class="s">org.jboss.logmanager.formatters.PatternFormatter</span>
+<span class="py">formatter.COLOR-PATTERN.properties</span><span class="p">=</span><span class="s">pattern</span>
+<span class="py">formatter.COLOR-PATTERN.pattern</span><span class="p">=</span><span class="s">%K{level}%d{HH</span><span class="se">\:</span><span class="s">mm</span><span class="se">\:</span><span class="s">ss,SSS} %-5p [%c] (%t) %s%e%n</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">formatter.*PATTERN</code> 형태로 여러가지를 정의하여, 적절할 때에 사용할 수 있다.</p>
+
+  <p><code class="language-plaintext highlighter-rouge">formatter.COLOR-PATTERN.pattern</code> 값의 %K{level} 이 문제가 된다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<ul>
+  <li>
+    <p>위 파일의 여러 부분을 수정해도 , 기동하면 복구가 된다.</p>
+
+    <p>확인 해보니, <code class="language-plaintext highlighter-rouge">standalone-ha.xml</code> 파일에 정의 되어 있어 기동시에 속성의 재정의 되기 때문이다.</p>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<ul>
+  <li>configuration/standalone*.xml (before)</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>        <span class="nt">&lt;subsystem</span> <span class="na">xmlns=</span><span class="s">"urn:jboss:domain:logging:8.0"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;console-handler</span> <span class="na">name=</span><span class="s">"CONSOLE"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;level</span> <span class="na">name=</span><span class="s">"INFO"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;formatter&gt;</span>
+                    <span class="nt">&lt;named-formatter</span> <span class="na">name=</span><span class="s">"COLOR-PATTERN"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;/formatter&gt;</span>
+            <span class="nt">&lt;/console-handler&gt;</span>
+                ...
+            <span class="nt">&lt;formatter</span> <span class="na">name=</span><span class="s">"PATTERN"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;pattern-formatter</span> <span class="na">pattern=</span><span class="s">"%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;/formatter&gt;</span>
+            <span class="nt">&lt;formatter</span> <span class="na">name=</span><span class="s">"COLOR-PATTERN"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;pattern-formatter</span> <span class="na">pattern=</span><span class="s">"%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;/formatter&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>내 설정의 경우, STDOUT(위에서 <code class="language-plaintext highlighter-rouge">CONSOLE</code>) 로그 레벨은 <code class="language-plaintext highlighter-rouge">INFO</code> 이고, Log 포맷으로 <code class="language-plaintext highlighter-rouge">COLOR_PATTERN</code>을 사용한다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<ul>
+  <li>configuration/standalone*.xml (after)</li>
+</ul>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>        <span class="nt">&lt;subsystem</span> <span class="na">xmlns=</span><span class="s">"urn:jboss:domain:logging:8.0"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;console-handler</span> <span class="na">name=</span><span class="s">"CONSOLE"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;level</span> <span class="na">name=</span><span class="s">"INFO"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;formatter&gt;</span>
+                    <span class="c">&lt;!--&lt;named-formatter name="COLOR-PATTERN"/&gt;--&gt;</span>
+                    <span class="nt">&lt;named-formatter</span> <span class="na">name=</span><span class="s">"PATTERN"</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;/formatter&gt;</span>
+            <span class="nt">&lt;/console-handler&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>사용할 Log 포맷을 <code class="language-plaintext highlighter-rouge">PATTERN</code> 으로 변경한다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<ul>
+  <li>
+    <p>재기동 이후 <code class="language-plaintext highlighter-rouge">CONSOLE</code> 로그는 아래처럼 나온다.</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>2022-05-17 14:07:51,960 INFO
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<h2 id="3-참고문헌">3. 참고문헌</h2>
+
+<p>https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.0/html/configuration_guide/logging_with_jboss_eap#configuring_log_formatters</p>
+:ET

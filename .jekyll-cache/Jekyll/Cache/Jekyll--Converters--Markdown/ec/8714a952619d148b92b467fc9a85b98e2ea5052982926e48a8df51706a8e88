@@ -1,0 +1,32 @@
+I"]<h2 id="1-개요">1. 개요</h2>
+
+<p>JBOSS EAP 대상으로, Patch 명령어 가이드</p>
+
+<blockquote>
+  <p>상위 patch는 하위 patch를 모두 포함한다.</p>
+
+  <p>7.3.10 , 7(major), 3(minor), 10(micro release) 를 의미한다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<h2 id="2-patch-구문별-명령어-설명">2. Patch 구문별 명령어 설명</h2>
+
+<h3 id="21-patch-apply">2.1 patch apply</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>./jboss-cli.sh <span class="s2">"patch apply /tmp/jboss-eap-7.3.10-patch.zip"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h3 id="21-patch-info">2.1 patch info</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>./jboss-cli.sh <span class="s2">"patch info"</span>
+Version:             7.3.10.GA
+Cumulative patch ID: jboss-eap-7.3.10.CP
+One-off patches:     none
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://access.redhat.com/solutions/64981">여기 참고</a></p>
+:ET

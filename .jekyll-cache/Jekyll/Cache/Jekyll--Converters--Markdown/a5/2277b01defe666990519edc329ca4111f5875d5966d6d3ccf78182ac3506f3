@@ -1,0 +1,55 @@
+I"�	<h2 id="1-개요">1. 개요</h2>
+
+<p>Jekyll github blog에서 mermaid 를 사용하여 graph(chart 등)이 그려지지 않았었다.</p>
+
+<p>git white plug list라는 word 로 검색을 해보니, 현재 mermaid plugin은 지원하지 않고 있어</p>
+
+<p>javascript 삽입 방식으로 사용해야 한다.</p>
+<p style="height:20px;"></p>
+<h2 id="2-mermaid-설치">2. mermaid 설치</h2>
+
+<p><a href="https://mermaid-js.github.io/mermaid/#/n00b-gettingStarted?id=_2-using-mermaid-plugins">여기</a>를 눌러 보면 Mermaid plugins 사용 방법을 확인할 수 있다.</p>
+
+<p>아래의 내용과 동일하다.</p>
+<p style="height:20px;"></p>
+<h3 id="21-javascript-삽입">2.1 javascript 삽입</h3>
+
+<p>_include/head.html 파일 끝에 삽입한다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"</span><span class="nt">&gt;</span>
+    <span class="nx">mermaid</span><span class="p">.</span><span class="nx">initialize</span><span class="p">({</span> <span class="na">startOnLoad</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h3 id="22-mermaid-api-호출">2.2 mermaid api 호출</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>&lt;div class="mermaid"&gt;
+    graph LR;
+    WebLogic --&gt; JTA[JTA Timeout];
+    JTA --&gt; XA[XA Timeout];
+    XA --&gt; DB[DB Lockout Timeout];
+&lt;/div&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>위 상자안의 일반 텍스트만 사용하면 다음과 같이 그릴 수 있다.</p>
+
+<div class="mermaid">
+    graph LR;
+    WebLogic --&gt; JTA[JTA Timeout];
+    JTA --&gt; XA[XA Timeout];
+    XA --&gt; DB[DB Lockout Timeout];
+</div>
+<p style="height:20px;"></p>
+<blockquote>
+  <p>mermaid.initialize 메서드가 div class 를 해독하여 렌더링 한다.</p>
+</blockquote>
+:ET

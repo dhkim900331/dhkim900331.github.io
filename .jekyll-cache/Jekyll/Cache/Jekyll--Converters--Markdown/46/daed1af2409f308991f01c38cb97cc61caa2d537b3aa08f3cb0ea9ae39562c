@@ -1,0 +1,175 @@
+I"�<h2 id="1-overview">1. Overview</h2>
+
+<p>SSL/TSL Handshake에 대하여 간단히 살펴본다, 이미 더 자세하게 설명된 자료들이 구글링 되지만 여기서는 오로지 비대칭키, 대칭키가 왜 같이 사용되는지, Handshake 안에서 일어나는 순서적인 개념을 되짚는다.</p>
+<p style="height:40px;"></p>
+<h2 id="2-what-is-questions">2. What Is Questions?</h2>
+
+<p>일반적으로 비대칭키의 일부분만 요약하면, 누출되면 안되는 개인키와 공개되어도 되는 공개키의 조합으로 만들어지는 암호이며, 상대방이 나의 공개키로 보낼 Data를 암호화하여 보내면 나의 개인키로 복호화할 수 있다는 이상적인 방법이다.</p>
+
+<p>장단점은, CPU Resource가 많이 필요하다는 것이며, 개인키가 누출되면 매우 위험하다는 것이다.</p>
+
+<p>또, 대칭키의 경우에는 서로가 단 하나의 암호를 공유하고, 이 암호로 암/복호화를 한다는 것이다.</p>
+
+<p>장단점은, 가벼우나 매우 위험하다는 것이다.</p>
+
+<p>SSL/TLS에서는 비대칭,대칭의 장점만을(?) 차용한 보안 통신 방식이다.</p>
+
+<p>구체적으로 알려면 <a href="https://datatracker.ietf.org/doc/html/rfc5246">RFC-5246</a>을 참고해야 하고, RFC을 통해서는 생각보다 구체적으로 이해를 얻기 쉽지 않아 구글링 또한 병행해야 하는데, 여기 글에서는 대략적으로 핵심 흐름만 이해하도록 한다.</p>
+<p style="height:40px;"></p>
+<h2 id="3-ssltls-handshake-flow">3. SSL/TLS Handshake flow</h2>
+
+<h3 id="1-clienthello">(1) ClientHello</h3>
+
+<p>Client가 Server에 보내는 ClientHello 메시지는 다음과 같다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>struct {
+    ProtocolVersion client_version;
+    Random random;
+    SessionID session_id;
+    CipherSuite cipher_suites&lt;2..2^16-2&gt;;
+    CompressionMethod compression_methods&lt;1..2^8-1&gt;;
+    select (extensions_present) {
+        case false:
+            struct {};
+        case true:
+            Extension extensions&lt;0..2^16-1&gt;;
+    };
+} ClientHello;
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<ul>
+  <li>ProtocolVersion : 클라이언트가 지원할 수 있는 가장 최신의 TLS 프로토콜 버전</li>
+  <li>CipherSuite : 클라이언트가 선호하고, 지원할 수 있는 알고리즘 리스트 (가장 좋아하는 것부터 순서대로 정렬되어)</li>
+  <li>CompressionMethod : 클라이언트가 지원하는 압축 알고리즘 목록이 포함되고, 클라이언트 기본 설정에 따라 정렬된다.</li>
+  <li>
+    <p>Random 은 다음의 구조체를 갖는다.</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre> struct {
+ uint32 gmt_unix_time;
+ opaque random_bytes[28];
+ } Random;
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <ul>
+      <li>
+        <p>gmt_unix_time : 현재 일자 및 시각</p>
+      </li>
+      <li>
+        <p>random_bytes : Secure Random Generator에 의해 생성된 28바이트 길이의 데이터</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p style="height:40px;"></p>
+
+<h3 id="2-serverhello">(2) ServerHello</h3>
+
+<p>Server가 Client에 보내는 ServerHello 메시지는 다음과 같다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>struct {
+    ProtocolVersion server_version;
+    Random random;
+    SessionID session_id;
+    CipherSuite cipher_suite;
+    CompressionMethod compression_method;
+    select (extensions_present) {
+        case false:
+            struct {};
+        case true:
+            Extension extensions&lt;0..2^16-1&gt;;
+    };
+} ServerHello;
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<ul>
+  <li>기본적으로 ClientHello와 같으며, Client가 제공한 값에서 선택하여 채워넣는다.</li>
+</ul>
+<p style="height:40px;"></p>
+<h3 id="3-server-certificate">(3) Server Certificate</h3>
+
+<p>ServerHello Message와 함께 Server Certificate(인증서)를 Client에 보낸다.</p>
+
+<p>Client는 Server의 인증서를 통해, Server를 식별한다.</p>
+
+<p>반대로 Server의 요구에 따라, Client의 인증서가 Server에 보내져 식별될 수 있다. (Optional)
+이는 2-way SSL/TLS Handshake의 일부 과정이다.</p>
+<p style="height:40px;"></p>
+<h3 id="4-pre-master-secret-key">(4) Pre-Master Secret Key</h3>
+
+<p>Client측에서는 ClientHello.Random와 ServerHello.Random 그리고 Client측에서 제공되는 임의의 값으로 Pre-Master Secret Key를 만든다.</p>
+
+<p>여기서, Client측에서 제공되는 임의의 값은 구체적으로 어떤 Struct/Field/Type인지 확인되지 않는다.</p>
+
+<p>또한 이렇게 만들어진 Pre-Master Secret Key는 Server의 인증서에서 확인된 공개키로 암호화화여 Server로 보낸다.
+Server는 자신의 개인키로 이를 복호화함으로 써, 서로가 동일한 Pre-Master Secret Key를 가지게 된다.</p>
+<p style="height:40px;"></p>
+<h3 id="5-master-secret-key">(5) Master Secret Key</h3>
+
+<p>Client/Server가 모두 알고 있는</p>
+<ul>
+  <li>Pre-Master Secret Key,</li>
+  <li>ClientHello.Random,</li>
+  <li>ServerHello.Random</li>
+</ul>
+
+<p>값을 가지고 각자 계산하여 48 bytes의 <a href="https://datatracker.ietf.org/doc/html/rfc5246#section-8.1">Master Secret Key</a>를 만든다.
+교환할 필요 없이 정확한 값이 계산된다.</p>
+<p style="height:40px;"></p>
+<h3 id="6-session-key">(6) Session Key</h3>
+
+<p>Client와 Server는 PRF 함수라는 것을 이용하여</p>
+<ul>
+  <li>Master Secret Key,</li>
+  <li>ClientHello.Random,</li>
+  <li>ServerHello.Random</li>
+</ul>
+
+<p>값을 가지고 <a href="https://datatracker.ietf.org/doc/html/rfc5246#section-6.3">Session Key</a>를 만든다.
+서로가 교환할 필요가 없다.</p>
+<p style="height:20px;"></p>
+<p>이로써, Client와 Server는 서로 SSL/TLS 통신에서 주고받는 Data를 암/복호화할 <strong><em>대칭키</em></strong>로 Session Key를 가지게 되었다.</p>
+
+<p><strong><em>대칭키</em></strong>는 누출되지 않도록 각자에서 계산되었으며, 항상 새로운 통신이 게시될 때마다 다르므로 과거 시점과 분리된다.</p>
+<p style="height:40px;"></p>
+<h2 id="4-references">4. References</h2>
+
+<p><a href="https://datatracker.ietf.org/doc/html/rfc5246">RFC-5246</a></p>
+
+<p><a href="https://datatracker.ietf.org/doc/html/rfc5246#section-7.4.1">SSL Handshake의 Flow - RFC-5246</a></p>
+
+<p><a href="https://datatracker.ietf.org/doc/html/rfc5246#section-8.1">Master Secret Key - RFC-5246</a></p>
+
+<p><a href="https://datatracker.ietf.org/doc/html/rfc5246#section-6.3">Session Key - RFC-5246</a></p>
+
+<p>[SSL Handshake - Oracle(https://docs.oracle.com/cd/E19693-01/819-0997/aakhb/index.html)</p>
+:ET

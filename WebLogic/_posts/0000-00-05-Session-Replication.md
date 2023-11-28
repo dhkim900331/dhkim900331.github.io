@@ -1,109 +1,79 @@
 ---
 date: 2022-02-15 11:57:12 +0900
 layout: post
-title: "[WebLogic] Cluster°£ Session Replication"
+title: "[WebLogic] Clusterê°„ Session Replication"
 tags: [Middleware, WebLogic, Cluster, Session, Replication]
 typora-root-url: ..
 ---
 
 
-# 1. °³¿ä
+# 1. ê°œìš”
 
-WebLogic Cluster ÀÇ Session º¹Á¦ Á¶°ÇÀ» ¾Ë¾Æº»´Ù.
+WebLogic Cluster ì˜ Session ë³µì œ ì¡°ê±´ì„ ì•Œì•„ë³¸ë‹¤.
+{{ site.content.br_big }}
+# 2. Session Replication ëŒ€ìƒ
 
+- ì‚¬ìš©ìê°€ was1ë²ˆì— ì ‘ì† ì‹œ, ì´ë¥¼ Primary Serverë¼ í•˜ë©° Sessionì„ ìƒì„±.
+- Primary Serverì— ìƒì„±ëœ Session Backupì„ Secondary Serverì— ë³µì œ.
+- Secondary ServerëŠ” ê°™ì€ Clusterë‚´ Memberì¤‘ Randomí•˜ê²Œ í•˜ë‚˜ë¥¼ ì„ íƒ.
+  - ë§ì´ ëœë¤ì´ì§€, ê¸°ì¤€ì´ ìˆë‹¤ (ì›¹ë¡œì§ë§Œì˜ ê¸°ì¤€). ì•„ë˜ ê·¸ë¦¼.
 
+- Primary Serverê°€ shutdown ë˜ë”ë¼ë„, Secondary Serverì— backup ë³¸ì´ ìˆìŒ. -> Failover
+{{ site.content.br_big }}
+# 3. Session Replication ì¡°ê±´
 
+Session ìƒì„±ì€ HttpSession.setAttribute() methodìœ¼ë¡œ ì‹¤í–‰ë¨.
 
+ì¦‰, ì‚¬ìš©ìì˜ Requestê°€ ìˆë‹¤ê³  Session Trigger(ê°„ë‹¨í•œ ì˜ë¯¸ë¡œ Sessionì´ ìœ íš¨í•œì§€)ë“±ì€ Page ìƒˆë¡œê³ ì¹¨(F5)ë§Œìœ¼ë¡œ ë°œìƒí•˜ëŠ” ê²ƒì´ ì•„ë‹ˆë¼ í•´ë‹¹ Pageì— setAttribute()ê°€ ìˆì–´ì•¼ í•¨.
+{{ site.content.br_small }}
+Primary Serverì˜ shutdownì´ ë˜ë”ë¼ë„, Secondary Serverì— backup Sessionì´ ë‚¨ì•„ìˆì§€ë§Œ,
 
-# 2. Session Replication ´ë»ó
+ë”ì´ìƒ ì‚¬ìš©ìì˜ Requestë¡œ ì¸í•´ setAttribute()ë¥¼ í˜¸ì¶œí•˜ì§€ ì•Šìœ¼ë©´, í•´ë‹¹ Sessionì€ Secondary Serverì—ë§Œ ì¡´ì¬í•˜ì§€ Primary Serverê°€ ì—†ëŠ” ìƒí™©ì´ ë°œìƒ.
+{{ site.content.br_small }}
+ë˜í•œ, ë‹¤ìŒ í‘œëŠ” Cluster ë‚´ Memberë“¤ ê°„ Session ë³µì œ ìš°ì„  ìˆœìœ„.
 
-- »ç¿ëÀÚ°¡ was1¹ø¿¡ Á¢¼Ó ½Ã, ÀÌ¸¦ Primary Server¶ó ÇÏ¸ç SessionÀ» »ı¼º.
-- Primary Server¿¡ »ı¼ºµÈ Session BackupÀ» Secondary Server¿¡ º¹Á¦.
-- Secondary Server´Â °°Àº Cluster³» MemberÁß RandomÇÏ°Ô ÇÏ³ª¸¦ ¼±ÅÃ.
-  - ¸»ÀÌ ·£´ıÀÌÁö, ±âÁØÀÌ ÀÖ´Ù (À¥·ÎÁ÷¸¸ÀÇ ±âÁØ). ¾Æ·¡ ±×¸².
+![Session-Replication_1](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_1.png)
 
-- Primary Server°¡ shutdown µÇ´õ¶óµµ, Secondary Server¿¡ backup º»ÀÌ ÀÖÀ½. -> Failover
+1ìˆœìœ„ - ë‹¤ë¥¸ ë¨¸ì‹ , ê°™ì€ ê·¸ë£¹
 
+2ìˆœìœ„ - ê°™ì€ ë¨¸ì‹ , ê°™ì€ ê·¸ë£¹
 
+3ìˆœìœ„ - ê°™ì€ ë¨¸ì‹ , ë‹¤ë¥¸ ê·¸ë£¹
 
+4ìˆœìœ„ - ë‹¤ë¥¸ ë¨¸ì‹ , ë‹¤ë¥¸ ê·¸ë£¹
+{{ site.content.br_small }}
+ë¨¸ì‹ ì€ ì´ì¤‘í™” ì¥ë¹„ë¥¼ ì˜ë¯¸. ê·¸ë£¹ì€ Console - Servers - <instance> - Configuration - Clusterì—ì„œ Replication Groupìœ¼ë¡œ ì§€ì •í•œë‹¤. ì‚¬ì‹¤, ë³µì¡í•œ ì‹œìŠ¤í…œ ë˜ëŠ” íŠ¹ë³„í•œ ìš”êµ¬ì‚¬í•­ì´ ì—†ë‹¤ë©´ ì¼ë°˜ì ìœ¼ë¡œ ì‹ ê²½ì“°ì§€ ì•ŠëŠ”ë‹¤.
+{{ site.content.br_big }}
+# 4. Instance Shutdown ì‹œì— Primaryì™€ Secondary Session ì´ë™
 
+m1ì— Primary 2, Secondary 1
 
-# 3. Session Replication Á¶°Ç
+m2ì— Primary 1, Secondary 2
 
-Session »ı¼ºÀº HttpSession.setAttribute() methodÀ¸·Î ½ÇÇàµÊ.
+![Session-Replication_2](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_2.png)
+{{ site.content.br_small }}
+m2 instanceë¥¼ shutdown ì‹œì—,
 
-Áï, »ç¿ëÀÚÀÇ Request°¡ ÀÖ´Ù°í Session Trigger(°£´ÜÇÑ ÀÇ¹Ì·Î SessionÀÌ À¯È¿ÇÑÁö)µîÀº Page »õ·Î°íÄ§(F5)¸¸À¸·Î ¹ß»ıÇÏ´Â °ÍÀÌ ¾Æ´Ï¶ó ÇØ´ç Page¿¡ setAttribute()°¡ ÀÖ¾î¾ß ÇÔ.
+m1ì˜ Secondaryê°€ m1ì˜ Primaryë¡œ ì´ë™í•œë‹¤.
 
+![Session-Replication_3](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_3.png)
+{{ site.content.br_big }}
+# 5. ë¡œì»¬ì—ì„œ Replication Group í…ŒìŠ¤íŠ¸
 
+í…ŒìŠ¤íŠ¸ ëª©ì  : í´ëŸ¬ìŠ¤í„°ë§ ì„¸ì…˜ì˜ Primary, Secondary êµ¬ì„±ì˜ ì—¬ëŸ¬ê°€ì§€ í…ŒìŠ¤íŠ¸.
 
-Primary ServerÀÇ shutdownÀÌ µÇ´õ¶óµµ, Secondary Server¿¡ backup SessionÀÌ ³²¾ÆÀÖÁö¸¸,
+í™˜ê²½ : Machine1ê³¼ Machine2 ëŠ” ë¬¼ë¦¬ì ìœ¼ë¡œ ì„œë²„ê°€ ë‹¤ë¥´ë‹¤.
 
-´õÀÌ»ó »ç¿ëÀÚÀÇ Request·Î ÀÎÇØ setAttribute()¸¦ È£ÃâÇÏÁö ¾ÊÀ¸¸é, ÇØ´ç SessionÀº Secondary Server¿¡¸¸ Á¸ÀçÇÏÁö Primary Server°¡ ¾ø´Â »óÈ²ÀÌ ¹ß»ı.
+Machine1 ì—ëŠ” ì¸ìŠ¤í„´ìŠ¤ M1, M2 ë¥¼ ë¬¶ì–´ ë„ì› ê³ ,
 
-
-
-¶ÇÇÑ, ´ÙÀ½ Ç¥´Â Cluster ³» Memberµé °£ Session º¹Á¦ ¿ì¼± ¼øÀ§.
-
-![SessionReplication_1](/../assets/posts/images/01-WebLogic/SessionReplication/SessionReplication_1.png)
-
-1¼øÀ§ - ´Ù¸¥ ¸Ó½Å, °°Àº ±×·ì
-
-2¼øÀ§ - °°Àº ¸Ó½Å, °°Àº ±×·ì
-
-3¼øÀ§ - °°Àº ¸Ó½Å, ´Ù¸¥ ±×·ì
-
-4¼øÀ§ - ´Ù¸¥ ¸Ó½Å, ´Ù¸¥ ±×·ì
-
-
-
-¸Ó½ÅÀº ÀÌÁßÈ­ Àåºñ¸¦ ÀÇ¹Ì. ±×·ìÀº Console - Servers - <instance> - Configuration - Cluster¿¡¼­ Replication GroupÀ¸·Î ÁöÁ¤ÇÑ´Ù. »ç½Ç, º¹ÀâÇÑ ½Ã½ºÅÛ ¶Ç´Â Æ¯º°ÇÑ ¿ä±¸»çÇ×ÀÌ ¾ø´Ù¸é ÀÏ¹İÀûÀ¸·Î ½Å°æ¾²Áö ¾Ê´Â´Ù.
-
-
-
-# 4. Instance Shutdown ½Ã¿¡ Primary¿Í Secondary Session ÀÌµ¿
-
-m1¿¡ Primary 2, Secondary 1
-
-m2¿¡ Primary 1, Secondary 2
-
-![SessionReplication_2](/../assets/posts/images/01-WebLogic/SessionReplication/SessionReplication_2.png)
-
-
-
-m2 instance¸¦ shutdown ½Ã¿¡,
-
-m1ÀÇ Secondary°¡ m1ÀÇ Primary·Î ÀÌµ¿ÇÑ´Ù.
-
-![SessionReplication_3](/../assets/posts/images/01-WebLogic/SessionReplication/SessionReplication_3.png)
-
-
-
-
-
-# 5. ·ÎÄÃ¿¡¼­ Replication Group Å×½ºÆ®
-
-Å×½ºÆ® ¸ñÀû : Å¬·¯½ºÅÍ¸µ ¼¼¼ÇÀÇ Primary, Secondary ±¸¼ºÀÇ ¿©·¯°¡Áö Å×½ºÆ®.
-
-È¯°æ : Machine1°ú Machine2 ´Â ¹°¸®ÀûÀ¸·Î ¼­¹ö°¡ ´Ù¸£´Ù.
-
-Machine1 ¿¡´Â ÀÎ½ºÅÏ½º M1, M2 ¸¦ ¹­¾î ¶ç¿ü°í,
-
-Machine2 ¿¡´Â ÀÎ½ºÅÏ½º M3, M4 ¸¦ ¹­¾î ¶ç¿ü´Ù.
-
-
-
-M1, M2, M3, M4 ´Â Clustering µÇ¾ú´Ù.
-
-
-
+Machine2 ì—ëŠ” ì¸ìŠ¤í„´ìŠ¤ M3, M4 ë¥¼ ë¬¶ì–´ ë„ì› ë‹¤.
+{{ site.content.br_small }}
+M1, M2, M3, M4 ëŠ” Clustering ë˜ì—ˆë‹¤.
+{{ site.content.br_small }}
 ===== WLS =========================
-
-
-
+{{ site.content.br_small }}
 AdminServer - 172.16.0.101
-
-
-
+{{ site.content.br_small }}
 ---- Clustering ----
 
 Machine1 (M1, M2) - 172.16.0.101
@@ -113,10 +83,8 @@ Machine2 (M3, M4) - 172.16.0.99
 \--------------------
 
 ===================================
-
-
-
-À¥·ÎÁ÷ ±âº» ¾Ë°í¸®Áò¿¡ ÀÇÇÏ¸é, ´ÙÀ½°ú °°ÀÌ Å¬·¯½ºÅÍ¸µ ¼ø¼­°¡ Á¤ÇØÁü.
+{{ site.content.br_small }}
+ì›¹ë¡œì§ ê¸°ë³¸ ì•Œê³ ë¦¬ì¦˜ì— ì˜í•˜ë©´, ë‹¤ìŒê³¼ ê°™ì´ í´ëŸ¬ìŠ¤í„°ë§ ìˆœì„œê°€ ì •í•´ì§.
 
 M1 - M3
 
@@ -126,13 +94,9 @@ M3 - M1
 
 M4 - M2
 
-\* ±âµ¿ ¼ø¼­¿¡ µû¶ó ¾à°£ÀÇ Â÷ÀÌ´Â ÀÖÁö¸¸, ´ëÃ¼·Î Á¶°ÇÇ¥¿¡ ºÎÇÕµÊ.
-
-
-
-
-
-Replication GroupÀ» ¾Æ·¡¿Í °°ÀÌ,
+\* ê¸°ë™ ìˆœì„œì— ë”°ë¼ ì•½ê°„ì˜ ì°¨ì´ëŠ” ìˆì§€ë§Œ, ëŒ€ì²´ë¡œ ì¡°ê±´í‘œì— ë¶€í•©ë¨.
+{{ site.content.br_big }}
+Replication Groupì„ ì•„ë˜ì™€ ê°™ì´,
 
 M1 (Replication Group : M1) , (Preferred Secondary Group : M2)
 
@@ -142,10 +106,8 @@ M3 (Replication Group : M3) , (Preferred Secondary Group : M4)
 
 M4 (Replication Group : M4) , (Preferred Secondary Group : M3)
 
-ÁÖ°Ô µÇ¸é
-
-
-
+ì£¼ê²Œ ë˜ë©´
+{{ site.content.br_small }}
 M1 - M2
 
 M2 - M1
@@ -154,33 +116,25 @@ M3 - M4
 
 M4 - M3
 
-¿Í °°ÀÌ ¼³Á¤ÀÌ °­Á¦·Î µÈ´Ù.
+ì™€ ê°™ì´ ì„¤ì •ì´ ê°•ì œë¡œ ëœë‹¤.
 
-Á¶°ÇÇ¥ ¹«½ÃÇÏ°í, Á÷Á¢ ¼±È£µµ¸¦ ¼³Á¤ °¡´É.
+ì¡°ê±´í‘œ ë¬´ì‹œí•˜ê³ , ì§ì ‘ ì„ í˜¸ë„ë¥¼ ì„¤ì • ê°€ëŠ¥.
 
-´Ù¸¸, µ¿½Ã ±âµ¿ÇÏ¿©¾ß ¼±È£ÇÏ´Â ±×·ìÀ¸·Î ¼³Á¤ÀÌ °¡´ÉÇÏ´Ù.
+ë‹¤ë§Œ, ë™ì‹œ ê¸°ë™í•˜ì—¬ì•¼ ì„ í˜¸í•˜ëŠ” ê·¸ë£¹ìœ¼ë¡œ ì„¤ì •ì´ ê°€ëŠ¥í•˜ë‹¤.
 
-\* Replication Group : ³ªÀÇ ±×·ì¸í
+\* Replication Group : ë‚˜ì˜ ê·¸ë£¹ëª…
 
-\* Preferred Secondary Group : ¼±È£ÇÏ´Â ¼¼ÄÁµå¸® ÀÎ½ºÅÏ½ºÀÇ ±×·ì¸í
+\* Preferred Secondary Group : ì„ í˜¸í•˜ëŠ” ì„¸ì»¨ë“œë¦¬ ì¸ìŠ¤í„´ìŠ¤ì˜ ê·¸ë£¹ëª…
+{{ site.content.br_big }}
+# 6. ë¡œì»¬ì—ì„œ Replication Group í…ŒìŠ¤íŠ¸ - #2
 
+ìœ„ í…ŒìŠ¤íŠ¸ì—ì„œ, Replication Group, Preferred Group ì„ ì„¤ì •í•˜ì—¬ë„
 
-
-
-
-# 6. ·ÎÄÃ¿¡¼­ Replication Group Å×½ºÆ® - #2
-
-À§ Å×½ºÆ®¿¡¼­, Replication Group, Preferred Group À» ¼³Á¤ÇÏ¿©µµ
-
-±âµ¿ ¼ø¼­¿¡ µû¶ó¼­, ¿øÇÏÁö ¾Ê´Â ¼ø¼­·Î ¸Î¾îÁö´Â ÁÙ ¾Ë¾Ò´Âµ¥..
-
-
-
-±âµ¿ ÇÒ ¶§¸¶´Ù Á¶°Ç¿¡ ºÎÇÕµÇµµ·Ï Å¬·¯½ºÅÍ ±¸¼ºÀ» ÀçÁ¶Á¤ ÇÏ°í ÀÖ´Ù.
-
-
-
-³»°¡ ¼³Á¤ÇÑ Á¶°Ç´ë·Î¶ó¸é,
+ê¸°ë™ ìˆœì„œì— ë”°ë¼ì„œ, ì›í•˜ì§€ ì•ŠëŠ” ìˆœì„œë¡œ ë§ºì–´ì§€ëŠ” ì¤„ ì•Œì•˜ëŠ”ë°..
+{{ site.content.br_small }}
+ê¸°ë™ í•  ë•Œë§ˆë‹¤ ì¡°ê±´ì— ë¶€í•©ë˜ë„ë¡ í´ëŸ¬ìŠ¤í„° êµ¬ì„±ì„ ì¬ì¡°ì • í•˜ê³  ìˆë‹¤.
+{{ site.content.br_small }}
+ë‚´ê°€ ì„¤ì •í•œ ì¡°ê±´ëŒ€ë¡œë¼ë©´,
 
 M1 - M2
 
@@ -188,33 +142,25 @@ M2 - M1
 
 M3 - M4
 
-M4 - M3 À¸·Î Å¬·¯½ºÅÍ Primary/Secondary ¼³Á¤ÀÌ µÇ¾î¾ß ÇÏ´Âµ¥
+M4 - M3 ìœ¼ë¡œ í´ëŸ¬ìŠ¤í„° Primary/Secondary ì„¤ì •ì´ ë˜ì–´ì•¼ í•˜ëŠ”ë°
 
-ÀÌ ±âµ¿¼ø¼­¸¦ Á¶Á¤ÇÏ¿© ´ÙÀ½°ú °°ÀÌ Á¶°Ç¿¡ ¸ÂÁö ¾Ê°Ô ºÙ°Ô ÇÏ¿´´Ù.
+ì´ ê¸°ë™ìˆœì„œë¥¼ ì¡°ì •í•˜ì—¬ ë‹¤ìŒê³¼ ê°™ì´ ì¡°ê±´ì— ë§ì§€ ì•Šê²Œ ë¶™ê²Œ í•˜ì˜€ë‹¤.
+{{ site.content.br_small }}
+ê·¸ë¦¼1. M1 , M3 ì¸ìŠ¤í„´ìŠ¤ë§Œ ê¸°ë™í•˜ì—¬ ì„œë¡œ ê°•ì œ í´ëŸ¬ìŠ¤í„°ë§
 
+![Session-Replication_4](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_4.png)
+{{ site.content.br_small }}
+ê·¸ë¦¼2. M2 ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì¶”ê°€ ê¸°ë™í•˜ì˜€ë”ë‹ˆ, í´ëŸ¬ìŠ¤í„° êµ¬ì¡° ì¬ì¡°ì •
 
+![Session-Replication_5](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_5.png)
+{{ site.content.br_small }}
+ê·¸ë¦¼3. M4 ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì¶”ê°€ ê¸°ë™í•˜ì˜€ë”ë‹ˆ, í´ëŸ¬ìŠ¤í„° êµ¬ì¡° ì¬ì¡°ì •
 
-±×¸²1. M1 , M3 ÀÎ½ºÅÏ½º¸¸ ±âµ¿ÇÏ¿© ¼­·Î °­Á¦ Å¬·¯½ºÅÍ¸µ
+![Session-Replication_6](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_6.png)
+{{ site.content.br_small }}
+í´ëŸ¬ìŠ¤í„° êµ¬ì¡°ê°€ ì¬ì¡°ì •ë˜ë©°, ì„¸ì…˜ì´ ì´ë™ëœë‹¤.
 
-![SessionReplication_4](/../assets/posts/images/01-WebLogic/SessionReplication/SessionReplication_4.png)
+ìƒë‹¹íˆ ë¬´ê±°ìš´ ì‹œìŠ¤í…œì—ì„œëŠ” ì´ëŸ¬í•œ ì¬ì¡°ì • ì‚¬íƒœì— ë¶€í•˜ê°€ ë°œìƒí•  ê²ƒ ê°™ì€ë°..
 
-
-
-±×¸²2. M2 ÀÎ½ºÅÏ½º¸¦ Ãß°¡ ±âµ¿ÇÏ¿´´õ´Ï, Å¬·¯½ºÅÍ ±¸Á¶ ÀçÁ¶Á¤
-
-![SessionReplication_5](/../assets/posts/images/01-WebLogic/SessionReplication/SessionReplication_5.png)
-
-
-
-±×¸²3. M4 ÀÎ½ºÅÏ½º¸¦ Ãß°¡ ±âµ¿ÇÏ¿´´õ´Ï, Å¬·¯½ºÅÍ ±¸Á¶ ÀçÁ¶Á¤
-
-![SessionReplication_6](/../assets/posts/images/01-WebLogic/SessionReplication/SessionReplication_6.png)
-
-
-
-Å¬·¯½ºÅÍ ±¸Á¶°¡ ÀçÁ¶Á¤µÇ¸ç, ¼¼¼ÇÀÌ ÀÌµ¿µÈ´Ù.
-
-»ó´çÈ÷ ¹«°Å¿î ½Ã½ºÅÛ¿¡¼­´Â ÀÌ·¯ÇÑ ÀçÁ¶Á¤ »çÅÂ¿¡ ºÎÇÏ°¡ ¹ß»ıÇÒ °Í °°Àºµ¥..
-
-°ü·Ã ³»¿ëÀº ¿À¶óÅ¬ ¹®¼­¿¡¼­ Ã£Áö ¸øÇß´Ù.
+ê´€ë ¨ ë‚´ìš©ì€ ì˜¤ë¼í´ ë¬¸ì„œì—ì„œ ì°¾ì§€ ëª»í–ˆë‹¤.
 

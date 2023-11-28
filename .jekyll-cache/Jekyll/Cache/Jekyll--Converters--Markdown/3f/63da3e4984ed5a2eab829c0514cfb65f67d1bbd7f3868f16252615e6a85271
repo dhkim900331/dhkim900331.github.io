@@ -1,0 +1,56 @@
+I"x<h2 id="1-개요">1. 개요</h2>
+
+<p>CORS 설정 방법.</p>
+<p style="height:20px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>LoadModule headers_module modules/mod_headers.so
+
+<span class="c"># 모든 URL</span>
+&lt;IfModule mod_headers.c&gt;
+    Header add Access-Control-Allow-Origin <span class="k">*</span>
+    Header <span class="nb">set </span>Access-Control-Allow-Credentials <span class="nb">true</span>
+&lt;/IfModule&gt;
+
+<span class="c"># 다음 URL</span>
+&lt;IfModule mod_headers.c&gt;
+    SetEnvIf Origin <span class="s2">"http(s)?://(abc|def</span><span class="se">\.</span><span class="s2">)?(test.com|beta.com)$"</span> <span class="nv">AccessControlAllowOrigin</span><span class="o">=</span><span class="nv">$0$1</span>
+    Header add Access-Control-Allow-Origin %<span class="o">{</span>AccessControlAllowOrigin<span class="o">}</span>e <span class="nb">env</span><span class="o">=</span>AccessControlAllowOrigin
+    Header <span class="nb">set </span>Access-Control-Allow-Credentials <span class="nb">true</span>
+&lt;/IfModule&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>다음 URL은</p>
+
+  <p>http://abc.test.com</p>
+
+  <p>http://abc.beta.com</p>
+
+  <p>https://abc.test.com</p>
+
+  <p>https://abc.beta.com</p>
+
+  <p>http://def.test.com</p>
+
+  <p>http://def.beta.com</p>
+
+  <p>https://def.test.com</p>
+
+  <p>https://def.beta.com</p>
+</blockquote>
+:ET

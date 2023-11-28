@@ -11,9 +11,7 @@ typora-root-url: ..
 고객사에 Apache 설치를 위해 OS Package가 사전 설치되어 있어야 하나, 폐쇄망으로 인하여 직접 Package를 설치해야 되는 상황이 발생하였다.
 
 Linux Image를 마운트하여 직접 Package를 구성해보자.
-
-
-
+{{ site.content.br_small }}
 # 2. Local Repo 구성
 
 ### 2.1 Image Upload
@@ -27,9 +25,7 @@ $ ls -rtl /root
 -rw-r--r--. 1 root root 4521459712  4월  6 09:31 CentOS-7-x86_64-DVD-1708.iso
 -rw-------. 1 root root       1277  4월  6 09:55 anaconda-ks.cfg
 ```
-
-
-
+{{ site.content.br_small }}
 ### 2.2 Image Mount
 
 ```bash
@@ -39,9 +35,7 @@ $ mount -o loop CentOS-7-x86_64-DVD-1708.iso /mnt_centos7.4
 
 > loop는 block device 장치를 뜻한다. (루프백)
 > 일반 파일(iso)을 장치처럼 접근가능하게 하기 위해 부여하는 옵션이다.
-
-
-
+{{ site.content.br_small }}
 ### 2.3 기존 Repository 비활성화
 
 * 폐쇄망이나, 기본으로 Enabled 되어 있는 기존 Repo 목록들을 Disabled 해두어야 yum 설치 시 불필요한 접근을 하지 않겠다.
@@ -50,9 +44,7 @@ $ mount -o loop CentOS-7-x86_64-DVD-1708.iso /mnt_centos7.4
 $ yum repolist enabled # 명령으로 enabled 항목 확인
 $ yum-config-manager --disable "disabled 전환할 repo id"
 ```
-
-
-
+{{ site.content.br_small }}
 ### 2.4 Local Repo 생성 및 활성화(자동)
 
 ```bash
@@ -68,9 +60,7 @@ EOF
 $ yum repolist enabled
 mnt_centos7.4              added from: file:///mnt_centos7.4              3,894
 ```
-
-
-
+{{ site.content.br_small }}
 Local repo에서 이미지 검색하는 것이 확인되면, 잘 끝났다.
 
 ```bash
@@ -80,17 +70,13 @@ Loading mirror speeds from cached hostfile
 Installed Packages
 gcc.x86_64             4.8.5-16.el7          @mnt_centos7.4
 ```
-
-
-
+{{ site.content.br_small }}
 위 단계에서, repomd.xml 파일을 찾지 못하는 에러가 발생한다면,
 
 ```
 Error: Failed to download metadata for repo 'mnt_centos7.4': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried
 ```
-
-
-
+{{ site.content.br_small }}
 repo 파일의 baseurl을 다음과 같이 BaseOS, AppStream 존재하는 디렉토리 별로 구성해주어야 한다.
 
 ```repo

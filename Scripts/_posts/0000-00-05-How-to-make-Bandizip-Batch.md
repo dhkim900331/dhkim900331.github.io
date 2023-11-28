@@ -13,9 +13,7 @@ Oracle GCS 업무를 수행하면서, 고객이 SR에 업로드한 파일을 내
 Bandizip 으로 압축을 일괄 해제하면, 각기 디렉토리에 분리되어 풀리는 등, 하나의 디렉토리에 모아서 보기가 여간 쉬운 일이 아니다.
 
 Bandizip 에서 제공하는 CLI 와 Window batch script를 이용하여 편리하게 만들어 본다.
-
-
-
+{{ site.content.br_small }}
 # 2. 준비물
 
 ## 2.1 Batch Script
@@ -54,9 +52,7 @@ for /f "delims=_ tokens=%count%" %%n in ('echo %FILE%') do (
 
 )
 ```
-
-
-
+{{ site.content.br_small }}
 ## 2.2 Registry
 
 다음의 내용을 임의의 이름으로 저장하여 실행하면 Registry가 추가된다.
@@ -71,18 +67,12 @@ Windows Registry Editor Version 5.00
 [HKEY_CLASSES_ROOT\*\shell\MySRDC\command]
 @="\"C:\\Users\\Dong-Hyun.KIM\\Desktop\\GoodMorning\\1. GCS\\9. Auto-Bandizip\\MyDC.bat\" %1"
 ```
-
-
-
+{{ site.content.br_small }}
 Registry 등록을 하면 마우스 우클릭에 MySRDC 메뉴가 보인다.
 
 <img src="/../assets/posts/images/How-to-make-Bandizip-Batch/image-20230426122458147.png" alt="image-20230426122458147" style="zoom:50%;" />
-
-
-
+{{ site.content.br_small }}
 아래처럼, 서로 다른 SR에서 가져온 압축 파일을 MySRDC로 일괄 해제할 수 있다.
 
-![image-20230426122855928](/../assets/posts/images/How-to-make-Bandizip-Batch/image-20230426122855928.png)
-
-
-
+![How-to-make-Bandizip-Batch_1](/../assets/posts/images/Scripts/How-to-make-Bandizip-Batch/How-to-make-Bandizip-Batch_1.png)
+{{ site.content.br_small }}

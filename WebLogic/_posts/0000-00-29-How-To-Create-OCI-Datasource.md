@@ -20,7 +20,8 @@ support.oracle에 oci 사용 시 weblogic jvm crash, not closed 사례와 같은
 > WLS JDBC Pool - Physical Connections are not closed by Weblogic JDBC Datasource using OCI driver (Doc ID 1928018.1)
 >
 > WebLogic Server Crash Observed When Using Oracle OCI JDBC Driver (Doc ID 889840.1)
-{{ site.content.br_big }}
+{{ site.content.br_small }}
+
 # 2. 설명
 
 ## 2.1 OCI 를 사용하는 Datasource 생성 방법.
@@ -56,12 +57,12 @@ export JAVA_OPTIONS="-Djava.library.path=/home/weblogic/was/1213/domains/lib/ins
 * 위에서 받은 oci는 11g이므로, ojdbc driver도 11g이어야 한다.
 
   `/home/weblogic/was/1213/domains/lib/instantclient_11_2/ojdbc6.jar 를 domains/lib 에 복사해둔다.`
-{{ site.content.br_big }}
+{{ site.content.br_small }}
 ### (3). datasource url
 
 * JDBC 생성 시 connect url은 oci 라는 글자만 들어가고 나머지는 thin 과 모두 동일하다.
   * `jdbc:oracle:oci:host:port:sid `
-{{ site.content.br_big }}
+{{ site.content.br_small }}
 ### (4). 설정 시 에러가 발생한다면
 
 * 적용하려는 oci 버전과 ojdbc 버전이 동일한지 확인한다. (oci version 11g이면 ojdbc 도 11g이어야 한다. oci library 디렉토리의 ojdbc.jar 를 사용한다면 해결되는 문제)

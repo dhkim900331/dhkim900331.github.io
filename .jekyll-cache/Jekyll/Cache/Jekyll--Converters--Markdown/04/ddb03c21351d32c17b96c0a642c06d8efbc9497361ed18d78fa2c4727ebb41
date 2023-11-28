@@ -1,0 +1,109 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>고객사에 Apache 설치를 위해 OS Package가 사전 설치되어 있어야 하나, 폐쇄망으로 인하여 직접 Package를 설치해야 되는 상황이 발생하였다.</p>
+
+<p>Linux Image를 마운트하여 직접 Package를 구성해보자.</p>
+<p style="height:20px;"></p>
+<h2 id="2-local-repo-구성">2. Local Repo 구성</h2>
+
+<h4 id="21-image-upload">2.1 Image Upload</h4>
+
+<ul>
+  <li>고객사와 같이 테스트 환경은 CentOS 7.4.1708 이미지다.</li>
+  <li>해당 이미지를 구할 수 있는 미러는 많으나, 오래된 자료라 Not Found 또는 다운로드 속도 지연 문제로 토렌트로 받을수는 있었다.</li>
+  <li>다음과 같이 받은 DVD (Full image) 파일을 특정 경로에 업로드 한다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-rtl</span> /root
+<span class="nt">-rw-r--r--</span><span class="nb">.</span> 1 root root 4521459712  4월  6 09:31 CentOS-7-x86_64-DVD-1708.iso
+<span class="nt">-rw-------</span><span class="nb">.</span> 1 root root       1277  4월  6 09:55 anaconda-ks.cfg
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h4 id="22-image-mount">2.2 Image Mount</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">mkdir</span> /mnt_centos7.4 <span class="c"># 이미 있는 '/mnt' 를 사용해도 된다. 필수로 새로 만들 필요는 없다.</span>
+<span class="nv">$ </span>mount <span class="nt">-o</span> loop CentOS-7-x86_64-DVD-1708.iso /mnt_centos7.4
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>loop는 block device 장치를 뜻한다. (루프백)
+일반 파일(iso)을 장치처럼 접근가능하게 하기 위해 부여하는 옵션이다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<h4 id="23-기존-repository-비활성화">2.3 기존 Repository 비활성화</h4>
+
+<ul>
+  <li>폐쇄망이나, 기본으로 Enabled 되어 있는 기존 Repo 목록들을 Disabled 해두어야 yum 설치 시 불필요한 접근을 하지 않겠다.</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>yum repolist enabled <span class="c"># 명령으로 enabled 항목 확인</span>
+<span class="nv">$ </span>yum-config-manager <span class="nt">--disable</span> <span class="s2">"disabled 전환할 repo id"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h4 id="24-local-repo-생성-및-활성화자동">2.4 Local Repo 생성 및 활성화(자동)</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>yum-config-manager <span class="nt">--add-repo</span> <span class="s2">"file:///mnt_centos7.4"</span>
+
+<span class="nv">$ </span><span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; /etc/yum.repos.d/mnt_centos7.4.repo
+[mnt_centos7.4]
+name=added from: file:///mnt_centos7.4
+baseurl=file:///mnt_centos7.4
+enabled=1
+</span><span class="no">EOF
+
+</span><span class="nv">$ </span>yum repolist enabled
+mnt_centos7.4              added from: file:///mnt_centos7.4              3,894
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>Local repo에서 이미지 검색하는 것이 확인되면, 잘 끝났다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>yum list gcc
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+Installed Packages
+gcc.x86_64             4.8.5-16.el7          @mnt_centos7.4
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>위 단계에서, repomd.xml 파일을 찾지 못하는 에러가 발생한다면,</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>Error: Failed to download metadata for repo 'mnt_centos7.4': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>repo 파일의 baseurl을 다음과 같이 BaseOS, AppStream 존재하는 디렉토리 별로 구성해주어야 한다.</p>
+
+<pre><code class="language-repo">[mnt_os_base]
+name=added from: file:///mnt_os
+baseurl=file:///mnt_os/BaseOS
+enabled=1
+
+[mnt_os_stream]
+name=added from: file:///mnt_os
+baseurl=file:///mnt_os/AppStream
+enabled=1
+</code></pre>
+
+:ET

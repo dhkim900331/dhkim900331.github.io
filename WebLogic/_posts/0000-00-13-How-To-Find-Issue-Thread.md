@@ -70,7 +70,7 @@ for (int i=0; i < 3; i++)
 >
 > 실행 결과는 다음과 같다. 인스턴스(22384)의 32.2퍼센트 cpu를 사용하는 스레드 아이디는 **22557, 22558, 22559**
 >
-![HowToFindIssueThread_1](/../assets/posts/images/01-WebLogic/HowToFindIssueThread/HowToFindIssueThread_1.png)
+![How-To-Find-Issue-Thread_1](/../assets/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_1.png)
 >
 > 22557, 22558, 22559를 헥사값(16진수)로 변환하면 각각 **0x581d, 0x581e, 0x581f** 다.
 {{ site.content.br_small }}
@@ -115,7 +115,7 @@ for (int i=0; i < 3; i++)
 # pslist java
 ```
 
-![HowToFindIssueThread_2](/../assets/posts/images/01-WebLogic/HowToFindIssueThread/HowToFindIssueThread_2.png)
+![How-To-Find-Issue-Thread_2](/../assets/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_2.png)
 >
 > pc에서 현재 동작중인 프로세스 중 자바를 찾아본다. **java PID는 7820**
 >

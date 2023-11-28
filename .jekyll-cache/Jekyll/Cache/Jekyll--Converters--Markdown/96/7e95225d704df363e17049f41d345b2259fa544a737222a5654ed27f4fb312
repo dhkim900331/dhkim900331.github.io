@@ -1,0 +1,105 @@
+I"]<h2 id="1-개요">1. 개요</h2>
+
+<p>Administration Port, Side-By-Side Deploy 기능을 알아보자.</p>
+<p style="height:40px;"></p>
+<h2 id="2-administration-port">2. Administration Port</h2>
+
+<ul>
+  <li>SSL 을 사용하여 웹로직 콘솔에 접근 하도록 한다.</li>
+  <li>알려지지 않은 포트로 포워딩 시킴으로써, 보안에 유리하다.
+(원래 7001포트 -&gt; 7200포트 등.. 사용자 정의에 의함)</li>
+  <li>매니지드 서버도 Administration Port를 해서 관리해야되는 단점이 있다.</li>
+</ul>
+<p style="height:40px;"></p>
+<h3 id="21-설정-방법">2.1 설정 방법</h3>
+
+<h4 id="211-admin-server">2.1.1 Admin Server</h4>
+
+<p>(1). Managed Shutdown</p>
+
+<p>(2). console - domain - configuration - general - Enable Administration Port, Administration Port</p>
+
+<p>(3). https://ip : administration Port로 console을 재접속한다.</p>
+
+<p><img src="/../assets/posts/images/01-WebLogic/AdminPort_SideDeploy/AdminPort_SideDeploy_1.png" alt="AdminPort_SideDeploy_1" /></p>
+<p style="height:20px;"></p>
+<h4 id="212-managed-server">2.1.2 Managed Server</h4>
+
+<p>Configuration - General - Advanced - Local Administration Port Override : Administration Port가 Managed Server 마다 Unique해야 된다.</p>
+<p style="height:20px;"></p>
+<h4 id="213-start-server">2.1.3 Start Server</h4>
+
+<p>(1). admin url = t3s://adminIP : administration port</p>
+
+<p>(2). JAVA_OPTIONS=”-Dweblogic.security.TrustKeyStore=DemoTrust”</p>
+<p style="height:20px;"></p>
+<h4 id="214-stop-server">2.1.4 Stop Server</h4>
+
+<p>(1). exit url = t3s://managed ip : managed administration port</p>
+
+<p>(2). JAVA_OPTIONS=”-Dweblogic.security.TrustKeyStore=DemoTrust”</p>
+
+<blockquote>
+  <p>* DemoTrust 말고도… 다양하게 설정할 방법이 있을텐데…</p>
+</blockquote>
+<p style="height:40px;"></p>
+<h2 id="3-side-by-side-deploy">3. Side-By-Side Deploy</h2>
+
+<p>어플리케이션을 서비스 중지없이 업데이트하여 버전 관리가 가능하다.</p>
+<p style="height:40px;"></p>
+<h3 id="31-배포된-어플리케이션의-상태와-커맨드">3.1 배포된 어플리케이션의 상태와 커맨드</h3>
+
+<h4 id="311-active-state">3.1.1 Active State</h4>
+
+<p>모든 사용자가 접근 가능한 어플리케이션 상태.</p>
+
+<p>타겟 인스턴스가 기동 중이지 않으면 New state</p>
+
+<p>기동 중이면 Activice state</p>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>java <span class="nt">-Dweblogic</span>.security.TrustKeyStore<span class="o">=</span>DemoTrust weblogic.Deployer <span class="nt">-adminurl</span> t3://adminServer_Address <span class="nt">-user</span> weblogic <span class="nt">-password</span> weblogic1 <span class="nt">-deploy</span> <span class="nt">-name</span> webapp <span class="nt">-source</span> D:<span class="se">\w</span>eblogic<span class="se">\W</span>LS1036<span class="se">\d</span>omains<span class="se">\d</span>m1036<span class="se">\w</span>ebapp <span class="nt">-targets</span> m1 <span class="nt">-appversion</span> v1
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/../assets/posts/images/01-WebLogic/AdminPort_SideDeploy/AdminPort_SideDeploy_2.png" alt="AdminPort_SideDeploy_2" /></p>
+
+<blockquote>
+  <p>appversion 파라메터가 버전 관리를 위해 잘 관리해줘야 한다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<h4 id="312-stop-running-state">3.1.2 Stop Running State</h4>
+
+<p>구 버전 어플리케이션과 신 버전 어플리케이션의 관리</p>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>java <span class="nt">-Dweblogic</span>.security.TrustKeyStore<span class="o">=</span>DemoTrust weblogic.Deployer <span class="nt">-adminurl</span> t3://adminServer_Address <span class="nt">-user</span> weblogic <span class="nt">-password</span> weblogic1 <span class="nt">-deploy</span> <span class="nt">-name</span> webapp <span class="nt">-source</span> D:<span class="se">\w</span>eblogic<span class="se">\W</span>LS1036<span class="se">\d</span>omains<span class="se">\d</span>m1036<span class="se">\w</span>ebapp <span class="nt">-targets</span> m1 <span class="nt">-appversion</span> v2
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/../assets/posts/images/01-WebLogic/AdminPort_SideDeploy/AdminPort_SideDeploy_3.png" alt="AdminPort_SideDeploy_3" /></p>
+
+<blockquote>
+  <p>webapp(v1)은 아직 사용자가 있어서 stop Running… 다 빠져나가면 retired가 된다.</p>
+
+  <p>webapp(v2)로 이후 신규 사용자가 접속된다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<h4 id="313-admin-state">3.1.3 ADMIN State</h4>
+
+<p>administration port를 사용 중인 admin server 환경에서 어플리케이션의 오픈전 테스트를 위해 사용한다.</p>
+
+<p>ADMIN state 어플리케이션은 웹로직 ‘myrealm’에 허가된 유저&amp;그룹만 접근가능한데,</p>
+
+<p>administration port를 사용하여 접근하는 행위가 허가된 유저&amp;그룹 인증 절차이기 때문이다.</p>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>java <span class="nt">-Dweblogic</span>.security.TrustKeyStore<span class="o">=</span>DemoTrust weblogic.Deployer <span class="nt">-adminurl</span> t3s://adminServerIP:administrationPORT <span class="nt">-user</span> weblogic <span class="nt">-password</span> weblogic1 <span class="nt">-adminmode</span> <span class="nt">-name</span> webapp <span class="nt">-deploy</span> <span class="nt">-upload</span> <span class="nt">-remote</span> D:<span class="se">\w</span>eblogic<span class="se">\W</span>LS1036<span class="se">\d</span>omains<span class="se">\d</span>m1036<span class="se">\w</span>ebapp
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/../assets/posts/images/01-WebLogic/AdminPort_SideDeploy/AdminPort_SideDeploy_4.png" alt="AdminPort_SideDeploy_4" /></p>
+
+<p><img src="/../assets/posts/images/01-WebLogic/AdminPort_SideDeploy/AdminPort_SideDeploy_5.png" alt="AdminPort_SideDeploy_5" /></p>
+
+<blockquote>
+  <p>위 커맨드 실행 결과가 remove Initializing 일 수 있다… admin server restart 하니 admin state이다…</p>
+</blockquote>
+:ET

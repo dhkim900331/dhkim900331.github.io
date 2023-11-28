@@ -1,0 +1,70 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+<p>Tomcat 에 Jenkins 설치
+Jenkins 는 기본적으로 jetty 로 구성되어 패키지 제공되고 있으나,
+war를 Tomcat에 배포하는 것으로 설치해보기로 한다.</p>
+<p style="height:20px;"></p>
+<h2 id="2-설치">2. 설치</h2>
+<h3 id="21-다운로드">2.1 다운로드</h3>
+<p><a href="https://www.jenkins.io/download/">여기 클릭</a></p>
+
+<p><img src="/../assets/posts/images/04-Jenkins/InstallJenkins/InstallJenkins_1.png" alt="InstallJenkins_1" /></p>
+
+<p>위 LTS 항목을 다운로드 받았다.</p>
+<p style="height:20px;"></p>
+<h3 id="22-tomcat-환경변수-설정">2.2 Tomcat 환경변수 설정</h3>
+<p>JEKINS_HOME만 세팅하였다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nb">export </span><span class="nv">JENKINS_HOME</span><span class="o">=</span><span class="s2">"your path"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h3 id="23-war를-배포">2.3 war를 배포</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>/app/servers/tomcat1/webapps/jenkins.war
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>여기까지가 아주 심플하게 설치는 완료되었다.</p>
+<p style="height:20px;"></p>
+<h2 id="3-tomcat-jenkins-시작">3. Tomcat (jenkins) 시작</h2>
+<h3 id="31-기동-시-로그에-아래처럼-초기-패스워드가-확인된다">3.1 기동 시 로그에 아래처럼 초기 패스워드가 확인된다.</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="k">*************************************************************</span>
+<span class="k">*************************************************************</span>
+<span class="k">*************************************************************</span>
+
+Jenkins initial setup is required. An admin user has been created and a password generated.
+Please use the following password to proceed to installation:
+
+1c0cba1ae6ef4b8a812978b4f578443e
+
+This may also be found at: /app/servers/tomcat1/jekins_home/secrets/initialAdminPassword
+
+<span class="k">*************************************************************</span>
+<span class="k">*************************************************************</span>
+<span class="k">*************************************************************</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>http://tomcat-addr/jekins 에서 위 패스워드로 접속을 한다.</p>
+<p style="height:20px;"></p>
+<h3 id="32-플러그인-설치">3.2 플러그인 설치</h3>
+<p>여기 시스템은 폐쇄망이 아니므로 제안하는 권장 플러그인 리스트를 설치한다.
+플러그인은 hpi 파일을 받아 JENKINS_HOME/plugins 에 넣고 재기동해도 된다.</p>
+<p style="height:20px;"></p>
+<h3 id="33-로그인">3.3 로그인</h3>
+<p>플러그인 설치가 마무리되면, 기본 설치 과정은 모두 끝났다.
+계정을 생성하고 로그인한다.</p>
+:ET

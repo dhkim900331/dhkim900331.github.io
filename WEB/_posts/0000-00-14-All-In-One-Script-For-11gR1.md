@@ -9,22 +9,14 @@ typora-root-url: ..
 # 1. 개요
 
 Oracle HTTP Server 11gR1 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. 설명
 
 All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한다.
 
 - baseInstance
 - Worker 2ea
-
-
-
-
-
+{{ site.content.br_big }}
 # 3. Script
 
 ## 3.1 Engine
@@ -86,22 +78,14 @@ chmod 700 ${BASEDIR}/Disk1/install/*/unzip
 
 ${BASEDIR}/Disk1/runInstaller -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ## 3.2 Instance
 
 ```sh
 # (4) Instance
 ${ENGINE_PATH}/opmn/bin/opmnctl createinstance -oracleInstance ${INSTANCE_HOME} -instanceName ${INSTANCE_NAME} -adminRegistration OFF
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ## 3.3 Component
 
 ```sh
@@ -113,11 +97,7 @@ ${ENGINE_PATH}/opmn/bin/opmnctl createcomponent -oracleInstance ${INSTANCE_HOME}
 ## delete command ##
 # ${ENGINE_PATH}/opmn/bin/opmnctl deletecomponent -oracleInstance ${INSTANCE_HOME} -componentName <componentName> -componentType OHS
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ## 3.4 Create Component Scripts (start, stop, ps)
 
 ```sh

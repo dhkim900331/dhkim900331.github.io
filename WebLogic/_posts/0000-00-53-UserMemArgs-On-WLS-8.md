@@ -11,8 +11,7 @@ typora-root-url: ..
 웹로직 8버전만 사용자 정의 메모리 아규먼트 기능이 없다.
 
 사실 기능이라고 하기에는 단순한 문자열 치환이다...
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 startA.sh 과 같이 사용자 스크립트에 `export USER_MEM_ARGS` 한다면

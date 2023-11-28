@@ -10,6 +10,7 @@ typora-root-url: ..
 
 WebLogic 12cR1 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
 {{ site.content.br_big }}
+
 # 2. 설명
 
 All-In-One-Script-For-12cR1.sh 실행으로 다음 환경을 구성하도록 한다.
@@ -118,6 +119,7 @@ exit()
 EOF
 ```
 {{ site.content.br_small }}
+
 ## 3.3 Startup AdminServer
 
 ```sh

@@ -9,8 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 WTC 설정 가이드
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ## 2.1 테스트 환경
@@ -24,46 +23,48 @@ WTC 설정 가이드
 
 > Tuxedo 입장에서, WDOM02는 Remote Access Point ID 다.
 {{ site.content.br_small }}
+
 ## 2.2 웹로직 설정
 
 (1). 콘솔 > 상호 운용성 > WTC 서버 > 새로 만들기 > WTC Server-0
 
-![WTCConfigration_1](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_1.png)
+![WTC-Configration_1](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_1.png)
 {{ site.content.br_small }}
 (2). 새로 만든 WTC Server-0 대상 M1 설정
 
-![WTCConfigration_2](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_2.png)
+![WTC-Configration_2](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_2.png)
 {{ site.content.br_small }}
 (3). WTC Server-0 > 로컬 AP
 
-![WTCConfigration_3](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_3.png)
+![WTC-Configration_3](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_3.png)
 
 > `netstat -an | grep 8011`으로 할당되지 않은 포트 검증하고 진행
 {{ site.content.br_small }}
 (4). WTC Server-0 > 원격 AP
 
-![WTCConfigration_4](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_4.png)
+![WTC-Configration_4](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_4.png)
 {{ site.content.br_small }}
 (5). WTC Server-0 > Import
 
-![WTCConfigration_5](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_5.png)
+![WTC-Configration_5](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_5.png)
 
 > Tuxedo 에서 WebLogic 쪽 서비스 호출할 때 이름이다.
 {{ site.content.br_small }}
+
 ## 2.3 턱시도 서비스 호출
 
 (1). 웹로직 기동 시 8001, 8011 port 확인된다.
 
-![WTCConfigration_6](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_6.png)
+![WTC-Configration_6](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_6.png)
 {{ site.content.br_small }}
 (2). 웹로직 Log에서 TDOM 연결 되었음이 확인된다.
 
-![WTCConfigration_7](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_7.png)
+![WTC-Configration_7](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_7.png)
 {{ site.content.br_small }}
 (3). 아래 JSP를 호출 시 TOUPPER 서비스는 잘 호출되나,
 정의되지 않은 `tpcall("LTOUPPER")` 호출하면 에러 발생한다.
 
-![WTCConfigration_8](/../assets/posts/images/01-WebLogic/WTCConfigration/WTCConfigration_8.png)
+![WTC-Configration_8](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_8.png)
 {{ site.content.br_small }}
 ```jsp
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -161,4 +162,3 @@ public String Toupper(String toConvert)
 </html>
 
 ```
-{{ site.content.br_small }}

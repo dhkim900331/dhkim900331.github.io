@@ -9,8 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 [WebLogic] 미들웨어 한글문서 리스트 - Oracle Weblogic Server (문서 ID 2301250.1)
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 [WebLogic] 미들웨어 한글문서 리스트 - Oracle Weblogic Server (문서 ID 2301250.1)

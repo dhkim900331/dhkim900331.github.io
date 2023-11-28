@@ -9,8 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 다른 JDBC Driver 적용 방법
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 derby.jar로 설명.

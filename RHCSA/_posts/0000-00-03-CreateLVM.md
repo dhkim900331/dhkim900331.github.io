@@ -13,9 +13,7 @@ tags: [Linux, RHCSA, LVM]
 - [[RHCSA] Swap 파티셔닝]({{ site.url }}/rhcsa/SwapPartitioning)
 
 에서 학습하였다.
-
-
-
+{{ site.content.br_small }}
 여기서는 LVM 개념을 배운다.
 
 LVM은 물리 디스크를 초기화 한 이후에, 그룹핑 개념을 도입하여
@@ -23,9 +21,7 @@ LVM은 물리 디스크를 초기화 한 이후에, 그룹핑 개념을 도입�
 여러 물리 디스크를 하나의 그룹처럼 묶어줄 수 있게 된다.
 
 논리적인 개념으로 만들어주기 때문에 원하는 크기의 가상의 디스크 장치를 만들 수 있다.
-
-
-
+{{ site.content.br_small }}
 # 2. 디스크 초기화 및 파티셔닝
 
 ```bash
@@ -41,9 +37,7 @@ vdd
 ```
 
 > 초기화되지 않은 신규 디스크 장치는 vdb, vdc, vdd
-
-
-
+{{ site.content.br_small }}
 ```bash
 # parted -s /dev/vdb mkpart part1 1M 256MB
 # parted -s /dev/vdb mkpart part2 257M 513MB
@@ -52,9 +46,7 @@ vdd
 > xfs / ext4 등의 type을 명시하지 않는 것이 특징이다.
 >
 > 두 개(part1, part2)의 파티셔닝을 하였다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # parted /dev/vdb set 1 lvm on
 # parted /dev/vdb set 2 lvm on
@@ -63,9 +55,7 @@ vdd
 > lvm type으로 지정한다.
 >
 > 위에서 lvm type을 일괄 지정하는 방법은 보이지 않는다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # parted /dev/vdb print
 Model: Virtio Block Device (virtblk)
@@ -80,33 +70,25 @@ Number  Start   End    Size   File system  Name   Flags
 ```
 
 > 총 2개의 파티션이 LVM으로 잘 준비되었다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # udevadm settle
 ```
 
 > 디스크 장치가 준비되기를 기다리는 것을 잊지 말자...!
-
-
-
+{{ site.content.br_small }}
 # 3. 물리 볼륨
 
 phyisical voulume 으로 만들어야 다음 volume group에서 묶을 수 있다.
 
 * 개별적인 물리 디스크 장치를 논리적으로 묶기 위해 하는 과정
-
-
-
+{{ site.content.br_small }}
 ```bash
 # pvcreate /dev/vdb1 /dev/vdb2
 ```
 
 > 각 장치를 volume으로 만들어 컨트롤할 수 있게 된다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # pvs
   PV         VG Fmt  Attr PSize   PFree 
@@ -115,9 +97,7 @@ phyisical voulume 으로 만들어야 다음 volume group에서 묶을 수 있�
 ```
 
 > pvs명령으로 간략하게 확인할 수 있다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # pvdisplay
   "/dev/vdb1" is a new physical volume of "243.00 MiB"
@@ -148,15 +128,11 @@ phyisical voulume 으로 만들어야 다음 volume group에서 묶을 수 있�
 > pvdisplay 명령으로 모든 volume을 확인할 수 있다.
 >
 > 장치명(_PV Name_)을 보면 이해가 쉽다.
-
-
-
+{{ site.content.br_small }}
 # 4. 볼륨 그룹
 
 앞서 만든 볼륨을 묶어 그룹으로 만들 수 있다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # vgcreate myvg /dev/vdb1 /dev/vdb2
 ```
@@ -168,9 +144,7 @@ phyisical voulume 으로 만들어야 다음 volume group에서 묶을 수 있�
 ```
 
 > vgs 명령으로 간략히 확인할 수 있다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # vgdisplay
   --- Volume group ---
@@ -198,25 +172,19 @@ phyisical voulume 으로 만들어야 다음 volume group에서 묶을 수 있�
 > VG Size: /dev/vdb1과 vdb2의 총합과 같다.
 >
 > PE : LVM 개념으로 만들어진 디스크에서 사용되는 단위. 해당 단위만큼 디스크 용량을 축소/확대 할 수 있다.
-
-
-
+{{ site.content.br_small }}
 # 5. 논리 볼륨
 
 생성한 그룹은 하나의 물리 디스크와 같다고 볼 수 있다.
 
 해당 디스크를 논리 볼륨이라는 단위로 파티셔닝 하여 쓸 수 있다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # lvcreate -n mylv -L 400MB myvg
 ```
 
 > myvg (/dev/vdb1, vdb2의 합)에서 400MB 만큼만 잘라서 파티셔닝 한다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # lvs
   LV   VG   Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
@@ -224,9 +192,7 @@ phyisical voulume 으로 만들어야 다음 volume group에서 묶을 수 있�
 ```
 
 > 간략히 확인할 수 있다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # lvdisplay
   --- Logical volume ---
@@ -250,9 +216,7 @@ phyisical voulume 으로 만들어야 다음 volume group에서 묶을 수 있�
 > 눈여겨 볼 것은 _LV Path_ 이다. 마치 실제 디스크 장치와 같다.
 >
 > 그리고, 여기도 PE같이 LE 개념이 있다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # parted /dev/myvg/mylv print
 Error: /dev/dm-0: unrecognised disk label
@@ -264,9 +228,7 @@ Disk Flags:
 ```
 
 > (가상의) 디스크 장치가 초기화 되지 않은 로그 내용.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # mkfs.xfs /dev/myvg/mylv
 meta-data=/dev/myvg/mylv         isize=512    agcount=4, agsize=25600 blks
@@ -282,9 +244,7 @@ realtime =none                   extsz=4096   blocks=0, rtextents=0
 ```
 
 > xfs(또는 원하는) 타입으로 초기화.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # parted /dev/myvg/mylv print
 Model: Linux device-mapper (linear) (dm)
@@ -298,9 +258,7 @@ Number  Start  End    Size   File system  Flags
 ```
 
 > xfs 타입으로 초기화하니, 파티셔닝된 디스크로써 모든 준비가 완료되었다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # mount /path /dev/myvg/mylv
 ```

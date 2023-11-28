@@ -9,7 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 Non supported character set (add orai18n.jar in your classpath) 에러가 발생할 시 대처 가이드
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 2. 설명
 
 [Globalization Support](https://docs.oracle.com/en/database/oracle/oracle-database/21/jjdbc/globalization-support.html#GUID-CE02B998-DD6A-46FC-8ECF-AD2413F09A97) 문서를 보면, 기본 Char set 외에 다른 세계언어를 사용하기 위해서 orai18n 파일이 필요하다고 설명 한다.

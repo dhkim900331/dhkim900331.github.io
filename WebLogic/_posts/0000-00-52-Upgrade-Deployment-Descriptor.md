@@ -8,7 +8,7 @@ tags: [Middleware, WebLogic, Upgraded, WebInf]
 
 # 1. 개요
 WEB-INF(web.xml, weblogic.xml) 의 버전 업그레이드
-
+{{ site.content.br_big }}
 # 2. 설명
 
 `java -cp "$WL_HOME/server/lib/weblogic.jar" weblogic.DDConverter -d /path/newConfig /applications/webapp`

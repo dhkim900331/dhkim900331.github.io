@@ -11,7 +11,6 @@ typora-root-url: ..
 WebLogic 12cR2 환경에서 Keep Alive 가 어떻게 동작하는지 살펴본다.
 {{ site.content.br_big }}
 # 2. Descriptions
-{{ site.content.br_small }}
 2023-06-29 기준으로 아래의 Java program으로 HTTP Urlconnection을 통해 hello.jsp 호출
 
 그리고 1분 Sleep 이후 world.jsp 호출을 하도록 했는데,
@@ -116,7 +115,8 @@ public class Java2WAS {
   }
 }
 ```
-{{ site.content.br_big }}
+
+
 ```java
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -239,7 +239,8 @@ public class Java2WAS {
   }
 }
 ```
-{{ site.content.br_big }}
+{{ site.content.br_small }}
+
 # 3. References
 
 https://bugs.openjdk.org/browse/JDK-8278067

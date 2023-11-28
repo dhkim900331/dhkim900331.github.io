@@ -14,7 +14,7 @@ typora-root-url: ..
 위 방법 외에 WebLogic이 실행중인 cmd.exe에서 Ctrl + Break 키조합으로
 
 Thread Dump 생성 방법입니다.
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ## 2.1 Scripting
@@ -34,18 +34,19 @@ tail -f %LOG_DIR%\%SERVER_NAME%.out
 ```shell
 C:\Windows\System32\cmd.exe /k startAdmin.cmd
 ```
-{{ site.content.br_small }}
+
+
 (3). startAdmin.bat 실행
 
-![JavaThreadDumpOnWindows_1](/../assets/posts/images/01-WebLogic/JavaThreadDumpOnWindows/JavaThreadDumpOnWindows_1.png)
+![Java-Thread-Dump-On-Windows_1](/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_1.png)
 {{ site.content.br_small }}
 (4). `Ctrl + Break` 일괄 작업을 끝내지 않음. `N`
 
-![JavaThreadDumpOnWindows_2](/../assets/posts/images/01-WebLogic/JavaThreadDumpOnWindows/JavaThreadDumpOnWindows_2.png)
+![Java-Thread-Dump-On-Windows_2](/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_2.png)
 {{ site.content.br_small }}
 (5). `tail -f LOG 실행` (startAdmin.bat 으로 실행하지 않은 경우, tail 명령어로 다시 log를 띄울 수 없습니다.)
 
-![JavaThreadDumpOnWindows_3](/../assets/posts/images/01-WebLogic/JavaThreadDumpOnWindows/JavaThreadDumpOnWindows_3.png)
+![Java-Thread-Dump-On-Windows_3](/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_3.png)
 {{ site.content.br_small }}
 (6). 위 화면에도 일부 보이듯, log에 Dump가 기록되어 있습니다.
 

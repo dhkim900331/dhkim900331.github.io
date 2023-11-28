@@ -12,6 +12,7 @@ J2EE 6 의 Servlet 3.0 부터 추가된 Servlet Fileupload 를 사용해본다.
 
 WebLogic 에서 대용량 파일 업로드시에 어떤 처리 과정을 갖는지 살펴본다.
 {{ site.content.br_small }}
+
 # 2. File upload Implements
 
 [Chapter 16 Uploading Files with Java Servlet Technology](https://docs.oracle.com/javaee/6/tutorial/doc/glrbb.html)
@@ -21,7 +22,7 @@ WebLogic 에서 대용량 파일 업로드시에 어떤 처리 과정을 갖는�
 Servlet 자체에서 지원하게 되어, 그럴 필요가 없어졌다는 의미이다.
 {{ site.content.br_small }}
 해당 기능의 App 구현은 [FileUpload]({{ site.url }}/servlet/FileUpload) 에서 다루었다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 3. Uploading Test
 
 MultipartConfig annoation은 다음과 같이 하였다.
@@ -73,7 +74,7 @@ Field 설정한 수치가 type을 벗어난것이 아닐까? (에러가 negative
 ```
 {{ site.content.br_small }}
 이 상황에서는 10GB 의 대용량 파일에도 문제 없이 WebLogic이 처리를 하였다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 4. Resource Monitoring
 
 대용량 파일을 전송 시에, `fileSizeThreshold` 크기를 넘어서는 파일을 어떻게 처리하며, 그 사이에 Java Heap Resource는 어떤지 살펴본다.

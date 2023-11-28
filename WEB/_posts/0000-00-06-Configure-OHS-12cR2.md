@@ -9,15 +9,11 @@ typora-root-url: ..
 # 1. 개요
 
 Oracle HTTP Server 12cR2 Configurations
-
-
-
+{{ site.content.br_small }}
 # 2. Performance
 
 Performance에 직접적으로 연관된 설정을 살펴본다.
-
-
-
+{{ site.content.br_small }}
 ## 2.1 MPM
 
 ohs.plugins.nodemanager.properties 파일에서 변경한다.
@@ -29,9 +25,7 @@ ohs.plugins.nodemanager.properties 파일에서 변경한다.
 
 mpm = worker
 ```
-
-
-
+{{ site.content.br_small }}
 httpd.conf 파일에서 변경한다. (예시로 mpm_worker 방식)
 
 ```httpd.conf
@@ -47,9 +41,7 @@ httpd.conf 파일에서 변경한다. (예시로 mpm_worker 방식)
     Mutex fcntl:${ORACLE_INSTANCE}/servers/${COMPONENT_NAME}/logs
 </IfModule>
 ```
-
-
-
+{{ site.content.br_small }}
 ## 2.2 Keep Alive
 
 Client 와 Web 간의 Keepalive는 httpd.conf에 설정한다.
@@ -58,18 +50,14 @@ Client 와 Web 간의 Keepalive는 httpd.conf에 설정한다.
 KeepAlive On
 KeepAliveTimeout 5
 ```
-
-
-
+{{ site.content.br_small }}
 Web-ProxyPlugin과 WAS는 [6. Proxy Plugin](#h-6-proxy-plugin) 과 같이 설정한다.
 
 ```mod_wl_ohs.conf
      KeepAliveEnabled ON
      KeepAliveSecs 5
 ```
-
-
-
+{{ site.content.br_small }}
 # 3. Security
 
 ## 3.1 HTTP Method
@@ -83,13 +71,9 @@ DocumentRoot "..."
     </LimitExcept>
 </Directory>
 ```
-
-
-
+{{ site.content.br_small }}
 Require method 지시어로 올바른 동작이 되지 않아 LimitExcept 지시어를 사용하였다.
-
-
-
+{{ site.content.br_small }}
 ## 3.2 Options
 
 ```httpd.conf
@@ -99,9 +83,7 @@ DocumentRoot "..."
     Options None
 </Directory>
 ```
-
-
-
+{{ site.content.br_small }}
 # 4. Logging
 
 %D LogFormat을 추가하였다.
@@ -109,17 +91,13 @@ DocumentRoot "..."
 ```httpd.conf
 LogFormat "%h %l %u %t %E \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" (%D)" combined
 ```
-
-
-
+{{ site.content.br_small }}
 access_log Rotation (KST 00~24)
 
 ```httpd.conf
 CustomLog "||${PRODUCT_HOME}/bin/odl_rotatelogs -u:32400 ${ORACLE_INSTANCE}/servers/${COMPONENT_NAME}/logs/access_log 86400" combined
 ```
-
-
-
+{{ site.content.br_small }}
 error_log Rotation (KST 00~24)
 
 ```httpd.conf
@@ -129,9 +107,7 @@ ErrorLog "||${PRODUCT_HOME}/bin/odl_rotatelogs -u:32400 ${ORACLE_INSTANCE}/serve
 OraLogMode apache
 ...
 ```
-
-
-
+{{ site.content.br_small }}
 # 5. Monitoring
 
 ## 5.1 server-status
@@ -142,13 +118,9 @@ OraLogMode apache
     Require ip 127
 </Location>
 ```
-
-
-
+{{ site.content.br_small }}
 /server-status 페이지를 접근하는 Client IP가 127 으로 시작하는 경우에만 허가한다.
-
-
-
+{{ site.content.br_small }}
 ## 5.2 DebugConfigInfo
 
 Proxy Plugin에서 다음의 옵션을 활성화 할 경우, Query String `__WebLogicBridgeConfig` 으로 접근 할 수 있다.
@@ -156,9 +128,7 @@ Proxy Plugin에서 다음의 옵션을 활성화 할 경우, Query String `__Web
 ```mod_wl_ohs.conf
 DebugConfigInfo On
 ```
-
-
-
+{{ site.content.br_small }}
 [공식 문서](https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/develop-plugin/plugin_params.html#GUID-2C0354F4-218A-4EBF-8BFD-B3140F7FE736)에서는, `keep this parameter turned OFF in production systems` 으로 권장하고 있다.
 
 혹은, 다음과 같이 설정하여 특정 접근만 허용할 수 있으므로 Debug 시에는 활용 할 수 있겠다.
@@ -172,11 +142,7 @@ DebugConfigInfo On
      </If>
 </Location>
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 # 6. Proxy Plugin
 
 ```mod_wl_ohs.conf
@@ -201,7 +167,5 @@ DebugConfigInfo On
      WLSRequest On
 </Location>
 ```
-
-
-
+{{ site.content.br_small }}
 /serverSide 호출 시 WLS으로 응답한다.

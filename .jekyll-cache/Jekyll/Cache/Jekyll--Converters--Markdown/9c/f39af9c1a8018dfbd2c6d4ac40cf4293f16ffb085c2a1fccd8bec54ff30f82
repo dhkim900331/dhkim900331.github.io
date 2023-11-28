@@ -1,0 +1,130 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>WebLogic Proxy Plugin 12cR2에서 Failover 를 처리하는 방법에 대해서 다양하게 살펴본다.</p>
+<p style="height:20px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<p>사용자의 GET/POST 요청의 처리 도중 Failed 시에 다른 Available Instance로 Failover를 위해 필요한 옵션은</p>
+
+<ul>
+  <li>FileCaching</li>
+  <li>Idempotent</li>
+  <li>WLRetryOnTimeout</li>
+  <li>WLRetryAfterDroppedConnection</li>
+  <li>WLServerInitiatedFailover</li>
+</ul>
+<p style="height:20px;"></p>
+<h2 id="3-get-method">3. GET Method</h2>
+
+<p>GET Method 방식에서 Failover시에는, 다음의 옵션으로 구성되어 있어야 한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>Idempotent ON
+WLRetryOnTimeout [ALL 또는 IDEMPOTENT]
+WLRetryAfterDroppedConnection [ALL 또는 IDEMPOTENT]
+WLServerInitiatedFailover [ALL 또는 IDEMPOTENT]
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/develop-plugin/plugin_params.html#GUID-C25D4368-26CE-4CA3-8433-F6BD99CF4BF9">Idempotent 설명</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/develop-plugin/plugin_params.html#GUID-57E6B538-D013-4A47-884A-DECD267F9EBF">WLRetryOnTimeout 설명</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/develop-plugin/plugin_params.html#GUID-46CA508A-25AD-4C8A-ACA0-A6746AFD7FDD">WLRetryAfterDroppedConnection 설명</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/develop-plugin/plugin_params.html#GUID-8B1817F7-F7D2-454D-8FE6-8C5FF5705F8B">WLServerInitiatedFailover 설명</a></p>
+<p style="height:20px;"></p>
+<p>ALL : GET/POST 모두 Failover</p>
+
+<p>IDEMPOTENT : GET method만 Failover, POST method는 <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-method-registration">RFC 9110 - HTTP Method Registration</a>에 따라 Idemponent Method가 아니다.</p>
+
+<p>NONE : Failover 하지 않음</p>
+<p style="height:20px;"></p>
+<p>모든 옵션이 ALL 또는 IDEMPOTENT로 정의되어야 GET Method의 Failover 구현이 가능하다.</p>
+<p style="height:20px;"></p>
+<h2 id="4-post-method">4. POST Method</h2>
+
+<p>POST Method 방식에서 Failover시에는, 다음의 옵션으로 구성되어 있어야 한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>FileCaching ON
+Idempotent ON
+WLRetryOnTimeout ALL
+WLRetryAfterDroppedConnectionALL
+WLServerInitiatedFailover ALL
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>위에서 언급하였는데, POST는 기본적으로 Idempotent Method가 아니다.</p>
+
+<p>또한, 실제 Field에서도 이중 거래와 같은 문제를 피하기 위해 POST는 Failover되지 않도록 설정한다.</p>
+
+<p>HTTP Spec 기본 사양에도 불구하고 WL Proxy Plugin에서 POST Method 또한 Failover 가능하도록 구현이 되어 있다.</p>
+<p style="height:20px;"></p>
+<h3 id="41-do-small-post-failover">4.1 Do Small POST Failover</h3>
+
+<p>POST Method의 Failover 과정을 Debug log(<code class="language-plaintext highlighter-rouge">LogLevel debug</code>)로 살펴보면 좀 더 이해하기 쉽다.</p>
+<p style="height:20px;"></p>
+<p>POST Size가 <code class="language-plaintext highlighter-rouge">2048 Bytes</code> 보다 작고, <code class="language-plaintext highlighter-rouge">FileCaching OFF 또는 ON</code> 인 경우, Failover가 수행된다.</p>
+
+<p>POST size가 <code class="language-plaintext highlighter-rouge">2048 bytes</code> 보다 작은 요청일 때, in memory 로 Post data를 읽어 들인다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>Going to get the post data of size=14 clength=0
+Post data length: 14 (in memory)
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>연결된 Instance에서 HTTP 503 Status Line을 받았을 때,</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>sendResponse() : r-&gt;status = '503'
+Marking *.*.*.*:8002 as unavailable for new requests
+*******Exception type [FAILOVER_REQUIRED] (Service Unavailable) raised at line 244 of BaseProxy.cpp
+got exception in sendResponse phase: FAILOVER_REQUIRED [line 244 of BaseProxy.cpp]: Service Unavailable at line 682
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>POST Size가 작은 경우에는, in memory로 수행하기 때문에 재전송이 가능하다.</p>
+
+<p>결국 어떠한 경우에든 Failover 수행 된다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>ap_proxy: trying POST /PostDataTest/recv.jsp at backend host *.*.*.*/8002, client *.*.*.*/55308, total tries 6; got exception 'FAILOVER_REQUIRED [line 244 of BaseProxy.cpp]: Service Unavailable'; state: reading status line or response headers from WLS; failing over
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h3 id="42-do-big-post-failover">4.2 Do Big POST Failover</h3>
+
+<p>POST Size가 <code class="language-plaintext highlighter-rouge">2048 Bytes</code> 보다 크고, <code class="language-plaintext highlighter-rouge">FileCaching ON</code> 인 경우, Failover가 수행된다.</p>
+
+<p>POST size가 <code class="language-plaintext highlighter-rouge">2048 bytes</code> 보다 큰 요청일 때, Disk로 Post data를 읽어 들인다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>Going to get the post data of size=6879
+getWLFilePath: Complete File name = [/tmp/_wl_proxy/_post_928399_0]
+Read 6879 of expected 6879 bytes of request body
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>이후 Log는 상동이며, POST가 Idemponent하지 않지만 Plugin에서 이를 가능하도록 구현하였기 때문에 Disk에 임시로 기록해둔 POST Data를 재전송하여 Failover를 수행한다.</p>
+<p style="height:20px;"></p>
+<p><code class="language-plaintext highlighter-rouge">FileCaching OFF</code> 인 경우에는 Big Size의 POST Data는 어떤 경우에도 Failover 할 수 없다.</p>
+
+<p>어떠한 경우에라는 것은, HTTP 503 Service Unavailable 또는 READ_TIMEOUT 등등 모든 경우를 뜻한다.</p>
+<p style="height:20px;"></p>
+<h2 id="5-references">5. References</h2>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/develop-plugin/plugin_params.html#GUID-08B84046-0EF9-4A21-B1A3-4618A3D4E87A">General Parameters for Web Server Plug-Ins</a></p>
+
+<p>12c proxy plug-in에서 HTTP request의 retry 여부 설정 (Doc ID 2785265.1)</p>
+
+<p><a href="https://www.rfc-editor.org/rfc/rfc9110.html">RFC 9110 HTTP Semantics</a></p>
+:ET

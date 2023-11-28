@@ -9,8 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 Security Filter를 이용하면, 접근 제한 규칙을 활용하여 인스턴스 접근 제한을 둘 수 있다.
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ## 2.1 Security Filter 적용
@@ -26,7 +25,7 @@ Security Filter를 이용하면, 접근 제한 규칙을 활용하여 인스턴�
   \* 192.168.56.1 8001 deny
   ```
 
-![SecurityFilter_1](/../assets/posts/images/01-WebLogic/SecurityFilter/SecurityFilter_1.png)
+![Security-Filter_1](/../assets/posts/images/WebLogic/Security-Filter/Security-Filter_1.png)
 
   > Connection Filter는 1줄에 1개의 Rule만 작성하며, 클라이언트가 접속하면, 맨위부터 1개의 Rule씩 적용한다.
   >
@@ -34,6 +33,7 @@ Security Filter를 이용하면, 접근 제한 규칙을 활용하여 인스턴�
   >
   > * protocol 을 작성하지 않으면, http/t3/iiop/t3s/https 등 모두 적용된다.
 {{ site.content.br_small }}
+
 ## 2.2 적용 예시
 
 (1). 적은 수의 허용 IP
@@ -51,7 +51,7 @@ Security Filter를 이용하면, 접근 제한 규칙을 활용하여 인스턴�
   172.16.4.81 192.168.56.2 7001 allow http
   * 192.168.56.2 7001 deny
   ```
-
+{{ site.content.br_small }}
 (2). 많은 수의 허용 IP
 
 * WLS : 192.168.56.2:7001
@@ -75,7 +75,7 @@ Security Filter를 이용하면, 접근 제한 규칙을 활용하여 인스턴�
   > 즉 netmask 는 255.255.255.255 (/32) 로, `11111111.11111111.11111111.11111111`를 지정한다.
   >
   > ***물론 이러한 설정은, `80~140` 뿐만 아니라 `1~79`와 `141~254` 아이피도 허용이 되는 설정이*다.**
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 ## 3. netmask 계산 방법
 
 * netmask 계산 방법은 어디서나 통용된다.
@@ -87,19 +87,22 @@ Security Filter를 이용하면, 접근 제한 규칙을 활용하여 인스턴�
   * "(2). 많은 수의 허용 IP" 예시를 보면, 결국 모든 범위 IP를 허용했다.
     이 부분을 해소하려면, `172.16.4.1~79` 는 deny 하고, `80~140`은 allow 하고,
     그 외는 모두 deny 하면 해결된다.
+{{ site.content.br_small }}
 * netmask 를 255.255.255.255 으로 표시할 수도, integer로 표시할 수도 있다.
   * ex) `255.255.255.255` is `/32`
   * 1이 32개 라는 뜻
+{{ site.content.br_small }}
 * netmask bit가 작으면 작을 수록 허용하는 IP 대역이 넓어진다.
   * `192.168.56.0/24` 라는 설정은,
     `192.168.56.X` 대역에 netmask 24bit 를 `AND` 계산한다는 것이다.
   * 24bit는 `11111111.11111111.11111111.00000000` 이다.
     뒤 `00000000` bit만큼 IP 허용 수가 많다.
+{{ site.content.br_small }}
 * 다른 예시로 설명을 해보자면,
   `192.168.56.0/28` 이라는 설정은, `192.168.56.X` 대역에 netmask 28 bit를 `AND`  계산한다는 것.
   * `11111111.11111111.11111111.11110000`과 접속하는 Client IP를 `AND` 계산해보면
     15개의 IP만 접근할 수 있다. (`192.168.56.0`은 제외하여 16-1 = 15개)
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 ## 4. netmask 계산 하면서 정리한 내용
 
 * targetAddress : 192.168.56.0

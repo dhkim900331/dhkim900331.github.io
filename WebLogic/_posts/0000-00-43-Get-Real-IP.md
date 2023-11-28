@@ -11,8 +11,7 @@ typora-root-url: ..
 WebLogic AP 단에서 앞단 WebServer IP 또는 L4, 또는 Client IP를 얻어야 하는 경우가 발생한다.
 
 이를 위해 WL-Proxy-Client-IP Header 를 제공한다.
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ## 2.1 Client Real IP

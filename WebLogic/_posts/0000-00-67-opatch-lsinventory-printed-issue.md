@@ -9,7 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 WLS Log에 `opatch lsinventory` log가 기록되어, 기동 시점이나, WLST 실행 시 지연이 발생한다는 이슈.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 2. 설명
 
 WLS PSU April 2022 과 WLS PSU July 2022 적용 시에 `java weblogic.WLST` 호출이 되면 `opatch lsinventory` Log가 기록되어, 지연 발생한다는 보고가 있었다. 
@@ -26,7 +26,7 @@ WLS 기동 시점 (`<BEA-141107> <Version: WebLogic Server 14.1.1.0.0 >`) 뒤에
 
 * WLS PSU Oct 2022 적용 (해당 PSU 부터 아래 기본값이 **다시** false 됨.)
 * `-Dweblogic.log.DisplayPatchInfo=false`
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 3. 참고
 
 How To Troubleshoot WebLogic Server Admin Console "Patch List" Showing 'No Patches Installed' (Doc ID 2777234.1)

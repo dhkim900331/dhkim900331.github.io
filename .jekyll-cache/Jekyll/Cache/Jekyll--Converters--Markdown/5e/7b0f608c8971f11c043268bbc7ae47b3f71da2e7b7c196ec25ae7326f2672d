@@ -1,0 +1,11 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+<p>SR 3-18108256751 : [건강보험공단] every hour cpu spike 건을 정리</p>
+<p style="height:40px;"></p>
+<h2 id="2-현상">2. 현상</h2>
+<h3 id="21-wldf">2.1 WLDF</h3>
+<p>WebLogic Diagnostics Framework
+servers/<server>/data/store/diagnostics/WLS_DIAGNOSTICS000000.DAT 파일로 저장.
+12cR1 기준으로, 5분마다 위 데이터 수집.
+1시간마다 용량 100mb 도달 시, old record 삭제.</server></p>
+<p style="height:40px;"></p>
+:ET

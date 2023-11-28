@@ -9,8 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 데이터소스 RAC URL
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 (1). `$ORACLE_HOME/network/admin/tnsnames.ora`에서 `host, port, service_name`을 캐치 하여 아래 URL 적용
@@ -21,6 +20,7 @@ jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=dbhost
 
 > 괄호 갯수에 주의하자. URL이 잘못되면 NL Exception, SO Exception이 떨어진다. (다른 이유로 떨어질 수도 있다.)
 {{ site.content.br_small }}
+
 # 3. 기타
 
 (1). MDS 권장

@@ -9,8 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 스레드 풀 사이즈 튜닝(조절)
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 (1). 콘솔 설정

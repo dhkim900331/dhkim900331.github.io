@@ -1,0 +1,181 @@
+I"�!<h2 id="1-개요">1. 개요</h2>
+
+<p>podman 을 이용한 Container 생성과 비-루트 계정으로 서비스를 등록해본다.</p>
+<p style="height:20px;"></p>
+<h2 id="2-컨테이너-생성">2. 컨테이너 생성</h2>
+
+<h3 id="21-이미지-검색">2.1 이미지 검색</h3>
+
+<pre><code class="language-0"># podman search docker.io/httpd
+INDEX       NAME                                              DESCRIPTION                                       STARS   OFFICIAL   AUTOMATED
+docker.io   docker.io/library/httpd                           The Apache HTTP Server Project                    3802    [OK]
+docker.io   docker.io/centos/httpd-24-centos7                 Platform for running Apache httpd 2.4 or bui...   40
+docker.io   docker.io/manageiq/httpd                          Container with httpd, built on CentOS for Ma...   1                  [OK]
+docker.io   docker.io/clearlinux/httpd                        httpd HyperText Transfer Protocol (HTTP) ser...   1
+... skip ...
+</code></pre>
+
+<blockquote>
+  <p>사용할(띄울) 이미지를 검색한다.</p>
+
+  <p>여기서는 httpd 에서 가장 낮은 버전(아무거나) 을 활용한다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="c"># skopeo inspect docker://docker.io/library/httpd</span>
+<span class="o">{</span>
+    <span class="s2">"Name"</span>: <span class="s2">"docker.io/library/httpd"</span>,
+    <span class="s2">"Digest"</span>: <span class="s2">"sha256:0c8dd1d9f90f0da8a29a25dcc092aed76b09a1c9e5e6e93c8db3903c8ce6ef29"</span>,
+    <span class="s2">"RepoTags"</span>: <span class="o">[</span>
+        <span class="s2">"2"</span>,
+        <span class="s2">"2-alpine"</span>,
+        <span class="s2">"2-alpine3.13"</span>,
+        <span class="s2">"2-alpine3.14"</span>,
+        <span class="s2">"2-alpine3.15"</span>,
+        <span class="s2">"2-bullseye"</span>,
+        <span class="s2">"2-buster"</span>,
+... skip ...
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>inspect 명령을 사용하여 찾은 이미지에서 포함된 릴리즈들을 모두 확인할 수 있다.</p>
+
+  <p>우리는 2-alpine3.15 를 아래에서 사용하기로 하자.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<h3 id="22-이미지-다운로드">2.2 이미지 다운로드</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="c"># podman pull docker.io/library/httpd:"2-alpine3.14"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h3 id="23-컨테이너-실행">2.3 컨테이너 실행</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c"># mkdir /html</span>
+<span class="c"># echo "Hello World" &gt; /html/index.html</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>옵션으로, 호스트 디렉토리를 컨테이너에게 전달하기 위한 환경</p>
+</blockquote>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="c"># podman run --detach --name "myweb" -p "8080:80" -v "/html:/usr/local/apache2/htdocs:Z" -e "BLOGGER=DHKIM" -e "GIT=dhkim900331" docker.io/library/httpd</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><em>_–detach : 백그라운드 실행</em></p>
+
+  <p><em>–name : 컨테이너 명</em></p>
+
+  <p><em>-p : 호스트 8080 port를 컨테이너 80 port로 forwarding</em></p>
+
+  <p><em>-v : 호스트 /html 디렉토리를 컨테이너의 /usr/…/htdocs 디렉토리로 연결</em></p>
+
+  <p>_  ㄴ Z 옵션은 SELinux 옵션. 주지 않으면 SELinux policy 다를 경우 권한 문제 발생_</p>
+
+  <p>_-e : 환경 변수를 key:value pair로 전달__</p>
+
+  <p>마지막 argument는 아까 받은 이미지</p>
+</blockquote>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="c"># podman ps -a</span>
+CONTAINER ID  IMAGE                           COMMAND           CREATED        STATUS            PORTS                 NAMES
+3c6ad1ea13e3  docker.io/library/httpd:latest  httpd-foreground  3 minutes ago  Up 3 minutes ago  0.0.0.0:8080-&gt;80/tcp  myweb
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>컨테이너 실행 중인 상태(STATUS를 보고 판단)</p>
+</blockquote>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="c"># podman exec -it myweb /bin/bash</span>
+root@3c6ad1ea13e3:/usr/local/apache2# <span class="nb">hostname
+</span>3c6ad1ea13e3
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>컨테이너 내부로 접속하여 hostname 명령을 쳐보았다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<h2 id="3-비-루트-계정-서비스-등록">3. 비-루트 계정 서비스 등록</h2>
+
+<ul>
+  <li>
+    <p>여기서부터는 비-루트 계정으로 로그인하면서 진행한다.</p>
+
+    <ul>
+      <li>앞서 컨테이너 생성 시 아래에서 사용할 계정과 다르면 컨테이너를 지우고 여기 계정으로 다시 생성한다.</li>
+    </ul>
+  </li>
+  <li>
+    <p>systemctl –user 옵션을 사용한다.</p>
+
+    <ul>
+      <li>
+        <p>반드시 ssh <user>@<host> 방식으로 로그인 해야한다.</host></user></p>
+      </li>
+      <li>
+        <p>그렇지 않으면 다음 처럼 bus에 연결하지 못한다.</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c"># systemctl --user</span>
+Failed to connect to bus: 그런 파일이나 디렉터리가 없습니다
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="c"># ssh test@localhost</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>컨테이너를 일반계정 test 에 서비스 등록하기 위하여 ssh 로그인</p>
+</blockquote>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c"># mkdir -p ~/.config/systemd/user</span>
+<span class="c"># podman generate systemd myweb --new &gt; ~/.config/systemd/user/container-myweb.service</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>현재 실행중인 myweb 컨테이너를 service 파일로 생성</p>
+</blockquote>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="c"># podman stop myweb</span>
+<span class="c"># podman rm myweb</span>
+<span class="c"># systemctl --user enable --now container-myweb.service</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>myweb 컨테이너를 정지/삭제 하고,</p>
+
+  <p>user 서비스를 재부팅 시 자동 시작되도록 및 지금 당장 시작하도록 설정한다.</p>
+</blockquote>
+:ET

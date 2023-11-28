@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 CORS 설정 방법.
-
-
-
+{{ site.content.br_small }}
 # 2. 설명
 
 ```bash

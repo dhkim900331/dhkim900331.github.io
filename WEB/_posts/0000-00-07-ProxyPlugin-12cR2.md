@@ -15,9 +15,7 @@ OHS 제품에 적용될 수 있는 (`Applies to: Oracle HTTP Server`) 항목만 
 또한, 자세한 동작의 알고리즘을 알아야 되는 옵션들 위주로 먼저 문서를 작성하므로
 
 Index는 존재하지만 내용은 Empty 할 수 있다.
-
-
-
+{{ site.content.br_small }}
 # 2. Connections
 
 Connect 관련 옵션들에 대해서 살펴본다.
@@ -25,17 +23,13 @@ Connect 관련 옵션들에 대해서 살펴본다.
 해당 부분은, 워낙에 대중적으로 잘 알려져있고 공식 메뉴얼에서 명확하게 설명하므로
 
 추후 필요시에 업데이트한다.
-
-
-
+{{ site.content.br_small }}
 # 3. Debugging
 
 ## 3.1 DebugConfigInfo
 
 참고, [6. Proxy Plugin](Configure-OHS-12cR2#h-6-proxy-plugin)
-
-
-
+{{ site.content.br_small }}
 # 4. FileCaching
 
 POST 데이터 전송 시 (보통 파일업로드),
@@ -43,9 +37,7 @@ POST 데이터 전송 시 (보통 파일업로드),
 FileSize가 2048Bytes를 초과하는 경우에 동작을 설정한다.
 
 공식 메뉴얼에 잘 나와 있으나, 실제로 어떻게 동작하는지 Debug Log로 살펴본다.
-
-
-
+{{ site.content.br_small }}
 ## 4.1 FileCaching OFF
 
 Plugin 옵션을 다음과 같이 설정한다.
@@ -54,9 +46,7 @@ Plugin 옵션을 다음과 같이 설정한다.
 FileCaching OFF
 WLTempDir <path>/WLTempDir
 ```
-
-
-
+{{ site.content.br_small }}
 * 100 Bytes 크기의 파일을 POST 전송
 
   ```
@@ -69,9 +59,7 @@ WLTempDir <path>/WLTempDir
   File뿐만 아니라, POST Header 등과 같은 기타 크기가 추가되었을 것으로 추측을 할뿐이다.
 
   **2048 Bytes 보다 작아 `in memory` 로 Plugin 에서 처리한다.**
-
-
-
+{{ site.content.br_small }}
 * 1000 Bytes
 
   ```

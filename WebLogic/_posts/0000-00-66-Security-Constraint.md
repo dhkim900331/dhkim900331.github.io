@@ -9,7 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 web.xml J2EE Spec에서 security-constraint 기술 사용법에 대해서 간략하게 설명한다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 2. HTTP-METHOD 제한
 
 ```xml
@@ -31,7 +31,7 @@ web.xml J2EE Spec에서 security-constraint 기술 사용법에 대해서 간략
 `/secured/*` URI에 대해서는 POST/GET method를 아무도 접근하지 못하도록 `<auth-constraint />` 설정한다.
 
 중요한 포인트는 `auth-constraint` 이다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 3. HTTPS으로 Redirect
 
 ```xml
@@ -60,7 +60,7 @@ web.xml J2EE Spec에서 security-constraint 기술 사용법에 대해서 간략
 그 외 요청들은 전환되지 않는다.
 {{ site.content.br_small }}
 중요한 포인트는 `auth-constraint` 가 없다는 것이다. METHOD를 제한하지 않으니, TRACE,OPTIONS,DELETE,HEAD 등.. 모든 METHOD를 허용한다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 4. 결합 옵션
 
 ```xml
@@ -98,7 +98,7 @@ web.xml J2EE Spec에서 security-constraint 기술 사용법에 대해서 간략
 POST/GET 은 HTTPS 전환되어 보호되고,
 
 그 외 METHOD는 접근 거부된다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 5. References
 
 **http-method 와 transport-guarantee 으로 애플리케이션 요청을 보호하는 방법 (Doc ID 2947435.1)**

@@ -1,0 +1,135 @@
+I"�<h2 id="1-overview">1. Overview</h2>
+
+<p>내 근무처는 Cisco AnyConnect Secure Mobility Client (version 4.10.05111) 로 VPN을 활성화해야 업무를 볼 수 있다.</p>
+
+<p>매번, PC boot 후 GUI Tool로 활성화 하는 것이 불편하여 vpncli.exe CLI 로 활성화 하는 것을 정리한다.</p>
+<p style="height:40px;"></p>
+<h2 id="2-description">2. Description</h2>
+
+<p><code class="language-plaintext highlighter-rouge">C:\Program Files (x86)\Cisco\Cisco AnyConnect Secure Mobility Client\vpncli.exe</code> 를 제어할 수 있기 때문에, 다음과 같은 batch 를 작성했다.</p>
+<p style="height:20px;"></p>
+<p>Relogin.cmd 는 작업 스케쥴러에 등록하여, PC boot 시에, 또는 매일 아침에 실행하도록 하여 VPN 재접속을 수행한다.</p>
+
+<p>vpncli.exe는 vpnui.exe(GUI)가 종료되어 있어야 한다.</p>
+<p style="height:20px;"></p>
+<p>env.cmd</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>@echo off
+
+rem 변수 설정
+<span class="nb">set </span><span class="nv">ScriptHome</span><span class="o">=</span>%~dp0
+<span class="nb">set </span><span class="nv">LoginCmd</span><span class="o">=</span>%ScriptHome%<span class="se">\L</span>ogin.cmd
+<span class="nb">set </span><span class="nv">LogoffCmd</span><span class="o">=</span>%ScriptHome%<span class="se">\L</span>ogoff.cmd
+<span class="nb">set </span><span class="nv">ipconfigCmd</span><span class="o">=</span>%ScriptHome%<span class="se">\i</span>pconfig.cmd
+
+<span class="nb">set </span><span class="nv">vpnExe</span><span class="o">=</span>C:<span class="se">\P</span>rogram Files <span class="o">(</span>x86<span class="o">)</span><span class="se">\C</span>isco<span class="se">\C</span>isco AnyConnect Secure Mobility Client<span class="se">\v</span>pncli.exe
+<span class="nb">set </span><span class="nv">vpnHost</span><span class="o">=</span>&lt;vpnHost&gt;
+<span class="nb">set </span><span class="nv">vpnUsername</span><span class="o">=</span>&lt;vpnUsername&gt;
+<span class="nb">set </span><span class="nv">vpnPassword</span><span class="o">=</span>&lt;vpnPassword&gt;
+<span class="nb">set </span><span class="nv">vpnResponseFile</span><span class="o">=</span>%ScriptHome%<span class="se">\r</span>sp.txt
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>Login.cmd</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>@echo off
+
+call <span class="s2">"%~dp0</span><span class="se">\e</span><span class="s2">nv.cmd"</span>
+
+rem 파일에 저장될 사용자 이름과 비밀번호
+<span class="o">(</span>
+    <span class="nb">echo</span> %vpnUsername%
+    <span class="nb">echo</span> %vpnPassword%
+<span class="o">)</span> <span class="o">&gt;</span> <span class="s2">"%vpnResponseFile%"</span>
+
+<span class="s2">"%vpnExe%"</span> connect %vpnHost% <span class="nt">-s</span> &lt; <span class="s2">"%vpnResponseFile%"</span>
+
+rem 파일 삭제
+del <span class="s2">"%vpnResponseFile%"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>Logoff.cmd</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>@echo off
+
+call <span class="s2">"%~dp0</span><span class="se">\e</span><span class="s2">nv.cmd"</span>
+
+rem 프로그램 실행
+<span class="s2">"%vpnExe%"</span> disconnect
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>ipconfig.cmd</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>@echo off
+
+call <span class="s2">"%~dp0</span><span class="se">\e</span><span class="s2">nv.cmd"</span>
+
+<span class="nb">echo</span> %date% %time% <span class="o">&gt;</span> <span class="s2">"%ipconfigRsp%"</span>
+ipconfig <span class="o">&gt;&gt;</span> <span class="s2">"%ipconfigRsp%"</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>Relogin.cmd</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>@echo off
+
+call <span class="s2">"%~dp0</span><span class="se">\e</span><span class="s2">nv.cmd"</span>
+
+call <span class="s2">"%LogoffCmd%"</span>
+<span class="nb">timeout</span> /t 5 <span class="o">&gt;</span>nul
+call <span class="s2">"%LoginCmd%"</span>
+<span class="nb">timeout</span> /t 5 <span class="o">&gt;</span>nul
+rem Must run as Administator
+call <span class="s2">"%ipconfigCmd%"</span>
+<span class="nb">exit</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

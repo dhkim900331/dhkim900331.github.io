@@ -11,11 +11,7 @@ typora-root-url: ..
 Outlook에서 중요한 이메일을 받으면, 알림이 울리도록 설정할 수 있지만, 반복적으로 사용자가 컴퓨터 앞에 도착할 때까지 울리지 않는다.
 
 꼭 수신받아야 하는 이메일이 왔을 경우를 위하여 반복적으로 사운드 파일을 재생하도록 한다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. Description
 
 ## 2.1 Class Module
@@ -36,11 +32,7 @@ Private Sub objInspectors_NewInspector(ByVal Inspector As Inspector)
     End If
 End Sub
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ## 2.2 ThisOutlookSession
 
 ThisOutlookSession 코드는 다음과 같다.
@@ -98,37 +90,23 @@ Private Sub PlaySoundLoop()
     PlaySound vbNullString, 0, SND_ASYNC ' 사운드 중지
 End Sub
 ```
-
-
-
+{{ site.content.br_small }}
 `Private Declare PtrSafe` VBA 7.1, Windows 11 64bit 환경이므로 필요한 선언부
-
-
-
+{{ site.content.br_small }}
 `GetDefaultFolder(olFolderInbox)` 기본 수신함(Inbox) 외에도
 
 `Folders("TAS")` Inbox 하위에 TAS 폴더 또한 보기 위하여 설정하였다.
 
 메일에 자동 규칙으로 자동 분류가 되면, 기본 수신함에 도착하지 않고 바로 TAS에 가기 때문에 반드시 필요했다.
-
-
-
+{{ site.content.br_small }}
 `For Each objMail In objInBox.Items` 기본적으로 메일의 최근 목록부터 과거로 가져온다고 하지만, 그렇지 않은 것 같다.
-
-
-
+{{ site.content.br_small }}
 `If (receivedDay = vbFriday And receivedHour >= 18) _
 Or (receivedDay = vbMonday And receivedHour <= 9) _
 Or (receivedDay = vbSaturday Or receivedDay = vbSunday) Then`  추적하려는 메일은 평일이 아닌, 금요일 18시 이후 월요일 09시 이전 사이에 도착하는 메일이다.
-
-
-
+{{ site.content.br_small }}
 `InStr(1, LCase(objMail.Body), "status: new")` 이메일 본문을 소문자로 변환하고, 'status: new' 가 포함되어 있는지 확인한다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 3. References
 
 ChatGPT 도움으로 해결함

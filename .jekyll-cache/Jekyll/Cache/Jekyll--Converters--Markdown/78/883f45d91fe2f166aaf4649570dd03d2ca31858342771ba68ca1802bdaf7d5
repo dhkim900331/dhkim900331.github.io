@@ -1,0 +1,70 @@
+I"<h2 id="1-개요">1. 개요</h2>
+
+<p>Ansible installation</p>
+<p style="height:20px;"></p>
+<hr />
+
+<h2 id="2-설치">2. 설치</h2>
+
+<p>CentOS Version</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> /etc/<span class="k">*</span>release
+CentOS Stream release 8
+<span class="nv">NAME</span><span class="o">=</span><span class="s2">"CentOS Stream"</span>
+<span class="nv">VERSION</span><span class="o">=</span><span class="s2">"8"</span>
+<span class="nv">ID</span><span class="o">=</span><span class="s2">"centos"</span>
+<span class="nv">ID_LIKE</span><span class="o">=</span><span class="s2">"rhel fedora"</span>
+<span class="nv">VERSION_ID</span><span class="o">=</span><span class="s2">"8"</span>
+<span class="nv">PLATFORM_ID</span><span class="o">=</span><span class="s2">"platform:el8"</span>
+<span class="nv">PRETTY_NAME</span><span class="o">=</span><span class="s2">"CentOS Stream 8"</span>
+<span class="nv">ANSI_COLOR</span><span class="o">=</span><span class="s2">"0;31"</span>
+<span class="nv">CPE_NAME</span><span class="o">=</span><span class="s2">"cpe:/o:centos:centos:8"</span>
+<span class="nv">HOME_URL</span><span class="o">=</span><span class="s2">"https://centos.org/"</span>
+<span class="nv">BUG_REPORT_URL</span><span class="o">=</span><span class="s2">"https://bugzilla.redhat.com/"</span>
+<span class="nv">REDHAT_SUPPORT_PRODUCT</span><span class="o">=</span><span class="s2">"Red Hat Enterprise Linux 8"</span>
+<span class="nv">REDHAT_SUPPORT_PRODUCT_VERSION</span><span class="o">=</span><span class="s2">"CentOS Stream"</span>
+CentOS Stream release 8
+CentOS Stream release 8
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>참고하여 CentOS 8에  설치 하였다.</p>
+
+<blockquote>
+  <p><em><a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-rhel-centos-or-fedora">https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-rhel-centos-or-fedora</a></em></p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>Oralce Linux 7 VM은 다음 링크</p>
+
+<blockquote>
+  <p><em><a href="https://blogs.oracle.com/scoter/ansible-with-oracle-linux-virtualization-manager-olvm">https://blogs.oracle.com/scoter/ansible-with-oracle-linux-virtualization-manager-olvm</a></em></p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>각각 VM에 다음 링크 대로 적용하여 nopass 설정하였다.</p>
+
+<p>ansible 이 각 VM 에 명령어 실행 시, password 인자를 줄 수 있지만,</p>
+
+<p>이번 설치 및 테스트 환경에서는 nopass 설정을 하였다.</p>
+
+<blockquote>
+  <p><em><a href="https://devfon.tistory.com/31">https://devfon.tistory.com/31</a></em></p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>/etc/ansible 에 설치완료</p>
+:ET

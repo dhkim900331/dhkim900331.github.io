@@ -9,8 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 DB 상태 출력하는 WLST Script
-{{ site.content.br_small }}
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ```python

@@ -13,7 +13,7 @@ WebLogic Server 14c 기준에서 Client 측에 TLS Protocol을 어떻게 다루�
 [How-To-Enable-TLS-Server](How-To-Enable-TLS-Server) 에서는 Server측 기준이었으나,
 
 [How-To-Enable-TLS-Client ](How-To-Enable-TLS-Client)에서는 WLS가 Client가 되었을 경우를 설명한다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 2. Inbound TLS
 
 다음 옵션으로 TLS를 받아들이는 Server측의 Protocol은 TLSv1.2 이상이 된다.
@@ -23,10 +23,11 @@ USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.security.properties=${DOMAIN_HOME}/java.s
 USER_MEM_ARGS="${USER_MEM_ARGS} -Dweblogic.security.SSL.minimumProtocolVersion=TLSv1.2"
 ```
 {{ site.content.br_small }}
+
 # 3. Outbound TLS
 
 WLS 가 Client가 되어 Outbound TLS 통신은 여러가지 환경에 따라, 살펴보아야 하는것 같다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 ## 3.1 URL openStream
 
 URL class의 openStream으로 Outbound TLS 호출을 할 경우를 살펴본다.
@@ -97,7 +98,7 @@ HttpsURLConnection 클래스, URL 클래스의 openStream 을 사용할 때는 `
 다시 살펴보니, Java 7 이전 버전에서 Client의 Outbound TLS 통신일 경우에 적용하는 옵션으로 보여진다.
 {{ site.content.br_small }}
 내 테스트 환경에 따른, [JDK 8 Security Enhancements](https://docs.oracle.com/javase/8/docs/technotes/guides/security/enhancements-8.html) 문서를 보면 Java SE 8 부터 `jdk.tls.client.protocols` 옵션을 가이드하고 있다. 그러므로 위 블로그의 내용이 아니라 공식 문서에 의견대로 옵션을 사용하는것이 올바라 보인다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 ## 3.2 HttpsUrlConnection (SSLContext)
 
 해당 부분은 URL openStream과 동일할 것이므로,
@@ -264,6 +265,7 @@ Server Hello는
       "selected version": [TLSv1.3]
 ```
 {{ site.content.br_small }}
+
 # 4. Outcome
 
 Outbound SSL 통신시, WAS 솔루션마다 지원하는 옵션이 있음이 확인된다.

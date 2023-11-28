@@ -11,7 +11,7 @@ typora-root-url: ..
 Sample EJB App을 배포하여, Cluster Weight 기능을 테스트한다.
 
 여기서 소개하는 EJB App의 Java Source Code나 Deployment Descriptor XML File의 내용은 올바르지 않을 수 있다.
-{{ site.content.br_small }}
+{{ site.content.br_big }}
 # 2. 요구 사항
 
 * 다음의 환경에서 진행하였다.
@@ -23,10 +23,11 @@ Sample EJB App을 배포하여, Cluster Weight 기능을 테스트한다.
 
 * 다음의 3개 Instance를 구성하고, 일부만 Clustering 설정한다.
 
-![EJB-ClusterWeight_1](/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_1.png)
+![EJB-ClusterWeight_1](/../assets/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_1.png)
 
 > 각 Instance는 Enable Tunneling 되었다. (중요하지 않아 보임)
-{{ site.content.br_small }}
+
+
 * base_cluster 내의 Instance는 각각 `Configuration - Cluster - Cluster Weight` 설정값을 `50`과 `100` 으로 적용하였다.
 {{ site.content.br_small }}
 * `base_cluster - Configuration - Default Load Algorithm` 을 `weight-based` 설정
@@ -36,14 +37,16 @@ Sample EJB App을 배포하여, Cluster Weight 기능을 테스트한다.
   * `clientSide` 를 `M1` 에 배포한다.
   * `serverSide` 를 `base_cluster` 에 배포한다.
 
-![EJB-ClusterWeight_2](/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_2.png)
+![EJB-ClusterWeight_2](/../assets/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_2.png)
 {{ site.content.br_big }}
+
 ## 2.2 EJB Application
 
 ### 2.2.1 serverSide
 
 serverSide EJB App은 Business Logic (`ejbHome.getMsg()`)이 구현되어 있다.
 {{ site.content.br_small }}
+
 * 다음의 EJB App을 준비한다.
 
 ```bash
@@ -98,7 +101,8 @@ serverSide/
 > index.jsp는 clientSide를 통해 호출할 것이고, 미리 여기서 만들었을 뿐이다.
 >
 > 물론 serverSide 의 index.jsp 를 호출해도 동작한다.
-{{ site.content.br_small }}
+
+
 * WEB-INF/src/serverSide/ejbHome.java
 
 ```java
@@ -180,7 +184,8 @@ javac -d ./classes ./src/serverSide/*java
 ```
 
 > 주석을 하더라도 동작하는 부분은 아직 이해하지 못했다.
-{{ site.content.br_big }}
+{{ site.content.br_small }}
+
 ### 2.2.2 clientSide
 
 clientSide는 serverSide를 복제하여 준비하면 된다.
@@ -194,7 +199,8 @@ interface class (ejbRemote.class) 만 가지고 있다.
 EJB의 특징이 여기서 드러나는데, 외부의 client가 server의 Business Logic 을 interface를 이용해 Remote 접근할 수 있다.
 {{ site.content.br_small }}
 > index.jsp 가 serverSide에 있지만, 중요하지 않다.
-{{ site.content.br_small }}
+
+
 * 다음의 EJB App을 준비한다.
 
 ```bash
@@ -224,7 +230,7 @@ JNDI Lookup Access Point로 요청을 수행한다.
 {{ site.content.br_small }}
 위 Global Name은 `<Instance> - Configuration - General - View JNDI Tree` 에서 확인할 수 있다.
 
-![EJB-ClusterWeight_3](/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_3.png)
+![EJB-ClusterWeight_3](/../assets/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_3.png)
 {{ site.content.br_small }}
 조회 시에, `base_cluster` 에 설정한 `weight-base` Algorithm 에 따라 동작한다.
 {{ site.content.br_small }}
@@ -232,7 +238,7 @@ JNDI Lookup Access Point로 요청을 수행한다.
 {{ site.content.br_small }}
 다음의 통계 화면에서 결과를 확인할 수 있으며, 초기 요청시에는 분산 가중치가 엇비슷 할 수 있다.
 
-![EJB-ClusterWeight_4](/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_4.png)
+![EJB-ClusterWeight_4](/../assets/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_4.png)
 {{ site.content.br_big }}
 # 4. Trouble Shooting
 
@@ -242,7 +248,7 @@ JNDI 호출이 잘 되지 않는 경우에는, 정확한 Naming을 확인해야 
 {{ site.content.br_small }}
 여기서는 **Global Naming Lookup**을 해야 Cluster Load Balancing이 적용되었다.
 
-![EJB-ClusterWeight_5](/../assets/posts/images/01-WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_5.png)
+![EJB-ClusterWeight_5](/../assets/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_5.png)
 {{ site.content.br_big }}
 ## 4.2 Cluster Default Load Algorithm
 

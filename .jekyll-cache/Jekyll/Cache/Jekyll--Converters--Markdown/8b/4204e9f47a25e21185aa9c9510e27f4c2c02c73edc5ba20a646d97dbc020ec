@@ -1,0 +1,9 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+<p>Tomcat 에 Jenkins 설치
+Jenkins 는 기본적으로 jetty 로 구성되어 패키지 제공되고 있으나,
+war를 Tomcat에 배포하는 것으로 설치해보기로 한다.</p>
+<p style="height:20px;"></p>
+<h2 id="2-설치">2. 설치</h2>
+<h3 id="21-다운로드">2.1 다운로드</h3>
+<p><a href="https://www.jenkins.io/download/">여기 클릭</a></p>
+:ET
