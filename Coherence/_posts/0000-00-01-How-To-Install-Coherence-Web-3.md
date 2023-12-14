@@ -33,14 +33,14 @@ Oracle Support의 Patches에서 Coherence를 다운로드 받는다.
         <member-identity>
             <cluster-name system-property="tangosol.coherence.cluster">MyCluster</cluster-name>
         </member-identity>
-​
+
         <unicast-listener>
             <address system-property="tangosol.coherence.localhost">wls.local</address>
-            <port system-property="tangosol.coherence.localport">10000<port>
+            <port system-property="tangosol.coherence.localport">10000</port>
             <port-auto-adjust system-property="tangosol.coherence.localport.adjust">true</port-auto-adjust>
         </unicast-listener>
     </cluster-config>
-​
+
     <license-config>
         <edition-name systemproperty="tangosol.coherence.edition">GE</edition-name>
         <license-mode systemproperty="tangosol.coherence.mode">prod</license-mode>
@@ -70,6 +70,8 @@ export JAVAEXEC=$JAVA_HOME/bin/java
 export PREFIX=`date +"%Y%m%d_%H%M%S"`
 export SERVER_NAME=CacheServer1
 export CLASSPATH="${CLASSPATH}:$COHERENCE_HOME/lib/coherence.jar:$COHERENCE_HOME/lib/coherence-web.jar"
+export LOG_DIR=${COHERENCE_HOME}/logs
+mkdir -p ${LOG_DIR}/backup
 
 JAVA_OPTS="$JAVA_OPTS -Xms6144m -Xmx6144m"
 JAVA_OPTS="$JAVA_OPTS -Dtangosol.coherence.override=${COHERENCE_HOME}/lib/run.xml"
