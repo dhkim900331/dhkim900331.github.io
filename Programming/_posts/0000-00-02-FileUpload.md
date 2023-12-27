@@ -45,11 +45,10 @@ import javax.servlet.annotation.*;
 
 
 @WebServlet(name = "FileUploadServlet", urlPatterns = { "/fileuploadservlet" })
-@MultipartConfig(
-  fileSizeThreshold = 1024 * 1024 * 10,     // 10 MB
-  maxFileSize = 1024 * 1024 * 1024 * 1,    // 1 GB
-  maxRequestSize = 1024 * 1024 * 1024 * 1  // 1 GB
-)
+@MultipartConfig(fileSizeThreshold=1024*1024*10,  // 10 MB
+                 maxFileSize=1024*1024*50,       // 50 MB
+                 maxRequestSize=1024*1024*100,    // 100 MB
+                 location="/tmp/fileUploadTemp")
 /* Simple Java File Upload Example */
 public class FileUploadServlet extends HttpServlet {
 

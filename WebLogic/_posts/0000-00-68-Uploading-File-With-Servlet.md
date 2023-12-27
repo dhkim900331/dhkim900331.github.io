@@ -23,6 +23,7 @@ Servlet 자체에서 지원하게 되어, 그럴 필요가 없어졌다는 의�
 {{ site.content.br_small }}
 해당 기능의 App 구현은 [FileUpload]({{ site.url }}/servlet/FileUpload) 에서 다루었다.
 {{ site.content.br_big }}
+
 # 3. Uploading Test
 
 MultipartConfig annoation은 다음과 같이 하였다.
@@ -35,6 +36,21 @@ MultipartConfig annoation은 다음과 같이 하였다.
   maxRequestSize = 1024 * 1024 * 1024 * 10  // 10 GB
 )
 ```
+
+
+
+> 2023-12-21 위 MultiPartConfig annoation에 문제가 없어 보이는데, 적용되지 않는 현상이 WLS 14.1 (Servlet 4.0)에서 목격되어 아래와 같이 변경하였다. (줄바꿈 등으로 인한 문제인 것인지..)
+>
+> ```java
+> @MultipartConfig(fileSizeThreshold=1024*1024*10,  // 10 MB
+>                  maxFileSize=1024*1024*50,       // 50 MB
+>                  maxRequestSize=1024*1024*100,    // 100 MB
+>                                  location="/tmp/fileUploadTemp")
+> ```
+>
+> 
+
+
 
 `fileSizeThreshold` 를 초과하는 경우, 임시로 `location`에 파일을 작성한다.
 
