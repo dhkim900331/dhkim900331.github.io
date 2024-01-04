@@ -33,12 +33,10 @@ WLDF (WebLogic Diagnostics Framework) Off
 * 웹로직 도메인 Console Page를 열어,
   Menu tree > 진단(Diagnostics) > 내장 진단 모듈(Built-in Diagnostics Module)을 엽니다.
 
-![How-To-Disable-WLDF_1](/../assets/posts/images/WebLogic/How-To-Disable-WLDF/How-To-Disable-WLDF_1.png)
-{{ site.content.br_small }}
+![How-To-Disable-WLDF_1](/../assets_copy/posts/images/WebLogic/How-To-Disable-WLDF_1.png){{ site.content.br_small }}
 * 비활성화 상태의 인스턴스를 선택하고, 활성화를 누릅니다.
 
-![How-To-Disable-WLDF_2](/../assets/posts/images/WebLogic/How-To-Disable-WLDF/How-To-Disable-WLDF_2.png)
-{{ site.content.br_small }}
+![How-To-Disable-WLDF_2](/../assets_copy/posts/images/WebLogic/How-To-Disable-WLDF_2.png){{ site.content.br_small }}
 * 상태가 활성으로 바뀌면, 진단 기능이 활성화 된 것을 의미합니다.
 
 * ***[중요]*** 기동되어 있는 각각의 `인스턴스 > 내장 시스템 모듈 : None (없음)` 으로 되어 있으면

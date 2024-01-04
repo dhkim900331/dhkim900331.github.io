@@ -121,8 +121,7 @@ do
 done
 ```
 
-![Get-Config-Bash_1](/../assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_1.png)
-{{ site.content.br_big }}
+![Get-Config-Bash_1](/../assets_copy/posts/images/WebLogic/Get-Config-Bash_1.png){{ site.content.br_big }}
 # 3. 배포 App 정보
 
 ## 3.1 App 이름
@@ -208,8 +207,7 @@ do
 done
 ```
 
-![Get-Config-Bash_2](/../assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_2.png)
-{{ site.content.br_big }}
+![Get-Config-Bash_2](/../assets_copy/posts/images/WebLogic/Get-Config-Bash_2.png){{ site.content.br_big }}
 # 4. Datasource 정보
 
 ## 4.1 Datasource 이름
@@ -309,4 +307,4 @@ do
 done
 ```
 
-![Get-Config-Bash_3](/../assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_3.png)
+![Get-Config-Bash_3](/../assets_copy/posts/images/WebLogic/Get-Config-Bash_3.png)

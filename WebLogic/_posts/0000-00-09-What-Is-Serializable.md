@@ -53,8 +53,7 @@ class gtplus{
 {{ site.content.br_small }}
 그래프는 다음과 같습니다.
 
-![What-Is-Serializable_1](/../assets/posts/images/WebLogic/What-Is-Serializable/What-Is-Serializable_1.png)
-
+![What-Is-Serializable_1](/../assets_copy/posts/images/WebLogic/What-Is-Serializable_1.png)
 클래스 내의 string, int 등은 통신에서 보낼 수 있지만, 클래스 객체는 연결고리(레퍼런스)가 그래프 형식이기 때문에 정리할 필요가 있습니다.
 {{ site.content.br_big }}
 # 5. Serializable
@@ -69,8 +68,7 @@ JDK 1.1에서 나온 직렬화는 단순히 인터페이스를 구현(implements
 
 직렬화를 요약하자면, 객체를 전송(파일 저장, 네트워크 통신)하기 위해 그래프를 일렬로 줄 세운다고 할 수 있습니다.
 {{ site.content.br_small }}
-![What-Is-Serializable_2](/../assets/posts/images/WebLogic/What-Is-Serializable/What-Is-Serializable_2.png)
-{{ site.content.br_small }}
+![What-Is-Serializable_2](/../assets_copy/posts/images/WebLogic/What-Is-Serializable_2.png){{ site.content.br_small }}
 # 6. RMI
 
 직렬화 하면, RMI 통신과 연관되어 있습니다.

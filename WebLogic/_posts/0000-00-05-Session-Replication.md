@@ -32,8 +32,7 @@ Primary Server의 shutdown이 되더라도, Secondary Server에 backup Session�
 {{ site.content.br_small }}
 또한, 다음 표는 Cluster 내 Member들 간 Session 복제 우선 순위.
 
-![Session-Replication_1](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_1.png)
-
+![Session-Replication_1](/../assets_copy/posts/images/WebLogic/Session-Replication_1.png)
 1순위 - 다른 머신, 같은 그룹
 
 2순위 - 같은 머신, 같은 그룹
@@ -50,14 +49,12 @@ m1에 Primary 2, Secondary 1
 
 m2에 Primary 1, Secondary 2
 
-![Session-Replication_2](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_2.png)
-{{ site.content.br_small }}
+![Session-Replication_2](/../assets_copy/posts/images/WebLogic/Session-Replication_2.png){{ site.content.br_small }}
 m2 instance를 shutdown 시에,
 
 m1의 Secondary가 m1의 Primary로 이동한다.
 
-![Session-Replication_3](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_3.png)
-{{ site.content.br_big }}
+![Session-Replication_3](/../assets_copy/posts/images/WebLogic/Session-Replication_3.png){{ site.content.br_big }}
 # 5. 로컬에서 Replication Group 테스트
 
 테스트 목적 : 클러스터링 세션의 Primary, Secondary 구성의 여러가지 테스트.
@@ -148,16 +145,13 @@ M4 - M3 으로 클러스터 Primary/Secondary 설정이 되어야 하는데
 {{ site.content.br_small }}
 그림1. M1 , M3 인스턴스만 기동하여 서로 강제 클러스터링
 
-![Session-Replication_4](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_4.png)
-{{ site.content.br_small }}
+![Session-Replication_4](/../assets_copy/posts/images/WebLogic/Session-Replication_4.png){{ site.content.br_small }}
 그림2. M2 인스턴스를 추가 기동하였더니, 클러스터 구조 재조정
 
-![Session-Replication_5](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_5.png)
-{{ site.content.br_small }}
+![Session-Replication_5](/../assets_copy/posts/images/WebLogic/Session-Replication_5.png){{ site.content.br_small }}
 그림3. M4 인스턴스를 추가 기동하였더니, 클러스터 구조 재조정
 
-![Session-Replication_6](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_6.png)
-{{ site.content.br_small }}
+![Session-Replication_6](/../assets_copy/posts/images/WebLogic/Session-Replication_6.png){{ site.content.br_small }}
 클러스터 구조가 재조정되며, 세션이 이동된다.
 
 상당히 무거운 시스템에서는 이러한 재조정 사태에 부하가 발생할 것 같은데..

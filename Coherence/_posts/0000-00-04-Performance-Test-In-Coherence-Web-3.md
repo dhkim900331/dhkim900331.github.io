@@ -107,8 +107,7 @@ typora-root-url: ..
 
 Jmeter 20 Users 가 지속적으로 세션을 생성하는 과정에서, 위 스크립트로 자료를 모아 엑셀로 평균을 뽑아 보았다.
 {{ site.content.br_small }}
-![Performance-Test-In-Coherence-Web-3_1](/../assets/posts/images/Coherence/Performance-Test-In-Coherence-Web-3/Performance-Test-In-Coherence-Web-3_1.png)
-{{ site.content.br_small }}
+![Performance-Test-In-Coherence-Web-3_1](/../assets_copy/posts/images/Coherence/Performance-Test-In-Coherence-Web-3_1.png){{ site.content.br_small }}
 Row 순서대로, `wm/CoherenceWorkManager` 의 Min/MaxThreads를 4, 8, 16 순으로 유사하게 테스트한 결과의 평균치이다.
 {{ site.content.br_small }}
 AverageReapDuraton, Threads가 증가할 수록 전체적으로 Reap Duration이 감소되었다.

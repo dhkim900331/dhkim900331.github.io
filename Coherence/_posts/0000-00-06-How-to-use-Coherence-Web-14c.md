@@ -122,8 +122,7 @@ Coherence - WebLogicHttpSessionManager - \<Member ID> - \<Web App> - Attributes 
 {{ site.content.br_small }}
 Member ID는 Node의 각 Attributes 에서 MemberName이나 ProcessName 으로 획득하면 수월하겠다.
 
-![How-to-use-Coherence-Web-14c_1](/../assets/posts/images/Coherence/How-to-use-Coherence-Web-14c/How-to-use-Coherence-Web-14c_1.png)
-{{ site.content.br_small }}
+![How-to-use-Coherence-Web-14c_1](/../assets_copy/posts/images/Coherence/How-to-use-Coherence-Web-14c_1.png){{ site.content.br_small }}
 예시 화면에서는 Unique 하게 되어 있지 않은데, Operational Override File에서 지정하면 된다.
 
 ```xml

@@ -46,12 +46,10 @@ X-Windows 환경의 Linux 에서도 가능하지만, Windows 에서 해보니 �
 {{ site.content.br_small }}
 * jconsole 화면에서 URL과 ID/PWD 로 접속을 시도한다.
 
-![JconsoleConnect_1](/../assets/posts/images/JBoss/JconsoleConnect/JconsoleConnect_1.png)
-{{ site.content.br_small }}
+![JconsoleConnect_1](/../assets_copy/posts/images/JBoss/JconsoleConnect_1.png){{ site.content.br_small }}
 * Debug 옵션에 의해, Debug Log 윈도우와 함께 정상적으로 접속이 되었다.
 
-![JconsoleConnect_2](/../assets/posts/images/JBoss/JconsoleConnect/JconsoleConnect_2.png)
-{{ site.content.br_small }}
+![JconsoleConnect_2](/../assets_copy/posts/images/JBoss/JconsoleConnect_2.png){{ site.content.br_small }}
 # 3. 참고문헌
 
 https://access.redhat.com/solutions/2435131

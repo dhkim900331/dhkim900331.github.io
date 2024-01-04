@@ -13,8 +13,7 @@ typora-root-url: ..
 {{ site.content.br_big }}
 # 2. 설명
 
-![Datasource-retry-options_1](/../assets/posts/images/WebLogic/Datasource-retry-options/Datasource-retry-options_1.png)
-{{ site.content.br_small }}
+![Datasource-retry-options_1](/../assets_copy/posts/images/WebLogic/Datasource-retry-options_1.png){{ site.content.br_small }}
 Connection Reserve Timeout 기본값 10초.
 
 사진상 3 초일 경우,
