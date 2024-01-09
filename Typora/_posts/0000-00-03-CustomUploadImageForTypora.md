@@ -29,8 +29,7 @@ typora-root-url: ..
 {{ site.content.br_small }}
 우선, 다음과 같이 `Upload image` 및 `Custom Command` 를 설정한다.
 
-![CustomUploadImageForTypora_1](/../assets_copy/posts/images/Typora/CustomUploadImageForTypora_1.png){{ site.content.br_small }}
-`Custom Command`는 `C:\PROGRA~1\Git\bin\sh.exe /c/Users/Dong-Hyun.KIM/Desktop/GoodMorning/2.-Blog/uploader.sh ${filename}` 와 같이 `uploader.sh`을 설정한다.
+[CustomUploadImageForTypora_1](/../assets_copy_1/posts/images/Typora/CustomUploadImageForTypora/CustomUploadImageForTypora_1.png)`Custom Command`는 `C:\PROGRA~1\Git\bin\sh.exe /c/Users/Dong-Hyun.KIM/Desktop/GoodMorning/2.-Blog/uploader.sh ${filename}` 와 같이 `uploader.sh`을 설정한다.
 
 뒤에 `${filename}`은 Typora에서 현재 Markdown 의 Filename을 매개변수로 넘겨준다.
 

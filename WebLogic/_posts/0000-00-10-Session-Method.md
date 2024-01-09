@@ -19,8 +19,7 @@ Session을 생성하고 복제하는 Method (setAttribute, getAttribute, getSess
 
 > (setAttribute 로 검색시)
 
-![Session-Method_1](/../assets_copy/posts/images/WebLogic/Session-Method_1.png){{ site.content.br_small }}
-
+[Session-Method_1](/../assets_copy_1/posts/images/WebLogic/Session-Method/Session-Method_1.png)
 
 # 3. 실제 Test 결과 및 결론
 
@@ -48,4 +47,4 @@ getSession(), getSession(true) = HttpSession이 존재하면 현재 HttpSession�
 
 getSession(false) = HttpSession이 존재하면 현재 HttpSession을 반환하고 존재하지 않으면 새로이 생성하지 않고 그냥 null을 반환합니다.
 {{ site.content.br_small }}
-![Session-Method_2](/../assets_copy/posts/images/WebLogic/Session-Method_2.png){{ site.content.br_small }}
+[Session-Method_2](/../assets_copy_1/posts/images/WebLogic/Session-Method/Session-Method_2.png)

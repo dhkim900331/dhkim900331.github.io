@@ -118,8 +118,7 @@ SSLCertificateKeyFile       ${CERT}/private.key
 {{ site.content.br_small }}
 * 접속 시 아래와 같이 완료되었습니다.
 
-![SetupSSLwithApache_1](/../assets_copy/posts/images/SSL/SetupSSLwithApache_1.png){{ site.content.br_small }}
-# 4. HTTS 테스트
+[SetupSSLwithApache_1](/../assets_copy_1/posts/images/SSL/SetupSSLwithApache/SetupSSLwithApache_1.png)# 4. HTTS 테스트
 
 ## 4.1 curl
 

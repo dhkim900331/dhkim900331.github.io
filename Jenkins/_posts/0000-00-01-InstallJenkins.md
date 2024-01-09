@@ -16,8 +16,7 @@ war를 Tomcat에 배포하는 것으로 설치해보기로 한다.
 ## 2.1 다운로드
 [여기 클릭](https://www.jenkins.io/download/)
 
-![InstallJenkins_1](/../assets_copy/posts/images/Jenkins/InstallJenkins_1.png)
-위 LTS 항목을 다운로드 받았다.
+[InstallJenkins_1](/../assets_copy_1/posts/images/Jenkins/InstallJenkins/InstallJenkins_1.png)위 LTS 항목을 다운로드 받았다.
 {{ site.content.br_small }}
 ## 2.2 Tomcat 환경변수 설정
 JEKINS_HOME만 세팅하였다.

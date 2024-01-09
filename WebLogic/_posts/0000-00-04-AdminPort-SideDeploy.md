@@ -28,8 +28,7 @@ Administration Port, Side-By-Side Deploy 기능을 알아보자.
 
 (3). https://ip : administration Port로 console을 재접속한다.
 
-![AdminPort-SideDeploy_1](/../assets_copy/posts/images/WebLogic/AdminPort-SideDeploy_1.png){{ site.content.br_small }}
-### 2.1.2 Managed Server
+[AdminPort-SideDeploy_1](/../assets_copy_1/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_1.png)### 2.1.2 Managed Server
 
 Configuration - General - Advanced - Local Administration Port Override : Administration Port가 Managed Server 마다 Unique해야 된다.
 {{ site.content.br_small }}
@@ -65,8 +64,7 @@ Configuration - General - Advanced - Local Administration Port Override : Admini
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3://adminServer_Address -user weblogic -password weblogic1 -deploy -name webapp -source D:\weblogic\WLS1036\domains\dm1036\webapp -targets m1 -appversion v1
 ```
 
-![AdminPort-SideDeploy_2](/../assets_copy/posts/images/WebLogic/AdminPort-SideDeploy_2.png)
-> appversion 파라메터가 버전 관리를 위해 잘 관리해줘야 한다.
+[AdminPort-SideDeploy_2](/../assets_copy_1/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_2.png)> appversion 파라메터가 버전 관리를 위해 잘 관리해줘야 한다.
 {{ site.content.br_small }}
 ### 3.1.2 Stop Running State
 
@@ -76,8 +74,7 @@ java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3:
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3://adminServer_Address -user weblogic -password weblogic1 -deploy -name webapp -source D:\weblogic\WLS1036\domains\dm1036\webapp -targets m1 -appversion v2
 ```
 
-![AdminPort-SideDeploy_3](/../assets_copy/posts/images/WebLogic/AdminPort-SideDeploy_3.png)
-> webapp(v1)은 아직 사용자가 있어서 stop Running... 다 빠져나가면 retired가 된다.
+[AdminPort-SideDeploy_3](/../assets_copy_1/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_3.png)> webapp(v1)은 아직 사용자가 있어서 stop Running... 다 빠져나가면 retired가 된다.
 >
 > webapp(v2)로 이후 신규 사용자가 접속된다.
 {{ site.content.br_small }}
@@ -93,6 +90,4 @@ administration port를 사용하여 접근하는 행위가 허가된 유저&그�
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3s://adminServerIP:administrationPORT -user weblogic -password weblogic1 -adminmode -name webapp -deploy -upload -remote D:\weblogic\WLS1036\domains\dm1036\webapp
 ```
 
-![AdminPort-SideDeploy_4](/../assets_copy/posts/images/WebLogic/AdminPort-SideDeploy_4.png)
-![AdminPort-SideDeploy_5](/../assets_copy/posts/images/WebLogic/AdminPort-SideDeploy_5.png)
-> 위 커맨드 실행 결과가 remove Initializing 일 수 있다... admin server restart 하니 admin state이다...
+[AdminPort-SideDeploy_4](/../assets_copy_1/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_4.png)[AdminPort-SideDeploy_5](/../assets_copy_1/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_5.png)> 위 커맨드 실행 결과가 remove Initializing 일 수 있다... admin server restart 하니 admin state이다...

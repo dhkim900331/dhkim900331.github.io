@@ -16,8 +16,7 @@ typora-root-url: ..
 {{ site.content.br_small }}
 # 2. Request Flow
 
-![X-Forwarded-For_1](/../assets_copy/posts/images/WEB/X-Forwarded-For_1.png)
-* Request가 들어올 경우, 어떠한 흐름으로 처리되는지를 이해하기 위한 그림이다.
+[X-Forwarded-For_1](/../assets_copy_1/posts/images/WEB/X-Forwarded-For/X-Forwarded-For_1.png)* Request가 들어올 경우, 어떠한 흐름으로 처리되는지를 이해하기 위한 그림이다.
 * 순서대로, 사용자(Client) / LB (wellknown.com) / WEB (innerweb.com)
 * 사용자가 `http://wellknown.com` 접속 하면, LB는 곧이 곧대로 `http://innerweb.com` 에 proxy pass 한다.
 * WEB (innerweb.com) 은 `http to https` 전환을 위해 RewriteRule 을 사용했다.

@@ -41,21 +41,17 @@ $ sudo systemctl status firewalld
 {{ site.content.br_small }}
 서버외부에서 TCP 8081 호출할 수 없다.
 
-![PortForwarding_1](/../assets_copy/posts/images/Linux/PortForwarding_1.png){{ site.content.br_small }}
-putty.exe의 SSH - Tunnels 에서 Target Address 를 설정한다.
+[PortForwarding_1](/../assets_copy_1/posts/images/Linux/PortForwarding/PortForwarding_1.png)putty.exe의 SSH - Tunnels 에서 Target Address 를 설정한다.
 
 (사진에서 Add 버튼 까지 눌러야 설정이 완료.)
 
-![PortForwarding_2](/../assets_copy/posts/images/Linux/PortForwarding_2.png){{ site.content.br_small }}
-Windows CMD로 localhost:8081 이 LISTENING 되어 있는 것이 확인 된다.
+[PortForwarding_2](/../assets_copy_1/posts/images/Linux/PortForwarding/PortForwarding_2.png)Windows CMD로 localhost:8081 이 LISTENING 되어 있는 것이 확인 된다.
 
 이는, putty.exe가 LISTEN을 하고 있는 것이다.
 
-![PortForwarding_3](/../assets_copy/posts/images/Linux/PortForwarding_3.png){{ site.content.br_small }}
-localhost:8081 접속 시, putty.exe가 proxy 역할을 수행한다.
+[PortForwarding_3](/../assets_copy_1/posts/images/Linux/PortForwarding/PortForwarding_3.png)localhost:8081 접속 시, putty.exe가 proxy 역할을 수행한다.
 
-![PortForwarding_4](/../assets_copy/posts/images/Linux/PortForwarding_4.png){{ site.content.br_small }}
-# 3. ssh
+[PortForwarding_4](/../assets_copy_1/posts/images/Linux/PortForwarding/PortForwarding_4.png)# 3. ssh
 
 putty.exe를 사용할 수 있는 구간은, Client가 Target Server 바로 앞일 때이다.
 
@@ -89,6 +85,5 @@ $ curl <Bastion IP>:8001
 {{ site.content.br_small }}
 putty.exe 의 Tunnels 기능을 통해, Client - Bastion 구간을 다음과 같이 설정하면, Client의 Browser 를 통해 Target Port에 Access 할 수 있다.
 
-![PortForwarding_5](/../assets_copy/posts/images/Linux/PortForwarding_5.png){{ site.content.br_small }}
-* putty.exe는 TCP 8001 으로 들어오는 Traffic을 Bastion 의 TCP 8001 으로 Forward 한다.
+[PortForwarding_5](/../assets_copy_1/posts/images/Linux/PortForwarding/PortForwarding_5.png)* putty.exe는 TCP 8001 으로 들어오는 Traffic을 Bastion 의 TCP 8001 으로 Forward 한다.
 * Bastion 은 (위에서 설명한 것과 같이) Target 의 TCP 8001 으로 Forward 한다.

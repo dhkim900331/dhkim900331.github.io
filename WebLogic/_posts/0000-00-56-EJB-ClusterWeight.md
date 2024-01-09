@@ -18,13 +18,12 @@ Sample EJB App을 배포하여, Cluster Weight 기능을 테스트한다.
   * Red Hat Enterprise Linux release 8.7
   * Oracle WebLogic Server 14c
   * Oracle JDK 1.8.0_351
-{{ site.content.br_big }}
+  {{ site.content.br_big }}
 ### 2.1 WebLogic
 
 * 다음의 3개 Instance를 구성하고, 일부만 Clustering 설정한다.
 
-![EJB-ClusterWeight_1](/../assets_copy/posts/images/WebLogic/EJB-ClusterWeight_1.png)
-> 각 Instance는 Enable Tunneling 되었다. (중요하지 않아 보임)
+[EJB-ClusterWeight_1](/../assets_copy_1/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_1.png)> 각 Instance는 Enable Tunneling 되었다. (중요하지 않아 보임)
 
 
 * base_cluster 내의 Instance는 각각 `Configuration - Cluster - Cluster Weight` 설정값을 `50`과 `100` 으로 적용하였다.
@@ -36,8 +35,7 @@ Sample EJB App을 배포하여, Cluster Weight 기능을 테스트한다.
   * `clientSide` 를 `M1` 에 배포한다.
   * `serverSide` 를 `base_cluster` 에 배포한다.
 
-![EJB-ClusterWeight_2](/../assets_copy/posts/images/WebLogic/EJB-ClusterWeight_2.png){{ site.content.br_big }}
-
+[EJB-ClusterWeight_2](/../assets_copy_1/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_2.png)
 ## 2.2 EJB Application
 
 ### 2.2.1 serverSide
@@ -228,15 +226,13 @@ JNDI Lookup Access Point로 요청을 수행한다.
 {{ site.content.br_small }}
 위 Global Name은 `<Instance> - Configuration - General - View JNDI Tree` 에서 확인할 수 있다.
 
-![EJB-ClusterWeight_3](/../assets_copy/posts/images/WebLogic/EJB-ClusterWeight_3.png){{ site.content.br_small }}
-조회 시에, `base_cluster` 에 설정한 `weight-base` Algorithm 에 따라 동작한다.
+[EJB-ClusterWeight_3](/../assets_copy_1/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_3.png)조회 시에, `base_cluster` 에 설정한 `weight-base` Algorithm 에 따라 동작한다.
 {{ site.content.br_small }}
 `index.jsp` 는 한번에 10번의 lookup을 의도적으로 수행한다.
 {{ site.content.br_small }}
 다음의 통계 화면에서 결과를 확인할 수 있으며, 초기 요청시에는 분산 가중치가 엇비슷 할 수 있다.
 
-![EJB-ClusterWeight_4](/../assets_copy/posts/images/WebLogic/EJB-ClusterWeight_4.png){{ site.content.br_big }}
-# 4. Trouble Shooting
+[EJB-ClusterWeight_4](/../assets_copy_1/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_4.png)# 4. Trouble Shooting
 
 ## 4.1 Naming Service
 
@@ -244,7 +240,9 @@ JNDI 호출이 잘 되지 않는 경우에는, 정확한 Naming을 확인해야 
 {{ site.content.br_small }}
 여기서는 **Global Naming Lookup**을 해야 Cluster Load Balancing이 적용되었다.
 
-![EJB-ClusterWeight_5](/../assets_copy/posts/images/WebLogic/EJB-ClusterWeight_5.png){{ site.content.br_big }}
+[EJB-ClusterWeight_5](/../assets_copy_1/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_5.png)
+{{ site.content.br_big }}
+
 ## 4.2 Cluster Default Load Algorithm
 
 \<Instance> 의 Cluster Weight 값 외에도 Cluster의 Default Load Algorithm 기본값을 round-robin에서 weight-based 으로 변경해야 된다.

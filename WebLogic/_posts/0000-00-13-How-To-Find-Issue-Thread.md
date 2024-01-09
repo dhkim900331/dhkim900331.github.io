@@ -70,8 +70,7 @@ for (int i=0; i < 3; i++)
 >
 > 실행 결과는 다음과 같다. 인스턴스(22384)의 32.2퍼센트 cpu를 사용하는 스레드 아이디는 **22557, 22558, 22559**
 >
-![How-To-Find-Issue-Thread_1](/../assets_copy/posts/images/WebLogic/How-To-Find-Issue-Thread_1.png)>
-> 22557, 22558, 22559를 헥사값(16진수)로 변환하면 각각 **0x581d, 0x581e, 0x581f** 다.
+[How-To-Find-Issue-Thread_1](/../assets_copy_1/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_1.png)> 22557, 22558, 22559를 헥사값(16진수)로 변환하면 각각 **0x581d, 0x581e, 0x581f** 다.
 {{ site.content.br_small }}
 ```bash
 # kill -3 22384
@@ -114,8 +113,7 @@ for (int i=0; i < 3; i++)
 # pslist java
 ```
 
-![How-To-Find-Issue-Thread_2](/../assets_copy/posts/images/WebLogic/How-To-Find-Issue-Thread_2.png)>
-> pc에서 현재 동작중인 프로세스 중 자바를 찾아본다. **java PID는 7820**
+[How-To-Find-Issue-Thread_2](/../assets_copy_1/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_2.png)> pc에서 현재 동작중인 프로세스 중 자바를 찾아본다. **java PID는 7820**
 >
 > 각 파라메타 설명은 pslist 툴을 다운로드 받은 홈페이지에 있다.
 {{ site.content.br_small }}
