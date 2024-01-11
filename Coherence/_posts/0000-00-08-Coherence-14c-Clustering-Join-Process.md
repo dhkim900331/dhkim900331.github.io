@@ -13,13 +13,17 @@ Coherence 14c 기동 될 때, Clustering 에 Join 되는 과정을 Log Level 에
 Log Message의 불필요할 수 있다고 판단되는 부분은 `...` 으로 skip 한다.
 
 Log Message에서 Date/Time Prefix 또한 불필요한 부분은, 임의 삭제한다.
-{{ site.content.br_small }}
+
+
+
 # 2. Environments
 
 OS, Oracle Linux Server release 8.7
 
 JVM, java version "1.8.0_351"
-{{ site.content.br_small }}
+
+
+
 그리고 다음의 Arguments로 구성된 여러 Instances 를 갖고 있다.
 
 ```
@@ -28,7 +32,9 @@ JVM, java version "1.8.0_351"
 -Dcoherence.cacheconfig=session-cache-config.xml
 -Dcoherence.override=tangosol-coherence-${DOMAIN_NAME}.xml
 ```
-{{ site.content.br_small }}
+
+
+
 Operational Override
 
 ```xml
@@ -58,9 +64,15 @@ Operational Override
     </packet-publisher>
   </cluster-config>
 ```
-{{ site.content.br_small }}
+
+
+
 Cluster Port는 기본값으로 7574를 사용하고 있다.
-{{ site.content.br_big }}
+
+
+
+
+
 # 3. Joining
 
 **최초 Cache Server(이하 #1) 기동 시, TCMP(Tangosol Cluster Management Protocol) 로 Listen을 위해 Bound한 Address 가 확인된다.**
@@ -88,7 +100,11 @@ WellKnownAddressList(
 사전 정의한 WKA List로 확인되며, Cluster 생성되어 `Created a new cluster "cluster_base_domain"` 메시지도 확인할 수 있다.
 
 Cluster Port (Default 7574) Log도 확인된다.
-{{ site.content.br_big }}
+
+
+
+
+
 **#1 - 정상 구성된 Member에 대한 Information 확인**
 
 ```
@@ -112,7 +128,11 @@ MasterMemberSet(
 ActualMemberSet을 통해 현재 실제 구성을 알 수 있겠다.
 
 Join 된 시점과 Coherence Version을 알 수 있다.
-{{ site.content.br_big }}
+
+
+
+
+
 **#1 - TcpRing**
 
 ```
@@ -123,13 +143,21 @@ IpMonitor{Addresses=0, Timeout=2m5s}
 Timeout은 ip-timeout * ip-attempts 정의한 대로, 2m5s 이며
 
 TcpRing은 Cluster Member들을 엮는 것이나 Single 이므로 값이 없는 것으로 보인다.
-{{ site.content.br_big }}
+
+
+
+
+
 **Second Cache Server(이하 #2) Startup**
 
 ```
 <Info> (thread=main, member=n/a): TCMP bound to /10.65.34.245:9002 using TCPDatagramSocketProvider[Delegate: DemultiplexedSocketProvider(com.oracle.common.internal.net.MultiplexedSocketProvider@30b6ffe0)]
 ```
-{{ site.content.br_big }}
+
+
+
+
+
 **#2 - Latency 보정**
 
 ```
@@ -140,7 +168,11 @@ TcpRing은 Cluster Member들을 엮는 것이나 Single 이므로 값이 없는 
 물리적으로 같은 VM 이지만, 통신 시 Latency 지연이 있어, 둘 Member에서 인지하는 System Clock 에 차이가 있다며 이후 Message (Member간 주고받는 Data 를 의미하는 것으로 보임) 에 더 여유있게 Timeout을 주는 것으로 보인다.
 
 [Failed to satisfy the variance: allowed=%n1 actual=%n2](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer/log-message-glossary.html#GUID-EA76C216-0977-44D5-92D1-E9561FF0D44B)
-{{ site.content.br_big }}
+
+
+
+
+
 **#2 - Cluster 합류**
 
 ```
@@ -149,14 +181,18 @@ TcpRing은 Cluster Member들을 엮는 것이나 Single 이므로 값이 없는 
 ```
 
 기존 Member, 그리고 현재 합류하는 신규 Member Log가 확인된다.
-{{ site.content.br_small }}
+
+
+
 ```
 <Info> (thread=Transport:TransportService, member=n/a): Service TransportService joined the cluster with senior service member 1
 <Info> (thread=SelectionService(channels=5, selector=MultiplexedSelector(sun.nio.ch.EPollSelectorImpl@471a9022), id=231311211), member=n/a): Connection established with tmb://10.65.34.245:9000.39212
 ```
 
 Senior  (Leader Member) 와 ESTABLISHED 되어, Cluster에 Joined
-{{ site.content.br_small }}
+
+
+
 ```
 MasterMemberSet(
   ThisMember=Member(Id=2, Timestamp=2023-06-14 15:55:26.448, Address=10.65.34.245:9002, ...)
@@ -180,7 +216,11 @@ IpMonitor{Addresses=0, Timeout=2m5s}
 이전에 본 Log 형태와 같이, 현재(ThisMember)가 합류되었다.
 
 TcpRing의 Array.Length 와 같이 확인된다.
-{{ site.content.br_big }}
+
+
+
+
+
 **#1과 #2 - Socket LISTEN**
 
 ```sh
@@ -196,7 +236,11 @@ tcp        0      0 10.65.34.245:9002       0.0.0.0:*               LISTEN      
 #1, #2 Cache Server 의 Port가 모든 NIC에서 열린다.
 
 이는, **Coherence Process Listens On All Interfaces Of The Machine, Why? (Doc ID 2143520.1)** 참고하여 Discovery-Address 를 지정해야 한다.
-{{ site.content.br_big }}
+
+
+
+
+
 **#1과 #2 - Socket ESTABLISHED**
 
 ```sh
@@ -228,7 +272,11 @@ tcp        0      0 10.65.34.245:58636      10.65.34.245:9002       ESTABLISHED 
 Understanding TCMP 의 Protocol Resource Utilization Section에 따라 TCP/IP 기반의 이점과 그 자체로 인해 ESTABLISHED가 많이 목격 될 수 있을 것이다. 
 
 **Observing High Number of Unicast Connections in Coherence (Doc ID 2799453.1)** 참고
-{{ site.content.br_big }}
+
+
+
+
+
 **Third Cache Server(이하 #3) Startup**
 
 ```
@@ -246,7 +294,11 @@ IpMonitor{Addresses=0, Timeout=2m5s}
 ```
 
 익숙한 Log 중에 하나로써, #1 ~ #3 Member Listup 을 알 수 있다.
-{{ site.content.br_big }}
+
+
+
+
+
 **#1 - TcpRing Disconnected to maintain ring**
 
 ```
@@ -256,19 +308,35 @@ IpMonitor{Addresses=0, Timeout=2m5s}
 TcpRing 은 이름 그대로, Member의 첫 부분부터 끝까지 Ring 형태로 이루어진 듯 싶다. 그래서 구조가 변경된다.
 
 이후 #4에 해당하는 Fourth 기동을 해보니, 구조가 변경된다. TcpRing 의 Array Alignment는 위 Table 과 같다.
-{{ site.content.br_big }}
+
+
+
+
+
 # 3. HeartBeat
 
 HeartBeat 통신이 진행될 때 남는 로그들, 잘 안될때 로그들
-{{ site.content.br_big }}
+
+
+
+
+
 # 4. TcpRing
 
 TcpRing 메시지를 log 살피고,, 통신에 어떤 문제가 있을 때 어떻게 되는지?
-{{ site.content.br_big }}
+
+
+
+
+
 # 5. GC
 
 짧은/매우 긴/혹은 짧더라도 자주 반복되는? GC 와 같은 상황이 발생하면 어떤 변화가? Leader 에 문제가 생기는 경우? Leader는 어떤 패턴으로 누가 후임자가 되는지?
-{{ site.content.br_big }}
+
+
+
+
+
 
 
 # 5. References

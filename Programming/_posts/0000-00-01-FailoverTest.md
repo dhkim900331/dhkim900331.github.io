@@ -11,7 +11,9 @@ typora-root-url: ..
 기본적으로 session clustering 환경 구성 후, Failover Test를 위해 사용하는 JSP
 
 다른 포스트에서도 webapp.zip 등으로 첨부파일 업로드 한 것이 있으나, 좀 더 깔끔한 것으로 업데이트
-{{ site.content.br_small }}
+
+
+
 # 2. Description
 
 다음의 어플리케이션의 구조이며, 해당 소스는 `infinispan`에서 사용되어 `distributable` 태그를 갖는다.
@@ -32,7 +34,9 @@ $ tree /usr/app/testapp.war
 
 5 directories, 5 files
 ```
-{{ site.content.br_small }}
+
+
+
 * 주요 스크립트
 
   * session.jsp

@@ -11,7 +11,9 @@ typora-root-url: ..
 GC Log 기록에 관여하는 여러 Options가 있다.
 
 Options 변경에 따른 GC Log Format을 확인하여, 우리가 고객에게 어떤 GC Log options를 적용해줄 지 준비하자.
-{{ site.content.br_small }}
+
+
+
 # 2. 테스트 환경
 
 * CentOS Linux release 7.9.2009
@@ -315,7 +317,9 @@ JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCTimeStamps"
 JAVA_OPTS="$JAVA_OPTS -XX:+PrintHeapAtGC"
 JAVA_OPTS="$JAVA_OPTS -XX:-PrintTenuringDistribution"
 ```
-{{ site.content.br_small }}
+
+
+
 또한 모든 옵션을 On 한 기준의 GC Log 파일에서, 상단 JVM Arguments 로그를 빼면 6초 동안 12 kbytes 가 기록되었다.
 
 (말도 안되지만..) 이 기준을 근거로, 1시간(3600초, 6초가 600번) 동안 7 mbytes 가 기록된다고 단순 계산된다.

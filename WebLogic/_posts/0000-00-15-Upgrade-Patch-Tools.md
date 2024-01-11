@@ -10,43 +10,57 @@ typora-root-url: ..
 # 1. 개요
 
 BSU, OPatch, Tool Upgrade 정리
-{{ site.content.br_big }}
+
+
+
 # 2. Patch 전에는 백업이 필수다.
 
 오라클 공식문서에서는 ORACLE_HOME 백업을 권고한다.
 
 아래에서 설명할 예시 환경은 다음과 같이 지정하자.
-{{ site.content.br_small }}
+
+
+
 WLS11gR1 :
 
  \- 오라클 제품 홈 (ORACLE_HOME) : /sw/weblogic/11gR1
 
  \- 웹로직 엔진 홈 (WL_HOME) : /sw/weblogic/11gR1/wlserver_10.3
-{{ site.content.br_small }}
+
+
+
 WLS12cR1 :
 
  \- 오라클 제품 홈 (ORACLE_HOME) : /sw/weblogic/12cR1
 
  \- 웹로직 엔진 홈 (WL_HOME) : /sw/weblogic/12cR1/wlserver
-{{ site.content.br_small }}
+
+
+
 위에서 말한 ORACLE_HOME 백업 하려고 하면,
 
 대게 DOMAIN_HOME (웹로직 도메인) 이 아래에 같이 위치한 경우가 있으므로,
 
 다음의 명령어로 백업을 하자.
-{{ site.content.br_small }}
+
+
+
 예) 12cR1 의 DOMAIN_HOME을 제외한, ORACLE_HOME 백업
 
 ```sh
 mkdir /backupdir
 cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
 ```
-{{ site.content.br_big }}
+
+
+
 # 3. BSU
 
 * bsu.sh 의 최대 Heap Memory는 2GB 이상 늘려주어야 OOME 를 피한다.
 * HP 장비에서는 `MEM_ARGS="-d64"`옵션을 추가한다.
-{{ site.content.br_big }}
+
+
+
 ## 3.1 command
 
 * 패치 설치/삭제/확인 명령어는 다음의 각 줄에 대응한다.
@@ -62,7 +76,9 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
   
 
 > BSU 패치는 일반적으로 1시간 잡고 진행할 정도로, 느리며 아래에서 BSU 툴을 Patch 하면 빨라진다.
-{{ site.content.br_big }}
+
+
+
 ## 3.2 BSU Tool Patch
 
 * WebLogic 10.3.6 이하의 버전들은 BSU 를 3.3으로 업그레이를 사전에 진행해야 한다.
@@ -80,7 +96,8 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
     > bsu_update 패치를 받아 bsu 디렉토리에 넣고 ./bsu_update.sh 을 실행하면 끝난다.
     >
     > ( 위 쉘스크립트는, 엔진에 jar를 복사하는 작업만 진행하므로 1초이내 끝. )
-{{ site.content.br_big }}
+
+  
 
 # 4. OPatch
 
@@ -100,7 +117,9 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
   ```
 
   > 거의 1분 이내에 저 경로 인벤토리를 생성해준다.
-{{ site.content.br_big }}
+
+
+
 ### 4.2 command
 
 * 패치 설치/삭제/확인 명령어는 다음의 각 줄에 대응한다.
@@ -126,7 +145,9 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
   근데, 실제로 다른 오라클 제품이 이후에 설치되면서 위 파일이 다른 경로로 바꾸어 버렸다.
 
   이런 사소하지만 발생하면 절대 찾을 수 없을것 같은 이슈를 위해 위 옵션 사용을 습관화 해야 한다.
-{{ site.content.br_big }}
+
+
+
 ### 4.2 OPatch Tool Patch
 
 * 12cR2 psu 17년 중순?? 부터 OPatch 13.9.2.0.0 을 13.9.4.0.0 으로 업그레이드 해야 한다.
@@ -134,11 +155,15 @@ cp -pR `ls /sw/weblogic/12cR1 | grep -v "domains"` /backupdir
 * 패치파일 : Using OUI NextGen OPatch 13 for Oracle Fusion Middleware 12c (문서 ID 1587524.1)
 
   > 위 문서 도입 부분에 [Patch 28186730](https://support.oracle.com/epmos/faces/ui/patch/PatchDetail.jspx?parent=DOCUMENT&sourceId=1587524.1&patchId=28186730) 을 안내하고 있음
-{{ site.content.br_big }}
+
+
+
 # 5. Trouble Shooting
 
 * 아래 트러블 슈팅은, 실제 고객사 OPatch 에러를 정리하였다.
-{{ site.content.br_big }}
+
+
+
 ## 5.1 기존 패치 롤백 시
 
 ```
@@ -159,7 +184,9 @@ Error "Prerequisite check CheckRollbackable on auto-rollback patches failed" Whe
 ORACLE_HOME/.patch_storage 아래에는 웹로직에 걸려 있는 패치 디렉토리가 있으며, 일부 파일이 누락되어 있어 발생한 문제다. /etc , /files 를 통째로 넣어준다.
 
 > patch_storage 폴더 복구 방법은 없음
-{{ site.content.br_big }}
+
+
+
 ## 5.2 신규 패치 적용 시
 
 ```
@@ -181,5 +208,7 @@ opatch 가 compDef.xml 로 현재 웹로직과 패치 파일 비교를 수행해
 다른 버그 등으로 발생할 수 있으나 대게는, 파일이 없는 경우이며
 
 문서를 확인한다. (XX저축은 solution 2번에 해당되었음)
-{{ site.content.br_small }}
+
+
+
 OPatch apply or rollback fails with com.oracle.cie.gdr.libraries.LibraryException: com.oracle.cie.gdr.utils.GdrException: Failed to apply xml diff to component definition error in WebLogic PSU (문서 ID 2088228.1)

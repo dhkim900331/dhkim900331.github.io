@@ -12,7 +12,9 @@ typora-root-url: ..
 * 여러 파일을 열어, 특정 내용들을 추출하는 스크립트를 짰다.
   * 수 많은 덤프의 유연하게 변화하는 내용을 단순 스크립트로 볼 수 없다.
   * 그냥 참고용이다~
-{{ site.content.br_small }}
+
+
+
 
 # 2. 설명
 
@@ -47,9 +49,15 @@ done
 > Line 14-16. 1개 Dump 파일에서 `catalina-exec` Thread 명을 검색하고, 해당 Line number를 while read 로 넘긴다.
 >
 > Line 18. `catalina-exec` Thread 명 밑에 Thread `State` 가 나오므로 +1 하여 본다.
-{{ site.content.br_big }}
+
+
+
+
+
 ---
-{{ site.content.br_small }}
+
+
+
 Thread Dump 를 자동으로 뜨려면...
 
 ```bash

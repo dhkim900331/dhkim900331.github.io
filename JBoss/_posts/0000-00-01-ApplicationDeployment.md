@@ -13,13 +13,17 @@ Application Deployment 명령어를 학습한다.
 
 * 압축된 Unexploded WAR 파일의 배포 및 관리
 * 압축해제된 Exploded WAR 파일의 배포 및 관리
-{{ site.content.br_small }}
+
+
+
 # 2. Deploy CLI
 
 기본적으로 배포 시에는 다음의 Syntax를 유념해야한다.
 
 > `jboss-cli > deploy --help` 명령을 통해 확인하면 되겟으며, 여기서는 필요한 요소만 확인한다.
-{{ site.content.br_small }}
+
+
+
 ```syntax
 deploy \
 --name=baseApp \
@@ -34,19 +38,27 @@ deploy \
 * --url : 어플리케이션 위치
 * --unmanaged : 어플리케이션을 `-Djboss.server.deploy.dir` 에 복사하지 않는다.
 * --force : 이미 배포된 어플리케이션을 덮어 씌운다.
-{{ site.content.br_small }}
+
+
+
 위의 Syntax에서 크게 벗어나지 않는 것만 알아도
 
 대부분의 어플리케이션 배포에는 문제가 없다.
-{{ site.content.br_small }}
+
+
+
 아래에서 여러가지 파라메터로 실행하고 확인한다.
-{{ site.content.br_small }}
+
+
+
 # 3. Unexploded WAR 배포
 
 Application 배포 디렉토리를 `-Djboss.server.deploy.dir=<PATH>/appDeployHome` 으로 지정하였다.
 
 지정하지 않으면, 기본적으로 인스턴스 아래, 즉 다음과 같은 경로가 된다. `/usr/ssw/jboss/servers/base_domain/baseSvr1_1/data/content`
-{{ site.content.br_small }}
+
+
+
 아래 명령으로, baseApp.war 파일을 배포한다.
 
 ```jboss-cli
@@ -55,13 +67,17 @@ deploy \
 --runtime-name=baseApp.war \
 <PATH>
 ```
-{{ site.content.br_small }}
+
+
+
 `--unmanaged` 옵션이 없으므로, 아래 위치에 복제된다.
 
 ```
 Content added at location /usr/ssw/jboss/servers/base_domain/baseSvr1_1/appDeployHome/28/c76586c599e9cf1c2f2e2f87269fcf377d351b/content
 ```
-{{ site.content.br_small }}
+
+
+
 baseApp.war 배포 정보 및 등록된 Context-Root 도 친절히 알려준다.
 
 ```
@@ -69,7 +85,9 @@ WFLYSRV0027: Starting deployment of "baseApp.war" (runtime-name: "baseApp.war")
 WFLYUT0021: Registered web context: '/baseApp' for server 'default-server'
 WFLYSRV0010: Deployed "baseApp.war" (runtime-name : "baseApp.war")
 ```
-{{ site.content.br_small }}
+
+
+
 standalone*xml 파일 확인
 
 ```xml
@@ -79,7 +97,9 @@ standalone*xml 파일 확인
         </deployment>
     </deployments>
 ```
-{{ site.content.br_small }}
+
+
+
 배포 상태 확인
 
 ```
@@ -89,7 +109,9 @@ baseApp.war baseApp.war  true       true    OK
 ```
 
 http://IP:PORT/baseApp/indexjsp 로 서비스 호출 할 수 있다.
-{{ site.content.br_small }}
+
+
+
 # 4. Exploded WAR 배포
 
 아래 명령으로, baseApp.war 파일을 배포한다.
@@ -101,7 +123,9 @@ deploy \
 --unmanaged \
 /usr/ssw/jboss/servers/base_domain/baseSvr1_1/baseApp
 ```
-{{ site.content.br_small }}
+
+
+
 압축 해제된 디렉터리 배포의 경우에는 `--unmanaged` 옵션을 적용해야 한다. (`jboss-cli> deploy --help`)
 
 해당 옵션은 디렉터리 배포의 경우에도 사용되지만, WAR 배포에도 사용된다.
@@ -115,7 +139,9 @@ deploy \
 ```
 Content added at location /usr/ssw/jboss/servers/base_domain/baseSvr1_1/appDeployHome/28/c76586c599e9cf1c2f2e2f87269fcf377d351b/content
 ```
-{{ site.content.br_small }}
+
+
+
 standalone*xml 파일 확인
 
 ```xml
@@ -125,7 +151,9 @@ standalone*xml 파일 확인
         </deployment>
     </deployments>
 ```
-{{ site.content.br_small }}
+
+
+
 # 5. 기존 배포 업데이트
 
 어플리케이션 변경에 대응 하기 위해,
@@ -140,16 +168,22 @@ deploy \
 --force \
 /usr/ssw/jboss/servers/base_domain/baseSvr1_1/baseApp
 ```
-{{ site.content.br_small }}
+
+
+
 baseApp 의 모든 컨텐츠를 `--force` 옵션으로 인해 재배포한다.
-{{ site.content.br_small }}
+
+
+
 배포 중단
 
 ```
 WFLYUT0022: Unregistered web context: '/baseApp' from server 'default-server'
 WFLYSRV0028: Stopped deployment baseApp (runtime-name: baseApp.war) in 11ms
 ```
-{{ site.content.br_small }}
+
+
+
 새로운 배포의 시작 (중단한 배포 삭제)
 
 ```
@@ -159,11 +193,15 @@ WFLYSRV0016: Replaced deployment "baseApp.war" with deployment "baseApp.war"
 WFLYDR0009: Content /usr/ssw/jboss/servers/base_domain/baseSvr1_1/appDeployHome/c0/4764af6fe95a9863599ad6ecbcae79106d3938 is obsolete and will be removed
 WFLYDR0002: Content removed from location /usr/ssw/jboss/servers/base_domain/baseSvr1_1/appDeployHome/c0/4764af6fe95a9863599ad6ecbcae79106d3938/content
 ```
-{{ site.content.br_small }}
+
+
+
 # 6. 어플리케이션 버저닝
 
 동일한 어플리케이션 여럿 등록하여 버저닝을 할 수도 있다.
-{{ site.content.br_small }}
+
+
+
 `--unmanaged` 를 제거해야, 컨텐츠를 복제하여 별도로 관리하기 때문에 버저닝이 된다.
 
 ```
@@ -172,7 +210,9 @@ deploy \
 --runtime-name=baseApp.war \
 /usr/ssw/jboss/servers/base_domain/baseSvr1_1/baseApp.war
 ```
-{{ site.content.br_small }}
+
+
+
 baseApp.war 를 수정하여 version#2 를 릴리즈 할 경우.
 
 ```
@@ -181,17 +221,23 @@ deploy \
 --runtime-name=baseApp_v2.war \
 /usr/ssw/jboss/servers/base_domain/baseSvr1_1/baseApp.war
 ```
-{{ site.content.br_small }}
+
+
+
 baseApp.war 는 각 명령어 배포 시점에 고유한 디렉토리에 복제되어 배포되기 때문에
 
 변경된 동일 어플리케이션을 버저닝 관리하듯이 배포할 수 있다.
-{{ site.content.br_small }}
+
+
+
 각각 접속 URL은
 
 http://IP:PORT/baseApp/index.jsp
 
 http://IP:PORT/baseApp_v2/index.jsp 가 된다.
-{{ site.content.br_small }}
+
+
+
 # 7. 어플리케이션 배포 삭제
 
 ```
@@ -200,7 +246,9 @@ NAME       RUNTIME-NAME   PERSISTENT ENABLED STATUS
 baseApp    baseApp.war    true       true    OK
 baseApp_v2 baseApp_v2.war true       true    OK
 ```
-{{ site.content.br_small }}
+
+
+
 ```
 deployment undeploy baseApp
 ```
@@ -210,7 +258,9 @@ deployment undeploy baseApp
 ```
 undeploy *
 ```
-{{ site.content.br_small }}
+
+
+
 # 8. 참고 문헌
 
 https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/6.4/html/administration_and_configuration_guide/define_a_custom_directory_for_deployed_content

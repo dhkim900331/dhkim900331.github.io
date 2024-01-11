@@ -38,11 +38,23 @@ C:\Windows\System32\cmd.exe /k startAdmin.cmd
 
 (3). startAdmin.bat 실행
 
-[Java-Thread-Dump-On-Windows_1](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_1.png)(4). `Ctrl + Break` 일괄 작업을 끝내지 않음. `N`
+![Java-Thread-Dump-On-Windows_1](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_1.png)
 
-[Java-Thread-Dump-On-Windows_2](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_2.png)(5). `tail -f LOG 실행` (startAdmin.bat 으로 실행하지 않은 경우, tail 명령어로 다시 log를 띄울 수 없습니다.)
 
-[Java-Thread-Dump-On-Windows_3](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_3.png)(6). 위 화면에도 일부 보이듯, log에 Dump가 기록되어 있습니다.
+
+(4). `Ctrl + Break` 일괄 작업을 끝내지 않음. `N`
+
+![Java-Thread-Dump-On-Windows_2](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_2.png)
+
+
+
+(5). `tail -f LOG 실행` (startAdmin.bat 으로 실행하지 않은 경우, tail 명령어로 다시 log를 띄울 수 없습니다.)
+
+![Java-Thread-Dump-On-Windows_3](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_3.png)
+
+
+
+(6). 위 화면에도 일부 보이듯, log에 Dump가 기록되어 있습니다.
 
 * startAdmin.cmd 의 /B 옵션 : 옵션 다음 명령줄을 백그라운드 실행
 * startAdmin.bat 의 /K 옵션 : 옵션 다음 명령줄 실행이 끝나도 세션 유지

@@ -10,7 +10,9 @@ typora-root-url: ..
 # 1. 개요
 
 Admin Server Hang 일 때, MSI Mode socket time out
-{{ site.content.br_big }}
+
+
+
 # 2. 설명
 
 managed server가 admin server에 req 하였지만, admin server의 hang 으로 ack 보내지 못할 때.
