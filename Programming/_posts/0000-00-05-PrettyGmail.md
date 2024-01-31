@@ -36,7 +36,7 @@ gmail 을 Ctrl+C/V 로 옮기면 매우 안이쁘게 복사가 된다.
 
 * 위 파일을 압축해제하고, 다음과 같이 크롬 확장 프로그램으로 추가한다.
 
-![PrettyGmail_1](/../assets/posts/images/16-Javascript/PrettyGmail/PrettyGmail_1.png)
+![PrettyGmail_1](/../assets_copy_final/posts/images/Programming/PrettyGmail/PrettyGmail_1.png)
 
 
 
@@ -49,7 +49,7 @@ gmail 을 Ctrl+C/V 로 옮기면 매우 안이쁘게 복사가 된다.
 
 * 다음의 이메일을 보고 있다고 가정하에..
 
-![PrettyGmail_2](/../assets/posts/images/16-Javascript/PrettyGmail/PrettyGmail_2.png)
+![PrettyGmail_2](/../assets_copy_final/posts/images/Programming/PrettyGmail/PrettyGmail_2.png)
 
 
 
@@ -58,7 +58,7 @@ gmail 을 Ctrl+C/V 로 옮기면 매우 안이쁘게 복사가 된다.
 * 다음처럼 Ctrl + A를 눌러 전체 선택하거나, 제목~본문 바닥까지만 드래그한다.
   * 그러고, Ctrl + C 를 눌러 복사하고, 바로 Ctrl + V 를 누르면...
 
-![PrettyGmail_3](/../assets/posts/images/16-Javascript/PrettyGmail/PrettyGmail_3.png)
+![PrettyGmail_3](/../assets_copy_final/posts/images/Programming/PrettyGmail/PrettyGmail_3.png)
 
 
 
@@ -66,7 +66,7 @@ gmail 을 Ctrl+C/V 로 옮기면 매우 안이쁘게 복사가 된다.
 
 * 개발자도구모음의 Console log로 내용이 출력된다.
 
-![PrettyGmail_4](/../assets/posts/images/16-Javascript/PrettyGmail/PrettyGmail_4.png)
+![PrettyGmail_4](/../assets_copy_final/posts/images/Programming/PrettyGmail/PrettyGmail_4.png)
 
 
 
@@ -75,6 +75,6 @@ gmail 을 Ctrl+C/V 로 옮기면 매우 안이쁘게 복사가 된다.
 * 위 Console log의 제목 부터 끝까지 복사하여, html 형식으로 집어넣으면 투박하지만 불필요한 css가 제거되고 필요한 내용들만 들어갔다. (맨 아래 명함 이미지도 잘 가져온다^^)
   * 아래 예는, 우리 회사 confluence 문서
 
-![PrettyGmail_5](/../assets/posts/images/16-Javascript/PrettyGmail/PrettyGmail_5.png)
+![PrettyGmail_5](/../assets_copy_final/posts/images/Programming/PrettyGmail/PrettyGmail_5.png)
 
 

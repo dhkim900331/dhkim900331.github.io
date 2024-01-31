@@ -82,7 +82,7 @@ for (int i=0; i < 3; i++)
 >
 > 실행 결과는 다음과 같다. 인스턴스(22384)의 32.2퍼센트 cpu를 사용하는 스레드 아이디는 **22557, 22558, 22559**
 >
-![HowToFindIssueThread_1](/../assets/posts/images/01-WebLogic/HowToFindIssueThread/HowToFindIssueThread_1.png)
+![HowToFindIssueThread_1](/../assets_copy_final/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_1.png)
 
 
 >
@@ -137,7 +137,7 @@ for (int i=0; i < 3; i++)
 # pslist java
 ```
 
-![HowToFindIssueThread_2](/../assets/posts/images/01-WebLogic/HowToFindIssueThread/HowToFindIssueThread_2.png)
+![HowToFindIssueThread_2](/../assets_copy_final/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_2.png)
 
 
 >

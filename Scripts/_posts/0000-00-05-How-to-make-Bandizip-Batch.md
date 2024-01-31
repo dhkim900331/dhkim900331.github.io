@@ -82,7 +82,7 @@ Registry 등록을 하면 마우스 우클릭에 MySRDC 메뉴가 보인다.
 
 아래처럼, 서로 다른 SR에서 가져온 압축 파일을 MySRDC로 일괄 해제할 수 있다.
 
-![image-20230426122855928](/../assets/posts/images/How-to-make-Bandizip-Batch/image-20230426122855928.png)
+![image-20230426122855928](/../assets_copy_final/posts/images/Scripts/How-to-make-Bandizip-Batch/How-to-make-Bandizip-Batch_1.png)
 
 
 

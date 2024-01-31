@@ -158,7 +158,7 @@ Coherence - WebLogicHttpSessionManager - \<Member ID> - \<Web App> - Attributes 
 
 Member ID는 Node의 각 Attributes 에서 MemberName이나 ProcessName 으로 획득하면 수월하겠다.
 
-![image-20230424151956264](/../assets/posts/images/How-to-use-Coherence-Web-14c/image-20230424151956264.png)
+![image-20230424151956264](/../assets_copy_final/posts/images/Coherence/How-to-use-Coherence-Web-14c/How-to-use-Coherence-Web-14c_1.png)
 
 
 

@@ -72,3 +72,5 @@ Available Connection이 있더라도, Connection을 너무 느리게 할당 받�
 # 3. References
 
 [BEA-000001 to BEA-2194843](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/fmerr/bea-000001-bea-2194843.html)
+
+**BEA-000627 Reached maximum capacity of pool 메시지와 No resources currently available in pool 의 차이점 (Doc ID 2999836.1)**

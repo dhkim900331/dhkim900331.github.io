@@ -18,7 +18,7 @@ typora-root-url: ..
 
 # 2. Request Flow
 
-![X-Forwarded-For_1](/../assets/posts/images/14-WebServer/X-Forwarded-For/X-Forwarded-For_1.png)
+![X-Forwarded-For_1](/../assets_copy_final/posts/images/WEB/X-Forwarded-For/X-Forwarded-For_1.png)
 
 
 

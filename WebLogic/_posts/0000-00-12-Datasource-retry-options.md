@@ -15,7 +15,7 @@ typora-root-url: ..
 
 # 2. 설명
 
-![Datasource_retry_options_1](/../assets/posts/images/01-WebLogic/Datasource_retry_options/Datasource_retry_options_1.png)
+![Datasource_retry_options_1](/../assets_copy_final/posts/images/WebLogic/Datasource-retry-options/Datasource-retry-options_1.png)
 
 
 

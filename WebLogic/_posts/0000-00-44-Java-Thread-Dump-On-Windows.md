@@ -38,19 +38,19 @@ C:\Windows\System32\cmd.exe /k startAdmin.cmd
 
 (3). startAdmin.bat 실행
 
-![Java-Thread-Dump-On-Windows_1](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_1.png)
+![Java-Thread-Dump-On-Windows_1](/../assets_copy_final/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_1.png)
 
 
 
 (4). `Ctrl + Break` 일괄 작업을 끝내지 않음. `N`
 
-![Java-Thread-Dump-On-Windows_2](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_2.png)
+![Java-Thread-Dump-On-Windows_2](/../assets_copy_final/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_2.png)
 
 
 
 (5). `tail -f LOG 실행` (startAdmin.bat 으로 실행하지 않은 경우, tail 명령어로 다시 log를 띄울 수 없습니다.)
 
-![Java-Thread-Dump-On-Windows_3](/../assets_copy_1/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_3.png)
+![Java-Thread-Dump-On-Windows_3](/../assets_copy_final/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_3.png)
 
 
 

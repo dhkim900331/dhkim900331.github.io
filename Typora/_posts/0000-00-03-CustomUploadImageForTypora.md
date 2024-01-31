@@ -39,7 +39,7 @@ typora-root-url: ..
 
 우선, 다음과 같이 `Upload image` 및 `Custom Command` 를 설정한다.
 
-![CustomUploadImageForTypora_1](/../assets/posts/images/07-Typora/CustomUploadImageForTypora/CustomUploadImageForTypora_1.png)
+![CustomUploadImageForTypora_1](/../assets_copy_final/posts/images/Typora/CustomUploadImageForTypora/CustomUploadImageForTypora_1.png)
 
 
 

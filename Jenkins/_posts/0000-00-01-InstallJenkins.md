@@ -18,7 +18,7 @@ war를 Tomcat에 배포하는 것으로 설치해보기로 한다.
 ## 2.1 다운로드
 [여기 클릭](https://www.jenkins.io/download/)
 
-![InstallJenkins_1](/../assets/posts/images/04-Jenkins/InstallJenkins/InstallJenkins_1.png)
+![InstallJenkins_1](/../assets_copy_final/posts/images/Jenkins/InstallJenkins/InstallJenkins_1.png)
 
 
 

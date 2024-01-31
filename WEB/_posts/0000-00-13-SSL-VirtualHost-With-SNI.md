@@ -82,14 +82,18 @@ Apache 의 SSL인 OpenSSL 에도 관련 [Bug](https://github.com/openssl/openssl
 
 
 
-다음과 같은 코드가 Apache 에 구현되고, A와 B가 동일한 IP:Port로 Single Listener인 경우 TLS Protocol 1.2 가 전역 설정된다는 것이다.
+다음과 같은 코드가 Apache 에 구현되고,  `x.x.x.x:443` 으로 Address 는 동일하나, `ServerName` 이 `A.com` 과 `B.com` 으로 별개의 서비스가 제공되기를 원했으나 Bug으로 인해 TLSv1.2 로만 Handshake가 발생한다는 것이다.
 
 ```
-<vhost A>
+Listen x.x.x.x:443
+
+<vhost x.x.x.x:443>
+  ServerName A.com
   SSLProtocol TLSv1.2
 </vhost>
 
-<vhost B>
+<vhost x.x.x.x:443>
+  ServerName B.com
   SSLProtocol TLSv1.3
 </vhost>
 ```
@@ -112,24 +116,24 @@ Single Listner 의 사용 시 SNI를 지원하지 않는 점으로 인해 SSL Vi
 
 다만, NZ 구현에 따르면, 
 
-즉. Wilcard 인증서를 보안에 취약한 것을 근거로 들며 SNI 를 지원하지 않는 OHS 에서는
+즉. Wilcard 인증서를 보안에 취약한 것을 근거로 들며 SNI 를 지원하지 않는 OHS 에서는 (Name-based 를 지원하지 않음)
 
 다음과 같이 구성하는 것을 권장한다.
 
 
 
 ```
-Listen A:2443
-Listen B:3443
+Listen x.x.x.x:443
+Listen y.y.y.y:443
 
 
-<VirtualHost A:2443>
+<VirtualHost x.x.x.x:443>
   <IfModule ossl_module>
    SSLProtocol TLSv1.2
 ...
 
 
-<VirtualHost B:3443>
+<VirtualHost y.y.y.y:443>
   <IfModule ossl_module>
    SSLProtocol TLSv1.1
 ...
@@ -137,7 +141,7 @@ Listen B:3443
 
 
 
-다른 A와 B Listner 를 구현하므로, NZ Wallet이 서로 다르게 적용될 수 있고 SSL/TLS Protocol set 또한 개별적으로 적용될 수 있다는 것이다.
+`x.x.x.x` 와 `y.y.y.y` 으로 서로 다른 Listner 를 구현하므로, NZ Wallet이 서로 다르게 적용될 수 있고 SSL/TLS Protocol set 또한 개별적으로 적용될 수 있다는 것이다.
 
 
 
@@ -152,3 +156,5 @@ Listen B:3443
 **Support Status for Wildcard, SNI and SAN SSL Certificates for Oracle HTTP Server and Web Cache 11g/12c (Doc ID 2225494.1)**
 
 [Using SAN Certificates with Oracle HTTP Server](https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/administer-ohs/workwith.html#GUID-31D9DE0F-FBC0-4035-BCF4-3E08EDEE37BD)
+
+**Oracle HTTP Server 12c 에서 VirtualHost 별 다른 SSLProtocol 지정 방법 (Doc ID 2999590.1)**
