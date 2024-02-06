@@ -149,6 +149,10 @@ Listen y.y.y.y:443
 
 
 
+또는 Port를 여러개 두어, Port-based Virtual Host로 구성할 수도 있다.
+
+
+
 
 
 # 5. References
