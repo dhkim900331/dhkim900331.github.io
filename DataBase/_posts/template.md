@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "[DataBase/] "
-tags: [DataBase, ]
+title: "[Database/] "
+tags: [Database, ]
 typora-root-url: ..
 ---
 

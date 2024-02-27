@@ -1,8 +1,8 @@
 ---
 date: 2022-05-31 11:38:35 +0900
 layout: post
-title: "[DataBase/MySQL] MySQL 8.X 설치 (Source Compile)"
-tags: [DataBase, MySQL, Source, Compile, Build]
+title: "[Database/MySQL] MySQL 8.X 설치 (Source Compile)"
+tags: [Database, MySQL, Source, Compile, Build]
 typora-root-url: ..
 ---
 
