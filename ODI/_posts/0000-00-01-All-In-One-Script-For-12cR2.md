@@ -136,7 +136,7 @@ OS_HOSTNAME=wls.local
 
 ORACLE_BASE=/sw/databases/oracle-12c
 ORACLE_HOME=${ORACLE_BASE}/product/12.1.0/dbhome_1
-ORACLE_SID=ORCL
+ORACLE_SID=ODI
 PATH=$ORACLE_HOME/bin:$PATH
 
 INVENTORY_PATH=/sw/databases/inventories/12cR2
@@ -171,8 +171,8 @@ oracle.install.db.BACKUPDBA_GROUP=weblogic
 oracle.install.db.DGDBA_GROUP=weblogic
 oracle.install.db.KMDBA_GROUP=weblogic
 oracle.install.db.config.starterdb.type=GENERAL_PURPOSE
-oracle.install.db.config.starterdb.globalDBName=GLOBAL_ORCL
-oracle.install.db.config.starterdb.SID=ORCL
+oracle.install.db.config.starterdb.globalDBName=GLOBAL_ODI
+oracle.install.db.config.starterdb.SID=ODI
 oracle.install.db.config.starterdb.characterSet=AL32UTF8
 oracle.install.db.config.starterdb.password.ALL=weblogic1
 oracle.install.db.config.starterdb.password.SYS=weblogic1
@@ -196,7 +196,7 @@ netca -silent -responseFile ${ORACLE_HOME}/assistants/netca/netca.rsp
 
 
 
-이후 DBCA
+이후 DB 를 생성한다.
 
 ```bash
 $ cp ${ORACLE_HOME}/assistants/dbca/dbca.rsp ${ORACLE_HOME}/assistants/dbca/dbca.rsp.back && \
@@ -228,7 +228,172 @@ dbca -silent -createDatabase -responsefile ${ORACLE_HOME}/assistants/dbca/dbca.r
 
 
 
-DBCA 이후 진행하면서 포스팅 작성
+> PDB 구성을 하지 않으면 다음과 같이 RCU 구성 단계에서 실패한다.
+>
+> ```
+> ERROR - RCU-6002 필요 조건 검증을 실패했습니다.
+> CAUSE - RCU-6002 지정된 데이터베이스에 대해 최소 메타데이터 저장소 로드 요구 사항이 충족되지 않았습니다.
+> ACTION - RCU-6002 필요 조건 요구사항이 충족되도록 데이터베이스 구성을 수정하십시오.
+> 
+> ERROR - RCU-6080 지정된 데이터베이스에 대한 전역 필요 조건 검사를 실패했습니다.
+> CAUSE - RCU-6080 전역 필요 조건 검사를 실패했습니다. 지정된 데이터베이스에 대한 요구사항을 확인하십시오.
+> ACTION - RCU-6080 전역 필요 조건 요구사항이 충족되도록 데이터베이스 구성을 수정하십시오.
+> 선택된 Oracle 데이터베이스는 CDB(다중 테넌트 컨테이너 데이터베이스)입니다. CDB(다중 테넌트 컨테이너 데이터베이스)에 대한 접속은 지원되지 않습니다. 대신 적합한 PDB(플러그인할 수 있는 데이터베이스)에 접속하십시오.
+> ```
+
+
+
+[RCU Requirements for Oracle Databases](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/sysrs/system-requirements-and-specifications.html#GUID-35B584F3-6F42-4CA5-9BBB-116E447DAB83) 에서 요구하는 값에 의해 일부 Tuning 이 필요하다.
+
+```sh
+$ sqlplus / as sysdba << EOF
+ALTER SYSTEM SET shared_pool_size=150M SCOPE=SPFILE;
+--ALTER SYSTEM SET sga_target 150M SCOPE=SPFILE;
+ALTER SYSTEM SET session_cached_cursors=100 SCOPE=SPFILE;
+ALTER SYSTEM SET processes=500 SCOPE=SPFILE;
+ALTER SYSTEM SET open_cursors=800 SCOPE=SPFILE;
+ALTER SYSTEM SET db_files=600 SCOPE=SPFILE;
+
+ALTER SESSION SET CONTAINER = ODIPDB;
+ALTER PLUGGABLE DATABASE SAVE STATE;
+
+CONN / AS SYSDBA
+SHUTDOWN IMMEDIATE;
+STARTUP;
+EXIT;
+EOF
+```
+
+
+
+RCU Silent mode로 Repository 를 생성하기 위해, 필요한 Parameters file을 준비한다.
+
+```sh
+$ cat << EOF > ${BASEDIR}/odi_rcu_parameters.txt
+###SYS_PASSWORD###
+###ODI_SCHEMA_PASSWORDS###
+###SUPERVISOR_PASSWORD###
+D
+###WORK_REPOSITORY###
+###WORK_REPOSITORY_PASSWORD###
+###ENCRYPTION###
+EOF
+```
+
+
+
+> SYS_PASSWORD : DBA Password
+>
+> ODI_SCHEMA_PASSWORDS : ODI Schema Password "[Specifying Schema Passwords](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/creating-master-and-work-repository-schemas.html#GUID-AB0E3E97-A6EA-43DF-9235-0A0A1CAE2F9C) 참고"
+>
+> 
+>
+> "이하 [Custom Variables for Oracle Data Integrator](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/rcuug/repository-creation-utility-screens.html#GUID-A3033F72-D0A9-498D-AC19-BCF2AC3FBBCC) 참고"
+>
+> SUPERVISOR_PASSWORD : ODI Supervisor Password
+>
+> D : (D)evelopement Or (E)xecution
+>
+> WORK_REPOSITORY : Work Repository Name
+>
+> WORK_REPOSITORY_PASSWORD : Work Repository Password
+>
+> ENCRYPTION : AES-128(Default) or AES-256
+
+
+
+RCU Silent mode 실행
+
+```sh
+${ODI_INSTALL_PATH}/oracle_common/bin/rcu -silent -createRepository \
+  -connectString ${OS_HOSTNAME}:1521/ODIPDB -dbUser SYS -dbRole SYSDBA \
+  -useSamePasswordForAllSchemaUsers true \
+  -schemaPrefix ODIDEV \
+  -component ODI -component IAU -component IAU_APPEND -component IAU_VIEWER -component OPSS \
+  < ${BASEDIR}/odi_rcu_parameters.txt
+```
+
+
+
+
+
+## 2.5 Configuring Oracle Data Integrator Studio
+
+[Configuring Oracle Data Integrator Studio](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-oracle-data-integrator-studio.html#GUID-C273EFBE-C0A8-49A2-908B-255BCF9DA468) 참고
+
+
+
+앞서 ODI 를 Unix에 설치하였지만,
+
+ODI Studio 환경은 GUI에서 대부분 사용되므로,
+
+별도로 Windows 에 설치한 ODI Studio 로 설명.
+
+
+
+[Starting ODI Studio](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-oracle-data-integrator-studio.html#GUID-E56E3874-6455-4D8E-B01A-0BC585B1BBD5) 참고하여 실행.
+
+'저장소에 접속...' 클릭
+
+![image-20240227155559201](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227155559201.png)
+
+
+
+'Oracle Data Integrator 로그인' 에서 '+' 클릭하여 새로운 로그인 접속 정보 기입
+
+기입되는 정보는 [Connecting to the Master Repository](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-oracle-data-integrator-studio.html#GUID-79B5C886-DBFC-460C-A8A0-29710A42A30A) 참고
+
+![image-20240227160456705](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227160456705.png)
+
+
+
+최초 로그인 시 'ODI 초기화' 수행 된다.
+
+![image-20240227160659552](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227160659552.png)
+
+
+
+
+
+## 2.6 Configuring the Domain for a Standalone Agent
+
+[Configuring the Domain for a Standalone Agent](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-domain-standalone-agent.html#GUID-36693629-7238-44AC-9BEB-B5F9305EBB3E) 참고
+
+
+
+새 에이전트 생성
+
+[Creating an Agent in the Master Repository with ODI Studio](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-domain-standalone-agent.html#GUID-6EEED355-F944-447F-A4CE-EA7BD9FE160C) 참고
+
+![image-20240227162303426](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227162303426.png)
+
+
+
+![image-20240227162501415](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227162501415.png)
+
+
+
+모두 저장.
+
+![image-20240227162822005](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227162822005.png)
+
+
+
+생성한 에이전트 접속 테스트를 수행하면, 물리적인 에이전트가 아직 없기에
+
+`oracle.odi.runtime.agent.invocation.InvocationException: ODI-1424: http://wls.local:20910/oraclediagent을(를) 사용하여 에이전트 호스트 또는 포트에 접속할 수 없습니다.` 에러가 발생한다.
+
+
+
+
+
+이후
+
+https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-domain-standalone-agent.html#GUID-B6B5E795-4B47-458E-B57E-616553240460
+
+부터 다시 진행
+
+
 
 
 
@@ -236,3 +401,4 @@ DBCA 이후 진행하면서 포스팅 작성
 
 [Installing and Configuring Oracle Data Integrator](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding)
 
+https://oracle-base.com/articles/12c/odi-12c-silent-installation-on-ol7-12212
