@@ -1,14 +1,16 @@
 ---
 date: 2024-02-27 13:38:15 +0900
 layout: post
-title: "[ODI] All In One Script For 12cR2"
+title: "[ODI] How to install ODI 12cR2?"
 tags: [ODI, Installation]
 typora-root-url: ..
 ---
 
 # 1. Overview
 
-Oracle Data Integrator 12cR2 (12.2.1.4.0) 의 설치
+Oracle Data Integrator 12cR2 (12.2.1.4.0) 의 설치를 위해 공식 메뉴얼과 해외 블로그를 토대로 정리한다.
+
+ODI 와 Oracle DB 를 설치하고, WLS Domain 구성하여 ODI Studio 에서 생성한 Agent와의 연결까지 진행한다.
 
 
 
@@ -19,6 +21,8 @@ Oracle Data Integrator 12cR2 (12.2.1.4.0) 의 설치
 ## 2.1 Roadmap for Verifying Your System Environment
 
 설치에 앞서 Certification 확인 및 OS 에 필요한 정보들을 [Roadmap for Verifying Your System Environment](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/preparing-install-and-configure-product.html#GUID-35030871-A1A0-435C-8094-A74CCD42EAD1) 에서 전체적으로 확인한다.
+
+
 
 
 
@@ -35,6 +39,8 @@ Oracle Data Integrator 12cR2 (12.2.1.4.0) 의 설치
 
 
 JDK가 이미 최신 버전일 경우, [Setting Java Home for ODI Studio](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-oracle-data-integrator-studio.html#GUID-F236D36F-05DF-4B43-AC33-0A30C5244B76) 설명에 따라 변경 가능하다고 되어 있지만, 직접 해보니 `odi.conf` 환경변수가 적용되지 않아 재설치 했다.
+
+
 
 
 
@@ -84,13 +90,14 @@ V983389-01.zip 을 압축 해제하여, fmw_12.2.1.4.0_odi.jar 파일을 얻는�
 BASEDIR=/sw/downloads
 OS_USERNAME=$(id --user --name)
 OS_GROUPNAME=$(id --group --name)
+OS_HOSTNAME=wls.local
 
 ODI_INSTALL_FILE=${BASEDIR}/fmw_12.2.1.4.0_odi.jar
-JAVA_HOME=/sw/jdk/jdk1.8.0_211
-
 ODI_INSTALL_PATH=/sw/odi/12cR2
 INVENTORY_PATH=/sw/odi/inventories/12cR2
 INVENTORY_GROUP=${OS_GROUPNAME}
+
+JAVA_HOME=/sw/jdk/jdk1.8.0_211
 
 
 cat << EOF > ${BASEDIR}/rsp
@@ -140,6 +147,7 @@ ORACLE_SID=ODI
 PATH=$ORACLE_HOME/bin:$PATH
 
 INVENTORY_PATH=/sw/databases/inventories/12cR2
+
 
 # Download 받은 Oracle DB 12c 는 2개의 ZIP으로 구성되어 있었다.
 mkdir -p ${ORACLE_HOME} && \
@@ -199,7 +207,7 @@ netca -silent -responseFile ${ORACLE_HOME}/assistants/netca/netca.rsp
 이후 DB 를 생성한다.
 
 ```bash
-$ cp ${ORACLE_HOME}/assistants/dbca/dbca.rsp ${ORACLE_HOME}/assistants/dbca/dbca.rsp.back && \
+cp ${ORACLE_HOME}/assistants/dbca/dbca.rsp ${ORACLE_HOME}/assistants/dbca/dbca.rsp.back && \
 cat << EOF > ${ORACLE_HOME}/assistants/dbca/dbca.rsp
 [GENERAL]
 RESPONSEFILE_VERSION = "12.1.0"
@@ -246,7 +254,7 @@ dbca -silent -createDatabase -responsefile ${ORACLE_HOME}/assistants/dbca/dbca.r
 [RCU Requirements for Oracle Databases](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/sysrs/system-requirements-and-specifications.html#GUID-35B584F3-6F42-4CA5-9BBB-116E447DAB83) 에서 요구하는 값에 의해 일부 Tuning 이 필요하다.
 
 ```sh
-$ sqlplus / as sysdba << EOF
+sqlplus / as sysdba << EOF
 ALTER SYSTEM SET shared_pool_size=150M SCOPE=SPFILE;
 --ALTER SYSTEM SET sga_target 150M SCOPE=SPFILE;
 ALTER SYSTEM SET session_cached_cursors=100 SCOPE=SPFILE;
@@ -269,7 +277,7 @@ EOF
 RCU Silent mode로 Repository 를 생성하기 위해, 필요한 Parameters file을 준비한다.
 
 ```sh
-$ cat << EOF > ${BASEDIR}/odi_rcu_parameters.txt
+cat << EOF > ${BASEDIR}/odi_rcu_parameters.txt
 ###SYS_PASSWORD###
 ###ODI_SCHEMA_PASSWORDS###
 ###SUPERVISOR_PASSWORD###
@@ -369,7 +377,7 @@ ODI Studio 환경은 GUI에서 대부분 사용되므로,
 
 
 
-![image-20240227162501415](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227162501415.png)
+![image-20240305170628461](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240305170628461.png)
 
 
 
@@ -385,13 +393,106 @@ ODI Studio 환경은 GUI에서 대부분 사용되므로,
 
 
 
+[Configuring the Domain](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-domain-standalone-agent.html#GUID-B6B5E795-4B47-458E-B57E-616553240460) 참고
+
+참고하여 생성된 WLST Script
+
+```python
+### Templates ###    
+# If you want to check useable Templates, call 'showAvailableTemplates'
+# showAvailableTemplates('true', 'true', 'true')
+selectTemplate('Oracle Data Integrator - Agent')
+loadTemplates()
+
+### Setup global env ###
+setOption('JavaHome', '/sw/jdk/jdk1.8.0_211');
+setOption('ServerStartMode', 'prod')
+setOption('OverwriteDomain', 'true')
+
+### Setup default datasource ###
+cd('/JDBCSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource/JDBCDriverParams/NO_NAME_0')
+set('DriverName','oracle.jdbc.OracleDriver')
+set('URL','jdbc:oracle:thin:@wls.local:1521/ODIPDB')
+set('PasswordEncrypted', 'schema1')
+cd('Properties/NO_NAME_0/Property/user')
+cmo.setValue('ODIDEV_STB')
+getDatabaseDefaults()
 
 
-이후
+### Setup Credential Keys
+# I don't know why this need
+# https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-domain-java-ee-agent.html#GUID-AFBE99F1-1677-41DE-8AD4-3E71CF4C414B
+cd('/SecurityConfiguration/base_domain')
+cmo.setUseKSSForDemo(false)
+cd('/Credential/TargetStore/oracle.odi.credmap/TargetKey/SUPERVISOR')
+create('c','Credential')
+cd('Credential')
+cmo.setUsername('SUPERVISOR')
+cmo.setPassword('supervisor1')
 
-https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-domain-standalone-agent.html#GUID-B6B5E795-4B47-458E-B57E-616553240460
 
-부터 다시 진행
+### Setup WLS account ###
+cd('/Security/base_domain/User/weblogic')
+cmo.setPassword('weblogic1')
+
+
+### Setup Admin&Managed(ODI) Servers ###
+cd('/Servers/AdminServer')
+set('ListenAddress','wls.local')
+set('ListenPort', 8001)
+
+cd('/Servers/ODI_server1')
+set('ListenAddress','wls.local')
+set('ListenPort', 20910)
+
+### Create domain
+writeDomain('/sw/odi/12cR2/domains/base_domain')
+closeTemplate()
+```
+
+
+
+이후 인스턴스 기동 후 ODI Studio 에서 앞서 생성한 OracleDIAgent 를 체크하면 된다.
+
+ODI Studio 에서 생성한 Agent 이름은 Master Repository 에 저장이 되는데,
+
+ODI_server1 기동 시 바라보는 Agent 이름이 서로 맞지 않을 때 아래처럼 에러가 난다.
+
+그러므로 아래 에러가 발생하면, 로그처럼 'OracleDIAgent' 가 ODI Studio 에서 생성한 이름과 같은지 확인한다.
+
+그리고 ODI_server1 재기동하면 에러가 사라진다.
+
+
+
+```
+<Mar 5, 2024 3:57:39,597 PM KST> <Error> <HTTP> <BEA-101216> <Servlet: "AgentServlet" failed to preload on startup in Web application: "oraclediagent".
+ODI-1405: Agent OracleDIAgent start failure: the agent is not defined in the topology for master repository.
+        at oracle.odi.runtime.agent.servlet.AgentServlet$1.doAction(AgentServlet.java:1188)
+        at oracle.odi.core.persistence.dwgobject.DwgObjectTemplate.execute(DwgObjectTemplate.java:173)
+        at oracle.odi.runtime.agent.servlet.AgentServlet.getSnpAgentForAgentInstance(AgentServlet.java:1178)
+        at oracle.odi.runtime.agent.servlet.AgentServlet.startup(AgentServlet.java:586)
+        at oracle.odi.runtime.agent.servlet.AgentServlet.init(AgentServlet.java:371)
+        Truncated. see log file for complete stacktrace
+>
+<Mar 5, 2024 3:57:39,778 PM KST> <Error> <Deployer> <BEA-149231> <Unable to set the activation state to true for the application "oraclediagent".
+weblogic.application.ModuleException: ODI-1405: Agent OracleDIAgent start failure: the agent is not defined in the topology for master repository.
+        at weblogic.application.internal.ExtensibleModuleWrapper.start(ExtensibleModuleWrapper.java:140)
+        at weblogic.application.internal.flow.ModuleListenerInvoker.start(ModuleListenerInvoker.java:124)
+        at weblogic.application.internal.flow.ModuleStateDriver$3.next(ModuleStateDriver.java:233)
+        at weblogic.application.internal.flow.ModuleStateDriver$3.next(ModuleStateDriver.java:228)
+        at weblogic.application.utils.StateMachineDriver.nextState(StateMachineDriver.java:45)
+        Truncated. see log file for complete stacktrace
+Caused By: ODI-1405: Agent OracleDIAgent start failure: the agent is not defined in the topology for master repository.
+        at oracle.odi.runtime.agent.servlet.AgentServlet$1.doAction(AgentServlet.java:1188)
+        at oracle.odi.core.persistence.dwgobject.DwgObjectTemplate.execute(DwgObjectTemplate.java:173)
+        at oracle.odi.runtime.agent.servlet.AgentServlet.getSnpAgentForAgentInstance(AgentServlet.java:1178)
+        at oracle.odi.runtime.agent.servlet.AgentServlet.startup(AgentServlet.java:586)
+        at oracle.odi.runtime.agent.servlet.AgentServlet.init(AgentServlet.java:371)
+        Truncated. see log file for complete stacktrace
+>
+```
+
+
 
 
 
