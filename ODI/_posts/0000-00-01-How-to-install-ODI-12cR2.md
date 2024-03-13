@@ -343,7 +343,7 @@ ODI Studio 환경은 GUI에서 대부분 사용되므로,
 
 '저장소에 접속...' 클릭
 
-![image-20240227155559201](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227155559201.png)
+![How-to-install-ODI-12cR2_1](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_1.png)
 
 
 
@@ -351,13 +351,13 @@ ODI Studio 환경은 GUI에서 대부분 사용되므로,
 
 기입되는 정보는 [Connecting to the Master Repository](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-oracle-data-integrator-studio.html#GUID-79B5C886-DBFC-460C-A8A0-29710A42A30A) 참고
 
-![image-20240227160456705](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227160456705.png)
+![How-to-install-ODI-12cR2_2](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_2.png)
 
 
 
 최초 로그인 시 'ODI 초기화' 수행 된다.
 
-![image-20240227160659552](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227160659552.png)
+![How-to-install-ODI-12cR2_3](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_3.png)
 
 
 
@@ -373,17 +373,17 @@ ODI Studio 환경은 GUI에서 대부분 사용되므로,
 
 [Creating an Agent in the Master Repository with ODI Studio](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-domain-standalone-agent.html#GUID-6EEED355-F944-447F-A4CE-EA7BD9FE160C) 참고
 
-![image-20240227162303426](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227162303426.png)
+![How-to-install-ODI-12cR2_4](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_4.png)
 
 
 
-![image-20240305170628461](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240305170628461.png)
+![How-to-install-ODI-12cR2_5](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_5.png)
 
 
 
 모두 저장.
 
-![image-20240227162822005](/../../../../../Desktop/GoodMorning/2.-Blog/dhkim900331.github.io/assets/posts/images/0000-00-01-All-In-One-Script-For-12cR2/image-20240227162822005.png)
+![How-to-install-ODI-12cR2_6](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_6.png)
 
 
 

@@ -136,7 +136,7 @@ SSLCertificateKeyFile       ${CERT}/private.key
 
 * 접속 시 아래와 같이 완료되었습니다.
 
-![SetupSSLwithApache_1](/../assets_copy_final/posts/images/SSL/SetupSSLwithApache/SetupSSLwithApache_1.png)
+![SetupSSLwithApache_1](/../assets/posts/images/SSL/SetupSSLwithApache/SetupSSLwithApache_1.png)
 
 
 

@@ -19,7 +19,7 @@ Session을 생성하고 복제하는 Method (setAttribute, getAttribute, getSess
 
 > (setAttribute 로 검색시)
 
-![SessionMethod_1](/../assets_copy_final/posts/images/WebLogic/Session-Method/Session-Method_1.png)
+![Session-Method_1](/../assets/posts/images/WebLogic/Session-Method/Session-Method_1.png)
 
 
 
@@ -57,7 +57,7 @@ getSession(false) = HttpSession이 존재하면 현재 HttpSession을 반환하�
 
 
 
-![SessionMethod_2](/../assets_copy_final/posts/images/WebLogic/Session-Method/Session-Method_2.png)
+![Session-Method_2](/../assets/posts/images/WebLogic/Session-Method/Session-Method_2.png)
 
 
 

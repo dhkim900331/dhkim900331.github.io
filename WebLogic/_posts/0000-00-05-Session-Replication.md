@@ -40,7 +40,7 @@ Primary Server의 shutdown이 되더라도, Secondary Server에 backup Session�
 
 또한, 다음 표는 Cluster 내 Member들 간 Session 복제 우선 순위.
 
-![SessionReplication_1](/../assets_copy_final/posts/images/WebLogic/Session-Replication/Session-Replication_1.png)
+![Session-Replication_1](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_1.png)
 
 
 
@@ -64,7 +64,7 @@ m1에 Primary 2, Secondary 1
 
 m2에 Primary 1, Secondary 2
 
-![SessionReplication_2](/../assets_copy_final/posts/images/WebLogic/Session-Replication/Session-Replication_2.png)
+![Session-Replication_2](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_2.png)
 
 
 
@@ -74,7 +74,7 @@ m2 instance를 shutdown 시에,
 
 m1의 Secondary가 m1의 Primary로 이동한다.
 
-![SessionReplication_3](/../assets_copy_final/posts/images/WebLogic/Session-Replication/Session-Replication_3.png)
+![Session-Replication_3](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_3.png)
 
 
 
@@ -194,7 +194,7 @@ M4 - M3 으로 클러스터 Primary/Secondary 설정이 되어야 하는데
 
 그림1. M1 , M3 인스턴스만 기동하여 서로 강제 클러스터링
 
-![SessionReplication_4](/../assets_copy_final/posts/images/WebLogic/Session-Replication/Session-Replication_4.png)
+![Session-Replication_4](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_4.png)
 
 
 
@@ -202,7 +202,7 @@ M4 - M3 으로 클러스터 Primary/Secondary 설정이 되어야 하는데
 
 그림2. M2 인스턴스를 추가 기동하였더니, 클러스터 구조 재조정
 
-![SessionReplication_5](/../assets_copy_final/posts/images/WebLogic/Session-Replication/Session-Replication_5.png)
+![Session-Replication_5](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_5.png)
 
 
 
@@ -210,7 +210,7 @@ M4 - M3 으로 클러스터 Primary/Secondary 설정이 되어야 하는데
 
 그림3. M4 인스턴스를 추가 기동하였더니, 클러스터 구조 재조정
 
-![SessionReplication_6](/../assets_copy_final/posts/images/WebLogic/Session-Replication/Session-Replication_6.png)
+![Session-Replication_6](/../assets/posts/images/WebLogic/Session-Replication/Session-Replication_6.png)
 
 
 

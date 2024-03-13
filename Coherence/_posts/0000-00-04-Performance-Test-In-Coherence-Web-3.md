@@ -119,7 +119,7 @@ Jmeter 20 Users 가 지속적으로 세션을 생성하는 과정에서, 위 스
 
 
 
-![Performance-Test-In-Coherence-Web-3_1](/../assets_copy_final/posts/images/Coherence/Performance-Test-In-Coherence-Web-3/Performance-Test-In-Coherence-Web-3_1.png)
+![Performance-Test-In-Coherence-Web-3_1](/../assets/posts/images/Coherence/Performance-Test-In-Coherence-Web-3/Performance-Test-In-Coherence-Web-3_1.png)
 
 
 

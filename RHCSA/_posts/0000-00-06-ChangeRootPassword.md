@@ -17,7 +17,7 @@ root 계정 패스워드 변경 방법
 
 (1). Linux 부팅 단계에서 e 를 눌러 명령줄 편집모드 진입
 
-![ChangeRootPassword_1](/../assets_copy_final/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_1.png)
+![ChangeRootPassword_1](/../assets/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_1.png)
 
 
 
@@ -25,7 +25,7 @@ root 계정 패스워드 변경 방법
 
 (2). linux 행에 마지막(End 키)에 rd.break 입력 후 Ctrl-x 키로 이어서 부팅
 
-![ChangeRootPassword_2](/../assets_copy_final/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_2.png)
+![ChangeRootPassword_2](/../assets/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_2.png)
 
 
 
@@ -39,7 +39,7 @@ root 계정 패스워드 변경 방법
 
 현재 sysroot가 ro(read only)다.
 
-![ChangeRootPassword_3](/../assets_copy_final/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_3.png)
+![ChangeRootPassword_3](/../assets/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_3.png)
 
 
 
@@ -51,7 +51,7 @@ root 계정 패스워드 변경 방법
 # mount -o(options) remount,rw /sysroot
 ```
 
-![ChangeRootPassword_4](/../assets_copy_final/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_4.png)
+![ChangeRootPassword_4](/../assets/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_4.png)
 
 
 
@@ -98,6 +98,6 @@ Re-type Password:
 
 (7). relabel 작업으로 보여지는 로그들
 
-![ChangeRootPassword_5](/../assets_copy_final/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_5.png)
+![ChangeRootPassword_5](/../assets/posts/images/RHCSA/ChangeRootPassword/ChangeRootPassword_5.png)
 
 

@@ -167,7 +167,7 @@ https://docs.oracle.com/cd/E24290_01/coh.371/e22842/jmx.htm#COHMG239
 
 Jconsole로 접근한다.
 
-![How-To-Monitor-Coherence-Web-3_1](/../assets_copy_final/posts/images/Coherence/How-To-Monitor-Coherence-Web-3/How-To-Monitor-Coherence-Web-3_1.png)
+![How-To-Monitor-Coherence-Web-3_1](/../assets/posts/images/Coherence/How-To-Monitor-Coherence-Web-3/How-To-Monitor-Coherence-Web-3_1.png)
 
 
 
@@ -175,7 +175,7 @@ Jconsole로 접근한다.
 
 다음의 `WebLogicHttpSessionManager` - `2 (WLS Member ID)` 하위에서 Session Application 별로 MBean을 모니터링 할 수 있다.
 
-![How-To-Monitor-Coherence-Web-3_2](/../assets_copy_final/posts/images/Coherence/How-To-Monitor-Coherence-Web-3/How-To-Monitor-Coherence-Web-3_2.png)
+![How-To-Monitor-Coherence-Web-3_2](/../assets/posts/images/Coherence/How-To-Monitor-Coherence-Web-3/How-To-Monitor-Coherence-Web-3_2.png)
 
 
 
