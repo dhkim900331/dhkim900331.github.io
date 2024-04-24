@@ -1,8 +1,8 @@
 ---
 date: 2023-07-25 09:33:29 +0900
 layout: post
-title: "[WEB/Apache] Error Redirect"
-tags: [WEB, Apache, ErrorDocument, Rewrite, Redirect]
+title: "[WebTier/Apache] Error Redirect"
+tags: [WebTier, Apache, ErrorDocument, Rewrite, Redirect]
 typora-root-url: ..
 ---
 

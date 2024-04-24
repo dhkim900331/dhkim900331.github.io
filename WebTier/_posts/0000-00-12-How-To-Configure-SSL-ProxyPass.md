@@ -1,8 +1,8 @@
 ---
 date: 2023-05-16 07:39:11 +0900
 layout: post
-title: "[WEB/OHS] How to Configure SSL ProxyPass"
-tags: [WEB, OracleHTTPServer, OHS, Apache, SSL, ProxyPass, HTTPS]
+title: "[WebTier/OHS] How to Configure SSL ProxyPass"
+tags: [WebTier, OHS, Apache, SSL, ProxyPass, HTTPS]
 typora-root-url: ..
 ---
 

@@ -1,8 +1,8 @@
 ---
 date: 2023-05-17 08:16:07 +0900
 layout: post
-title: "[WEB/OSSL] SSL VirtualHost With SNI"
-tags: [WEB, OracleHTTPServer, OHS, Apache, mod_ossl, HTTPS, SSL]
+title: "[WebTier/OSSL] SSL VirtualHost With SNI"
+tags: [WebTier, OHS, Apache, mod_ossl, HTTPS, SSL]
 typora-root-url: ..
 ---
 

@@ -1,8 +1,8 @@
 ---
 date: 2024-02-07 16:43:22 +0900
 layout: post
-title: "[WEB/OHS] How to capture SSL Hello Messages"
-tags: [WEB, OHS, SSL, Handshake]
+title: "[WebTier/OHS] How to capture SSL Hello Messages"
+tags: [WebTier, OHS, SSL, Handshake]
 typora-root-url: ..
 ---
 

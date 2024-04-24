@@ -1,8 +1,8 @@
 ---
 date: 2023-07-28 08:38:57 +0900
 layout: post
-title: "[WEB/Apache] MaxConnectionsPerChild Monitoring"
-tags: [WEB, Apache, MaxConnectionsPerChild, server-status, ExtendedStatus]
+title: "[WebTier/Apache] MaxConnectionsPerChild Monitoring"
+tags: [WebTier, Apache, MaxConnectionsPerChild, server-status, ExtendedStatus]
 typora-root-url: ..
 ---
 

@@ -1,8 +1,8 @@
 ---
 date: 2022-10-06 17:15:38 +0900
 layout: post
-title: "[WEB/Apache] mod_proxy의 ProxyErrorOverride"
-tags: [WEB, OracleHTTPServer, OHS, Apache, ProxyErrorOverride, ErrorDocument, mod_proxy]
+title: "[WebTier/Apache] mod_proxy의 ProxyErrorOverride"
+tags: [WebTier, OHS, Apache, ProxyErrorOverride, ErrorDocument, mod_proxy]
 typora-root-url: ..
 ---
 

@@ -1,8 +1,8 @@
 ---
 date: 2023-05-19 08:37:17 +0900
 layout: post
-title: "[WEB/OHS] All In One Script For 11gR1"
-tags: [WEB, OracleHTTPServer, OHS, Apache, Install, WLST, Jython]
+title: "[WebTier/OHS] All In One Script For 11gR1"
+tags: [WebTier, OHS, Apache, Install, WLST, Jython]
 typora-root-url: ..
 ---
 

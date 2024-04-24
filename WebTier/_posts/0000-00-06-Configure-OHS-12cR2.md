@@ -1,8 +1,8 @@
 ---
 date: 2022-12-06 08:53:52 +0900
 layout: post
-title: "[WEB/OHS] Oracle HTTP Server 12cR2 Configurations"
-tags: [WEB, OracleHTTPServer, OHS, Config]
+title: "[WebTier/OHS] Oracle HTTP Server 12cR2 Configurations"
+tags: [WebTier, OHS, Config]
 typora-root-url: ..
 ---
 

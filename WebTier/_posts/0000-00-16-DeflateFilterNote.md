@@ -1,8 +1,8 @@
 ---
 date: 2023-07-14 08:50:48 +0900
 layout: post
-title: "[WEB/Apache] DeflateFilterNote"
-tags: [WEB, Apache, mod_deflate]
+title: "[WebTier/Apache] DeflateFilterNote"
+tags: [WebTier, Apache, mod_deflate]
 typora-root-url: ..
 ---
 
