@@ -1,0 +1,221 @@
+I"h(<h2 id="1-개요">1. 개요</h2>
+
+<p>weblogic.WLST Class 의 동작 속도의 지연을 줄여보자.</p>
+<p style="height:40px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<p>weblogic.WLST Class 를 사용할 때마다, 이 답답한 동작 속도를 개선해보자.</p>
+
+<p>개선해보기 위해서 여러 자료들을 찾아보았다.</p>
+
+<p>JVM Compiler 옵션 조정을 통해서 효과가 있을 것으로 보였다.</p>
+<p style="height:20px;"></p>
+<p>참고한 문서로는, 크게 두가지가 있다.</p>
+<p style="height:20px;"></p>
+<p>하나는, <a href="https://www.baeldung.com/jvm-tiered-compilation">Tiered Compilation in JVM</a> 에서 JVM Compiler 동작 방식에 대해서 이해를 도왔다.</p>
+
+<p>두번째로는, <a href="https://docs.oracle.com/javacomponents/jrockit-hotspot/migration-guide/comp-opt.htm#JRHMG117">4 Compilation Optimization</a> 에서 JVM Compiler 개념이며, 여기서 <code class="language-plaintext highlighter-rouge">For example, the client compiler would probably be a better fit for a command line administration tool like WLST.</code> 와 같은 메시지도 발견했다.</p>
+<p style="height:20px;"></p>
+<p>Compiler 옵션을 변경해가며 weblogic.WLST 가 체감이 될 정도로 빨라질 수 있는지 몇가지 Test를 진행해본다.</p>
+<p style="height:40px;"></p>
+<h2 id="3-환경-및-테스트">3. 환경 및 테스트</h2>
+
+<p>다음의 시스템 환경에서 테스트 했다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>Red Hat Enterprise Linux release 8.7
+CPU 2 core (Hyperthreading 으로 인해 논리적으로 4 core)
+16 GB Memory
+Java 1.8.0_351
+WebLogic 14.1.1.0.0 (PSU Oct 2022 Applied)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>다음의 단순한 WLST connect script를 실행하고, start/end date 값으로 평균을 계산했다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="nb">echo </span>start <span class="si">$(</span><span class="nb">date</span><span class="si">)</span>
+
+java weblogic.WLST <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
+connect(url='</span><span class="k">${</span><span class="nv">SERVER_ADDR</span><span class="k">}</span><span class="sh">:</span><span class="k">${</span><span class="nv">SERVER_PORT</span><span class="k">}</span><span class="sh">')
+exit()
+</span><span class="no">EOF
+
+</span><span class="nb">echo </span>end <span class="si">$(</span><span class="nb">date</span><span class="si">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>다음의 명령으로, WLST CPU/MEM 사용률만 1초 단위로 뽑아 평균을 계산했다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>sh <span class="o">&lt;&lt;</span> <span class="sh">"</span><span class="no">EOF</span><span class="sh">"
+while true
+do
+  PID=</span><span class="si">$(</span>ps <span class="nt">-ef</span> | <span class="nb">grep </span>weblogic.WLST | <span class="nb">grep</span> <span class="nt">-v</span> <span class="nb">grep</span> | <span class="nb">awk</span> <span class="s1">'{print $2}'</span><span class="si">)</span><span class="sh">
+  if [ "x</span><span class="nv">$PID</span><span class="sh">" == "x" ]; then
+    continue
+  fi
+  
+  ps -p </span><span class="k">${</span><span class="nv">PID</span><span class="k">}</span><span class="sh"> -o %cpu,%mem,cmd | tail -1 &amp;&amp; sleep 1
+done
+</span><span class="no">EOF
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+
+<h3 id="31-c2-compiler-default">3.1 C2 Compiler (Default)</h3>
+
+<p>Default는 다음과 같다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>-server -XX:+TieredCompilation
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>첫 시도에, 실행 시 WLST script는 아래와 같은 Log를 얻는다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>start Wed May 10 12:28:06 KST 2023
+end Wed May 10 12:28:32 KST 2023
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>ps script는 아래와 같은 Log를 얻는다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>109  0.6 java weblogic.WLST
+132  0.9 java weblogic.WLST
+...
+237  4.3 java weblogic.WLST
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>이러한 방법으로 세번의 시도를 했고, 평균을 내보면</p>
+
+<ul>
+  <li>WLST Connect 까지 평균 27초</li>
+  <li>WLST 실행부터 종료까지 CPU 평균 220%</li>
+  <li>WLST 실행부터 종료까지 MEM 평균 2.7%</li>
+</ul>
+
+<p>가 계산된다.</p>
+<p style="height:40px;"></p>
+<h3 id="32-c2--tiered-off">3.2 C2 + Tiered Off</h3>
+
+<p>적용된 옵션은 다음과 같다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>-server -XX:-TieredCompilation
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>평균은,</p>
+
+<ul>
+  <li>32초</li>
+  <li>164%</li>
+  <li>2.4%</li>
+</ul>
+<p style="height:40px;"></p>
+<h3 id="33-c1-compiler">3.3 C1 Compiler</h3>
+
+<p>적용된 옵션은 다음과 같다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>-client -XX:+TieredCompilation
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>평균은,</p>
+
+<ul>
+  <li>27초</li>
+  <li>218%</li>
+  <li>2.6%</li>
+</ul>
+<p style="height:20px;"></p>
+<p>C1 Compiler 옵션을 쓰면 괜찮을 것이라는 공식 문서 내용이 있지만, 마법같은 변화는 없다.</p>
+<p style="height:40px;"></p>
+<h3 id="34-c1--tiered-off">3.4 C1 + Tiered Off</h3>
+
+<p>적용된 옵션은 다음과 같다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>-client -XX:-TieredCompilation
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>평균은,</p>
+
+<ul>
+  <li>31초</li>
+  <li>169%</li>
+  <li>2.4%</li>
+</ul>
+<p style="height:20px;"></p>
+<p>중간 계층의 최적화 Compiler 기능을 끄므로써, Sec는 늘어났지만, 소요되는 OS Resource가 절약 되었다.</p>
+<p style="height:40px;"></p>
+<h3 id="35-just-interpreter">3.5 Just Interpreter</h3>
+
+<p>모든 Compile 기능은 끄고, Interpreter Mode로만 적용한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>-Xint
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>평균은,</p>
+
+<ul>
+  <li>95초</li>
+  <li>101%</li>
+  <li>1.4%</li>
+</ul>
+<p style="height:20px;"></p>
+<p>OS Resource 가 상당량 절약 되었다.</p>
+
+<p>그러나 Runtime이 매우 길다.</p>
+<p style="height:40px;"></p>
+<h2 id="4-outcome">4. Outcome</h2>
+
+<p>Compiler Mode를 간략히 살펴보면 HotSpot JVM은 <code class="language-plaintext highlighter-rouge">-client (C1)</code> 와 <code class="language-plaintext highlighter-rouge">-server (C2)</code> 가 있다.</p>
+
+<p>C1은 Method를 빠르게 Compile 하여 덜 최적화되지만, Startup이 빠른 장점이 있다.</p>
+
+<p>C2는 비교적 그렇지 않지만 자주 실행되는 Method (<code class="language-plaintext highlighter-rouge">-XX:CompileThreshold</code>) 를 Byte code 에서 Native code로 변환한다. 이러한 최적화를 오랜 시간 수행되는 Enterprise App에 필요로 한다.</p>
+<p style="height:20px;"></p>
+<p>위 내용을 좀 더 이해하게 되었으며,</p>
+
+<p>이번 Post에서 다룬 weblogic.WLST 는 대부분 단순 일회성으로 처음과 끝을 반복 실행하는 Client Program의 성격이며,</p>
+
+<p>CPU Resource에 매우 민감하다면, <a href="#-35-just-interpreter">3.5 Just Interpreter</a> (그러나 너무 느리다)</p>
+
+<p>CPU Resource에 조금 민감하다면, <a href="#h-32-c2+tiered-off">3.2 C2 + Tiered Off</a> 중에 선택해야 할 것으로 보인다.</p>
+<p style="height:20px;"></p>
+<p>Runtime 기준에서 살펴보자면, <a href="#h-31-c2-compiler-(default)">3.1 C2 Compiler (Default)</a> 와 <a href="#h-33-c1-compiler">3.3 C1 Compiler</a> 가 동일하지만, 약간의 Resource 차이가 있으므로 후자를 선택하면 될 것으로 보인다.</p>
+<p style="height:20px;"></p>
+<p>이번 테스트는 매우 심플/협소하기도 했고, 평균의 평균이라 데이터에 약간의 오류가 있었다.</p>
+<p style="height:40px;"></p>
+<h2 id="5-references">5. References</h2>
+
+<p><a href="https://www.baeldung.com/jvm-tiered-compilation">Tiered Compilation in JVM</a></p>
+
+<p><a href="https://docs.oracle.com/javacomponents/jrockit-hotspot/migration-guide/comp-opt.htm#JRHMG117">4 Compilation Optimization</a></p>
+
+<p><strong>E-WL: WLST Script Spikes Up CPU To More Than 300% (Doc ID 2903838.1)</strong></p>
+:ET

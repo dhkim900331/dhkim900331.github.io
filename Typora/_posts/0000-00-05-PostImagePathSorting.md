@@ -12,19 +12,13 @@ typora-root-url: ..
 [PostImageSorting](PostImageSorting)에서는 Image 의 경로를 바로 잡아주었다.
 
 > Typora로 image를 paste 하고 나면 내가 원하는 Image 경로가 아니다. (냅둬도 상관은 없음)
-
-
-
+{{ site.content.br_small }}
 이 게시물에서는,
 
 문제가 없이 존재하는 Image 자체를
 
 내가 원하는 디렉토리 구조로 옮겨 세팅해주는 스크립트다.
-
-
-
-
-
+{{ site.content.br_big }}
 
 
 # 2. ImagePathSorter.sh
@@ -90,11 +84,7 @@ do
 	IDX=1
 done
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 내가 게시한 모든 post 파일에서 img tag가 있는 게시물만 loop 한다.
 
 ```shell
@@ -110,9 +100,7 @@ do
 		continue
 	fi
 ```
-
-
-
+{{ site.content.br_small }}
 post 파일 경로는 일반적으로 다음과 같다.
 
 `...skip...<Category>/_posts/<Filename>.md`
@@ -125,9 +113,7 @@ post 파일 경로는 일반적으로 다음과 같다.
 	# 에서 Category 추출 (https://linuxhint.com/sed-capture-group-examples/)
 	mCat=$(echo ${MD} | sed 's/^\(.*\)\/\(.*\)\/_posts\/\(.*\)\.md$/\2/')
 ```
-
-
-
+{{ site.content.br_small }}
 이외 makrdown 파일명을 구한다.
 
 일반적인 Default Jekyll Blog 게시물의 경우에는, Filename 앞부분(prefix)에 date format이 있어야 한다.
@@ -144,9 +130,7 @@ post 파일 경로는 일반적으로 다음과 같다.
 	mName=$(echo ${MD} | sed 's/^\(.*\)\/\(.*\)\/_posts\/\(.*\)\.md$/\3/')
 	mName=$(echo ${mName} | sed -e "s|${MD_REGEX_DATE}||g")
 ```
-
-
-
+{{ site.content.br_small }}
 post 내에 image tag로 감싸져 있는, 실제 path를 구하고,
 
 다음에서, Image Name_IDX 로 관리하기 위해, IDX var를 사용한다.
@@ -158,9 +142,7 @@ post 내에 image tag로 감싸져 있는, 실제 path를 구하고,
 	# 이미지 갯수 카운트 용도
 	IDX=1
 ```
-
-
-
+{{ site.content.br_small }}
 `<Category>/<Markdown filename>/<Makrdown filename>_<IDX>.png` 와 같이 이미지를 옮기고,
 
 URL을 수정한다.

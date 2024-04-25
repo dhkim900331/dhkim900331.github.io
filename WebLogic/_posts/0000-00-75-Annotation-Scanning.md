@@ -28,17 +28,13 @@ Scan 기능은 쓸 수 없고, 다음의 옵션들로 Debugging 할 수 있다. 
 ```
 
 {{ site.content.br_big }}
-
-
-
+{{ site.content.br_small }}
 이러한 Scan은 화장자를 가리지 않고 모든 대상에 수행되며, WAR 로 패키징된 App은 Scan 하지 않는다.
 
 JAR 또한 Scan 하는 것처럼 Logging 되지만 실제로는 Scan 되지 않는 것으로 보인다.
 
 Scan은 EJB 1번, RAR 1번 검사를 위해 총 모든 Files/Dirs를 2회씩 Scan 한다.
-
-
-
+{{ site.content.br_small }}
 Scan 에 의해 발생하는 지연 현상을 위한 WorkAround 는 ...
 
  - WAR 로 패키징 (권장)

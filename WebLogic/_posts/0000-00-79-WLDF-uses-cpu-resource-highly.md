@@ -53,27 +53,19 @@ CPU resources 사용률이 높을 때 Thread dump 분석을 하면 아래와 같
 	at weblogic.work.ExecuteThread.execute(ExecuteThread.java:420)
 	at weblogic.work.ExecuteThread.run(ExecuteThread.java:360) 
 ```
-
-
-
+{{ site.content.br_small }}
 Thread dump에서 특정 Thread가 CPU resources를 많이 사용하는 것을 찾기 위해서는
 
 Unexpected High CPU Usage with WebLogic Server (WLS) Support Pattern (Doc ID 779349.1) 문서를 참고한다.
-
-
-
+{{ site.content.br_small }}
 WLDF는 WLS Instance에서 제공되는 Applications 들의 진단 정보를 수집하기 위해 기본적으로 활성화 되어 있다.
 
 WLDF에 의해 생성되는 DAT 파일이 점점 커짐에 따라 내부 record indexing 에서 CPU resources를 많이 사용한다.
 
 (예, servers/data/store/diagnostics/WLS_DIAGNOSTICS000000.DAT)
-
-
-
+{{ site.content.br_small }}
 WLS*.DAT 파일을 삭제하고 재기동하면 CPU resources 부하 상황을 1차적으로 해결할 수 있다.
-
-
-
+{{ site.content.br_small }}
 WLDF 데이터 수집을 위해 동작하는 저 Threads 는 다음의 JVM Arguments 로 수집되는 WLDF 데이터 양을 줄일 수 있고, 데이터 Indexing 을 비활성화하여 부하를 감소시킬 수 있다.
 
 ```
@@ -81,9 +73,7 @@ WLDF 데이터 수집을 위해 동작하는 저 Threads 는 다음의 JVM Argum
 -Dcom.bea.wlw.netui.disableInstrumentation=true
 -Dweblogic.connector.ConnectionPoolProfilingEnabled=false
 ```
-
-
-
+{{ site.content.br_small }}
 위 옵션은 WLDF 자체를 비활성화하지 않기 때문에 계속해서 WLS*.DAT 파일은 생성될 수 있기 때문에, 근본적으로 비활성화하기 위해서는 <Console - Diagnostics - Built-in Diagnostic Modules - {Server} - Low 값을 None> 적용을 한다.
 
 {{ site.content.br_big }}

@@ -14,6 +14,8 @@ mod_ossl 모듈이 영향이 생기는게 아닌가?
 
 
 
+
+
 # 2. Descriptions
 
 Oracle에서 개발한 mod_ossl Module은 기능적으로 Apache의 mod_ssl Module과 유사하다.
@@ -43,6 +45,8 @@ mod_security2 Module을 사용하는 경우, OpenSSL 상위 Version과의 호환
 타사 Library 이므로 이에 대해서 정리된 자료가 Oracle에는 없다.
 
 mod_security2 Module은 http://www.modsecurity.org/documentation.html 참고한다.
+
+
 
 
 

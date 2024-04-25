@@ -1,0 +1,107 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>Encryption/Decryption (암/복호화)</p>
+<p style="height:20px;"></p>
+<h2 id="2-encryption">2. Encryption</h2>
+
+<p>WebLogic 8 ~ 12cR2 사용 가능</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="o">[</span>weblogic@was base_domain]<span class="nv">$ </span><span class="nb">.</span> ./bin/setDomainEnv.sh
+<span class="o">[</span>weblogic@was base_domain]<span class="nv">$ </span>java weblogic.security.Encrypt string
+<span class="o">{</span>AES256<span class="o">}</span>WSq0iT981CeH2J+qbftpo0NN+IAT9689J+pk/Ecj5mw<span class="o">=</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>string 이라는 plain text는 {AES256}WSq0iT981CeH2J+qbftpo0NN+IAT9689J+pk/Ecj5mw= 으로 암호화됨</p>
+<p style="height:20px;"></p>
+<h2 id="3-decryption">3. Decryption</h2>
+
+<h3 id="21-weblogic-wlst-패키지-있는-경우">2.1 WebLogic WLST 패키지 있는 경우</h3>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="c1"># decrypt.py 파일 내용
+</span><span class="kn">import</span> <span class="nn">weblogic.security.internal</span> <span class="k">as</span> <span class="nb">int</span>
+
+<span class="k">def</span> <span class="nf">decrypt</span><span class="p">(</span><span class="n">domainPath</span><span class="p">,</span> <span class="n">encryptedPwd</span><span class="p">):</span>
+<span class="n">es</span> <span class="o">=</span> <span class="nb">int</span><span class="p">.</span><span class="n">SerializedSystemIni</span><span class="p">.</span><span class="n">getEncryptionService</span><span class="p">(</span><span class="n">domainPath</span><span class="p">)</span>
+<span class="n">ces</span> <span class="o">=</span> <span class="nb">int</span><span class="p">.</span><span class="n">encryption</span><span class="p">.</span><span class="n">ClearOrEncryptedService</span><span class="p">(</span><span class="n">es</span><span class="p">)</span>
+<span class="n">clear</span> <span class="o">=</span> <span class="n">ces</span><span class="p">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encryptedPwd</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">encryptedPwd</span> <span class="o">+</span> <span class="s">" -&gt; "</span> <span class="o">+</span> <span class="n">clear</span>
+
+<span class="n">decrypt</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="o">[</span>weblogic@was base_domain]<span class="nv">$ </span><span class="nb">.</span> ./bin/setDomainEnv.sh
+<span class="o">[</span>weblogic@was base_domain]<span class="nv">$ </span>java weblogic.WLST decrypt.py <span class="nv">$DOMAIN_HOME</span> <span class="o">{</span>AES256<span class="o">}</span>WSq0iT981CeH2J+qbftpo0NN+IAT9689J+pk/Ecj5mw<span class="o">=</span>
+
+Initializing WebLogic Scripting Tool <span class="o">(</span>WLST<span class="o">)</span> ...
+
+Welcome to WebLogic Server Administration Scripting Shell
+
+Type <span class="nb">help</span><span class="o">()</span> <span class="k">for </span><span class="nb">help </span>on available commands
+
+<span class="o">{</span>AES256<span class="o">}</span>WSq0iT981CeH2J+qbftpo0NN+IAT9689J+pk/Ecj5mw<span class="o">=</span> -&gt; string
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h4 id="22-그-외pure-java">2.2 그 외(Pure Java)</h4>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="err">#</span> <span class="n">decrypt</span><span class="o">.</span><span class="na">java</span> <span class="n">파일</span> <span class="n">내용</span>
+    <span class="kn">import</span> <span class="nn">weblogic.security.internal.SerializedSystemIni</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">weblogic.security.internal.encryption.ClearOrEncryptedService</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">weblogic.security.internal.encryption.EncryptionService</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">decrypt</span><span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">EncryptionService</span> <span class="n">es</span> <span class="o">=</span> <span class="nc">SerializedSystemIni</span><span class="o">.</span><span class="na">getEncryptionService</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+    <span class="nc">ClearOrEncryptedService</span> <span class="n">ces</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ClearOrEncryptedService</span><span class="o">(</span><span class="n">es</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">clear</span> <span class="o">=</span> <span class="n">ces</span><span class="o">.</span><span class="na">decrypt</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="s">" -&gt; "</span> <span class="o">+</span> <span class="n">clear</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="o">[</span>weblogic@was base_domain]<span class="nv">$ </span><span class="nb">.</span> ./bin/setDomainEnv.sh
+<span class="o">[</span>weblogic@was base_domain]<span class="nv">$ </span>javac decrypt.java
+<span class="o">[</span>weblogic@was base_domain]<span class="nv">$ </span>java decrypt <span class="nv">$DOMAIN_HOME</span> <span class="o">{</span>AES256<span class="o">}</span>WSq0iT981CeH2J+qbftpo0NN+IAT9689J+pk/Ecj5mw<span class="o">=</span>
+<span class="o">{</span>AES256<span class="o">}</span>WSq0iT981CeH2J+qbftpo0NN+IAT9689J+pk/Ecj5mw<span class="o">=</span> -&gt; string
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

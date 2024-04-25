@@ -11,9 +11,7 @@ tags: [Linux, RHCSA]
 특정 마운트 지점의 공간이 부족하다는 가정하에
 
 확장 방법을 알아본다.
-
-
-
+{{ site.content.br_small }}
 # 2. 설명
 
 ## 2.1 현재 상황
@@ -25,9 +23,7 @@ Filesystem                               Size  Used Avail Use% Mounted on
 ```
 
 > /data Total Size가 395MB 이다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # mount | grep /data
 /dev/mapper/servera_01_vg-servera_01_lv on /data type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
@@ -36,13 +32,9 @@ Filesystem                               Size  Used Avail Use% Mounted on
 > _/dev/mapper/servera_01_vg-servera_01_lv_ 장치명도 확인을 하였다.
 >
 > 이 부분은 그냥 쳐본거지, 여기서 얻어야만 하는 정보는 없다.
-
-
-
+{{ site.content.br_small }}
 /data 의 총 크기를 최소 700MB로 만들기 위해서는 **_대략 400MB_**를 추가 할당해주어야 한다.
-
-
-
+{{ site.content.br_small }}
 ## 2.2 볼륨 그룹 확장과 추가 파티셔닝
 
 ```bash
@@ -66,9 +58,7 @@ Filesystem                               Size  Used Avail Use% Mounted on
 ```
 
 > /data 가 마운트된 장치의 논리볼륨(LV)은 _servera_01_vg_ 볼륨 그룹에서 할당되었다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # vgdisplay servera_01_vg
   --- Volume group ---
@@ -98,9 +88,7 @@ Filesystem                               Size  Used Avail Use% Mounted on
 > Free Size가 104MB이므로 300MB 정도를 더 확장해야 한다.
 >
 > 여기 Free Size가 충분했다면 볼륨 그룹 확장이 필요 없다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # parted /dev/vdb print                                 
 Model: Virtio Block Device (virtblk)
@@ -115,9 +103,7 @@ Number  Start   End    Size   File system  Name     Flags
 ```
 
 > 디스크 장치 크기는 5369MB로 여유가 있다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # parted /dev/vdb mkpart primary 540MB 900MB
 # parted /dev/vdb set 3 lvm on
@@ -125,9 +111,7 @@ Number  Start   End    Size   File system  Name     Flags
 ```
 
 > 추가로 파티션을 생성하엿다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # parted /dev/vdb print                                 
 Model: Virtio Block Device (virtblk)
@@ -141,18 +125,14 @@ Number  Start   End    Size   File system  Name     Flags
  2      271MB   539MB  268MB               primary  lvm
  3      540MB   900MB  360MB               primary  lvm
 ```
-
-
-
+{{ site.content.br_small }}
 ```bash
 # pvcreate /dev/vdb3
 # vgextend servera_01_vg /dev/vdb3
 ```
 
 > /dev/vdb3 장치를 볼륨으로 만들고, 기존 _servera_01_vg_ 그룹에 할당하였다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # vgdisplay
   --- Volume group ---
@@ -178,9 +158,7 @@ Number  Start   End    Size   File system  Name     Flags
 ```
 
 > Free Size가 444 MB로 크게 늘어났다.
-
-
-
+{{ site.content.br_small }}
 ## 2.3 논리 볼륨 확장
 
 ```bash
@@ -190,9 +168,7 @@ Number  Start   End    Size   File system  Name     Flags
 > _700MB_는 추가할 사이즈가 아니라, 최종 사이즈다.
 >
 > 명령어로 가상 디스크 장치(LV)를 확장한다.
-
-
-
+{{ site.content.br_small }}
 ```bash
 # xfs_growfs /data
 ```
@@ -200,9 +176,7 @@ Number  Start   End    Size   File system  Name     Flags
 > 해당 명령어로 새롭게 늘어난 비어있는 공간을 xfs로 채워넣는다.
 >
 > _**ext4 의 경우에는 resize2fs 를 사용한다.**_
-
-
-
+{{ site.content.br_small }}
 ```bash
 # df -h /data
 Filesystem                               Size  Used Avail Use% Mounted on

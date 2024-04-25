@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 * Scouter APM에서 Method Profiling 방법
-
-
-
+{{ site.content.br_small }}
 # 2. 설명
 
 * 가령, 다음과 같은 구조를 갖는 Application이 있다고 해보자.
@@ -19,9 +17,7 @@ typora-root-url: ..
   * com.athena.dolly 아래에도 수두룩~
   * org.infinispan 아래에도 수두룩~
   * com.example.parent Class 아래에는 child 라는 method 1개
-
-
-
+{{ site.content.br_small }}
 ## 2.1 hook_method_patterns
 
 * 특정 Method만 Profiling

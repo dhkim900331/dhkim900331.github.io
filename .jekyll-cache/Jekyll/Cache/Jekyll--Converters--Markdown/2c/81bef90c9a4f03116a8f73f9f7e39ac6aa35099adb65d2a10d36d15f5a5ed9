@@ -1,0 +1,53 @@
+I"e<h2 id="1-개요">1. 개요</h2>
+<ul>
+  <li>WebLogic Console 메뉴에서 Thread Dump 생성</li>
+  <li>jdk의 jstack tool 사용하여 Thread Dump 생성</li>
+</ul>
+
+<p>위 방법 외에 WebLogic이 실행중인 cmd.exe에서 Ctrl + Break 키조합으로</p>
+
+<p>Thread Dump 생성 방법입니다.</p>
+<p style="height:40px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<h3 id="21-scripting">2.1 Scripting</h3>
+
+<p>(1). startAdmin.cmd (인스턴스 기동 스크립트)</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>...skip...
+start /B %DOMAIN_HOME%<span class="se">\b</span><span class="k">in</span><span class="se">\s</span>tartWebLogic.cmd <span class="o">&gt;&gt;</span> %LOG_DIR%<span class="se">\%</span>SERVER_NAME%.out 2&gt;&amp;1
+<span class="nb">tail</span> <span class="nt">-f</span> %LOG_DIR%<span class="se">\%</span>SERVER_NAME%.out
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>일반적인 기동 스크립트의 예시일 뿐</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>(2). startAdmin.bat (새로운 스크립트 파일)</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>C:<span class="se">\W</span>indows<span class="se">\S</span>ystem32<span class="se">\c</span>md.exe /k startAdmin.cmd
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>(3). startAdmin.bat 실행</p>
+
+<p><img src="/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_1.png" alt="Java-Thread-Dump-On-Windows_1" /></p>
+<p style="height:20px;"></p>
+<p>(4). <code class="language-plaintext highlighter-rouge">Ctrl + Break</code> 일괄 작업을 끝내지 않음. <code class="language-plaintext highlighter-rouge">N</code></p>
+
+<p><img src="/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_2.png" alt="Java-Thread-Dump-On-Windows_2" /></p>
+<p style="height:20px;"></p>
+<p>(5). <code class="language-plaintext highlighter-rouge">tail -f LOG 실행</code> (startAdmin.bat 으로 실행하지 않은 경우, tail 명령어로 다시 log를 띄울 수 없습니다.)</p>
+
+<p><img src="/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_3.png" alt="Java-Thread-Dump-On-Windows_3" /></p>
+<p style="height:20px;"></p>
+<p>(6). 위 화면에도 일부 보이듯, log에 Dump가 기록되어 있습니다.</p>
+
+<ul>
+  <li>startAdmin.cmd 의 /B 옵션 : 옵션 다음 명령줄을 백그라운드 실행</li>
+  <li>startAdmin.bat 의 /K 옵션 : 옵션 다음 명령줄 실행이 끝나도 세션 유지</li>
+</ul>
+:ET

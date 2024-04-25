@@ -36,9 +36,7 @@ MultipartConfig annoation은 다음과 같이 하였다.
   maxRequestSize = 1024 * 1024 * 1024 * 10  // 10 GB
 )
 ```
-
-
-
+{{ site.content.br_small }}
 > 2023-12-21 위 MultiPartConfig annoation에 문제가 없어 보이는데, 적용되지 않는 현상이 WLS 14.1 (Servlet 4.0)에서 목격되어 아래와 같이 변경하였다. (줄바꿈 등으로 인한 문제인 것인지..)
 >
 > ```java
@@ -49,9 +47,7 @@ MultipartConfig annoation은 다음과 같이 하였다.
 > ```
 >
 > 
-
-
-
+{{ site.content.br_small }}
 `fileSizeThreshold` 를 초과하는 경우, 임시로 `location`에 파일을 작성한다.
 
 하나의 업로드 파일은 `maxFileSize`를 초과할 수 없다. (예외 처리)

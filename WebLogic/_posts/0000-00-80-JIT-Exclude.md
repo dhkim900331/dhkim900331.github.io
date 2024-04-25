@@ -13,9 +13,7 @@ Just-In-Time (JIT) 의 Method Exclude 방법
 
 # 2. Descriptions
 결론을 언급하면, [Advanced JIT Compiler Options](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html#BABDDFII)의 설명대로 `-XX:CompileCommand=exclude,java/lang/String.indexOf` 와 같이 설정하여 java/lang/String Class의 indexOf method를 JIT에서 제외할 수 있다.
-
-
-
+{{ site.content.br_small }}
 특정 장애 사례에서,
 
 어느 Thread가 다음과 같은 복잡하지 않은 Stack Trace를 갖는데,
@@ -34,47 +32,35 @@ J 46698 C2 <Customer's App>.resolver.OutboundResolver.handleQueue(L***/framework
 J 36322% C2 <Customer's App>.core.asyncqueue.internal.AsyncQueueProcessor$QueueWorker._run()V (529 bytes) @ 0x00007f502c6c0a58 [0x00007f502c6c0280+0x7d8]
 j  <Customer's App>.core.asyncqueue.internal.AsyncQueueProcessor$QueueWorker.run()V+8
 ```
-
-
-
+{{ site.content.br_small }}
 가장 최근 `lookupAllHostAddr` 구간에서 잘못된 메모리 접근이 발생하여 Crash 가 발생했다.
 
 ```
 #  SIGSEGV (0xb) at pc=0x00007f503c7a0366, pid=520072, tid=0x00007f4da18e2700
 ```
-
-
-
+{{ site.content.br_small }}
 Crash가 발생한 지점인 thread_in_native.
 
 ```
 C  [libc.so.6+0x86366]  __libc_malloc+0x136
 ```
-
-
-
+{{ site.content.br_small }}
 libc는 OS Kernel libraries 중 하나인 GBLIC에 속해있으며,
 
 libc의 문제로 인해 이러한 현상이 발생할 수도 있지만,
 
 대게 공통 모듈이므로 일반적으로 JDK/WLS 에 Known issue가 있는지 살펴보아야 한다.
-
-
-
+{{ site.content.br_small }}
 RHEL 8.X / JDK 8 환경에서 Known issue는 없었고,
 
 이러한 Crash 문제는 처음 발생을 했기 때문에,
 
 다음과 같은 Solutions 을 제공할 수 있다.
-
-
-
+{{ site.content.br_small }}
 (1) JDK Minor update
 
 JDK 8 에서 유사한 형태의 Known issue는 검색되지 않았지만, 그동안의 Minor 코드 수정으로 인해서 잠재적으로 문제가 해소되었을 가능성도 있기 때문에, 최신 JDK 8 Minor update를 고려할 수 있다.
-
-
-
+{{ site.content.br_small }}
 (2) JIT Disable
 
 JIT는 자주 사용되는 Method를 ByteCode compile 하는 것이다.

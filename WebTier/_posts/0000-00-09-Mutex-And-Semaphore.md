@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 Apache, OHS 의 SSLSessionCache 에서 사용되는 Mutex와 Semaphore 에 대해서 간략하게 알아본다.
-
-
-
+{{ site.content.br_small }}
 # 2. 설명
 
 고객의 `ssl.conf` 설정값으로 다음의 기본값이 지정되었다.
@@ -31,30 +29,22 @@ Apache, OHS 의 SSLSessionCache 에서 사용되는 Mutex와 Semaphore 에 대�
 - SSLSessionCache : Mechanism
 - SSLSessionCacheTimeout : Expiring timeout (in seconds)
 - Mutex : Mutex to be used
-
-
-
+{{ site.content.br_small }}
 다음의 Error와 함께, 기동이 되지 않았다.
 
 ```
 (13)Permission denied: AH00023: Couldn't create the ssl-cache mutex
 ```
-
-
-
+{{ site.content.br_small }}
 해당 사례를 살펴보기 위해 Apache 컴파일 소스를 뒤져보았다.
-
-
-
+{{ site.content.br_small }}
 # 3. Mutex
 
 * Mutual Exclusion (상호 배제)
 * 공유 자원에, Only 1개의 Thread만 접근 가능하도록 하는 기법
 * 1개 Thread가 자원 접근이 “가능할 때”  Lock을 걸고 공유 자원이 있는 “임계 영역(Critical Section)”에 접근
 * Lock을 가지고 있는 Thread만이 Lock Release 하여 빠져나올 수 있음
-
-
-
+{{ site.content.br_small }}
 chatgpt의 example code를 보면,
 
 ```java
@@ -93,13 +83,9 @@ public class MutexExample {
     }
 }
 ```
-
-
-
+{{ site.content.br_small }}
 공통자원 lock을 Thread 1개만 소유할 수 있어, Mutex 가 증명된다.
-
-
-
+{{ site.content.br_small }}
 # 4. Semaphore
 
 * 기찻길에서 선로를 가리키는 “깃발” 이 어원.
@@ -109,9 +95,7 @@ public class MutexExample {
   * Semaphore에 접근하려는 Thread 만큼 count를 줄이고, 0보다 클 경우 임계 영역에 접근한다.
   * 즉, Semaphore는 count 만큼 누구나, 동시에 들어설 수 있다.
 * count(동시 접근 가능 수)가 1인 경우, binary mutex라고 함.
-
-
-
+{{ site.content.br_small }}
 example code.
 
 ```java
@@ -160,13 +144,9 @@ public class SemaphoreExample {
     }
 }
 ```
-
-
-
+{{ site.content.br_small }}
 lock은 없고, Thread 10개 중에서 Semaphore count 3만큼만 참여한다.
-
-
-
+{{ site.content.br_small }}
 # 5. View Source In httpd
 
 httpd/modules/ssl/ssl_private.h 에서 ssl-cache 정의를 확인할 수 있다.
@@ -185,9 +165,7 @@ int          ssl_stapling_mutex_reinit(server_rec *, apr_pool_t *);
 #define SSL_STAPLING_CACHE_MUTEX_TYPE "ssl-stapling"
 #define SSL_STAPLING_REFRESH_MUTEX_TYPE "ssl-stapling-refresh"
 ```
-
-
-
+{{ site.content.br_small }}
 httpd/modules/ssl/ssl_engine_mutex.c 에서 mutex 를 통한 lock 구현 호출 지점
 
 ```c
@@ -209,9 +187,7 @@ httpd/modules/ssl/ssl_engine_mutex.c 에서 mutex 를 통한 lock 구현 호출 
         ap_log_error(APLOG_MARK, APLOG_WARNING, rv, s, APLOGNO(02027)
                      "Failed to release SSL session cache lock");
 ```
-
-
-
+{{ site.content.br_small }}
 httpd/server/util_mutex.c 에서 mutex 구현과 다시 호출 지점이 확인된다.
 
 ```c
@@ -228,9 +204,7 @@ AP_DECLARE(apr_status_t) ap_global_mutex_create(apr_global_mutex_t **mutex,
 ...
     rv = ap_unixd_set_global_mutex_perms(*mutex);
 ```
-
-
-
+{{ site.content.br_small }}
 # 6. View Source In apr
 
 여기서부터는 apr source.
@@ -249,9 +223,7 @@ APR_DECLARE(apr_status_t) apr_global_mutex_create(apr_global_mutex_t **mutex,
 ...
 	rv = opr_thread_mutex_create(&m->thread_mutex, APR_THREAD_MUTEX_DEFAULT, m->pool);
 ```
-
-
-
+{{ site.content.br_small }}
 apr/locks/unix/proc_mutex.c
 
 ```c
@@ -276,23 +248,17 @@ static apr_status_t proc_mutex_pthread_create(apr_proc_mutex_t *new_mutex,  cons
     }
 
 ```
-
-
-
+{{ site.content.br_small }}
 proc_mutex.c 까지 소스를 추적하였는데, `proc_mutex_pthread_create` 메서드를 호출하는 지점을 찾지못하였다.
 
 그러나, mutex lock 생성을 위해 `/dev/zero` 을 필요로 하는 것은 확인은 되었다.
-
-
-
+{{ site.content.br_small }}
 # 7. Outcome
 
 고객의 경우, 응답을 중지하여 해당 사례를 끝마치지 못하였지만
 
 `/dev/zero` 권한을 변경하여 해당 이슈 재현이 가능한 점을 보아 `/dev/zero` 가 이슈의 원인이었다.
-
-
-
+{{ site.content.br_small }}
 ```sh
 $ ls -al /dev/zero
 crw-rw-rw- 1 root root 1, 5 Mar  2 11:24 /dev/zero

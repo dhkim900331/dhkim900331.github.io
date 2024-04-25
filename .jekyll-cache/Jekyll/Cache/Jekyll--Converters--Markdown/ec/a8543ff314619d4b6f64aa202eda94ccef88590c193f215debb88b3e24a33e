@@ -1,0 +1,28 @@
+I"{<h2 id="1-개요">1. 개요</h2>
+
+<p>웹로직 8버전만 사용자 정의 메모리 아규먼트 기능이 없다.</p>
+
+<p>사실 기능이라고 하기에는 단순한 문자열 치환이다…</p>
+<p style="height:40px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<p>startA.sh 과 같이 사용자 스크립트에 <code class="language-plaintext highlighter-rouge">export USER_MEM_ARGS</code> 한다면</p>
+
+<p>이 startA.sh은 결국 startWeblogic.sh 을 노헙으로 실행.</p>
+
+<p>startWeblogic.sh에서는 하위 프로세스로 실행되므로 앞에서 export된 USER_MEM_ARGS 변수를 내부적으로 사용가능.</p>
+
+<p>echo 등으로 찍히진 않는다. (물론 startWeblogic.sh을 실행시키면 찍힌다)</p>
+<p style="height:20px;"></p>
+<p>여튼 프로그래밍하여 startWeblogic.sh 하단쯤에 <code class="language-plaintext highlighter-rouge">if USER_MEM_ARGS != ""</code> 등 조건을 부여하여 <code class="language-plaintext highlighter-rouge">MEM_ARGS = USER_MEM_ARGS</code> 하자.</p>
+<p style="height:20px;"></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="s2">"</span> <span class="o">!=</span> <span class="s2">""</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+	</span><span class="nv">MEM_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">USER_MEM_ARGS</span><span class="k">}</span><span class="s2">"</span>
+<span class="k">fi
+</span><span class="nb">export </span>MEM_ARGS
+</pre></td></tr></tbody></table></code></pre></div></div>
+:ET

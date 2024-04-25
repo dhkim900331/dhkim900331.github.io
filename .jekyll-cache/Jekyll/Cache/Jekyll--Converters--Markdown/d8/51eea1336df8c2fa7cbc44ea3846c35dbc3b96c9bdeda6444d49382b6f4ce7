@@ -1,0 +1,122 @@
+I"�<h2 id="1-overview">1. Overview</h2>
+<p>Admin Console 을 통해서 반영 작업을 진행할 때, <code class="language-plaintext highlighter-rouge">Caused By: java.lang.ClassNotFoundException: com/bea/xml/stream/MXParserFactory</code> 발생하는 에러에 대해서 살펴본다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p>문제가 재현되는 시스템에서는, Admin Console을 통해서 반영 작업을 적용하려고 시도할 때 마다, 다음과 같은 Exception이 기록된다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre></td><td class="rouge-code"><pre>&lt;2023. 12. 20 오후 1시 55분 02초 KST&gt; &lt;Warning&gt; &lt;Deployer&gt; &lt;BEA-149078&gt; &lt;Stack trace for message 149004
+weblogic.management.provider.UpdateException: [Management:141191]The prepare phase of the configuration update failed with an exception:
+	at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.updateDeploymentContext(RuntimeAccessDeploymentReceiverService.java:670)
+	at weblogic.deploy.service.internal.targetserver.DeploymentReceiverCallbackDeliverer.doUpdateDeploymentContextCallback(DeploymentReceiverCallbackDeliverer.java:147)
+	at weblogic.deploy.service.internal.targetserver.DeploymentReceiverCallbackDeliverer.updateDeploymentContext(DeploymentReceiverCallbackDeliverer.java:28)
+	at weblogic.deploy.service.internal.statemachines.targetserver.ReceivedPrepare.callDeploymentReceivers(ReceivedPrepare.java:203)
+	at weblogic.deploy.service.internal.statemachines.targetserver.ReceivedPrepare.handlePrepare(ReceivedPrepare.java:112)
+	at weblogic.deploy.service.internal.statemachines.targetserver.ReceivedPrepare.receivedPrepare(ReceivedPrepare.java:52)
+	at weblogic.deploy.service.internal.targetserver.TargetRequestImpl.run(TargetRequestImpl.java:211)
+	at weblogic.deploy.service.internal.transport.CommonMessageReceiver$1.run(CommonMessageReceiver.java:457)
+	at weblogic.work.SelfTuningWorkManagerImpl$WorkAdapterImpl.run(SelfTuningWorkManagerImpl.java:550)
+	at weblogic.work.ExecuteThread.execute(ExecuteThread.java:263)
+	at weblogic.work.ExecuteThread.run(ExecuteThread.java:221)
+Caused By: java.lang.ClassNotFoundException: com/bea/xml/stream/MXParserFactory
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:278)
+	at javax.xml.stream.FactoryFinder.getProviderClass(FactoryFinder.java:124)
+	at javax.xml.stream.FactoryFinder.newInstance(FactoryFinder.java:179)
+	at javax.xml.stream.FactoryFinder.newInstance(FactoryFinder.java:148)
+	at javax.xml.stream.FactoryFinder.find(FactoryFinder.java:254)
+	at javax.xml.stream.FactoryFinder.find(FactoryFinder.java:215)
+	at javax.xml.stream.XMLInputFactory.newInstance(XMLInputFactory.java:154)
+	at weblogic.descriptor.DescriptorReader.&lt;init&gt;(DescriptorReader.java:22)
+	at weblogic.management.provider.internal.ConfigReader.&lt;init&gt;(ConfigReader.java:70)
+	at weblogic.management.provider.internal.ConfigReader.&lt;init&gt;(ConfigReader.java:64)
+	at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.handleExternalTreeLoad(RuntimeAccessDeploymentReceiverService.java:1021)
+	at weblogic.management.provider.internal.RuntimeAccessDeploymentReceiverService.updateDeploymentContext(RuntimeAccessDeploymentReceiverService.java:597)
+	at weblogic.deploy.service.internal.targetserver.DeploymentReceiverCallbackDeliverer.doUpdateDeploymentContextCallback(DeploymentReceiverCallbackDeliverer.java:147)
+	at weblogic.deploy.service.internal.targetserver.DeploymentReceiverCallbackDeliverer.updateDeploymentContext(DeploymentReceiverCallbackDeliverer.java:28)
+	at weblogic.deploy.service.internal.statemachines.targetserver.ReceivedPrepare.callDeploymentReceivers(ReceivedPrepare.java:203)
+	at weblogic.deploy.service.internal.statemachines.targetserver.ReceivedPrepare.handlePrepare(ReceivedPrepare.java:112)
+	at weblogic.deploy.service.internal.statemachines.targetserver.ReceivedPrepare.receivedPrepare(ReceivedPrepare.java:52)
+	at weblogic.deploy.service.internal.targetserver.TargetRequestImpl.run(TargetRequestImpl.java:211)
+	at weblogic.deploy.service.internal.transport.CommonMessageReceiver$1.run(CommonMessageReceiver.java:457)
+	at weblogic.work.SelfTuningWorkManagerImpl$WorkAdapterImpl.run(SelfTuningWorkManagerImpl.java:550)
+	at weblogic.work.ExecuteThread.execute(ExecuteThread.java:263)
+	at weblogic.work.ExecuteThread.run(ExecuteThread.java:221)
+&gt; 
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>위 에러가 발생하는 시스템과 문제가 발생하지 않는 다른 시스템 둘 다에서 <code class="language-plaintext highlighter-rouge">-verbose:class</code> 옵션을 적용하여 비교/조사하였는데,</p>
+
+<p>ClassNotFoundException 에러가 가리키는 <code class="language-plaintext highlighter-rouge">com/bea/xml/stream/MXParserFactory</code> 를 어디에서도 Loaded 되지 않았다.</p>
+
+<p>또한, 문제가 발생하지 않는 시스템에서 또한 <code class="language-plaintext highlighter-rouge">MXParserFactory</code> 를 Loaded 되지 않았다.</p>
+<p style="height:20px;"></p>
+<p>즉, Admin Console 반영 작업에 있어, <code class="language-plaintext highlighter-rouge">com/bea/xml/stream/MXParserFactory</code> Class는 필요하지 않다는 것이며,</p>
+
+<p><code class="language-plaintext highlighter-rouge">com/bea/xml/stream/MXParserFactory</code> Class는 <code class="language-plaintext highlighter-rouge">com.bea.core.xml.stax_1.1.0.0.jar</code> 에 포함되어 있지만, 사용되지 않으므로 Loaded 되지 않은 것이다.</p>
+<p style="height:20px;"></p>
+<p>이러한 내용을 뒷바침 하는 문서는 <strong>How to Configure WebLogic Server to Use JDK’s StAX Implementation (Doc ID 1566056.1)</strong> 에서도 확인할 수 있다.</p>
+
+<p>WebLogic에서 사용하도록 구현된 StAX library는 <code class="language-plaintext highlighter-rouge">com.bea.core.weblogic.stax_x.x.x.x.jar</code> 이다.</p>
+<p style="height:20px;"></p>
+<p>문제가 재현되는 시스템의 특이사항으로는,</p>
+
+<p>Windows Server 2012 R2 환경에서 WebLogic Server 10.3.6 및 Oracle JDK 1.7.0_171 을 사용중인데</p>
+
+<p><a href="https://www.oracle.com/technetwork/middleware/downloads/fmw-11gr1certmatrix.xls">Fusion Middleware certification matrix</a> 에 따르면,</p>
+
+<p>최소한 Oracle JDK 1.7.0_201 이상으로 Upgrade를 해야 Certification Matrix에 부합한다.</p>
+<p style="height:20px;"></p>
+<p>발견된 다음 문서와 유사하게, Certification 에 부합하지 않는 환경에서 동일한 <code class="language-plaintext highlighter-rouge">com/bea/xml/stream/MXParserFactory</code> Class Exception이 발견되었다.</p>
+
+<p><strong>WebLogic Server 12.2.1.4 Installation Fails with “java.lang.reflect.InvocationTargetException” (Doc ID 2708587.1)</strong></p>
+
+<p>문제의 시스템 또한 JDK Version을 Upgrade 해야 한다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+
+<p><strong>How to Configure WebLogic Server to Use JDK’s StAX Implementation (Doc ID 1566056.1)</strong></p>
+
+<p><strong>WebLogic Server 12.2.1.4 Installation Fails with “java.lang.reflect.InvocationTargetException” (Doc ID 2708587.1)</strong></p>
+:ET

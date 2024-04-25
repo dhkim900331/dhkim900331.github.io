@@ -1,0 +1,27 @@
+I"<h2 id="1-개요">1. 개요</h2>
+
+<p>사용 가능한 커넥션 풀의 갯수가 어떤 조건보다 적을 때 얼마 만큼의 커넥션을 강제로 풀로 반납시킬 수 있다.</p>
+<p style="height:40px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<p>(1). Console &gt; Services &gt; DataSource &gt; Configuration &gt; Connection Pool &gt; Advanced</p>
+
+<ul>
+  <li>
+    <p>Connection Harvest Max Count: 5</p>
+  </li>
+  <li>
+    <p>Connection Harvest Trigger Count: 8</p>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<p>(2). Test</p>
+
+<ul>
+  <li>현재 Connection Pool 은 10개</li>
+  <li>사용중인 Connection은 5개</li>
+  <li><code class="language-plaintext highlighter-rouge">사용중인 커넥션 &gt; Connection Harvest Trigger Count == True</code>가 되면
+사용중인 커넥션에서 <code class="language-plaintext highlighter-rouge">한번에 5개의 커넥션을 강제 반환</code>시킨다.</li>
+  <li>결과적으로 사용중인 커넥션은 9개가 전혀 될 수 없고, 수집 되면 4개로 줄어든다.</li>
+</ul>
+:ET

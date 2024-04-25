@@ -1,0 +1,20 @@
+I"�<h2 id="1-개요">1. 개요</h2>
+
+<p>데이터소스 커넥션 풀 시도 횟수 관련 옵션</p>
+<p style="height:20px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<p><img src="/../assets/posts/images/WebLogic/Datasource-retry-options/Datasource-retry-options_1.png" alt="Datasource-retry-options_1" /></p>
+<p style="height:40px;"></p>
+<p>Connection Reserve Timeout 기본값 10초.</p>
+
+<p>사진상 3 초일 경우,</p>
+<p style="height:20px;"></p>
+<p>Reached maximum data… 에러의 경우</p>
+
+<p>3초 동안 Free connection pool 찾음.</p>
+<p style="height:20px;"></p>
+<p>없으면 503 error.</p>
+<p style="height:20px;"></p>
+<p>해당 3초 내에 몇번의 요청을 하는 구조인지는 모르겠다.</p>
+:ET

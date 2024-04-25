@@ -12,9 +12,7 @@ typora-root-url: ..
 Windows 환경에서 jconsole을 이용하여 JBoss EAP 7.X 의 JMX 모니터링을 위해 연결 방법을 설명한다.
 
 X-Windows 환경의 Linux 에서도 가능하지만, Windows 에서 해보니 문법상 특이점이 많아 Windows 로 가이드한다.
-
-
-
+{{ site.content.br_small }}
 # 2. 설명
 
 * 우선 나는, JBoss EAP 7.X 버전을 기준으로 삼기 때문에, `jboss-cli-client.jar` 가 필요하여, 설치된 Engine 에서 가져왔다.
@@ -45,25 +43,15 @@ X-Windows 환경의 Linux 에서도 가능하지만, Windows 에서 해보니 �
   > `11 Line` jconsole 실행 단계
   >
   > `12 Line` 조금 중요한 부분인데, 맨 뒤에 connect URL을 적으면 자동으로 연결하지만 ID/PWD 부분은 제공하지 않아 에러가 발생한다. 해당 부분은, 방법은 있어 보이나 일반적인(우리가 간편하게 하고 싶어하는) ID/PWD 제공방식과는 달라 아직 방법을 모르겠다.
-
-
-
+{{ site.content.br_small }}
 * jconsole 화면에서 URL과 ID/PWD 로 접속을 시도한다.
 
 ![JconsoleConnect_1](/../assets/posts/images/JBoss/JconsoleConnect/JconsoleConnect_1.png)
-
-
-
-
-
+{{ site.content.br_big }}
 * Debug 옵션에 의해, Debug Log 윈도우와 함께 정상적으로 접속이 되었다.
 
 ![JconsoleConnect_2](/../assets/posts/images/JBoss/JconsoleConnect/JconsoleConnect_2.png)
-
-
-
-
-
+{{ site.content.br_big }}
 # 3. 참고문헌
 
 https://access.redhat.com/solutions/2435131

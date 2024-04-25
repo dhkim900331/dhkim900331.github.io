@@ -9,11 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 Oracle HTTP Server 12.2.1.4 에서 SNI 가 지원되는지, SSL VirtualHost 사용 시 유의할 점을 살펴보자.
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. SNI
 
 SNI(Server Name Indication).
@@ -29,23 +25,15 @@ SSL Virtual Host section에 사용자를 할당해야, SSL Handshake 과정이 �
 이를 위해, SSL Handshake 이전, 즉. Client Hello 와 관계 없이 SNI 라는 제공되는 Field 를 통해서 ServerName을 추출할 수 있다.
 
 최근에는 이 값 또한 암호화 되어야 한다고 논의 중인 것으로 알고 있다.
-
-
-
+{{ site.content.br_small }}
 어찌되었든, SNI 는 그런 종류의 Data이다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 3. SNI with OHS
 
 OHS 에서는 SNI 기능을 공식적으로 지원하지 않는다.
 
 mod_ossl 모듈에서 SNI 기능을 제공하지 않는다는 의미이다.
-
-
-
+{{ site.content.br_small }}
 내부적으로는, 제한적으로 SNI 기능을 지원한다.
 
 자세한 내용은, Internal Docs 이므로 공개할 수 없지만, NZ library (mod_ossl 구현체) 의 SSL 지갑인 NZ Wallet은 Single Listener (same IP:PORT) 에서는 모두 동일해야 한다는 것이다.
@@ -55,33 +43,21 @@ mod_ossl 모듈에서 SNI 기능을 제공하지 않는다는 의미이다.
 단일 Listner는 모두 공통된 NZ Wallet에 상속되는 것이다.
 
 NZ Wallet 뿐만 아니라, SSL/TLS Protocol set 또한 단일 Listener 에 동일해야 한다.
-
-
-
+{{ site.content.br_small }}
 NZ Library 으로 구현된 NZ Wallet (OWM; Oracle Wallet Manager) 에 의해 이러한 제약조건 또는 보안취약점을 해소하기 위한 기능상의 이유로 단일 Listner를 갖는 Virtaul Host 에서는 제한적으로 SNI를 지원하게 된 것이다.
-
-
-
+{{ site.content.br_small }}
 Apache와 자주 비교하게 되는데, Apache의 SNI를 이용한 Name-Based Virtual Host가 OHS에서는 지원되지 않는 이유다.
-
-
-
+{{ site.content.br_small }}
 > Apache는 Apache 2.22 에서 SNI 지원이 내장된 mod_ssl을 사용하여 Name-Based VH가 제공되고 있다.
 >
 > SNI는 단순히, SSL Client Hello 전에 알 수 있는 Data로 알고 있는데... NZ Library에서 SNI를 부분적으로 지원한다는거에 관련한 정확한 의미를 이해하지 못하기도 했다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 4. SSL Virtual Host with Apache
 
 Apache 2.4.37 에서 SSL Virtual Host 개별로 SSLProtocol 지정 시 첫번째 VirtualHost Section의 SSLProtocol이 전역적으로 정의되는 것으로 [Bug](https://bz.apache.org/bugzilla/show_bug.cgi?id=55707)가 등록되었다.
 
 Apache 의 SSL인 OpenSSL 에도 관련 [Bug](https://github.com/openssl/openssl/issues/4301)가 등록되었으나, Apache issue로 closed 되었다.
-
-
-
+{{ site.content.br_small }}
 다음과 같은 코드가 Apache 에 구현되고,  `x.x.x.x:443` 으로 Address 는 동일하나, `ServerName` 이 `A.com` 과 `B.com` 으로 별개의 서비스가 제공되기를 원했으나 Bug으로 인해 TLSv1.2 로만 Handshake가 발생한다는 것이다.
 
 ```
@@ -97,31 +73,21 @@ Listen x.x.x.x:443
   SSLProtocol TLSv1.3
 </vhost>
 ```
-
-
-
+{{ site.content.br_small }}
 해당 Bug는 Apache 2.4.42 에서 [Fixed](https://downloads.apache.org/httpd/CHANGES_2.4) 되었다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 5. SSL Virtual Host with OHS
 
 Apache와 다른 SSL Library인 NZ 를 사용하는 OHS 에서는,
 
 Single Listner 의 사용 시 SNI를 지원하지 않는 점으로 인해 SSL Virtual Host에서 Apache bug와 동일한 동작이 발생한다.
-
-
-
+{{ site.content.br_small }}
 다만, NZ 구현에 따르면, 
 
 즉. Wilcard 인증서를 보안에 취약한 것을 근거로 들며 SNI 를 지원하지 않는 OHS 에서는 (Name-based 를 지원하지 않음)
 
 다음과 같이 구성하는 것을 권장한다.
-
-
-
+{{ site.content.br_small }}
 ```
 Listen x.x.x.x:443
 Listen y.y.y.y:443
@@ -138,23 +104,13 @@ Listen y.y.y.y:443
    SSLProtocol TLSv1.1
 ...
 ```
-
-
-
+{{ site.content.br_small }}
 `x.x.x.x` 와 `y.y.y.y` 으로 서로 다른 Listner 를 구현하므로, NZ Wallet이 서로 다르게 적용될 수 있고 SSL/TLS Protocol set 또한 개별적으로 적용될 수 있다는 것이다.
-
-
-
+{{ site.content.br_small }}
 그러므로, 서로 다른 SSLProtocol 를 적용 받게 된다.
-
-
-
+{{ site.content.br_small }}
 또는 Port를 여러개 두어, Port-based Virtual Host로 구성할 수도 있다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 5. References
 
 **Support Status for Wildcard, SNI and SAN SSL Certificates for Oracle HTTP Server and Web Cache 11g/12c (Doc ID 2225494.1)**

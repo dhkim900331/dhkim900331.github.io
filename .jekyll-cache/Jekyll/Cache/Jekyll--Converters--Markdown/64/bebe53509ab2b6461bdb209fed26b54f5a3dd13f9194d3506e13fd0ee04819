@@ -1,0 +1,16 @@
+I"O<h2 id="1-개요">1. 개요</h2>
+
+<p>WLST로 Thread dump를 뜨는 스크립트</p>
+<p style="height:40px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>java <span class="nt">-cp</span> wlfullclient.jar weblogic.Admin <span class="nt">-url</span> t3://ip:port <span class="nt">-username</span> weblogic <span class="nt">-password</span> weblogic1 THREAD_DUMP
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>nohup에 기록된다.</p>
+
+  <p>wlfullclient.jar는 <em>https://docs.oracle.com/cd/E13222_01/wls/docs103/client/jarbuilder.html#wp1078098</em> 를 참고하여 생성한다.</p>
+</blockquote>
+:ET

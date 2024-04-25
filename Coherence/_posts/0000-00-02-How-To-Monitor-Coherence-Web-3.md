@@ -9,28 +9,20 @@ typora-root-url: ..
 # 1. 개요
 
 Coherence Web 3.X 사용 시, 여러 Monitoring 옵션과 결과물을 확인한다.
-
-
-
+{{ site.content.br_small }}
 # 2. Debug Log
 
 ## 2.1 Using Coherence
 
 WLS Instance JVM Options으로 다음과 같이 설정 시, Instance에서 동작하는 Coherence 의 Debug Log가 최대값(9)로 기록된다.
-
-
-
+{{ site.content.br_small }}
 https://docs.oracle.com/cd/E24290_01/coh.371/e22837/gs_debug.htm#COHDG5549
-
-
-
+{{ site.content.br_small }}
 ```sh
 -Dtangosol.coherence.log.level=9
 -Dtangosol.coherence.log=debug.log
 ```
-
-
-
+{{ site.content.br_small }}
 다음의 사항들을 Log에서 확인할 수 있다.
 
 * Version
@@ -106,16 +98,12 @@ https://docs.oracle.com/cd/E24290_01/coh.371/e22837/gs_debug.htm#COHDG5549
   ```
   Registering MBean using object name "type=WebLogicHttpSessionManager,nodeId=1,appId=cohSessionAppcohSessionApp"
   ```
-
-
-
+{{ site.content.br_small }}
 
 ## 2.2 Using JDK
 
 https://docs.oracle.com/cd/E24290_01/coh.371/e22837/gs_debug.htm#COHDG5555
-
-
-
+{{ site.content.br_small }}
 ```logging.properties
 handlers=java.util.logging.FileHandler, java.util.logging.ConsoleHandler
 .level=INFO
@@ -128,30 +116,20 @@ java.util.logging.FileHandler.formatter=java.util.logging.SimpleFormatter
 
 java.util.logging.ConsoleHandler.formatter=java.util.logging.SimpleFormatter
 ```
-
-
-
+{{ site.content.br_small }}
 ```sh
 -Dtangosol.coherence.log=jdk
 -Djava.util.logging.config.file=$DOMAIN_HOME/logging.properties
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 # 3. JMX MBean
 
 ## 3.1 활성화 방법
 
 JMX MBean 활성화 및 JConsole 또는 JVisualVM으로 모니터링 할 수 있다.
-
-
-
+{{ site.content.br_small }}
 https://docs.oracle.com/cd/E24290_01/coh.371/e22842/jmx.htm#COHMG239
-
-
-
+{{ site.content.br_small }}
 ```sh
 -Dtangosol.coherence.management=all"
 -Dtangosol.coherence.management.remote=true"
@@ -162,37 +140,23 @@ https://docs.oracle.com/cd/E24290_01/coh.371/e22842/jmx.htm#COHMG239
 -Djava.rmi.server.hostname=wls.local"
 -Dcom.sun.management.jmxremote.port=8999"
 ```
-
-
-
+{{ site.content.br_small }}
 Jconsole로 접근한다.
 
 ![How-To-Monitor-Coherence-Web-3_1](/../assets/posts/images/Coherence/How-To-Monitor-Coherence-Web-3/How-To-Monitor-Coherence-Web-3_1.png)
-
-
-
-
-
+{{ site.content.br_big }}
 다음의 `WebLogicHttpSessionManager` - `2 (WLS Member ID)` 하위에서 Session Application 별로 MBean을 모니터링 할 수 있다.
 
 ![How-To-Monitor-Coherence-Web-3_2](/../assets/posts/images/Coherence/How-To-Monitor-Coherence-Web-3/How-To-Monitor-Coherence-Web-3_2.png)
-
-
-
-
-
+{{ site.content.br_big }}
 
 
 ## 3.2 MBean 항목 설명
 
 위 MBean 항목은 여러 차례 테스트 및 문서에서 안내하는 내용들로 확인 결과 아래 처럼 정리할 수 있었다.
-
-
-
+{{ site.content.br_small }}
 https://docs.oracle.com/cd/E24290_01/coh.371/e22620/manageapps.htm#CIHCBHIG
-
-
-
+{{ site.content.br_small }}
  (1) Reaper 주기 지표
   - NextReapCycle : 다음 reaper 주기 (date)
   - LastReapCycle : 최근 reaper 시간 (date)
@@ -219,19 +183,13 @@ https://docs.oracle.com/cd/E24290_01/coh.371/e22620/manageapps.htm#CIHCBHIG
   - OverflowThreshold : Default로 보여짐 -> 1024 (좀 더 테스트가 필요하지만,  기본값 1024 bytes로 되어있는 경우, session 객체 크기가 해당 bytes보다 크면 Overflow 로 통계치 분리 저장됨)
 
   ** Overflow : 특별히 큰 세션 객체에 대한 속성들
-
-
-
+{{ site.content.br_small }}
 # 4. Report
 
 Reporter 를 구성하여 보고서를 기록할 수 있다.
-
-
-
+{{ site.content.br_small }}
 https://docs.oracle.com/cd/E24290_01/coh.371/e22620/manageapps.htm#COHCW283
-
-
-
+{{ site.content.br_small }}
 Reports XML 추출 [보고서의 종류](https://docs.oracle.com/cd/E24290_01/coh.371/e22842/analyze_report.htm#COHMG245)
 
 ```sh
@@ -257,25 +215,19 @@ $ jar -xvf ${COHERENCE_HOME}/lib/coherence.jar reports
  inflated: reports/report-web-sessions.xml
  inflated: reports/report-web.xml
 ```
-
-
-
+{{ site.content.br_small }}
 Instance에 JVM Option을 설정한다. [메뉴얼](https://docs.oracle.com/cd/E24290_01/coh.371/e22842/reporter.htm#COHMG5536)
 
 ```sh
 -Dtangosol.coherence.management.report.configuration=${COHERENCE_HOME}/lib/reports/report-web.xml"
 ```
-
-
-
+{{ site.content.br_small }}
 Instance의 Coherence Log에 기록된다.
 
 ```
 2023-01-26 10:15:18.586/16.785 Oracle Coherence GE 3.7.1.22 <Info> (thread=[ACTIVE] ExecuteThread: '0' for queue: 'weblogic.kernel.Default (self-tuning)', member=n/a): Loaded Reporter configuration from "file:/sw/coherence/3.7.1.22/lib/reports/report-web.xml"
 ```
-
-
-
+{{ site.content.br_small }}
 이후, 자동으로 Report가 남지 않아 MBean에서 확인해본 결과,
 
 * Reporter - \<Member ID>
@@ -286,17 +238,13 @@ Instance의 Coherence Log에 기록된다.
     * OutputPath : /sw/weblogic/11g/domains/base_domain
   * Operations
     * start, stop, runReport ...
-
-
-
+{{ site.content.br_small }}
 AutoStart가 true가 아닌지라, 직접 start 실행을 했고, 매 60초마다 실행되는것으로 보이게끔 Coherence Log에 남았다.
 
 ```
 2023-01-26 10:21:20.491/378.690 Oracle Coherence GE 3.7.1.22 <Info> (thread=RMI TCP Connection(8)-10.191.18.100, member=2): Management Reporting -  Started
 ```
-
-
-
+{{ site.content.br_small }}
 이후 보고서는 잘 나오는것이 확인되나, 내가 원하는 web-session Service만 Report를 실행하고 싶어 설정해본다.
 
 아래와 같이 `myreport-web.xml` Group List을 만들어 `report-web.xml` 단독 보고서만 실행을 하고 싶으나, 해당 파일은 보고서를 생성하지 않았다. 원인은 알 수가 없다.
@@ -317,9 +265,7 @@ $ cat myreport-web.xml
 </report-group>
 
 ```
-
-
-
+{{ site.content.br_small }}
 위에서 내가 일부 편집한 보고서는 동작이 되지 않으므로... 다시 맨 처음 잘 되던 보고서를 사용할 수밖에 없는 듯 하다.
 
 [Date Format](https://docs.oracle.com/cd/E24290_01/coh.371/e22842/reporter.htm#COHMG5555) 옵션과 함께, 기본으로 제공되는 `report-all.xml` Group List 파일을 실행하도록 옵션을 구성해본다.
@@ -330,15 +276,11 @@ $ cat myreport-web.xml
 -Dtangosol.coherence.management.report.timezone=Asia/Seoul"
 -Dtangosol.coherence.management.report.timeformat=hh:mm:ss"
 ```
-
-
-
+{{ site.content.br_small }}
 WLS Instance 기동 후 얼마 지나지 않아, Reporter 실행될 때마다 반복적으로 로깅된다.
 
 `Loaded Reporter configuration from "jar:file:/sw/weblogic/11g/domains/base_domain/lib/coherence.jar!/reports/<report-all.xml 내의 List>"`
-
-
-
+{{ site.content.br_small }}
 `output-directory` (끝에 slash 있어야 함) 내에 시간 단위 파일이 생성되고, 1분 단위로 append 된다.
 
 ```sh
@@ -359,9 +301,7 @@ drwxrwxr-x 6 wasadm wasadm   82 Jan 26 11:34 ..
 -rw-r----- 1 wasadm wasadm 1454 Jan 26 11:33 2023012611-web-session-service.txt
 -rw-r----- 1 wasadm wasadm 4620 Jan 26 11:33 2023012611-web-sessions.txt
 ```
-
-
-
+{{ site.content.br_small }}
 위 파일들이 보고서 갯수에 비해 적어 보이는데... 시간이 더 지나니 아래와 같이 늘어났다..?
 
 ```sh
@@ -394,11 +334,7 @@ drwxrwxr-x 6 wasadm wasadm    82 Jan 26 12:50 ..
 -rw-r----- 1 wasadm wasadm  7064 Jan 26 12:52 2023012612-web-session-service.txt
 -rw-r----- 1 wasadm wasadm 23966 Jan 26 12:52 2023012612-web-sessions.txt
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 # 5. Plugin (JVisualVM)
 
 https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/tutorial-install-coh-visualvm/

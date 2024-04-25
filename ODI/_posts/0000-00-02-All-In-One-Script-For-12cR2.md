@@ -11,11 +11,7 @@ typora-root-url: ..
 [How-to-install-ODI-12cR2]({{ site.url }}/odi/How-to-install-ODI-12cR2) 에서 작성한 내용을 토대로,
 
 All In One Script를 작성한다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. Descriptions
 
 ## 2.1 DB Scripts
@@ -43,11 +39,7 @@ ORACLE_DB_GROUP=weblogic
 ORACLE_DB_PASSWORD=weblogic1
 export PATH=${ORACLE_HOME}/bin:$PATH
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ### 2.1.2 Install DB
 
 ```sh
@@ -87,11 +79,7 @@ ${ORACLE_HOME}/runInstaller -silent -responseFile ${ORACLE_HOME}/response/db_ins
 sleep 10
 tail ${DB_INVENTORY_PATH}/logs/installActions$(date +%Y-%m-%d)*.log
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ### 2.1.3 Setup Listener & DB
 
 ```sh
@@ -126,11 +114,7 @@ EOF
 
 dbca -silent -createDatabase -responsefile ${ORACLE_HOME}/assistants/dbca/dbca.rsp
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ### 2.1.4 Tune DB as ODI requests
 
 ```sh
@@ -152,11 +136,7 @@ STARTUP;
 EXIT;
 EOF
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 
 
 ## 2.2 ODI Scripts
@@ -208,11 +188,7 @@ RCU_ENCRYPTION=AES-128
 RCU_JDBC_DRIVER=oracle.jdbc.OracleDriver
 RCU_JDBC_URL=jdbc:oracle:thin:@${RCU_DB_HOSTNAME}:${RCU_DB_PORT}/${RCU_DB_NAME}
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ### 2.2.2 Install ODI
 
 ```sh
@@ -234,11 +210,7 @@ EOF
 
 ${JAVA_HOME}/bin/java -jar ${ODI_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ### 2.2.3 Setup ODI Schema with RCU
 
 ```sh
@@ -259,11 +231,7 @@ ${ODI_INSTALL_PATH}/oracle_common/bin/rcu -silent -createRepository \
  -component ODI -component IAU -component IAU_APPEND -component IAU_VIEWER -component OPSS \
  < ${BASEDIR}/odi_rcu_parameters.txt
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ### 2.2.4 Setup Domain
 
 ```sh
@@ -323,11 +291,7 @@ EOF
 
 ${ODI_INSTALL_PATH}/oracle_common/common/bin/wlst.sh ${BASEDIR}/dom
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 # 3. References
 
 [How-to-install-ODI-12cR2]({{ site.url }}/odi/How-to-install-ODI-12cR2)

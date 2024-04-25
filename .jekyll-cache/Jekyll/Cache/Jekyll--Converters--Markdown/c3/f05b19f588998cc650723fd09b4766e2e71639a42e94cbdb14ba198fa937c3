@@ -1,0 +1,22 @@
+I"\<h2 id="1-개요">1. 개요</h2>
+
+<p>File Descriptor 로그 확인 및 변경</p>
+<p style="height:40px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<h3 id="21-현재-웹로직-fd값">2.1 현재 웹로직 FD값</h3>
+
+<p>도메인/servers/{server}/logs/{server}.log 에 다음처럼 로그가 보인다.</p>
+<p style="height:40px;"></p>
+<h3 id="22-웹로직-fd-변경">2.2 웹로직 FD 변경</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nb">ulimit</span> <span class="nt">-Ha</span> <span class="c"># 하드웨어 설정값 확인</span>
+<span class="nb">ulimit</span> <span class="nt">-Sa</span> <span class="c"># 소프트웨어 설정값 확인</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p><code class="language-plaintext highlighter-rouge">commEnv.sh</code> 에서 resetFd 의 uname -n 4096 을 수정.</p>
+
+<p>(ulimited 으로 된경우에는 수정이필요.)</p>
+:ET

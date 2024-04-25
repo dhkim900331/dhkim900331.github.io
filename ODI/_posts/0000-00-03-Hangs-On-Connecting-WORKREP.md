@@ -9,21 +9,13 @@ typora-root-url: ..
 # 1. Overview
 
 ODI  12cR2 Studio 에서 WORKREP (작업저장소 Repository) 접근 시 Hang 사례
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. Descriptions
 
 ODI Studio 에서 WORKREP 를 접근 시, 다음 화면에서 Hang 걸린다.
 
-![image-20240320163358542](/../assets/posts/images/Hangs-On-Connecting-WORKREP/image-20240320163358542.png)
-
-
-
-
-
+![Hangs-On-Connecting-WORKREP_1](/../assets/posts/images/ODI/Hangs-On-Connecting-WORKREP/Hangs-On-Connecting-WORKREP_1.png)
+{{ site.content.br_big }}
 Stack trace는 socketRead0 에 걸려 있다.
 
 ```
@@ -43,11 +35,7 @@ Stack trace는 socketRead0 에 걸려 있다.
 	at oracle.ide.dialogs.ProgressBar.run(ProgressBar.java:961)
 	at java.lang.Thread.run(Thread.java:748)
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 ODI 설치 위치 아래 log/studio.log 를 보면, WARNING 메시지가 있다.
 
 ```
@@ -59,23 +47,13 @@ ODI 설치 위치 아래 log/studio.log 를 보면, WARNING 메시지가 있다.
 [2024-03-20T16:28:08.395+09:00] [odi] [WARNING] [] [oracle.odi.mapping] [tid: 17] [ecid: 0000OtQkSzcB_6D_z9w0yW1_yczI000001,0] Refreshing/creating repository seeded objects.
 [2024-03-20T16:28:08.400+09:00] [odi] [WARNING] [] [oracle.odi.mapping] [tid: 17] [ecid: 0000OtQkSzcB_6D_z9w0yW1_yczI000001,0] The repository seeding version is less than the client version.   Repository seeding version=1, client seeding version=3771.  The repository seeding will be refreshed.
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 이는, RCU가 생성한 Repository version과 Client Tool인 ODI Studio 의 seeding version이 맞지 않아 발생한다.
-
-
-
+{{ site.content.br_small }}
 ODI Studio 에서 Master Schema 에 로그인 후 도구 > Groovy 에서 새 스크립트를 만들어, 'print OdiAdapter.getClientSeedingVersion()' 를 실행하면 아래와 같이 Client seeding version이 확인된다.
 
-![image-20240321155434586](/../assets/posts/images/Hangs-On-Connecting-WORKREP/image-20240321155434586.png)
-
-
-
-
-
+![Hangs-On-Connecting-WORKREP_2](/../assets/posts/images/ODI/Hangs-On-Connecting-WORKREP/Hangs-On-Connecting-WORKREP_2.png)
+{{ site.content.br_big }}
 Repository DB에 연결하여 확인하면 '1' 로 확인된다, Client 와 Version이 다르다.
 
 ```sh
@@ -87,11 +65,7 @@ SQL> select ID_NEXT from SNP_ID where ID_TBL = 'SEEDING_VERSION';
 ----------
          1
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 권장하지 않는 방법이겠지만, 수동으로 Repository 에서 seeding version '1'을 '3771' 로 업데이트한다.
 
 ```sh
@@ -109,23 +83,13 @@ SQL> select ID_NEXT from SNP_ID where ID_TBL = 'SEEDING_VERSION';
 ----------
       3771
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 **How to Clear The Cache For ODI Studio (Doc ID 1943854.1)** 문서에 따라 Cache를 지우고 ODI Studio를 실행하면 WORKREP 에 정상적으로 연결이 된다.
-
-
-
+{{ site.content.br_small }}
 수동으로 seeding version을 업데이트 하지 않는 방법은 시간이 다시 허락할 때 진행해본다.
 
 아마도, RCU와 ODI Studio tool version을 맞추는 것일 것이다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 3. References
 
 **KM Seeding for Execution Type Repositories (Doc ID 2852999.1)**

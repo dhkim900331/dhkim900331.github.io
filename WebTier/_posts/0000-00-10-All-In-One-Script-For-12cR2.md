@@ -12,6 +12,8 @@ Oracle HTTP Server 12cR2 테스트 환경을 자동 재구축을 위해 모든 �
 
 
 
+
+
 # 2. 설명
 
 All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한다.
@@ -19,6 +21,8 @@ All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한
 - base_domain
 - NodeManager (SecureListner=false, TCP 5556)
 - Worker 2ea
+
+
 
 
 
@@ -98,12 +102,12 @@ EOF
 
 ${BASEDIR}/${OHS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
-
-
-
+{{ site.content.br_small }}
 ADMIN_ADDR을 127.0.0.1 으로만 해야 되는 것으로 테스트상 확인되는데,
 
 구체적인 이유는 확인되지 않는다.
+
+
 
 
 
@@ -121,6 +125,7 @@ writeDomain('${DOMAIN_HOME}')
 exit()
 EOF
 ```
+
 
 
 
@@ -151,6 +156,7 @@ EOF
 # WLST 으로 update 되지 않아 추가로 해야 한다. 실질적으로 아래가 필수
 sed -i 's/SecureListener=true/SecureListener=false/g' ${DOMAIN_HOME}/nodemanager/nodemanager.properties
 ```
+
 
 
 
@@ -190,6 +196,7 @@ updateDomain()
 exit()
 EOF
 ```
+
 
 
 
@@ -273,6 +280,7 @@ DOMAIN_HOME=${BASEDIR}
 ps -ef | grep "java" | grep "weblogic.NodeManager -v" | grep "${DOMAIN_HOME}"
 EOF
 ```
+
 
 
 

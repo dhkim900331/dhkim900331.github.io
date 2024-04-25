@@ -15,9 +15,7 @@ BEA-000627 Reached maximum capacity of pool "{0}", making "{2}" new resource ins
 BEA-000627 메시지와 No resources currently available in pool 은 기본적으로, Datasource connection pool 에 available connection이 부족한 상황에서 발생할 수 있다.
 
 그러나 항상, 부족한 상황에서만 나오는 것은 아니기에 두 메시지가 다른 타이밍에 출력될 수 있다.
-
-
-
+{{ site.content.br_small }}
 상황 재현을 위해 Pool Min/Max 가 2/2 인 환경에서,
 
 많은 요청 유입으로 Available connection이 부족한 타이밍에 아래의 메시지가 추가 요청마다  기록된다.
@@ -29,9 +27,7 @@ BEA-000627 메시지와 No resources currently available in pool 은 기본적�
 ```
 
 위는 실제로, 총 5개의 동시 요청이 유입되었을 때이다.
-
-
-
+{{ site.content.br_small }}
 BEA-000627 메시지를 유발한 추가 요청들은,
 
 Connection Reserve Timeout (기본값 10s) 동안 Connection 을 기다리다가
@@ -54,17 +50,13 @@ weblogic.jdbc.extensions.PoolLimitSQLException:
       ...
       at weblogic.work.ExecuteThread.run(ExecuteThread.java:360)
 ```
-
-
-
+{{ site.content.br_small }}
 BEA-000627 메시지는 Log가 기록될 당시, Available Connection 수 보다 많은 요청이 유입되었을 때 기록되는 것이고
 
 No resources currently available in pool 메시지는 Available Connection 이 없는 상황에서, 10초 이후에도 Connection을 얻지 못했을 때 발생하지만,
 
 Available Connection이 있더라도, Connection을 너무 느리게 할당 받는 slow timing issue 로도 충분히 발생할 수 있다.
-
-
-
+{{ site.content.br_small }}
 그러므로, 단순히 Pool에 Connection이 부족하다고 하여 반드시 두 메시지가 나란히 기록되어야 하는 것은 아니다.
 
 {{ site.content.br_big }}

@@ -9,11 +9,7 @@ typora-root-url: ..
 # 1. Overview
 
 Oracle HTTP Server 12cR2 (12.2.1.4) 환경에서 Client와 Server의 SSL Handshake 과정 중에 Client/Server 의 Hello Messages 를 Capture 해본다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. Descriptions
 
 SSL Handshake 과정 중에 Hello Messages 를 Capture 하여,
@@ -21,11 +17,7 @@ SSL Handshake 과정 중에 Hello Messages 를 Capture 하여,
 어떤 CipherSuites, 어떤 SSL Protocol version을 합의되었는지를 확인 해볼 수 있다.
 
 Capture 된 데이터를 통해, Client와 Server간의 SSL Handshake가 실패하는 원인으로 서로 지원하는 메서드가 다를 경우 이를 알 수 있다.
-
-
-
-
-
+{{ site.content.br_big }}
 ## 2.1 Server가 지원하는 Cipher Suites, SSL Protocol
 
 OHS의 ssl.conf 설정값을 통해 지원하려는 Cipher Suites, SSL Protocol 을 직관적으로 쉽게 알 수 있다.
@@ -38,9 +30,7 @@ OHS의 ssl.conf 설정값을 통해 지원하려는 Cipher Suites, SSL Protocol 
    SSLCipherSuite TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA256,SSL_RSA_WITH_AES_128_CBC_SHA,SSL_RSA_WITH_AES_256_CBC_SHA
    ...
 ```
-
-
-
+{{ site.content.br_small }}
 기본 로그 파일(`error_log`)는 기동 시에 다음과 같은 Log가 수 회 반복되어 출력된다.
 
 ```
@@ -48,13 +38,9 @@ OHS의 ssl.conf 설정값을 통해 지원하려는 Cipher Suites, SSL Protocol 
 
 [ossl:info] [pid 1596506:tid 140063574840704] OHS:2183 NZ Trace message: Setting ciphers to ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:...
 ```
-
-
-
+{{ site.content.br_small }}
 Child Process 의 mod_ossl 초기화 시마다 반복되어 출력되는 것으로 보여지며, 이를 통해 Server에서 제공하려는 Cipher Suites 를 알 수 있겠다.
-
-
-
+{{ site.content.br_small }}
 또는, `nmap` 명령으로 확인하는 방법도 있다.
 
 ```bash
@@ -87,11 +73,7 @@ PORT      STATE SERVICE
 
 Nmap done: 1 IP address (1 host up) scanned in 0.59 seconds
 ```
-
-
-
-
-
+{{ site.content.br_big }}
 
 
 ## 2.2 Client가 지원하는 Cipher Suites, SSL Protocol
@@ -106,9 +88,7 @@ SSLTraceLogLevel ssl
 LogLevel info
 OraLogMode apache
 ```
-
-
-
+{{ site.content.br_small }}
 HTTPS 요청이 있을 때, 기본 로그 파일(`error_log`)은 아래처럼 기록된다.
 
 ```
@@ -171,29 +151,19 @@ HTTPS 요청이 있을 때, 기본 로그 파일(`error_log`)은 아래처럼 �
 [ossl:info] [pid 1559019:tid 139777974175488] OHS:2182 NZ Trace function: nzos_DestroyCtx
 [ossl:info] [pid 1559019:tid 139777974175488] OHS:2183 NZ Trace message: exit
 ```
-
-
-
+{{ site.content.br_small }}
 Client(openssl; TLSv1.2)가 Server(OHS; TLSv1.1) 에 Hello messages 를 교환하지만, Protocol이 성립되지 않아 `wrong version number` 메시지와 함께 실패한 샘플이다.
-
-
-
+{{ site.content.br_small }}
 위 Log 구문에 대해 자세하게 정리된 내용이 없어 더 Deep 하게 분석하는것에는 무리가 있고,
 
 언뜻 보아도 Hello messages 에 대한 자세한 내용이 나오지 않는다.
-
-
-
-
-
+{{ site.content.br_big }}
 ## 2.3 Fiddler 를 이용한 Messages debugging 방법
 
 Fiddler Classic for Windows 설치 > Tools > Options > HTTPS 에서 `Capture HTTPS CONNECTs` 를 활성화.
 
 HTTPS 호출 시, Fiddler 에서 Captured Data 의 TextView를 확인한다.
-
-
-
+{{ site.content.br_small }}
 상단의 TextView는 Client의 Hello Message
 
 ```
@@ -243,9 +213,7 @@ Ciphers:
 Compression: 
 	[00]	NO_COMPRESSION
 ```
-
-
-
+{{ site.content.br_small }}
 하단의 TextView는 Server의 Hello Message 이다.
 
 ```
@@ -262,7 +230,5 @@ CompressionSuite:	NO_COMPRESSION [0x00]
 Extensions:
 		renegotiation_info	00
 ```
-
-
-
+{{ site.content.br_small }}
 Client가 제시한 값들 중에서, Server가 선택한 값들이 Response(TextView data)로 확인된다.

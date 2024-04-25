@@ -9,9 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 시스템 점검 중 가용가능한 메모리가 얼마 없어, 메모리-과점유 프로세스 점검 차 간단하게 짜보았다.
-
-
-
+{{ site.content.br_small }}
 # 2. 설명
 
 ```sh
@@ -19,17 +17,13 @@ PID=$(jps -v | grep "Standalone" | awk '{print $1}')
 PID_SED=$(echo ${PID} | sed 's| |\||g')
 ps -eo start,user,pid,rss,vsize,pmem,pcpu --sort -rss | egrep "${PID_SED}"
 ```
-
-
-
+{{ site.content.br_small }}
 당시 점검 대상 시스템은 WAS-Middleware 시스템이라, jps 명령으로 실행중인 java 프로세스의 PID 값을 따왔다.
 
 PID값은 줄바꿈으로 정렬되어 있으나, echo 를 통해 한줄로 정리할 수 있고, 정리된 값을 sed 로 다음에서 egrep 을 위해 파이프라인(|)을 삽입한다.
 
 프로세스를 실제 메모리 점유량(rss)으로 정렬한다.
-
-
-
+{{ site.content.br_small }}
 실제 값은 아래처럼 나타난다.
 
 ```sh

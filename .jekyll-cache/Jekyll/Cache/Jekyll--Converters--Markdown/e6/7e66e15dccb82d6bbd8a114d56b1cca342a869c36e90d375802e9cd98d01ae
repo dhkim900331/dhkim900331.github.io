@@ -1,0 +1,212 @@
+I"�"<h2 id="1-개요">1. 개요</h2>
+
+<p>Security Filter를 이용하면, 접근 제한 규칙을 활용하여 인스턴스 접근 제한을 둘 수 있다.</p>
+<p style="height:40px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<h3 id="21-security-filter-적용">2.1 Security Filter 적용</h3>
+
+<p>(1). <code class="language-plaintext highlighter-rouge">Console - Domain - Security - Filter</code></p>
+
+<ul>
+  <li>
+    <p>Connection Filter: <strong>weblogic.security.net.ConnectionFilterImpl</strong></p>
+  </li>
+  <li>
+    <p>Connection Filter Rules:</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>192.168.56.2 192.168.56.1 8001 allow
+\* 192.168.56.1 8001 deny
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><img src="/../assets/posts/images/WebLogic/Security-Filter/Security-Filter_1.png" alt="Security-Filter_1" /></p>
+
+<blockquote>
+  <p>Connection Filter는 1줄에 1개의 Rule만 작성하며, 클라이언트가 접속하면, 맨위부터 1개의 Rule씩 적용한다.</p>
+
+  <p>Syntax: [client ip] [wls ip] [wls port] [action] [protocol; optional]</p>
+
+  <ul>
+    <li>protocol 을 작성하지 않으면, http/t3/iiop/t3s/https 등 모두 적용된다.</li>
+  </ul>
+</blockquote>
+<p style="height:20px;"></p>
+
+<h3 id="22-적용-예시">2.2 적용 예시</h3>
+
+<p>(1). 적은 수의 허용 IP</p>
+
+<ul>
+  <li>
+    <p>WLS : 192.168.56.2:7001</p>
+  </li>
+  <li>
+    <p>허용할 접속 Client IP : 172.16.4.80 ~ 81</p>
+  </li>
+  <li>
+    <p>허용할 프로토콜 : http</p>
+  </li>
+  <li>
+    <p>허용할 IP가 2개로 설정 수가 적다. 간단하게 아래와 같이 적용한다.</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>172.16.4.80 192.168.56.2 7001 allow http
+172.16.4.81 192.168.56.2 7001 allow http
+* 192.168.56.2 7001 deny
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<p>(2). 많은 수의 허용 IP</p>
+
+<ul>
+  <li>
+    <p>WLS : 192.168.56.2:7001</p>
+  </li>
+  <li>
+    <p>허용할 접속 Client IP : 172.16.4.80 ~ 140</p>
+  </li>
+  <li>
+    <p>허용할 프로토콜 : http</p>
+  </li>
+  <li>
+    <p>허용할 IP가 많으므로, 일부 대역을 통째로 허용한다. netmask 를 활용한다.</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>172.16.4.0/32 192.168.56.2 7001 allow http
+* 192.168.56.2 7001 deny
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <blockquote>
+      <p>172.16.4.140 은 2진수로 <code class="language-plaintext highlighter-rouge">10101100.00010000.00000100.10001100</code> 이다.</p>
+
+      <p>netmask는 허용할 IP 개수를 지정하는 옵션이고, 172.16.4.X 를 허용하기로 하였으므로 254개를 통쨰로 해줄 수 있다.</p>
+
+      <p>즉 netmask 는 255.255.255.255 (/32) 로, <code class="language-plaintext highlighter-rouge">11111111.11111111.11111111.11111111</code>를 지정한다.</p>
+
+      <p><strong><em>물론 이러한 설정은, <code class="language-plaintext highlighter-rouge">80~140</code> 뿐만 아니라 <code class="language-plaintext highlighter-rouge">1~79</code>와 <code class="language-plaintext highlighter-rouge">141~254</code> 아이피도 허용이 되는 설정이</em>다.</strong></p>
+    </blockquote>
+  </li>
+</ul>
+<p style="height:40px;"></p>
+<h3 id="3-netmask-계산-방법">3. netmask 계산 방법</h3>
+
+<ul>
+  <li>
+    <p>netmask 계산 방법은 어디서나 통용된다.</p>
+  </li>
+  <li>
+    <p>netmask bit는 1과 1 사이에 0이 올 수 없다.</p>
+    <ul>
+      <li>즉 1이 연속되어야 하고, 0이 오면 그 뒤로 1이 다시는 올 수 없다.</li>
+      <li><code class="language-plaintext highlighter-rouge">1111 11...</code> is <code class="language-plaintext highlighter-rouge">OK</code></li>
+      <li><code class="language-plaintext highlighter-rouge">1101 11...</code> is <code class="language-plaintext highlighter-rouge">INVALID</code></li>
+      <li>“(2). 많은 수의 허용 IP” 예시를 보면, 결국 모든 범위 IP를 허용했다.
+이 부분을 해소하려면, <code class="language-plaintext highlighter-rouge">172.16.4.1~79</code> 는 deny 하고, <code class="language-plaintext highlighter-rouge">80~140</code>은 allow 하고,
+그 외는 모두 deny 하면 해결된다.</li>
+    </ul>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<ul>
+  <li>netmask 를 255.255.255.255 으로 표시할 수도, integer로 표시할 수도 있다.
+    <ul>
+      <li>ex) <code class="language-plaintext highlighter-rouge">255.255.255.255</code> is <code class="language-plaintext highlighter-rouge">/32</code></li>
+      <li>1이 32개 라는 뜻</li>
+    </ul>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<ul>
+  <li>netmask bit가 작으면 작을 수록 허용하는 IP 대역이 넓어진다.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">192.168.56.0/24</code> 라는 설정은,
+<code class="language-plaintext highlighter-rouge">192.168.56.X</code> 대역에 netmask 24bit 를 <code class="language-plaintext highlighter-rouge">AND</code> 계산한다는 것이다.</li>
+      <li>24bit는 <code class="language-plaintext highlighter-rouge">11111111.11111111.11111111.00000000</code> 이다.
+뒤 <code class="language-plaintext highlighter-rouge">00000000</code> bit만큼 IP 허용 수가 많다.</li>
+    </ul>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<ul>
+  <li>다른 예시로 설명을 해보자면,
+<code class="language-plaintext highlighter-rouge">192.168.56.0/28</code> 이라는 설정은, <code class="language-plaintext highlighter-rouge">192.168.56.X</code> 대역에 netmask 28 bit를 <code class="language-plaintext highlighter-rouge">AND</code>  계산한다는 것.
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">11111111.11111111.11111111.11110000</code>과 접속하는 Client IP를 <code class="language-plaintext highlighter-rouge">AND</code> 계산해보면
+15개의 IP만 접근할 수 있다. (<code class="language-plaintext highlighter-rouge">192.168.56.0</code>은 제외하여 16-1 = 15개)</li>
+    </ul>
+  </li>
+</ul>
+<p style="height:40px;"></p>
+<h3 id="4-netmask-계산-하면서-정리한-내용">4. netmask 계산 하면서 정리한 내용</h3>
+
+<ul>
+  <li>
+    <p>targetAddress : 192.168.56.0</p>
+  </li>
+  <li>
+    <p>netmask : 255.255.255.252 (<code class="language-plaintext highlighter-rouge">11111111.11111111.11111111.11111100</code>; 4개 host 가능)</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre>192.168.56.0    -&gt; 11000000.10101000.00111000.00000000 -&gt; netmask와 AND 계산 결과 : 192.168.56.0 (ok)
+  
+192.168.56.1    -&gt; 11000000.10101000.00111000.00000001 -&gt; netmask와 AND 계산 결과 : 192.168.56.0 (ok)
+  
+192.168.56.2    -&gt; 11000000.10101000.00111000.00000010 -&gt; netmask와 AND 계산 결과 : 192.168.56.0 (ok)
+  
+192.168.56.3    -&gt; 11000000.10101000.00111000.00000011 -&gt; netmask와 AND 계산 결과 : 192.168.56.0 (ok)
+  
+192.168.56.4    -&gt; 11000000.10101000.00111000.00000100 -&gt; netmask와 AND 계산하면 192.168.56.4가 나온다, targetAddress와 다르니 fail
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ul>
+<p style="height:20px;"></p>
+<ul>
+  <li>
+    <p>targetAddress : 172.16.4.0</p>
+  </li>
+  <li>
+    <p>netmask : 255.255.255.248 (<code class="language-plaintext highlighter-rouge">11111111.11111111.11111111.11111000</code>; 8개 host 가능)</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>172.16.4.0 생략
+172.16.4.1 생략
+172.16.4.2 생략
+172.16.4.3 생략
+172.16.4.4 생략
+172.16.4.5 생략
+172.16.4.6 생략
+  
+172.16.4.7      -&gt; 10101100.00010000.00000100.00000111 -&gt; netmask와 AND 계산 결과 : 172.16.4.0 (ok)
+  
+172.16.4.8      -&gt; 10101100.00010000.00000100.00001000 -&gt; netmask와 AND 계산하면 172.16.4.8 이 나온다, targetAddress와 다르니 fail
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ul>
+
+:ET

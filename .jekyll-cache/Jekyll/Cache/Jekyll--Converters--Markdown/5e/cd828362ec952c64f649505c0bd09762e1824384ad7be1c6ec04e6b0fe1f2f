@@ -1,0 +1,70 @@
+I"!<h2 id="1-개요">1. 개요</h2>
+
+<p>Stdout Log Rotation (perl script)</p>
+<p style="height:20px;"></p>
+
+<h2 id="2-설명">2. 설명</h2>
+
+<div class="language-perl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre><span class="c1"># rotateLOG.pl 파일 내용</span>
+<span class="c1">#!/usr/bin/perl </span>
+<span class="nv">$TRUE</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> 
+<span class="nv">$FALSE</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> 
+<span class="nv">$DEBUG</span><span class="o">=</span><span class="nv">$FALSE</span><span class="p">;</span> 
+<span class="c1">#$DEFAULT_LOG_PFX="/was_log/디렉토리/로그이름.";</span>
+<span class="nv">$DEFAULT_LOG_PFX</span><span class="o">=</span><span class="p">"</span><span class="s2">/home/weblogic/was/1213/domains/base_domain/logs/AdminServer/AdminServer.out.</span><span class="p">";</span> 
+<span class="nv">$logPfx</span><span class="o">=</span><span class="nv">$DEFAULT_LOG_PFX</span><span class="p">;</span>
+<span class="nv">$ignoreConsole</span><span class="o">=</span><span class="nv">$FALSE</span><span class="p">;</span> <span class="err">​</span> 
+ 
+<span class="k">while</span><span class="p">(</span><span class="nv">$aLine</span> <span class="o">=</span> <span class="o">&lt;</span><span class="bp">STDIN</span><span class="o">&gt;</span><span class="p">){</span>
+	<span class="p">(</span><span class="nv">$sec</span><span class="p">,</span><span class="nv">$min</span><span class="p">,</span><span class="nv">$hour</span><span class="p">,</span><span class="nv">$mday</span><span class="p">,</span><span class="nv">$mon</span><span class="p">,</span><span class="nv">$year</span><span class="p">,</span><span class="nv">$wday</span><span class="p">,</span><span class="nv">$yday</span><span class="p">,</span><span class="nv">$isdst</span><span class="p">)</span> <span class="o">=</span> <span class="nb">localtime</span><span class="p">(</span><span class="nb">time</span><span class="p">());</span>
+	<span class="nv">$logFile</span><span class="o">=</span><span class="nv">$logPfx</span><span class="o">.</span><span class="nb">sprintf</span><span class="p">("</span><span class="s2">%02d%02d%02d%</span><span class="p">",(</span><span class="nv">$year</span><span class="o">%</span><span class="mi">100</span><span class="p">),(</span><span class="nv">$mon</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span><span class="nv">$mday</span><span class="p">,</span><span class="nv">$hour</span><span class="p">,</span><span class="nv">$min</span><span class="p">,</span><span class="nv">$sec</span><span class="p">);</span> 
+	<span class="nb">open</span><span class="p">(</span><span class="nv">logH</span><span class="p">,"</span><span class="s2">&gt;&gt; </span><span class="si">$logFile</span><span class="p">");</span> 
+    <span class="c1">#Auto flush ON</span>
+	<span class="nb">select</span><span class="p">((</span><span class="nb">select</span><span class="p">(</span><span class="nv">logH</span><span class="p">),</span><span class="vg">$|</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]);</span>
+	<span class="c1">#use IO::Handle;</span>
+	<span class="c1">#logH-&gt;autoflush($TRUE);</span>
+	<span class="k">print</span> <span class="nv">logH</span> <span class="nv">$aLine</span><span class="p">;</span>
+	<span class="k">if</span><span class="p">(</span><span class="nv">$ignoreConsole</span><span class="p">){</span> 
+		<span class="k">print</span> <span class="nv">$aLine</span><span class="p">;</span>
+	<span class="p">}</span> 
+	<span class="nb">close</span><span class="p">(</span><span class="nv">logH</span><span class="p">);</span> 
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c"># 시작 방법</span>
+<span class="nb">nohup</span> <span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span>/bin/startWebLogic.sh 2&gt;&amp;1 | ./rotateLOG.pl &amp;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>perl script의 sprintf 안의 %02d 가 늘어날수록, 시간단위가 작아진다. %02d%02d%02d -&gt; 년월일, 하루 단위로 로테이션</p>
+
+  <p>%02d%02d%02d%02d -&gt; 한 시간 단위로 로테이션</p>
+</blockquote>
+<p style="height:20px;"></p>
+:ET

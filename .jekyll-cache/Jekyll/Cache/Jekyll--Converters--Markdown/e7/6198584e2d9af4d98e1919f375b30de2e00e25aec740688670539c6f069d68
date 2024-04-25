@@ -1,0 +1,48 @@
+I"k<h2 id="1-개요">1. 개요</h2>
+
+<p>Encoding 설명</p>
+<p style="height:40px;"></p>
+<h2 id="2-설명">2. 설명</h2>
+
+<p>(1). Encoding 옵션 적용 순서는 <code class="language-plaintext highlighter-rouge">jsp -&gt; web.xml -&gt; weblogic.xml</code></p>
+
+<p>대규모 프로젝트의 경우 보통 weblogic.xml 설정하여 도메인 전체 어플리케이션에 동일한 인코딩을 적용</p>
+<p style="height:20px;"></p>
+<p>(2). jsp pageEncoding</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="c">&lt;!-- weblogic.xml --&gt;</span>
+<span class="nt">&lt;jsp-descriptor&gt;</span>
+  <span class="nt">&lt;jsp-param&gt;</span>
+    <span class="nt">&lt;param-name&gt;</span>encoding<span class="nt">&lt;/param-name&gt;</span>
+    <span class="nt">&lt;param-value&gt;</span>UTF-8<span class="nt">&lt;/param-name&gt;</span>
+  <span class="nt">&lt;/jsp-param&gt;</span>
+<span class="nt">&lt;/jsp-descriptor&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>(3). url path를 이용한 servlet encoding</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="c">&lt;!-- weblogic.xml --&gt;</span>
+<span class="nt">&lt;charset-params&gt;</span>
+  <span class="nt">&lt;input-charset&gt;</span>
+    <span class="nt">&lt;resource-path&gt;</span>/*<span class="nt">&lt;/resource-path&gt;</span>
+    <span class="nt">&lt;java-charset-name&gt;</span>UTF-8<span class="nt">&lt;/java-charset-name&gt;</span>
+  <span class="nt">&lt;/input-charset&gt;</span>
+<span class="nt">&lt;/charset-params&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>4). 이외, jvm 의 encoding은 <code class="language-plaintext highlighter-rouge">-Dfile.encoding=UTF8</code></p>
+:ET

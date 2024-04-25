@@ -10,9 +10,7 @@ typora-root-url: ..
 # 1. 개요
 
 Encryption/Decryption (암/복호화)
-
-
-
+{{ site.content.br_small }}
 # 2. Encryption
 
 WebLogic 8 ~ 12cR2 사용 가능
@@ -24,9 +22,7 @@ WebLogic 8 ~ 12cR2 사용 가능
 ```
 
 string 이라는 plain text는 {AES256}WSq0iT981CeH2J+qbftpo0NN+IAT9689J+pk/Ecj5mw= 으로 암호화됨
-
-
-
+{{ site.content.br_small }}
 # 3. Decryption
 
 ## 2.1 WebLogic WLST 패키지 있는 경우
@@ -56,9 +52,7 @@ Type help() for help on available commands
 
 {AES256}WSq0iT981CeH2J+qbftpo0NN+IAT9689J+pk/Ecj5mw= -> string
 ```
-
-
-
+{{ site.content.br_small }}
 ### 2.2 그 외(Pure Java)
 
 ```java

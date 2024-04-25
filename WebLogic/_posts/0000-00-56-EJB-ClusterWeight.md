@@ -26,9 +26,7 @@ Sample EJB App을 배포하여, Cluster Weight 기능을 테스트한다.
 ![EJB-ClusterWeight_1](/../assets/posts/images/WebLogic/EJB-ClusterWeight/EJB-ClusterWeight_1.png)
 
 > 각 Instance는 Enable Tunneling 되었다. (중요하지 않아 보임)
-
-
-
+{{ site.content.br_small }}
 
 * base_cluster 내의 Instance는 각각 `Configuration - Cluster - Cluster Weight` 설정값을 `50`과 `100` 으로 적용하였다.
 {{ site.content.br_small }}

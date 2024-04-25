@@ -13,9 +13,7 @@ typora-root-url: ..
 해당 블로그를 꾸미기 위해 여러 가지 편집을 했는데, 어떤것을 했나?
 
 향후 테마가 변경된다 해도 해당 게시물 편집을 할 수도 안할수도!!
-
-
-
+{{ site.content.br_small }}
 # 2. 설명
 
 ## 2.1 _config.yml
@@ -25,33 +23,25 @@ typora-root-url: ..
 ```_config.xml
 permalink: /:categories/:title
 ```
-
-
-
+{{ site.content.br_small }}
 ### (2). header tag를 ToC 표시 시 적용 단계 변경
 
 ```conf
   header_offset: 1
 ```
-
-
-
+{{ site.content.br_small }}
 ### (3). post의 date 더 짧게 보여주기 위해서
 
 ```_config.yml
   date_format: "%Y-%m-%d"
 ```
-
-
-
+{{ site.content.br_small }}
 ### (4). copyright 실제 올바른 적용
 
 ```_config.yml
 copyright: "Copyright 2015-{currentYear}. {author} All data cannot be copied without permission."
 ```
-
-
-
+{{ site.content.br_small }}
 ### (5). 블로그 기본 정보
 
 ```_config.yml
@@ -59,17 +49,13 @@ title: IT Blogger DongDong
 email: ks900331@naver.com
 author: DongHyun Kim
 ```
-
-
-
+{{ site.content.br_small }}
 ### (6). 블로그 URL
 
 ```_config.yml
 url: "https://dhkim900331.github.io"
 ```
-
-
-
+{{ site.content.br_small }}
 ## 2.2 _data/defaults.yml
 
 * 원래 _config.yml 입력 시 index.html 자동 컴파일 되어야 할 것으로 보이는데 해당 테마는 그렇지 않아 직접 변경
@@ -81,9 +67,7 @@ url: "https://dhkim900331.github.io"
 <meta name="description" content="소프트웨어/솔루션/IT 엔지니어로 종사하며 얻는 모든 지식들을 공유하고자 블로그로 기록하고 있습니다. 제가 알고 있는 것을 공유하고 기록하는 행동을 통해, 많은 지식을 흡수하고 있습니다.">
 <meta property="og:description" content="소프트웨어/솔루션/IT 엔지니어로 종사하며 얻는 모든 지식들을 공유하고자 블로그로 기록하고 있습니다. 제가 알고 있는 것을 공유하고 기록하는 행동을 통해, 많은 지식을 흡수하고 있습니다.">
 ```
-
-
-
+{{ site.content.br_small }}
 ## 2.3 _includes/head.html
 
 ### (1). favicon
@@ -113,9 +97,7 @@ url: "https://dhkim900331.github.io"
   <meta name="msapplication-TileImage" content="/assets/img/favicons/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
 ```
-
-
-
+{{ site.content.br_small }}
 ## 2.4 index.html
 
 ### (1). main banner image 변경 시 사용
@@ -123,16 +105,12 @@ url: "https://dhkim900331.github.io"
 ```index.html
 banner: "/assets/images/banners/home.jpeg"
 ```
-
-
-
+{{ site.content.br_small }}
 ## 2.5 _sass
 
 * _site/assets/css/main.css 는 _sass 의 컴파일 결과물이므로, 변경하면 적용은 되지만 rebuild 할 때마다 새로이 컴파일 된 결과물이 덮어쓰기 되므로 원복된다.
 * 그러므로 _sass 내 파일들을 변경해야 한다.
-
-
-
+{{ site.content.br_small }}
 ### (1). 기본 폰트 크기
 
 * 해당 값에 의해 글로벌로 기준 폰트 크기로 사용된다.
@@ -141,9 +119,7 @@ banner: "/assets/images/banners/home.jpeg"
 //$base-line-height: 1.6 !default;
 $base-line-height: 1.4 !default;
 ```
-
-
-
+{{ site.content.br_small }}
 ### (2). 내용의 h1~6, 행간 조정
 
 ```_layout.scss
@@ -170,9 +146,7 @@ $base-line-height: 1.4 !default;
       margin-bottom: 3px;
     }
 ```
-
-
-
+{{ site.content.br_small }}
 ### (3). 포스트 제목 header 조정
 
 ```_layout.scss
@@ -190,9 +164,7 @@ $base-line-height: 1.4 !default;
 //    line-height: 1.1;
     line-height: 1.0;
 ```
-
-
-
+{{ site.content.br_small }}
 ### (4). 인용부호(<) 폰트 크기 조정
 
 * yat.scss 파일에 $base-font-size 값이 14px 로 지정되어 있으면, 1.125*14px = 15.75px 로 지정된다.
@@ -215,9 +187,7 @@ blockquote {
   }
 }
 ```
-
-
-
+{{ site.content.br_small }}
 ## 2.6 _includes
 
 ### (1). code-highlight.html
@@ -231,9 +201,7 @@ Badge는 CSS pusedo element으로써, DOM 아니므로 addEventListener을 직�
 real position을 구하는 방법으로도 가능해 보이지만 javascript 테스트에 많은 시간이 필요해보인다.
 
 단순히, codeBox 전체에 [더블클릭 시 복사](https://www.aleksandrhovhannisyan.com/blog/how-to-add-a-copy-to-clipboard-button-to-your-jekyll-blog/)하도록 했다. (나만 아는 copy 기능이 생긴 것)
-
-
-
+{{ site.content.br_small }}
 ```javascript
   function addBadge(block) {
     var enabled = ('{{ badge_enabled }}' || 'true').toLowerCase();
