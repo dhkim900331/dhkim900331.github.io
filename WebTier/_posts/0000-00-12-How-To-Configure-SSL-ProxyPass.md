@@ -9,11 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 Oracle HTTP Server 12cR2 에서 ProxyPass SSL 구현 방법
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. Server SSL 설정
 
 Server가 되는 SSL Site에 Wallet 인증서를 구현한다.
@@ -38,9 +34,7 @@ SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5:!RC4:!eNULL
 SSLCRLCheck Off
 SSLWallet "/sw/webtier/12cR2/domains/base_domain/worker2-cert"
 ```
-
-
-
+{{ site.content.br_small }}
 
 # 3. Client SSL 설정
 
@@ -82,11 +76,7 @@ SSLProxyWallet "<Wallet Dir>"
 ```
 {{ site.content.br_small }}
 Client OHS Component의 `/ssl` 요청 시 Server OHS Component의 SSL Page를 호출한다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 4. References
 
 https://oracle-base.com/articles/12c/oracle-http-server-ohs-configure-ssl

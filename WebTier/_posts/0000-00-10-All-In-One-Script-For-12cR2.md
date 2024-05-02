@@ -9,11 +9,7 @@ typora-root-url: ..
 # 1. 개요
 
 Oracle HTTP Server 12cR2 테스트 환경을 자동 재구축을 위해 모든 기본 설치 환경을 집약한다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. 설명
 
 All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한다.
@@ -21,11 +17,7 @@ All-In-One-Script-For-12cR2.sh 실행으로 다음 환경을 구성하도록 한
 - base_domain
 - NodeManager (SecureListner=false, TCP 5556)
 - Worker 2ea
-
-
-
-
-
+{{ site.content.br_big }}
 # 3. Script
 
 ## 3.1 Engine
@@ -106,11 +98,7 @@ ${BASEDIR}/${OHS_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc $
 ADMIN_ADDR을 127.0.0.1 으로만 해야 되는 것으로 테스트상 확인되는데,
 
 구체적인 이유는 확인되지 않는다.
-
-
-
-
-
+{{ site.content.br_big }}
 ## 3.2 Domain
 
 ```sh
@@ -125,9 +113,7 @@ writeDomain('${DOMAIN_HOME}')
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_small }}
 
 ## 3.3 NodeManager
 
@@ -156,9 +142,7 @@ EOF
 # WLST 으로 update 되지 않아 추가로 해야 한다. 실질적으로 아래가 필수
 sed -i 's/SecureListener=true/SecureListener=false/g' ${DOMAIN_HOME}/nodemanager/nodemanager.properties
 ```
-
-
-
+{{ site.content.br_small }}
 
 ## 3.4 Component
 
@@ -196,9 +180,7 @@ updateDomain()
 exit()
 EOF
 ```
-
-
-
+{{ site.content.br_small }}
 
 ## 3.5 Create NodeManager Scripts (start, stop, log, ps)
 
@@ -280,9 +262,7 @@ DOMAIN_HOME=${BASEDIR}
 ps -ef | grep "java" | grep "weblogic.NodeManager -v" | grep "${DOMAIN_HOME}"
 EOF
 ```
-
-
-
+{{ site.content.br_small }}
 
 ## 3.6 Create Component Scripts (start, stop, ps)
 

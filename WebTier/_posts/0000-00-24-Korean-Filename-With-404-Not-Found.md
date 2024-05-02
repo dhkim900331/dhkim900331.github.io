@@ -121,3 +121,5 @@ Unicode 로 정의되어 있는 문자들은, UTF(Unicode Transformation Format)
 [유니코드와 UTF 이해하기](https://velog.io/@goggling/%EC%9C%A0%EB%8B%88%EC%BD%94%EB%93%9C%EC%99%80-UTF-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0)
 
 [유니코드 변환기 온라인](https://unicode.codethoi.com/ko/index.html)
+
+**한글파일 요청 시 404 Not Found 발생 (Doc ID 3019045.1)**

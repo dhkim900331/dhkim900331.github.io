@@ -11,11 +11,7 @@ typora-root-url: ..
 Content Security Policy Header를 테스트한다.
 
 default-src 개념만 알면, 나머지 XXX-src 는 동일하므로 default/script-src 만 테스트한다.
-
-
-
-
-
+{{ site.content.br_big }}
 # 2. 설명
 
 ## 2.1 default-src
@@ -69,9 +65,7 @@ Header always set Content-Security-Policy: "default-src 'self' 'unsafe-inline';"
 또는
 Header always set Content-Security-Policy: "default-src 'none' 'unsafe-inline';"
 ```
-
-
-
+{{ site.content.br_small }}
 
 ## 2.2 script-src
 
@@ -101,9 +95,7 @@ Header always set Content-Security-Policy: "default-src 'none'; script-src 'self
 ```
 Header always set Content-Security-Policy: "default-src 'none'; script-src 'self' child.wls.local;"
 ```
-
-
-
+{{ site.content.br_small }}
 
 # 3. 참고
 
