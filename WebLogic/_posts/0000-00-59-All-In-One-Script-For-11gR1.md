@@ -25,7 +25,7 @@ All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한
 ## 3.1 Engine
 
 ```sh
-BASEDIR=/sw/installFiles
+BASEDIR=/sw/downloads
 OS_USERNAME=$(id --user --name)
 OS_GROUPNAME=$(id --group --name)
 

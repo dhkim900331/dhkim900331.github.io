@@ -77,7 +77,7 @@ EOF
 
 ${ORACLE_HOME}/runInstaller -silent -responseFile ${ORACLE_HOME}/response/db_install.rsp
 sleep 10
-tail ${DB_INVENTORY_PATH}/logs/installActions$(date +%Y-%m-%d)*.log
+tail -f ${DB_INVENTORY_PATH}/logs/installActions$(date +%Y-%m-%d)*.log
 ```
 {{ site.content.br_big }}
 ### 2.1.3 Setup Listener & DB

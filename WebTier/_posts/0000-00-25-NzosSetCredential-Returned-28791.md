@@ -93,3 +93,5 @@ Wallet SSL Certificate 가 Expired 되면 Component와 NodeManager가 HTTPS 통�
 **12c: How to Recreate the Default Wallet that has Expired from Oracle HTTP Server (Doc ID 2729766.1)**
 
 **Oracle HTTP Server Start Failed with "Nzos Call NzosSetCredential Returned 28791" Due to Expired SSL Certificate (Doc ID 2314626.1)**
+
+**"nzos call nzosSetCredential returned 28791" 에러와 함께 Component가 기동되지 않음 (Doc ID 3020447.1)**
