@@ -12,7 +12,7 @@ Oracle DB가 필요하게 되어, 12c 설치를 하며 작성을 한다.
 
 정확도가 떨어지는 가이드의 문서가 될 수 있겠다.
 {{ site.content.br_small }}
-[Install-Oracle-19c]({{ site.url/database/Install-Oracle-19c }}) 게시물을 참고하여 작성
+[Install-Oracle-19c]({{ site.url }}/database/Install-Oracle-19c) 게시물을 참고하여 작성
 {{ site.content.br_big }}
 # 2. 문서 작성 기준이 되는 테스트 환경
 

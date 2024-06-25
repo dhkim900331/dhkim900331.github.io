@@ -103,7 +103,7 @@ ${JAVA_HOME}/bin/java -jar ${ODI_INSTALL_FILE} -silent -responseFile ${BASEDIR}/
 
 RCU 로 Repository 를 생성하기 위해 Oracle DB 12c 를 설치하기로 한다.
 
-[Install-Oracle-12c]({{ site.url/database/Install-Oracle-12c }}) 게시물을 참고하여 진행한다.
+[Install-Oracle-12c]({{ site.url }}/database/Install-Oracle-12c) 게시물을 참고하여 진행한다.
 {{ site.content.br_small }}
 DB 엔진 설치
 
