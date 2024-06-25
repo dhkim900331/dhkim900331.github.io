@@ -61,3 +61,5 @@ INNER_EOF
 # 3. References
 
 **Stopping OHS 12.1.3 Fails with "error occurred while performing nmConnect : Cannot connect to Node Manager" (Doc ID 1959645.1)**
+
+**USER HOME Directory 아래에 있는 .wlst Key가 삭제 되었습니다. (Doc ID 3030991.1)**

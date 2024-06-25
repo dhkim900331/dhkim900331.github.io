@@ -6,18 +6,18 @@ tags: [Coherence, Web, Installation]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 Coherence 14c 테스트 환경을 위해 기본 설치 환경을 집약한다.
 {{ site.content.br_small }}
-# 2. 설명
+# 2. Descriptions
 
 다음 환경을 구성하도록 한다.
 
 - cluster-base_domain
   - Coherence Server, TCP 9000 ~ 9100
   - Managed Coherence Server, TCP 9000
-{{ site.content.br_small }}
+  {{ site.content.br_small }}
 
 아래 문서에서는 Coherence-Server를 Cache-Server,
 
@@ -25,6 +25,17 @@ Managed Coherence Server(WLS+Coherence Module)를 Cache-Client 라고 표현하�
 
 WLS 또한 자기 자신이 Cache-Server가 될 수 있으나, Coherence을 사용하는 목적은 WLS 에서는 Data를 처리하지 않는 것이기 때문이다.
 {{ site.content.br_small }}
+
+## 2.1 Downloads
+
+[Oracle Software Delivery Cloud](https://edelivery.oracle.com) 에서 Download 할 List
+
+- Oracle Coherence 14.1.1.0.0 (124.3 MB)
+
+
+
+
+
 # 3. Script
 
 ## 3.1 Engine
@@ -222,7 +233,7 @@ CLASSPATH 에 있는 xml 파일을 override 할 수 있다.
 
 * [Start a Cache Server](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer-http-sessions/using-coherenceweb-weblogic-server.html#GUID-D8120C85-FCD3-491E-8618-03B691279797)
   * Coherence 는 기본적으로 WLS 하위 subsystem으로 (즉 같은 JVM) 유지되면, WLS와 같은 lifecycle을 공유한다. 이러한 경우 Managed Coherence Server 라고 부른다.
-{{ site.content.br_small }}
+  {{ site.content.br_small }}
 * [To Start a Standalone Coherence Cache Server](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer-http-sessions/using-coherenceweb-weblogic-server.html#GUID-E65D5FAC-B517-4F59-8AF7-8458AE1216C1)
 
   * Cache Server를 독립 실행, 아래에서 이 방식을 사용하는 Script를 설명했다.

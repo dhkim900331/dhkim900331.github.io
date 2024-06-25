@@ -7,7 +7,7 @@ typora-root-url: ..
 ---
 
 # 1. Overview
-Oracle JDBC Driver 의 Certifications 문서 확인 방법에 대한 설명
+Oracle JDBC Driver 의 Certifications 문서 확인 방법에 대한 설
 
 {{ site.content.br_big }}
 

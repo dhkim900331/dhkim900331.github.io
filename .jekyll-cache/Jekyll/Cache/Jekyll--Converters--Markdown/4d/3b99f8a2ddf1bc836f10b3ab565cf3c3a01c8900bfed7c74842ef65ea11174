@@ -1,0 +1,619 @@
+I"Sl<h2 id="1-overview">1. Overview</h2>
+
+<p><a href="http://localhost:4000/odi/How-to-install-ODI-12cR2">How-to-install-ODI-12cR2</a> 에서 작성한 내용을 토대로,</p>
+
+<p>All In One Script를 작성한다.</p>
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<h3 id="21-downloads">2.1 Downloads</h3>
+
+<p><a href="https://edelivery.oracle.com">Oracle Software Delivery Cloud</a> 에서 Download 할 List</p>
+
+<ul>
+  <li>Oracle Database Standard Edition 2 12.1.0.2.0 (2.5 GB)</li>
+  <li>Oracle WebLogic Server 10.3.6.0.0 (1018.5 MB)</li>
+  <li>Oracle Data Integrator 11.1.1.9.0 (4.1 GB)</li>
+  <li>Oracle Fusion Middleware Repository Creation Utility 11.1.1.9.0 (561.4 MB)</li>
+</ul>
+<p style="height:20px;"></p>
+<h3 id="22-db">2.2 DB</h3>
+
+<h4 id="221-define-envs">2.2.1 Define Envs</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+</pre></td><td class="rouge-code"><pre><span class="c">## OS Env ##</span>
+<span class="nb">unset</span> <span class="si">$(</span><span class="nb">env</span> | <span class="nb">grep </span>ORACLE | <span class="nb">awk</span> <span class="nt">-F</span><span class="o">=</span> <span class="s1">'{print $1}'</span><span class="si">)</span>
+<span class="nv">BASEDIR</span><span class="o">=</span>/sw/downloads
+<span class="nv">OS_USERNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--user</span> <span class="nt">--name</span><span class="si">)</span>
+<span class="nv">OS_GROUPNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--group</span> <span class="nt">--name</span><span class="si">)</span>
+<span class="nv">OS_HOSTNAME</span><span class="o">=</span>wls.local
+
+
+<span class="c">## Setup OS Kernel Parameters</span>
+<span class="c"># ref. https://velog.io/@w10sim/오라클-데이터베이스-설치하기싱글-노드x8664</span>
+<span class="nb">sudo cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; /etc/sysctl.conf
+kernel.shmmax = 2147483648
+kernel.shmall = 943719
+kernel.shmmni = 4096
+kernel.sem = 250 32000 100 128
+kernel.panic_on_oops = 1
+fs.file-max = 6815744
+fs.aio-max-nr = 1048576
+net.core.rmem_default = 262144
+net.core.rmem_max = 4194304
+net.core.wmem_default = 262144
+net.core.wmem_max = 1048576
+net.ipv4.ip_local_port_range = 9000 65500
+</span><span class="no">EOF
+</span><span class="nb">sudo </span>sysctl <span class="nt">-p</span>
+
+<span class="nb">sudo cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; /etc/security/limits.conf
+</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh"> soft nofile 1024
+</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh"> hard nofile 65536
+</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh"> soft nproc 2047
+</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh"> hard nproc 16384
+</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh"> soft stack 10240
+</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh"> hard stack 32768
+</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh"> soft memlock 3774874
+</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh"> hard memlock 3774874
+</span><span class="no">EOF
+
+
+</span><span class="c">## DB Env ##</span>
+<span class="nv">DB_INSTALL_PATH</span><span class="o">=</span>/sw/databases/oracle-12c
+<span class="nv">DB_INVENTORY_PATH</span><span class="o">=</span>/sw/databases/inventories/12cR1
+
+<span class="nb">export </span><span class="nv">ORACLE_BASE</span><span class="o">=</span><span class="k">${</span><span class="nv">DB_INSTALL_PATH</span><span class="k">}</span>
+<span class="nb">export </span><span class="nv">ORACLE_HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">ORACLE_BASE</span><span class="k">}</span>/product/12.1.0/db_home_1
+<span class="nb">export </span><span class="nv">ORACLE_SID</span><span class="o">=</span>ODI
+<span class="nb">export </span><span class="nv">ORACLE_ODI_PDBNAME</span><span class="o">=</span><span class="k">${</span><span class="nv">ORACLE_SID</span><span class="k">}</span>PDB
+<span class="nb">export </span><span class="nv">ORACLE_DB_GROUP</span><span class="o">=</span>weblogic
+<span class="nb">export </span><span class="nv">ORACLE_DB_PASSWORD</span><span class="o">=</span>weblogic1
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/bin:<span class="nv">$PATH</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:40px;"></p>
+<h4 id="222-install-db">2.2.2 Install DB</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre><span class="c">## Move unziped file to ORACLE_HOME ##</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>
+<span class="nb">mv</span> <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/database/<span class="k">*</span> <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>
+
+
+<span class="c">## Install DB Engine ##</span>
+<span class="nb">cp</span> <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/response/db_install.rsp <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/response/db_install.rsp.back
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span><span class="sh">/response/db_install.rsp
+ORACLE_HOME=</span><span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span><span class="sh">
+ORACLE_BASE=</span><span class="k">${</span><span class="nv">ORACLE_BASE</span><span class="k">}</span><span class="sh">
+ORACLE_HOSTNAME=</span><span class="k">${</span><span class="nv">OS_HOSTNAME</span><span class="k">}</span><span class="sh">
+
+UNIX_GROUP_NAME=</span><span class="k">${</span><span class="nv">OS_USERNAME</span><span class="k">}</span><span class="sh">
+INVENTORY_LOCATION=</span><span class="k">${</span><span class="nv">DB_INVENTORY_PATH</span><span class="k">}</span><span class="sh">
+
+SELECTED_LANGUAGES=en
+DECLINE_SECURITY_UPDATES=true
+
+oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v12.1.0
+oracle.install.option=INSTALL_DB_SWONLY
+oracle.install.db.InstallEdition=SE
+oracle.install.db.ConfigureAsContainerDB=false
+oracle.install.db.DBA_GROUP=</span><span class="k">${</span><span class="nv">ORACLE_DB_GROUP</span><span class="k">}</span><span class="sh">
+oracle.install.db.OPER_GROUP=</span><span class="k">${</span><span class="nv">ORACLE_DB_GROUP</span><span class="k">}</span><span class="sh">
+oracle.install.db.BACKUPDBA_GROUP=</span><span class="k">${</span><span class="nv">ORACLE_DB_GROUP</span><span class="k">}</span><span class="sh">
+oracle.install.db.DGDBA_GROUP=</span><span class="k">${</span><span class="nv">ORACLE_DB_GROUP</span><span class="k">}</span><span class="sh">
+oracle.install.db.KMDBA_GROUP=</span><span class="k">${</span><span class="nv">ORACLE_DB_GROUP</span><span class="k">}</span><span class="sh">
+</span><span class="no">EOF
+
+</span><span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/runInstaller <span class="nt">-silent</span> <span class="nt">-responseFile</span> <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/response/db_install.rsp
+<span class="nb">sleep </span>10
+<span class="nb">tail</span> <span class="nt">-f</span> <span class="k">${</span><span class="nv">DB_INVENTORY_PATH</span><span class="k">}</span>/logs/installActions<span class="si">$(</span><span class="nb">date</span> +%Y-%m-%d<span class="si">)</span><span class="k">*</span>.log
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:40px;"></p>
+<h4 id="223-setup-listener--db">2.2.3 Setup Listener &amp; DB</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="rouge-code"><pre><span class="c">## Setup Listener ##</span>
+netca <span class="nt">-silent</span> <span class="nt">-responseFile</span> <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/response/netca.rsp
+
+
+<span class="c">## Setup DB ##</span>
+<span class="nb">cp</span> <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/assistants/dbca/dbca.rsp <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/assistants/dbca/dbca.rsp.back
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span><span class="sh">/assistants/dbca/dbca.rsp
+[GENERAL]
+RESPONSEFILE_VERSION = "12.1.0"
+OPERATION_TYPE = "createDatabase"
+
+[CREATEDATABASE]
+GDBNAME = "GLOBAL_</span><span class="k">${</span><span class="nv">ORACLE_SID</span><span class="k">}</span><span class="sh">"
+SID = "</span><span class="k">${</span><span class="nv">ORACLE_SID</span><span class="k">}</span><span class="sh">"
+DATABASECONFTYPE = "SI"
+CREATEASCONTAINERDATABASE = true
+NUMBEROFPDBS = 1
+PDBNAME = "</span><span class="k">${</span><span class="nv">ORACLE_ODI_PDBNAME</span><span class="k">}</span><span class="sh">"
+PDBADMINPASSWORD = "</span><span class="k">${</span><span class="nv">ORACLE_DB_PASSWORD</span><span class="k">}</span><span class="sh">"
+SYSPASSWORD = "</span><span class="k">${</span><span class="nv">ORACLE_DB_PASSWORD</span><span class="k">}</span><span class="sh">"
+SYSTEMPASSWORD = "</span><span class="k">${</span><span class="nv">ORACLE_DB_PASSWORD</span><span class="k">}</span><span class="sh">"
+STORAGETYPE = "FS"
+TEMPLATENAME = "General_Purpose.dbc"
+CHARACTERSET = "AL32UTF8"
+TOTALMEMORY = "1536"
+EMCONFIGURATION = "NONE"
+DATABASETYPE = "MULTIPURPOSE"
+</span><span class="no">EOF
+
+</span>dbca <span class="nt">-silent</span> <span class="nt">-createDatabase</span> <span class="nt">-responsefile</span> <span class="k">${</span><span class="nv">ORACLE_HOME</span><span class="k">}</span>/assistants/dbca/dbca.rsp
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:40px;"></p>
+<h4 id="224-tune-db-as-odi-requests">2.2.4 Tune DB as ODI requests</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="c">## Tuning DB as ODI requests</span>
+sqlplus / as sysdba <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
+ALTER SYSTEM SET shared_pool_size=150M SCOPE=SPFILE;
+--ALTER SYSTEM SET sga_target 150M SCOPE=SPFILE;
+ALTER SYSTEM SET session_cached_cursors=100 SCOPE=SPFILE;
+ALTER SYSTEM SET processes=500 SCOPE=SPFILE;
+ALTER SYSTEM SET open_cursors=800 SCOPE=SPFILE;
+ALTER SYSTEM SET db_files=600 SCOPE=SPFILE;
+
+ALTER SESSION SET CONTAINER = </span><span class="k">${</span><span class="nv">ORACLE_ODI_PDBNAME</span><span class="k">}</span><span class="sh">;
+ALTER PLUGGABLE DATABASE SAVE STATE;
+
+CONN / AS SYSDBA;
+SHUTDOWN IMMEDIATE;
+STARTUP;
+EXIT;
+</span><span class="no">EOF
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:40px;"></p>
+
+<h3 id="23-rcu">2.3 RCU</h3>
+
+<h4 id="231-define-envs">2.3.1 Define Envs</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="c">## OS Env ##</span>
+<span class="nv">BASEDIR</span><span class="o">=</span>/sw/downloads
+
+
+<span class="c">## RCU Env ##</span>
+<span class="nv">RCU_DB_HOSTNAME</span><span class="o">=</span>wls.local        <span class="c"># is ORACLE_HOSTNAME</span>
+<span class="nv">RCU_DB_PORT</span><span class="o">=</span>1521                 <span class="c"># is DB Port</span>
+<span class="nv">RCU_DB_NAME</span><span class="o">=</span>ODIPDB               <span class="c"># is ORACLE_ODI_PDBNAME</span>
+<span class="nv">RCU_DB_SYS_PASSWORD</span><span class="o">=</span>weblogic1    <span class="c"># is ORACLE_DB_PASSWORD</span>
+
+<span class="nv">RCU_SCHEMA_PREFIX</span><span class="o">=</span>ODIDEV
+<span class="nv">RCU_SCHEMA_PASSWORD</span><span class="o">=</span>schema1
+<span class="nv">RCU_SUPERVISOR_PASSWORD</span><span class="o">=</span>supervisor1
+<span class="nv">RCU_PRODUCTION_MODE</span><span class="o">=</span>D
+<span class="nv">RCU_WORK_REPOSITORY</span><span class="o">=</span>WORKREP
+<span class="nv">RCU_ENCRYPTION</span><span class="o">=</span>AES-128
+<span class="nv">RCU_MASTER_REPOSITORY_ID</span><span class="o">=</span>001
+<span class="nv">RCU_WORK_REPOSITORY_ID</span><span class="o">=</span>001
+
+<span class="nv">RCU_JDBC_DRIVER</span><span class="o">=</span>oracle.jdbc.OracleDriver
+<span class="nv">RCU_JDBC_URL</span><span class="o">=</span>jdbc:oracle:thin:@<span class="k">${</span><span class="nv">RCU_DB_HOSTNAME</span><span class="k">}</span>:<span class="k">${</span><span class="nv">RCU_DB_PORT</span><span class="k">}</span>/<span class="k">${</span><span class="nv">RCU_DB_NAME</span><span class="k">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p style="height:40px;"></p>
+
+<h4 id="232-setup-odi-schema-with-rcu">2.3.2 Setup ODI Schema with RCU</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="c">## Setup ODI Schema with RCU</span>
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span><span class="sh">/odi_rcu_parameters.txt
+</span><span class="k">${</span><span class="nv">RCU_DB_SYS_PASSWORD</span><span class="k">}</span><span class="sh">
+</span><span class="k">${</span><span class="nv">RCU_SCHEMA_PASSWORD</span><span class="k">}</span><span class="sh">
+</span><span class="k">${</span><span class="nv">RCU_MASTER_REPOSITORY_ID</span><span class="k">}</span><span class="sh">
+</span><span class="k">${</span><span class="nv">RCU_SUPERVISOR_PASSWORD</span><span class="k">}</span><span class="sh">
+</span><span class="k">${</span><span class="nv">RCU_PRODUCTION_MODE</span><span class="k">}</span><span class="sh">
+</span><span class="k">${</span><span class="nv">RCU_WORK_REPOSITORY_ID</span><span class="k">}</span><span class="sh">
+</span><span class="k">${</span><span class="nv">RCU_WORK_REPOSITORY</span><span class="k">}</span><span class="sh">
+</span><span class="k">${</span><span class="nv">RCU_SCHEMA_PASSWORD</span><span class="k">}</span><span class="sh">
+</span><span class="no">EOF
+	
+</span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/rcuHome/bin/rcu <span class="nt">-silent</span> <span class="nt">-createRepository</span> <span class="se">\</span>
+  <span class="nt">-connectString</span> <span class="k">${</span><span class="nv">RCU_DB_HOSTNAME</span><span class="k">}</span>:<span class="k">${</span><span class="nv">RCU_DB_PORT</span><span class="k">}</span>/<span class="k">${</span><span class="nv">RCU_DB_NAME</span><span class="k">}</span> <span class="nt">-dbUser</span> SYS <span class="nt">-dbRole</span> SYSDBA <span class="se">\</span>
+  <span class="nt">-useSamePasswordForAllSchemaUsers</span> <span class="nb">true</span> <span class="se">\</span>
+  <span class="nt">-schemaPrefix</span> <span class="k">${</span><span class="nv">RCU_SCHEMA_PREFIX</span><span class="k">}</span> <span class="se">\</span>
+  <span class="nt">-component</span> ODI <span class="nt">-component</span> IAU <span class="se">\</span>
+  <span class="nt">-component</span> OPSS &lt; <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/odi_rcu_parameters.txt
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p style="height:40px;"></p>
+
+<h3 id="24-wls">2.4 WLS</h3>
+
+<h4 id="241-install-wls">2.4.1 Install WLS</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+</pre></td><td class="rouge-code"><pre><span class="c">## OS Env ##</span>
+<span class="nv">BASEDIR</span><span class="o">=</span>/sw/downloads
+<span class="nv">OS_USERNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--user</span> <span class="nt">--name</span><span class="si">)</span>
+<span class="nv">OS_GROUPNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--group</span> <span class="nt">--name</span><span class="si">)</span>
+<span class="nv">OS_HOSTNAME</span><span class="o">=</span>wls.local
+
+<span class="nv">WLS_INSTALL_FILE</span><span class="o">=</span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/wls1036_generic.jar
+<span class="nv">JAVA_HOME</span><span class="o">=</span>/sw/jdk/jdk1.7.0_201
+
+<span class="nv">WLS_INSTALL_PATH</span><span class="o">=</span>/sw/weblogic/11gR1
+<span class="nv">INVENTORY_PATH</span><span class="o">=</span>/sw/weblogic/inventories/11gR1
+<span class="nv">INVENTORY_GROUP</span><span class="o">=</span><span class="k">${</span><span class="nv">OS_GROUPNAME</span><span class="k">}</span>
+
+
+<span class="c"># (1) silent.xml</span>
+<span class="c"># https://docs.oracle.com/cd/E24329_01/doc.1211/e24492/silent.htm#WLSIG185</span>
+<span class="c"># https://oracle-base.com/articles/11g/weblogic-silent-installation-11g</span>
+<span class="c"># wls1036_generic.jar:lpr.xml or gpr.xml</span>
+
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span><span class="sh">/silent.xml
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;bea-installer&gt;
+ &lt;input-fields&gt;
+  &lt;data-value name="BEAHOME" value="</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span><span class="sh">"/&gt;
+  &lt;data-value name="WLS_INSTALL_DIR" value="</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span><span class="sh">/wlserver_10.3"/&gt;
+  &lt;!--&lt;data-value name="COMPONENT_PATHS" value="WebLogic Server/Core Application Server|WebLogic Server/Administration Console|WebLogic Server/Web 2.0 HTTP Pub-Sub Server|WebLogic Server/WebLogic SCA|WebLogic Server/WebLogic JDBC Drivers|WebLogic Server/Third Party JDBC Drivers|WebLogic Server/WebLogic Server Clients|WebLogic Server/WebLogic Web Server Plugins"/&gt;--&gt;
+    &lt;data-value name="COMPONENT_PATHS" value="WebLogic Server"/&gt;
+  &lt;data-value name="INSTALL_SHORTCUT_IN_ALL_USERS_FOLDER" value="no"/&gt;
+  &lt;data-value name="LOCAL_JVMS" value="</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span><span class="sh">"/&gt;
+ &lt;/input-fields&gt;
+&lt;/bea-installer&gt;
+</span><span class="no">EOF
+
+
+</span><span class="c"># (2) Installation</span>
+<span class="c"># https://docs.oracle.com/cd/E24329_01/doc.1211/e24492/silent.htm#CIHCAHGC</span>
+
+<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin/java <span class="nt">-jar</span> <span class="k">${</span><span class="nv">WLS_INSTALL_FILE</span><span class="k">}</span> <span class="nt">-mode</span><span class="o">=</span>silent <span class="nt">-silent_xml</span><span class="o">=</span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/silent.xml
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p style="height:40px;"></p>
+
+<h3 id="25-odi">2.5 ODI</h3>
+
+<h4 id="251-define-envs">2.5.1 Define Envs</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="c">## OS Env ##</span>
+<span class="nv">BASEDIR</span><span class="o">=</span>/sw/downloads
+<span class="nv">OS_USERNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--user</span> <span class="nt">--name</span><span class="si">)</span>
+<span class="nv">OS_GROUPNAME</span><span class="o">=</span><span class="si">$(</span><span class="nb">id</span> <span class="nt">--group</span> <span class="nt">--name</span><span class="si">)</span>
+<span class="nv">OS_HOSTNAME</span><span class="o">=</span>wls.local
+
+
+<span class="c">## WLS Env ##</span>
+<span class="c"># https://docs.oracle.com/middleware/11119/core/ODING/ODING.pdf#page=62&amp;zoom=100,124,846</span>
+<span class="nv">MIDDLEWARE_HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">WLS_INSTALL_PATH</span><span class="k">}</span>
+
+
+<span class="c">## ODI Env ##</span>
+<span class="nv">JAVA_HOME</span><span class="o">=</span>/sw/jdk/jdk1.7.0_201
+<span class="nv">ODI_INSTALL_FILE</span><span class="o">=</span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/Disk1/runInstaller
+<span class="nv">ODI_INSTALL_PATH</span><span class="o">=</span>/sw/odi/11gR1
+<span class="nv">ODI_INVENTORY_PATH</span><span class="o">=</span>/sw/odi/inventories/11gR1
+<span class="nv">ODI_INVENTORY_GROUP</span><span class="o">=</span><span class="k">${</span><span class="nv">OS_GROUPNAME</span><span class="k">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:40px;"></p>
+
+<h4 id="252-install-odi">2.5.2 Install ODI</h4>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class="rouge-code"><pre><span class="c">## Install ODI Engine ##</span>
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span><span class="sh">/rsp
+[ENGINE]
+Response File Version=1.0.0.0.0
+
+[GENERIC]
+ORACLE_HOME=</span><span class="k">${</span><span class="nv">ODI_INSTALL_PATH</span><span class="k">}</span><span class="sh">
+MIDDLEWARE_HOME=</span><span class="k">${</span><span class="nv">MIDDLEWARE_HOME</span><span class="k">}</span><span class="sh">
+APPSERVER_TYPE=WLS
+SKIP_SOFTWARE_UPDATES=true
+SPECIFY_DOWNLOAD_LOCATION=false
+USE EXISTING REPOSITORY=false
+SKIP REPOSITORY CREATION=true
+
+[APPLICATIONS]
+ODI_STUDIO=true
+ODI_SDK=true
+STANDALONE_AGENT=false
+ORACLE_DATA_INTEGRATOR_J2EE_AGENT=true
+ORACLE_DATA_INTEGRATOR_CONSOLE=true
+ORACLE_DATA_INTEGRATOR_PUBLIC_WEB_SERVICE=true
+</span><span class="no">EOF
+
+
+</span><span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; </span><span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span><span class="sh">/loc
+inventory_loc=</span><span class="k">${</span><span class="nv">ODI_INVENTORY_PATH</span><span class="k">}</span><span class="sh">
+inst_group=</span><span class="k">${</span><span class="nv">ODI_INVENTORY_GROUP</span><span class="k">}</span><span class="sh">
+</span><span class="no">EOF
+
+</span><span class="k">${</span><span class="nv">ODI_INSTALL_FILE</span><span class="k">}</span> <span class="nt">-silent</span> <span class="nt">-responseFile</span> <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/rsp <span class="nt">-invPtrLoc</span> <span class="k">${</span><span class="nv">BASEDIR</span><span class="k">}</span>/loc <span class="nt">-jreLoc</span> <span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:40px;"></p>
+
+<h4 id="253-odi-studio">2.5.3 ODI Studio</h4>
+
+<p>ODI 11gR1 의 ODI Studio 가 Windows 10/11 에서 정상적으로 설치가 되지 않아, Windows에는 별도로 설치를 하지 않았다.</p>
+
+<p>TigerVNC 를 구축 및 활용하여, <code class="language-plaintext highlighter-rouge">${ODI_INSTALL_PATH}/oracledi/client/odi.sh</code> 실행하였다.</p>
+<p style="height:20px;"></p>
+<p>Studio 에서 Login을 위한 정보는 아래와 같다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>Oracle Data Integrator Connection
+Login Name : Any string that you want
+User : SUPERVISOR
+Password : <span class="k">${</span><span class="nv">RCU_SUPERVISOR_PASSWORD</span><span class="k">}</span>
+
+Database Connection <span class="o">(</span>Master Repository<span class="o">)</span>
+User : <span class="k">${</span><span class="nv">RCU_SCHEMA_PREFIX</span><span class="k">}</span>_ODI_REPO
+Password : <span class="k">${</span><span class="nv">RCU_SCHEMA_PASSWORD</span><span class="k">}</span>
+Driver List : Oracle JDBC Driver
+Driver Name : oracle.jdbc.OracleDriver
+Url : jdbc:oracle:thin:@<span class="k">${</span><span class="nv">RCU_DB_HOSTNAME</span><span class="k">}</span>:<span class="k">${</span><span class="nv">RCU_DB_PORT</span><span class="k">}</span>/<span class="k">${</span><span class="nv">RCU_DB_NAME</span><span class="k">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+
+<p><a href="http://localhost:4000/odi/How-to-install-ODI-12cR2">How-to-install-ODI-12cR2</a></p>
+
+<p>https://oracle-base.com/articles/11g/odi-11g-silent-installation-on-ol7</p>
+:ET
