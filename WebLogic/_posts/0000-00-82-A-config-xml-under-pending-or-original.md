@@ -23,20 +23,12 @@ DOMAIN_HOME 아래 original/pending 디렉터리에 생성되는 config.xml 의 
 * AdminServer 재시작으로 기동이 완료되면 삭제된다.
 * 해당 파일은, 공식 자료로 기술되어 있지 않지만 내부 로직에 의해 사용되는 임시 파일로 보여진다.
 * 편집 모드가 활성화 되어 있는 상태에서 재시작을 하면, Console login 시점에 다시 생성된다.
-
-
-
-
-
+{{ site.content.br_big }}
 ## 2.2 pending/config.xml
 
 * 설정을 수정하면 반영 전에 생성되는 임시 파일이다.
 * `2.1 original/config.xml` 마지막 설명에, 재시작 이후 Console login 시점에 다시 생성된다고 하였는데, `pending/config.xml`이 있다면 두 파일이 동기화 된다.
-
-
-
-
-
+{{ site.content.br_big }}
 ### 2.3 config.xml의 archiving
 
 [Configuration File Archiving](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/domcf/config_files.html#GUID-43B51552-2AFB-4B17-A95E-D502B2C42EA0)
