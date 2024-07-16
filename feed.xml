@@ -1,0 +1,1097 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="https://dhkim900331.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://dhkim900331.github.io/" rel="alternate" type="text/html" /><updated>2024-07-16T13:16:37+00:00</updated><id>https://dhkim900331.github.io/feed.xml</id><title type="html">IT Blogger DongDong</title><subtitle>소프트웨어/솔루션/IT 엔지니어로 종사하며 얻는 모든 지식들을 공유하고자 블로그로 기록하고 있습니다. 제가 알고 있는 것을 공유하고 기록하는 행동을 통해, 많은 지식을 흡수하고 있습니다.</subtitle><author><name>DongHyun Kim</name></author><entry><title type="html">[WebLogic/JMS] A JMS Client using IIOP</title><link href="https://dhkim900331.github.io/weblogic/A-JMS-Client-Using-IIOP" rel="alternate" type="text/html" title="[WebLogic/JMS] A JMS Client using IIOP" /><published>2024-07-03T07:39:54+00:00</published><updated>2024-07-03T07:39:54+00:00</updated><id>https://dhkim900331.github.io/weblogic/A-JMS-Client-Using-IIOP</id><content type="html" xml:base="https://dhkim900331.github.io/weblogic/A-JMS-Client-Using-IIOP"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>WebLogic 12.2.1.4 (12cR2) 환경에서 개발되는 JMS Client는 IIOP Protocol을 사용하여, JMS Resource에 접근할 수 있다.</p>
+
+<p>그러나, 권장되는 것은 T3 Protocol 이다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/saclt/basics.html#GUID-9C190A32-C8FF-40AD-8186-33ADAD2E3CCC">Overview of Standalone Clients</a>에서 WebLogic Server와 독립적으로 사용하는 Standalone client의 전반적인 목차가 소개된다.</p>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/saclt/wlthint3client.html#GUID-D352B8F0-1B9D-43E8-A675-BBFE7E4DE1E9">Developing a WebLogic Thin T3 Client</a>에서 가장 권장되는 Model 인 Thin t3 client 을 소개하며,</p>
+
+<p>t3/t3s protocol을 사용하여 JMS 외에 여러 Resource에 접근하는 Standalone client를 개발할 수 있다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p>위 컨텐츠에 나와있음.</p>]]></content><author><name>DongHyun Kim</name></author><category term="WebLogic" /><category term="Middleware" /><category term="WebLogic" /><category term="JMS" /><category term="IIOP" /><category term="t3" /><category term="client" /><summary type="html"><![CDATA[1. Overview WebLogic 12.2.1.4 (12cR2) 환경에서 개발되는 JMS Client는 IIOP Protocol을 사용하여, JMS Resource에 접근할 수 있다.]]></summary></entry><entry><title type="html">[WebLogic/Servlet] weblogic.servlet.ServletServlet Class</title><link href="https://dhkim900331.github.io/weblogic/weblogic.servlet.ServletServlet" rel="alternate" type="text/html" title="[WebLogic/Servlet] weblogic.servlet.ServletServlet Class" /><published>2024-07-03T07:39:54+00:00</published><updated>2024-07-03T07:39:54+00:00</updated><id>https://dhkim900331.github.io/weblogic/weblogic.servlet.ServletServlet</id><content type="html" xml:base="https://dhkim900331.github.io/weblogic/weblogic.servlet.ServletServlet"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>weblogic.servlet.ServletServlet Class를 사용하면 잘못된 URL에도 정상 페이지가 호출 될 수 있다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p>weblogic.servlet.ServletServlet Class는 WebLogic 초기 버전에서 개발자의 Servlet 개발의 도움을 위해 제공되었다.</p>
+
+<p>WebLogic 14cR1 까지도 제공되는 Class 이며, 향후에는 포함되지 않도록 Deprecated 되었다.</p>
+<p style="height:20px;"></p>
+<p>다음과 같은 사용 예시.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;servlet&gt;</span>
+ <span class="nt">&lt;servlet-name&gt;</span>ServletServlet<span class="nt">&lt;/servlet-name&gt;</span>
+ <span class="nt">&lt;servlet-class&gt;</span>weblogic.servlet.ServletServlet<span class="nt">&lt;/servlet-class&gt;</span>
+<span class="nt">&lt;/servlet&gt;</span>
+
+<span class="nt">&lt;servlet-mapping&gt;</span> 
+ <span class="nt">&lt;servlet-name&gt;</span>ServletServlet<span class="nt">&lt;/servlet-name&gt;</span>
+ <span class="nt">&lt;url-pattern&gt;</span>/myservlet/*<span class="nt">&lt;/url-pattern&gt;</span>
+<span class="nt">&lt;/servlet-mapping&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>ServletServlet Class 내부에서는 <code class="language-plaintext highlighter-rouge">/myservlet/*</code> 호출에 대해서 Class 검색을 수행하는데,</p>
+
+<p>ClassNotFoundException 이 발생하는 경우에 대해서, dot(.)으로 하위 Class를 수행하도록 재귀호출 구조가 존재한다.</p>
+<p style="height:20px;"></p>
+<p>즉 <code class="language-plaintext highlighter-rouge">/myservlet/Hello.class.abc</code> 와 같은 요청의 경우 abc Class가 없어 CNFE 가 발생하면,</p>
+
+<p><code class="language-plaintext highlighter-rouge">/myservlet/Hello.class</code> 재귀호출하여 찾아내어 정상 페이지가 나타날 수 있다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p><a href="https://docs.oracle.com/middleware/11119/wls/WBAPP/configureservlet.htm#g163199">Table 4-1 url-patterns and Servlet Invocation</a></p>
+
+<p><strong>존재하지 않는 Servlet 을 호출해도 정상적인 페이지가 나타납니다. (Doc ID 3032777.1)</strong></p>]]></content><author><name>DongHyun Kim</name></author><category term="WebLogic" /><category term="Middleware" /><category term="WebLogic" /><category term="Servlet" /><summary type="html"><![CDATA[1. Overview weblogic.servlet.ServletServlet Class를 사용하면 잘못된 URL에도 정상 페이지가 호출 될 수 있다.]]></summary></entry><entry><title type="html">[WebTier/iPlanet] ECC Cipher Suite with iPlanet 7</title><link href="https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-iPlanet-7" rel="alternate" type="text/html" title="[WebTier/iPlanet] ECC Cipher Suite with iPlanet 7" /><published>2024-07-03T07:39:54+00:00</published><updated>2024-07-03T07:39:54+00:00</updated><id>https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-iPlanet-7</id><content type="html" xml:base="https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-iPlanet-7"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>iPlanet 7 에서 ECC(Elliptic-curve cryptography)를 지원한다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p><a href="https://docs.oracle.com/cd/E18958_01/doc.70/e18789.pdf">A.27.15 Elliptic Curve Cryptography Support</a> ECC를 지원하고 있음을 알 수 있다.</p>
+
+<p><a href="https://docs.oracle.com/cd/E19146-01/821-1827/gcfbv/index.html">ssl3-tls-ciphers</a> 에서 Cipher suites 목록을 확인한다.</p>
+<p style="height:20px;"></p>
+<p>특정 요구사항으로, X25519Kyber768 를 지원하는지에 대해서 논의한다면,</p>
+
+<p>X25519는 ECC 기반 알고리즘이지만, 위 목록에 포함되어 있지 않고,</p>
+
+<p>Kyber(Post-Quantum Cryptography) 또한 지원되지 않아 X25519Kyber768은 사용 불가하다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p>iPlanet 7.X 버전에서 ECC(Elliptic Curve Cryptography)를 지원합니까? (Doc ID 3031765.1)</p>]]></content><author><name>DongHyun Kim</name></author><category term="WebTier" /><category term="WebTier" /><category term="iPlanet" /><category term="ECC" /><category term="cipher" /><category term="suite" /><category term="ssl" /><category term="tls" /><summary type="html"><![CDATA[1. Overview iPlanet 7 에서 ECC(Elliptic-curve cryptography)를 지원한다.]]></summary></entry><entry><title type="html">[WebTier/OHS] ECC Cipher Suite with OHS 12cR2</title><link href="https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-OHS-12cR2" rel="alternate" type="text/html" title="[WebTier/OHS] ECC Cipher Suite with OHS 12cR2" /><published>2024-07-03T07:39:54+00:00</published><updated>2024-07-03T07:39:54+00:00</updated><id>https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-OHS-12cR2</id><content type="html" xml:base="https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-OHS-12cR2"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>Oracle HTTP Server 12.2.1.4 에서 ECC(Elliptic-curve cryptography)를 지원한다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/administer-ohs/ohs-module-directives.html#GUID-C76BCA2A-9C28-4D16-9758-9346FBCF7512__CIHCEDCG">Table H-1 SSLCipher Suite Tags</a> 에서 사용 가능한 Cipher suites 목록이 있다.</p>
+
+<p>ECDSA, ECDHE와 같이 ECC 기반 Cipher suite를 사용할 수 있다.</p>
+<p style="height:20px;"></p>
+<p>특정 요구사항으로, X25519Kyber768 를 지원하는지에 대해서 논의한다면,</p>
+
+<p>X25519는 ECC 기반 알고리즘이지만, 위 목록에 포함되어 있지 않고,</p>
+
+<p>Kyber(Post-Quantum Cryptography) 또한 지원되지 않아 X25519Kyber768은 사용 불가하다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p>Oracle HTTP Server 12cR2 버전에서 ECC(Elliptic Curve Cryptography)를 지원합니까? (Doc ID 3031719.1)</p>]]></content><author><name>DongHyun Kim</name></author><category term="WebTier" /><category term="WebTier" /><category term="OHS" /><category term="ECC" /><category term="cipher" /><category term="suite" /><category term="ssl" /><category term="tls" /><summary type="html"><![CDATA[1. Overview Oracle HTTP Server 12.2.1.4 에서 ECC(Elliptic-curve cryptography)를 지원한다.]]></summary></entry><entry><title type="html">[Coherence/Data Grid] How to install Coherence Data Grid 14c?</title><link href="https://dhkim900331.github.io/coherence/How-To-Install-Coherence-Data-Grid-14c" rel="alternate" type="text/html" title="[Coherence/Data Grid] How to install Coherence Data Grid 14c?" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/coherence/How-To-Install-Coherence-Data-Grid-14c</id><content type="html" xml:base="https://dhkim900331.github.io/coherence/How-To-Install-Coherence-Data-Grid-14c"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>Coherence Data grid 설치 및 기본적인 사용 방법을 설명한다.</p>
+
+<p style="height:20px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<h3 id="21-data-grid">2.1 Data Grid</h3>
+
+<p>기본적으로 Coherence Web 과 크게 다르지 않기 때문에, <a href="https://dhkim900331.github.io/coherence/How-to-install-Coherence-Web-14c">How-to-install-Coherence-Web-14c</a> 을 참고하여 설치한다.</p>
+<p style="height:20px;"></p>
+<p><a href="https://dhkim900331.github.io/coherence/How-to-install-Coherence-Web-14c#h-32-cache-configuration">3.2 Cache Configuration</a> 에서 추출하여 사용하는 *session-cache-config.xml 은 필요치 않고, 다음의 Data grid cache config 파일을 사용한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; grid-cache-config.xml
+&lt;?xml version="1.0"?&gt;
+
+&lt;cache-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns="http://xmlns.oracle.com/coherence/coherence-cache-config"
+   xsi:schemaLocation="http://xmlns.oracle.com/coherence/coherence-cache-config
+   coherence-cache-config.xsd"&gt;
+   &lt;caching-scheme-mapping&gt;
+      &lt;cache-mapping&gt;
+         &lt;cache-name&gt;*&lt;/cache-name&gt;
+         &lt;scheme-name&gt;distributed&lt;/scheme-name&gt;
+      &lt;/cache-mapping&gt;
+   &lt;/caching-scheme-mapping&gt;
+
+   &lt;caching-schemes&gt;
+      &lt;distributed-scheme&gt;
+         &lt;scheme-name&gt;distributed&lt;/scheme-name&gt;
+         &lt;backing-map-scheme&gt;
+            &lt;local-scheme/&gt;
+         &lt;/backing-map-scheme&gt;
+         &lt;autostart&gt;true&lt;/autostart&gt;
+      &lt;/distributed-scheme&gt;
+   &lt;/caching-schemes&gt;
+&lt;/cache-config&gt;
+</span><span class="no">EOF
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206//develop-applications/configuring-caches.html#GUID-5035C967-54E0-480E-8B57-B0EECF241C2D">autostart</a> : false 일 경우, Cache service 가 시작되지 않아 Coherence clustering 또한 시작되지 않는다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>Cache Server/Client(WLS 또는 CacheFactory 를 모두 포함하여) 는 다음의 환경변수를 사용한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.mode=prod"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.cacheconfig=grid-cache-config.xml"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.override=tangosol-coherence-</span><span class="k">${</span><span class="nv">DOMAIN_NAME</span><span class="k">}</span><span class="s2">.xml"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.session.localstorage=true"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.management.remote=true"</span>
+<span class="nb">export </span>COHERENCE_ARGS
+
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="s2">/lib"</span>
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="s2">/lib/coherence.jar"</span>
+<span class="nb">export </span>CLASSPATH
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>localstorage 는 상황에 맞게 변경한다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p><a href="https://dhkim900331.github.io/coherence/How-to-install-Coherence-Web-14c">How-to-install-Coherence-Web-14c</a>을 토대로 구성하되, <code class="language-plaintext highlighter-rouge">grid-cache-config.xml</code> 만 교체하여 사용하면 된다.</p>
+<p style="height:40px;"></p>
+<h3 id="22-cachefactory">2.2 CacheFactory</h3>
+
+<p>CacheFactory API를 사용하는 <code class="language-plaintext highlighter-rouge">${ORACLE_HOME}/bin/coherence.sh</code> 을 사용시에는 다음과 같이 한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="nv">COHERENCE_HOME</span><span class="o">=</span>/sw/coherence/14c/coherence
+<span class="nv">DOMAIN_HOME</span><span class="o">=</span>/sw/coherence/14c/domains/base_domain
+<span class="nv">DOMAIN_NAME</span><span class="o">=</span>base_domain
+<span class="nv">JAVA_HOME</span><span class="o">=</span>/sw/jdk/jdk1.8.0_381
+
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.mode=prod"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.cacheconfig=grid-cache-config.xml"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.override=tangosol-coherence-</span><span class="k">${</span><span class="nv">DOMAIN_NAME</span><span class="k">}</span><span class="s2">.xml"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.session.localstorage=false"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.management.remote=true"</span>
+<span class="nb">export </span>COHERENCE_ARGS
+
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="s2">/lib"</span>
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="s2">/lib/coherence.jar"</span>
+<span class="nb">export </span>CLASSPATH
+
+<span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"-server -showversion -Xms128m -Xmx128m -cp </span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2"> </span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2">"</span>
+<span class="nb">export </span>JAVA_OPTS
+
+<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin/java <span class="k">${</span><span class="nv">JAVA_OPTS</span><span class="k">}</span> com.tangosol.net.CacheFactory
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>CacheFactory Client는 Clustering에 가입하여 Cache를 조회하는데 사용하는 간단한 준비된 Application이다.</p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206//develop-applications/starting-and-stopping-cluster-members.html#GUID-ABB02255-7BDD-4E0E-A5B4-6A8E119BEB1F">Using the Legacy CacheFactory Client</a> 참고</p>
+<p style="height:40px;"></p>
+<h2 id="3-references">3. References</h2>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206/install/installing-oracle-coherence-java.html#GUID-453BF180-CBC5-4932-A947-1E1F4394F6C2">Running Coherence for the First Time</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/using-coherence-query-language.html#GUID-C0D082B1-FA62-4899-A043-4345156E6641">Using Coherence Query Language</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206//develop-applications/starting-and-stopping-cluster-members.html#GUID-ABB02255-7BDD-4E0E-A5B4-6A8E119BEB1F">Using the Legacy CacheFactory Client</a></p>]]></content><author><name>DongHyun Kim</name></author><category term="Coherence" /><category term="Coherence" /><category term="Data" /><category term="Grid" /><summary type="html"><![CDATA[1. Overview Coherence Data grid 설치 및 기본적인 사용 방법을 설명한다.]]></summary></entry><entry><title type="html">[JVM/Heap] How to calculate SurvivorRatio?</title><link href="https://dhkim900331.github.io/jvm/How-To-Calculate-SurvivorRatio" rel="alternate" type="text/html" title="[JVM/Heap] How to calculate SurvivorRatio?" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/jvm/How-To-Calculate-SurvivorRatio</id><content type="html" xml:base="https://dhkim900331.github.io/jvm/How-To-Calculate-SurvivorRatio"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>SurvivorRatio옵션값에 따른 계산 방식</p>
+<p style="height:40px;"></p>
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<p>Heap 은 New / Old 영역으로 구성 되어 있으며, New 영역은 다시 Eden 과 Survivor 로 구성 되어 있다.</p>
+
+<p>Survivor는 From 과 To 영역으로 구성 되어 있다.</p>
+<p style="height:20px;"></p>
+<p>JVM 옵션으로 Heap 전체 크기가 2GB, NewSize 768MB, SurvivorRatio 8 설정일 경우</p>
+
+<p>다음의 공식에 의해 계산한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre># SurvivorRatio 공식
+SurvivorRatio : 8
+NewSize = Eden : Survivor(From) : Survivor(To) -&gt; 8 : 1 : 1
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>SurvivorRatio는 Eden의 크기가 Survivor의 From과 To 개별에 보다 8배 크다는 것이다.</p>
+
+<p>Eden = NewSize(768) / 10 * 8</p>
+
+<p>Survivor(From) = NewSize(768) / 10 * 1</p>
+
+<p>Survivor(To) = NewSize(768) / 10 * 1</p>]]></content><author><name>DongHyun Kim</name></author><category term="JVM" /><category term="JVM" /><category term="Heap" /><category term="SurvivorRatio" /><summary type="html"><![CDATA[1. Overview SurvivorRatio옵션값에 따른 계산 방식 2. Descriptions]]></summary></entry><entry><title type="html">[SSL/Certificate] How to make a self-signed certificate?</title><link href="https://dhkim900331.github.io/ssl/How-to-make-a-self-signed-certificate" rel="alternate" type="text/html" title="[SSL/Certificate] How to make a self-signed certificate?" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/ssl/How-to-make-a-self-signed-certificate</id><content type="html" xml:base="https://dhkim900331.github.io/ssl/How-to-make-a-self-signed-certificate"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+
+<p>JAVA SSL 테스트를 위해 수없이 생성하는 self-signed certificate의 생성 방법에 대한 간략한 정리</p>
+
+<p>여기서는 JDK 1.8 기준에서 사용 가능한 RSA 와 ECDSA cipher suite를 가정한다.</p>
+<p style="height:40px;"></p>
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="c"># JAVA 환경변수</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/sw/jdk/jdk1.8.0_381/bin:<span class="k">${</span><span class="nv">PATH</span><span class="k">}</span>
+
+<span class="c"># 인증서 변수</span>
+<span class="nv">KEYSTOREPATH</span><span class="o">=</span>/tmp/ssl/keystore
+<span class="nv">KEYSTOREFILE</span><span class="o">=</span>keystore.jks
+<span class="nv">KEYPASS</span><span class="o">=</span>keypass
+<span class="nv">STOREPASS</span><span class="o">=</span>storepass
+
+<span class="c"># RSA 인증서 생성</span>
+keytool <span class="nt">-genkeypair</span> <span class="nt">-alias</span> key-RSA <span class="nt">-keyalg</span> RSA <span class="nt">-keysize</span> 2048 <span class="nt">-sigalg</span> SHA256withRSA <span class="nt">-keypass</span> <span class="k">${</span><span class="nv">KEYPASS</span><span class="k">}</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-validity</span> 365 <span class="nt">-dname</span> <span class="s2">"CN=CommonName, OU=OrgUnit, O=Org, L=City, ST=State, C=CountryCode"</span>
+keytool <span class="nt">-export</span> <span class="nt">-alias</span> key-RSA <span class="nt">-file</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/rsa_cert.cer <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-noprompt</span>
+keytool <span class="nt">-import</span> <span class="nt">-alias</span> key-RSA <span class="nt">-file</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/rsa_cert.cer <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/trust.jks <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-noprompt</span>
+
+<span class="c"># ECDSA 인증서 생성</span>
+keytool <span class="nt">-genkeypair</span> <span class="nt">-alias</span> key-EC <span class="nt">-keyalg</span> EC <span class="nt">-keysize</span> 256 <span class="nt">-sigalg</span> SHA256withECDSA <span class="nt">-keypass</span> <span class="k">${</span><span class="nv">KEYPASS</span><span class="k">}</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-validity</span> 365 <span class="nt">-dname</span> <span class="s2">"CN=CommonName, OU=OrgUnit, O=Org, L=City, ST=State, C=CountryCode"</span>
+keytool <span class="nt">-export</span> <span class="nt">-alias</span> key-EC <span class="nt">-file</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/ec_cert.cer <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-noprompt</span>
+keytool <span class="nt">-import</span> <span class="nt">-alias</span> key-EC <span class="nt">-file</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/ec_cert.cer <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/trust.jks <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-noprompt</span>
+
+<span class="c"># 필요시 PKCS12 형식으로 변환</span>
+keytool <span class="nt">-importkeystore</span> <span class="nt">-srckeystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-destkeystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span>.p12 <span class="nt">-deststoretype</span> PKCS12 <span class="nt">-srcstorepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-deststorepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span>
+
+<span class="c"># 인증서 파일 확인</span>
+keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span>
+keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span>.p12 <span class="nt">-storetype</span> PKCS12 <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>]]></content><author><name>DongHyun Kim</name></author><category term="SSL" /><category term="SSL" /><category term="Certificate" /><summary type="html"><![CDATA[1. Overview]]></summary></entry><entry><title type="html">[WebLogic] A config.xml under pending or original directory</title><link href="https://dhkim900331.github.io/weblogic/A-config-xml-under-pending-or-original" rel="alternate" type="text/html" title="[WebLogic] A config.xml under pending or original directory" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/weblogic/A-config-xml-under-pending-or-original</id><content type="html" xml:base="https://dhkim900331.github.io/weblogic/A-config-xml-under-pending-or-original"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>DOMAIN_HOME 아래 original/pending 디렉터리에 생성되는 config.xml 의 용도를 설명한다.</p>
+
+<p>추가로 config.xml의 archiving 도 간략 설명한다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<h3 id="21-originalconfigxml">2.1 original/config.xml</h3>
+
+<ul>
+  <li>original directory는 공식 메뉴얼에 소개되어 있지 않기 때문에 일련의 테스트를 통해 확인된다.</li>
+  <li>Admin console 에서 편집 모드를 활성화 하면 <code class="language-plaintext highlighter-rouge">DOMAIN_HOME/original/config.xml</code> 생성된다.</li>
+  <li>재차 편집 모드로 들어설 때마다, overwrite 한다.</li>
+  <li>AdminServer 재시작으로 기동이 완료되면 삭제된다.</li>
+  <li>해당 파일은, 공식 자료로 기술되어 있지 않지만 내부 로직에 의해 사용되는 임시 파일로 보여진다.</li>
+  <li>편집 모드가 활성화 되어 있는 상태에서 재시작을 하면, Console login 시점에 다시 생성된다.</li>
+</ul>
+<p style="height:40px;"></p>
+<h3 id="22-pendingconfigxml">2.2 pending/config.xml</h3>
+
+<ul>
+  <li>설정을 수정하면 반영 전에 생성되는 임시 파일이다.</li>
+  <li><code class="language-plaintext highlighter-rouge">2.1 original/config.xml</code> 마지막 설명에, 재시작 이후 Console login 시점에 다시 생성된다고 하였는데, <code class="language-plaintext highlighter-rouge">pending/config.xml</code>이 있다면 두 파일이 동기화 된다.</li>
+</ul>
+<p style="height:40px;"></p>
+<h4 id="23-configxml의-archiving">2.3 config.xml의 archiving</h4>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/domcf/config_files.html#GUID-43B51552-2AFB-4B17-A95E-D502B2C42EA0">Configuration File Archiving</a></p>]]></content><author><name>DongHyun Kim</name></author><category term="WebLogic" /><category term="Middleware" /><category term="WebLogic" /><category term="backup" /><category term="archive" /><category term="original" /><category term="pending" /><summary type="html"><![CDATA[1. Overview DOMAIN_HOME 아래 original/pending 디렉터리에 생성되는 config.xml 의 용도를 설명한다.]]></summary></entry><entry><title type="html">[WebLogic/SSL] Configuring Multiple Cipher Suite Certificates</title><link href="https://dhkim900331.github.io/weblogic/Configuring-Multiple-Cipher-Suite-Certificates" rel="alternate" type="text/html" title="[WebLogic/SSL] Configuring Multiple Cipher Suite Certificates" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/weblogic/Configuring-Multiple-Cipher-Suite-Certificates</id><content type="html" xml:base="https://dhkim900331.github.io/weblogic/Configuring-Multiple-Cipher-Suite-Certificates"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>WebLogic Server 14.1 (14cR1) 및 JDK 1.8 환경에서</p>
+
+<p>하나의 단일 HTTPS Port에 다양한 Cipher Suite Certificates 구성 방법을 살펴본다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p>결론적으로, WLS 에서는 단일 HTTPS Port에 단 하나의 Keystore Alias만 설정할 수 있기 때문에</p>
+
+<p>다양한 Cipher Suite의 Client와 Handshake 할 수 없다.</p>
+<p style="height:20px;"></p>
+<p>WLS 에서 SSL 구성 단계 과정 중, Keystore 에 있는 인증서 중 단 하나의 Alias만 Load 하도록 설정한다.</p>
+
+<p>이로 인해, 단일 HTTPS Port 별로 1개의 Certificate만 Load 되고,</p>
+
+<p>Load 된 Certificate 가 어떤 Cipher suite를 사용하는지에 따라 SSL Handshake 대상이 되는 Client가 정해진다.</p>
+<p style="height:20px;"></p>
+<p>JSSE(Java Secure Socket Extension) API로 구현하는 Java socket program 을 통해서는</p>
+
+<p>KeyManager package에서 여러 Keystore, Alias를 하나의 HTTPS Port에서 사용 가능하다.</p>
+<p style="height:20px;"></p>
+<p>위 두 내용을 직접 테스트를 통해 검증한다.</p>
+<p style="height:20px;"></p>
+<blockquote>
+  <p>WLS 또한 JSSE 를 구현하지만, 단일 Alias 선택이 가능한 점 때문에 차이가 발생한다.</p>
+</blockquote>
+<p style="height:40px;"></p>
+<h3 id="21-wls-에서-ssl-구성">2.1 WLS 에서 SSL 구성</h3>
+
+<h4 id="211-인증서-생성">2.1.1 인증서 생성</h4>
+
+<p><a href="https://dhkim900331.github.io/ssl/How-to-make-a-self-signed-certificate">How-to-make-a-self-signed-certificate</a> 을 참고하여 인증서를 생성한다.</p>
+
+<p>아래와 같이, keystore.jks 내에 RSA 및 ECDSA cipher suite 인증서 2개가 포함되어 있다.</p>
+
+<blockquote>
+  <p>(.p12 파일은 여러 인증서를 하나에 집약할 수 있는 PKCS12 표준 포맷이며, 권장되나 여기 포스트에서는 사용하지 않을 것이다.)</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>$ ls
+ec_cert.cer  keystore.jks  keystore.jks.p12  rsa_cert.cer  trust.jks
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:40px;"></p>
+<h4 id="212-생성한-jks를-wls-도메인에-등록">2.1.2 생성한 JKS를 WLS 도메인에 등록</h4>
+
+<ul>
+  <li>{Server} - Configuration
+    <ul>
+      <li>General - <strong>SSL Listen Port Enabled</strong> and <strong>SSL Listen Port</strong></li>
+      <li>Keystore : keystore.jks 와 trust.jks 를 등록한다.</li>
+      <li>SSL : Private Key Alias 는 1개만 등록이 가능하기 때문에, <strong>여기서 단일 HTTPS Port에 단 하나의 Certificate만 사용 가능한점이 확인 된다.</strong> 진행을 위해 keystore.jks 에 등록된 “key-rsa” 를 입력한다.</li>
+    </ul>
+  </li>
+</ul>
+<p style="height:40px;"></p>
+<h4 id="213-ssl-debugging-log">2.1.3 SSL Debugging Log</h4>
+
+<ul>
+  <li>{Server} - Logging - General 에서 Standard out 의 Log level을 Debug</li>
+  <li>{Server} - Debug 에서 weblogic.security.ssl 을 Enabled</li>
+</ul>
+<p style="height:20px;"></p>
+<p><code class="language-plaintext highlighter-rouge">nmap</code> 또는 <code class="language-plaintext highlighter-rouge">openssl</code> 등으로 SSL Handshake를 요청하면 WLS Debug log가 아래의 내용을 포함한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre># 일반적으로 기록되는 Logs
+&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;[Thread[weblogic.socket.ServerListenThread,5,Pooled Threads]]weblogic.security.SSL.jsseadapter: SSLCONTEXT: Expected SSLContext service protocol: TLS&gt;
+&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;[Thread[weblogic.socket.ServerListenThread,5,Pooled Threads]]weblogic.security.SSL.jsseadapter: SSLCONTEXT: Got SSLContext, protocol=TLS, provider=SunJSSE&gt;
+&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;Using TLSv1.2 as the default minimum TLS protocol.&gt;
+&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;supportedProtocolVersions=TLSv1.3,TLSv1.2,TLSv1.1,TLSv1,SSLv3,SSLv2Hello&gt;
+&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;given minimumProtocolVersion=TLSv1.2&gt;
+
+# JDK 수준.
+&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;[Thread[weblogic.socket.ServerListenThread,5,Pooled Threads]]weblogic.security.SSL.jsseadapter: SSLENGINE: SSLEngine.setEnabledCipherSuites(String[]): value=TLS_AES_256_GCM_SHA384,TLS_AES_128_GCM_SHA256,...,TLS_EMPTY_RENEGOTIATION_INFO_SCSV.&gt;
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>JDK 수준이라고 설명하는 log는 WLS 상위 JDK 에서 허용하는 Cipher suites 를 WLS 에서도 지원된다는 것을 보여준다.</p>
+
+<p><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/SunProviders.html#SunJSSEProvider">JDK 1.8 에서 지원하는 Cipher Suites 목록</a> 에서 WLS 자체적으로 취약점으로 제외한 것을 빼면 모두 언급되어 있다.</p>
+<p style="height:20px;"></p>
+<blockquote>
+  <p>참고로, nmap 과 openssl 은 Target Server에서 지원하는 Cipher Suites 를 조회하는데 유용한 도구임에 틀림 없지만, Third party tool 의 결과이므로 온전히 신뢰할 수 없다. 직접 WLS의 Debugging Log를 통해 어떤 Cipher Suites 가 지원되는지 확인하는 것이 올바르다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<blockquote>
+  <p>WLS 수준에서 지원되는 Cipher Suites 목록을 조정하려면 WLST를 이용해 수정할 수 있다.</p>
+
+  <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="nf">connect</span><span class="p">(</span><span class="sh">'</span><span class="s">username</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">password</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">ADM_URL</span><span class="sh">'</span><span class="p">)</span>
+<span class="nf">edit</span><span class="p">()</span>
+<span class="nf">startEdit</span><span class="p">()</span>
+
+<span class="c1"># AdminServer의 SSL 설정을 가져옴
+</span><span class="n">server</span> <span class="o">=</span> <span class="n">cmo</span><span class="p">.</span><span class="nf">lookupServer</span><span class="p">(</span><span class="sh">'</span><span class="s">{Server}</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">ssl</span> <span class="o">=</span> <span class="n">server</span><span class="p">.</span><span class="nf">getSSL</span><span class="p">()</span>
+
+<span class="c1"># 설정할 cipher suite 목록
+</span><span class="n">ciphers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sh">'</span><span class="s">TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</span><span class="sh">'</span>
+<span class="p">]</span>
+
+<span class="c1"># 설정 적용
+</span><span class="n">ssl</span><span class="p">.</span><span class="nf">setCiphersuites</span><span class="p">(</span><span class="n">ciphers</span><span class="p">)</span>
+
+<span class="c1"># 설정 저장 및 활성화
+</span><span class="nf">save</span><span class="p">()</span>
+<span class="nf">activate</span><span class="p">()</span>
+<span class="nf">disconnect</span><span class="p">()</span>
+<span class="nf">exit</span><span class="p">()</span>
+</pre></td></tr></tbody></table></code></pre></div>  </div>
+</blockquote>
+<p style="height:40px;"></p>
+<h4 id="214-cipher-suites-that-available">2.1.4 Cipher Suites That Available</h4>
+
+<p>다음의 Java code로 WLS 에서 지원가능한 Cipher Suites를 받아올 수 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+</pre></td><td class="rouge-code"><pre><span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; SSLClient.java
+import javax.net.ssl.*;
+import java.io.*;
+import java.net.Socket;
+import java.util.Arrays;
+
+public class SSLClient {
+    public static void main(String[] args) throws Exception {
+        String host = "{HOSTNAME}";
+        int port = {PORT};
+
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{
+            new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+            }
+        };
+
+        // Install the all-trusting trust manager
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+        // Create socket factory with the all-trusting manager
+        SSLSocketFactory factory = sslContext.getSocketFactory();
+        SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
+
+        socket.startHandshake();
+
+        System.out.println("Enabled Cipher Suites:");
+        for (String cipherSuite : socket.getEnabledCipherSuites()) {
+            System.out.println(cipherSuite);
+        }
+
+        System.out.println("Supported Cipher Suites:");
+        for (String cipherSuite : socket.getSupportedCipherSuites()) {
+            System.out.println(cipherSuite);
+        }
+
+        socket.close();
+    }
+}
+</span><span class="no">EOF
+</span>javac <span class="nt">-cp</span> <span class="nb">.</span> SSLClient.java
+java <span class="nt">-cp</span> <span class="nb">.</span> SSLClient
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>확인해보면, 결과는 <code class="language-plaintext highlighter-rouge">2.1.3 SSL Debugging Log</code> 와 같다.</p>
+
+<p>이 Cipher Suites 목록에는 RSA 및 ECDSA 등등 다양한 서명 알고리즘이 포함되어 있다.</p>
+<p style="height:40px;"></p>
+<h4 id="215-ssl-handshake-to-wls">2.1.5 SSL Handshake to WLS</h4>
+
+<p>앞서 우리는 RSA 및 ECDSA 서명 알고리즘을 사용한 두 개의 인증서를 하나의 Keystore file로 저장했다.</p>
+
+<p>물론 WLS 에서는 하나의 Private Key Alias 만을 허용하고, 이때문에 RSA 인증서만 Load 해둔 상태다.</p>
+<p style="height:20px;"></p>
+<p>이 상황에서, 아래 Java code를 이용하여 RSA 와 ECDSA 인증서를 사용하는 Client가 SSL Handshake를 시도해볼 수 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+</pre></td><td class="rouge-code"><pre><span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; SSLClient.java
+import javax.net.ssl.*;
+import java.io.*;
+import java.net.Socket;
+import java.util.Arrays;
+
+public class SSLClient {
+    public static void main(String[] args) throws Exception {
+        String host = "{HOSTNAME}";
+        int port = {PORT};
+
+        // Specify the desired cipher suite
+        String[] desiredCipherSuites = {
+          "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+          "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+          "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+          "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+          "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+        };
+
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = {
+            new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+            }
+        };
+
+        // Install the all-trusting trust manager
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+        // Create socket factory with the all-trusting manager
+        SSLSocketFactory factory = sslContext.getSocketFactory();
+
+        // Create the SSLSocket
+        SSLSocket socket = null;
+        for (String cipherSuite : desiredCipherSuites) {
+            try {
+                // Create a new socket with the desired cipher suite
+                socket = (SSLSocket) factory.createSocket(host, port);
+                socket.setEnabledCipherSuites(new String[]{cipherSuite});
+
+                // Start SSL/TLS handshake
+                socket.startHandshake();
+
+                // Get the enabled cipher suite negotiated during the handshake
+                String negotiatedCipherSuite = socket.getSession().getCipherSuite();
+
+                // Print negotiated cipher suite
+                System.out.println("Negotiated Cipher Suite:");
+                System.out.println(negotiatedCipherSuite);
+            } catch (Exception e) {
+                // If the handshake fails, try the next cipher suite
+                System.out.println("Failed to negotiate using cipher suite: " + cipherSuite);
+                e.printStackTrace();
+            } finally {
+                // Close the socket if it was created
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+}
+</span><span class="no">EOF
+</span>javac <span class="nt">-cp</span> <span class="nb">.</span> SSLClient.java
+java <span class="nt">-cp</span> <span class="nb">.</span> SSLClient
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>ECDSA 3개 Cipher suites를 사용할 시, Java code는 아래와 같이 exception이 발생했다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>Failed to negotiate using cipher suite: &lt;ECDSA cipher suite name&gt;
+javax.net.ssl.SSLHandshakeException: Received fatal alert: handshake_failure
+        at sun.security.ssl.Alert.createSSLException(Alert.java:131)
+        at sun.security.ssl.Alert.createSSLException(Alert.java:117)
+        at sun.security.ssl.TransportContext.fatal(TransportContext.java:364)
+        at sun.security.ssl.Alert$AlertConsumer.consume(Alert.java:293)
+        at sun.security.ssl.TransportContext.dispatch(TransportContext.java:203)
+        at sun.security.ssl.SSLTransport.decode(SSLTransport.java:155)
+        at sun.security.ssl.SSLSocketImpl.decode(SSLSocketImpl.java:1320)
+        at sun.security.ssl.SSLSocketImpl.readHandshakeRecord(SSLSocketImpl.java:1233)
+        at sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:417)
+        at sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:389)
+        at SSLClient.main(SSLClient.java:51)
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>동시에 WLS 에서도 exception이 발생했다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;[Thread[ExecuteThread: '2' for queue: 'weblogic.socket.Muxer',5,Thread Group for Queue: 'weblogic.socket.Muxer']]weblogic.security.SSL.jsseadapter: SSLENGINE: Exception occurred during SSLEngine.wrap(ByteBuffer,ByteBuffer).
+javax.net.ssl.SSLHandshakeException: no cipher suites in common
+        at sun.security.ssl.Alert.createSSLException(Alert.java:131)
+        at sun.security.ssl.Alert.createSSLException(Alert.java:117)
+        at sun.security.ssl.TransportContext.fatal(TransportContext.java:364)
+        at sun.security.ssl.TransportContext.fatal(TransportContext.java:320)
+        at sun.security.ssl.TransportContext.fatal(TransportContext.java:311)
+        at sun.security.ssl.ServerHello$T12ServerHelloProducer.chooseCipherSuite(ServerHello.java:460)
+        ...
+        
+&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;[Thread[ExecuteThread: '2' for queue: 'weblogic.socket.Muxer',5,Thread Group for Queue: 'weblogic.socket.Muxer']]weblogic.security.SSL.jsseadapter: SSLENGINE: SSLEngine.wrap(ByteBuffer,ByteBuffer) called: result=Status = CLOSED HandshakeStatus = NOT_HANDSHAKING
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>반면, RSA Handshake에는 아래처럼 정상 수행이 되었다. (WLS Log)</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;[Thread[ExecuteThread: '2' for queue: 'weblogic.socket.Muxer',5,Thread Group for Queue: 'weblogic.socket.Muxer']]weblogic.security.SSL.jsseadapter: SSLENGINE: negotiatedCipherSuite: &lt;RSA cipher suite name&gt;&gt;
+
+&lt;Debug&gt; &lt;SecuritySSL&gt; &lt;BEA-000000&gt; &lt;[Thread[ExecuteThread: '0' for queue: 'weblogic.socket.Muxer',5,Thread Group for Queue: 'weblogic.socket.Muxer']]weblogic.security.SSL.jsseadapter: SSLENGINE: SSLEngine.wrap(ByteBuffer,ByteBuffer) called: result=Status = OK HandshakeStatus = FINISHED
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>이로써, 다양한 Cipher suites를 사용하는 Client를 지원하기 위한 요구가 있지만 WLS에서 지원하지 않는 한계가 있다는 것을 검증하였다.</p>
+
+<p>WLS 만 구성한 시스템일 경우, 가장 광범위하게 사용되는 RSA 인증서를 사용하면 될 것이며,</p>
+
+<p>가장 권장 되는 케이스로는 앞단에 다양한 Cipher 를 지원하는 LB 또는 Web server를 두는 것이다.</p>
+<p style="height:40px;"></p>
+<h3 id="22-jsse-api-에서-ssl-구성">2.2 JSSE API 에서 SSL 구성</h3>
+
+<h4 id="221-인증서-생성">2.2.1 인증서 생성</h4>
+
+<p><code class="language-plaintext highlighter-rouge">2.1.1 인증서 생성</code>과 동일하다.</p>
+<p style="height:40px;"></p>
+<h4 id="222-start-ssl-server-socket">2.2.2 Start SSL Server Socket</h4>
+
+<p>다음의 Java code로 SSL Server를 생성한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+</pre></td><td class="rouge-code"><pre><span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; SSLServer.java
+import javax.net.ssl.*;
+import java.io.*;
+import java.security.*;
+import java.security.cert.CertificateException;
+
+public class SSLServer {
+    public static void main(String[] args) {
+        int port = &lt;HTTPS PORT&gt;;
+        
+        try {
+            // Load keystore
+            String keystorePath = "FULLPATH of keystore.jks";
+            char[] keystorePassword = "&lt;Keystore Password&gt;".toCharArray();
+            char[] keyPassword = "&lt;Key Password&gt;".toCharArray();
+            
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            FileInputStream inputStream = new FileInputStream(keystorePath);
+            keyStore.load(inputStream, keystorePassword);
+            
+            // Initialize key manager factory
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+            keyManagerFactory.init(keyStore, keyPassword);
+
+            // Initialize SSL context
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+
+            // Create SSL server socket factory
+            SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();
+
+            // Create SSL server socket
+            SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(port);
+
+            // Accept incoming connections
+            while (true) {
+                SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
+                SSLSession sslSession = sslSocket.getSession();
+                System.out.println("SSL handshake successful with:");
+                System.out.println("   Protocol: " + sslSession.getProtocol());
+                System.out.println("   Cipher suite: " + sslSession.getCipherSuite());
+                sslSocket.close();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+</span><span class="no">EOF
+</span>javac <span class="nt">-cp</span> <span class="nb">.</span> SSLServer.java
+java <span class="nt">-cp</span> <span class="nb">.</span> SSLServer
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:40px;"></p>
+<h4 id="223-ssl-handshake-to-java">2.2.3 SSL Handshake to Java</h4>
+
+<p><code class="language-plaintext highlighter-rouge">2.1.5 SSL Handshake to WLS</code> 의 Java code를 실행하여 Java SSL Server와 Handshake를 수행하면,</p>
+
+<p>다음과 같이 RSA 및 ECDSA 복합적인 Cipher Suites 를 모두 소화한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre>SSL handshake successful with:
+   Protocol: TLSv1.2
+   Cipher suite: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+   
+SSL handshake successful with:
+   Protocol: TLSv1.2
+   Cipher suite: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
+   
+SSL handshake successful with:
+   Protocol: TLSv1.2
+   Cipher suite: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+   
+SSL handshake successful with:
+   Protocol: TLSv1.2
+   Cipher suite: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+   
+SSL handshake successful with:
+   Protocol: TLSv1.2
+   Cipher suite: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>JSSE API(여기서는 <code class="language-plaintext highlighter-rouge">KeyManagerFactory</code> 사용) 으로 SSL Server Socket 를 구현하면 여러 Keystore 및 여러 Alias 를 Load 할 수 있기 때문에, 다양한 Cipher suite를 갖는 Client에 대한 제약이 없다.</p>]]></content><author><name>DongHyun Kim</name></author><category term="WebLogic" /><category term="Middleware" /><category term="WebLogic" /><category term="SSL" /><category term="TLS" /><category term="Keystore" /><category term="cipher" /><category term="suite" /><category term="JSSE" /><summary type="html"><![CDATA[1. Overview WebLogic Server 14.1 (14cR1) 및 JDK 1.8 환경에서]]></summary></entry><entry><title type="html">[WebLogic/JTA] JTA Timeout and EJB Timeout</title><link href="https://dhkim900331.github.io/weblogic/JTA-and-EJB-Timeout" rel="alternate" type="text/html" title="[WebLogic/JTA] JTA Timeout and EJB Timeout" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/weblogic/JTA-and-EJB-Timeout</id><content type="html" xml:base="https://dhkim900331.github.io/weblogic/JTA-and-EJB-Timeout"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>JTA Timeout과 EJB Timeout의 상관관계</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<h3 id="21-jta-timeout">2.1 JTA Timeout</h3>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wlmbr/mbeans/JTAMBean.html#TimeoutSeconds">JTA Timeout 의 설명</a></p>
+
+<blockquote>
+  <p>Specifies the maximum amount of time, in seconds,</p>
+
+  <p>an active transaction is allowed to be in the first phase of a two-phase commit transaction.</p>
+
+  <p>If the specified amount of time expires, the transaction is automatically rolled back.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>JTA는 2PC 를 지원하며, JTA Timeout은 전체 트랜잭션(2PC 까지의 모든 작업이 Commit 되는 것 또는 반대로 모든 변경 사항이 Rollback 되는 것) 중 작업 기간이 초과하지 않도록 보장한다.</p>
+<p style="height:40px;"></p>
+<h3 id="22-jta-timeout-과-ejb-timeout-설정간의-우선순위">2.2 JTA Timeout 과 EJB Timeout 설정간의 우선순위</h3>
+
+<p>EJB는 CMT나 BMT냐에 따라 다르며</p>
+
+<p>CMT일 경우 WebLogic domain에 설정하는 JTA Timeout(기본값 30초) 설정의 영향을 받으며</p>
+
+<p>BMT는 개발자가 JTA APIT를 사용하여 EJB Transaction 간에 Timeout을 직접 지시한다.</p>
+
+<p>둘 다 JTA API 영향을 받지만 CMT는 컨테이너(WLS)가 관리하는 Transaction 의미이므로,</p>
+
+<p>JTA Timeout 설정에 globally 하게 영향을 받는 다는 의미이다.</p>
+<p style="height:20px;"></p>
+<p><a href="https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wljta/jtaapi.html#GUID-F1E79DA6-7A95-4FB5-B341-839D7A2D30AE">JTA API Overview 참고</a></p>
+
+<blockquote>
+  <p>You use this interface as part of a Java client program or within an EJB as part of a bean-managed transaction.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p><a href="https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wljta/trxejb.html#GUID-357B74F6-6D08-45B3-B203-3EE0DEB00D46">10 Transactions in EJB Applications 참고</a></p>
+
+<blockquote>
+  <p>10 Transactions in EJB Applications</p>
+
+  <ul>
+    <li>The EJB specification allows for distributed transactions that span multiple resources (such as databases) and supports the two-phase commit protocol for both EJB CMP 2.1 and EJB CMP 1.1.</li>
+    <li>the transaction attribute specifies whether transactions are demarcated by the WebLogic Server EJB container (container-managed transactions) or by the EJB itself (bean-managed transactions).</li>
+    <li>
+      <p>he setting of the transaction-type element in the deployment descriptor determines whether an EJB is container-managed or bean-managed.</p>
+    </li>
+    <li>Setting Transaction Timeouts
+      <ul>
+        <li>Container-managed transactions: The Bean Provider configures the trans-timeout-seconds attribute in the weblogic-ejb-jar.xml deployment descriptor.</li>
+        <li>Bean-managed transactions: An application calls the UserTransaction.setTransactionTimeout method.</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+<p style="height:40px;"></p>
+<h2 id="3-references">3. References</h2>
+
+<p>위 컨텐츠에 직접 소개되어 있음.</p>]]></content><author><name>DongHyun Kim</name></author><category term="WebLogic" /><category term="Middleware" /><category term="WebLogic" /><category term="EJB" /><category term="Timeout" /><category term="JTA" /><summary type="html"><![CDATA[1. Overview JTA Timeout과 EJB Timeout의 상관관계]]></summary></entry></feed>
