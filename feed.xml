@@ -1,0 +1,880 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://dhkim900331.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://dhkim900331.github.io/" rel="alternate" type="text/html" /><updated>2024-10-08T07:49:35+00:00</updated><id>https://dhkim900331.github.io/feed.xml</id><title type="html">IT Blogger DongDong</title><subtitle>소프트웨어/솔루션/IT 엔지니어로 종사하며 얻는 모든 지식들을 공유하고자 블로그로 기록하고 있습니다. 제가 알고 있는 것을 공유하고 기록하는 행동을 통해, 많은 지식을 흡수하고 있습니다.</subtitle><author><name>DongHyun Kim</name></author><entry><title type="html">[Coherence] Creating and Deploying App with WebLogic</title><link href="https://dhkim900331.github.io/coherence/Creating-and-Deploying-App" rel="alternate" type="text/html" title="[Coherence] Creating and Deploying App with WebLogic" /><published>2024-10-08T07:44:22+00:00</published><updated>2024-10-08T07:44:22+00:00</updated><id>https://dhkim900331.github.io/coherence/Creating-and-Deploying-App</id><content type="html" xml:base="https://dhkim900331.github.io/coherence/Creating-and-Deploying-App"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>Coherence 14c 에서 App을 생성하고 배포하는 내용에 대해 설명한다.
+공식 문서만을 기준으로 정리하였으며, 설명하는 순서가 공식 문서의 목차 순서와 다를 수 있다.</p>
+<p style="height:20px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<h3 id="21-creating-first-app">2.1 Creating First App</h3>
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/building-your-first-coherence-application.html#GUID-B5575517-C6B7-46BF-9188-2E3903C7862A">Building Your First Coherence Application</a>에서 가장 심플한 Coherence App을 만들 수 있다.</p>
+<p style="height:20px;"></p>
+<h4 id="211-basic-coherence-standalone-application">2.1.1 Basic Coherence Standalone Application</h4>
+<p>해당 과정은 “2.1.2 Basic Coherence JavaEE Web Application”의 방법과 거의 동일하다.</p>
+<p style="height:20px;"></p>
+<h4 id="212-basic-coherence-javaee-web-application">2.1.2 Basic Coherence JavaEE Web Application</h4>
+<p>해당 과정은, JavaEE Module로 Container 등에 배포하는 것이고, WebLogic Server에는 권장되지 않는다고 설명한다.</p>
+
+<blockquote>
+  <p>“The instructions in this section are not specific to, or recommended for, WebLogic Server.”</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>이 Post의 Deploying… Sections 에서도 언급하겠지만, WebLogic Server에는 이미 Coherence가 Integrated 되어 있기 때문이다.</p>
+
+<p>그러나 그것을 제외하면, WAR/EAR 단위의 Coherence Application 배포는 가장 이상적인 구조이다.</p>
+
+<p>JVM의 Life cycle에 영향을 받지 않기도 하고, 즉시 변경사항을 Update 할 수 있기 때문이다.</p>
+<p style="height:20px;"></p>
+<h5 id="1-creating-war">(1) Creating WAR</h5>
+<p>WAR 단위의 Coherence App은 가장 많은 Resource를 사용하는 구조가 될 수 있다.</p>
+<p style="height:20px;"></p>
+<p>FirstWAR 의 구조</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>/sw/app/FirstWAR
+├── index.jsp
+└── WEB-INF
+    ├── classes
+    │          ├── example-config.xml
+    │          └── tangosol-coherence-override.xml
+    ├── weblogic.xml
+    └── web.xml
+
+2 directories, 5 files
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>Cache 서비스를 호출하는 index.jsp</p>
+
+<div class="language-jsp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;html&gt;</span>
+   <span class="nt">&lt;head&gt;</span>
+      <span class="nt">&lt;title&gt;</span>My First Coherence Cache<span class="nt">&lt;/title&gt;</span>
+   <span class="nt">&lt;/head&gt;</span>
+   <span class="nt">&lt;body&gt;</span>
+      <span class="nt">&lt;h1&gt;</span>
+               <span class="nt">&lt;%@ page </span><span class="na">language=</span><span class="s">"java"</span><span class="na">
+                        import=</span><span class="s">"com.tangosol.net.CoherenceSession,
+                                com.tangosol.net.NamedCache,
+                                com.tangosol.net.Session"</span>
+               <span class="nt">%&gt;</span>
+               <span class="nt">&lt;%</span>
+                  <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"k2"</span><span class="o">;</span>
+                  <span class="nc">String</span> <span class="n">value</span> <span class="o">=</span> <span class="s">"Hello World!"</span><span class="o">;</span>
+
+                  <span class="nc">Session</span> <span class="n">coh_session</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CoherenceSession</span><span class="o">();</span>
+                  <span class="nc">NamedCache</span> <span class="o">&lt;</span><span class="nc">Object</span><span class="o">,</span> <span class="nc">Object</span><span class="err">&gt;</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">coh_session</span><span class="o">.</span><span class="na">getCache</span><span class="o">(</span><span class="s">"hello-example"</span><span class="o">);</span>
+
+                  <span class="n">cache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+                  <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">((</span><span class="nc">String</span><span class="o">)</span><span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">));</span>
+                  <span class="n">coh_session</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+
+               <span class="nt">%&gt;</span>
+      <span class="nt">&lt;/h1&gt;</span>
+   <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>Cache 정의를 위한 example-config.xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+
+<span class="nt">&lt;cache-config</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+   <span class="na">xmlns=</span><span class="s">"http://xmlns.oracle.com/coherence/coherence-cache-config"</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">"http://xmlns.oracle.com/coherence/coherence-cache-config
+   coherence-cache-config.xsd"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;caching-scheme-mapping&gt;</span>
+      <span class="nt">&lt;cache-mapping&gt;</span>
+         <span class="nt">&lt;cache-name&gt;</span>hello-example<span class="nt">&lt;/cache-name&gt;</span>
+         <span class="nt">&lt;scheme-name&gt;</span>distributed<span class="nt">&lt;/scheme-name&gt;</span>
+      <span class="nt">&lt;/cache-mapping&gt;</span>
+   <span class="nt">&lt;/caching-scheme-mapping&gt;</span>
+
+   <span class="nt">&lt;caching-schemes&gt;</span>
+      <span class="nt">&lt;distributed-scheme&gt;</span>
+         <span class="nt">&lt;scheme-name&gt;</span>distributed<span class="nt">&lt;/scheme-name&gt;</span>
+         <span class="nt">&lt;service-name&gt;</span>DistributedCache<span class="nt">&lt;/service-name&gt;</span>
+         <span class="nt">&lt;local-storage</span> <span class="na">system-property=</span><span class="s">"coherence.session.localstorage"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/local-storage&gt;</span>
+         <span class="nt">&lt;backing-map-scheme&gt;</span>
+            <span class="nt">&lt;local-scheme/&gt;</span>
+         <span class="nt">&lt;/backing-map-scheme&gt;</span>
+         <span class="nt">&lt;autostart&gt;</span>true<span class="nt">&lt;/autostart&gt;</span>
+      <span class="nt">&lt;/distributed-scheme&gt;</span>
+   <span class="nt">&lt;/caching-schemes&gt;</span>
+<span class="nt">&lt;/cache-config&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>Coherence Cluster member 정의를 위한 tangosol-coherence-override.xml 에서는 아래가 필수로 포함되어야 한다.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre> ... skip ...
+   <span class="nt">&lt;configurable-cache-factory-config&gt;</span>
+      <span class="nt">&lt;init-params&gt;</span>
+         <span class="nt">&lt;init-param&gt;</span>
+            <span class="nt">&lt;param-type&gt;</span>java.lang.String<span class="nt">&lt;/param-type&gt;</span>
+            <span class="nt">&lt;param-value</span> <span class="na">system-property=</span><span class="s">"coherence.cacheconfig"</span><span class="nt">&gt;</span>
+               example-config.xml<span class="nt">&lt;/param-value&gt;</span>
+         <span class="nt">&lt;/init-param&gt;</span>
+      <span class="nt">&lt;/init-params&gt;</span>
+   <span class="nt">&lt;/configurable-cache-factory-config&gt;</span>
+<span class="nt">&lt;/coherence&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<blockquote>
+  <p>lib에 coherence-metrics.jar는 Server Starts with Info “com.tangosol.coherence.metrics.internal.DefaultMetricRegistry$Adapter not found” (Doc ID 2703637.1) 로 인해 넣은것이고,</p>
+
+  <p>coherence-mock.jar 또한 관련 Exception이 발생을 하기에 넣은 것이다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+
+<h5 id="2-creating-ear">(2) Creating EAR</h5>
+<p>EAR 단위의 Coherence App은 WAR 보다는 더 적은 Resource를 사용한다.</p>
+
+<p>EAR 단위의 ClassLoader에 Singleton으로 생성된 Coherence Cluster 1개가 생성되고, 하위 WAR가 모두 이 Cluster를 공유한다.</p>
+<p style="height:20px;"></p>
+<p>FirstEAR 의 구조</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>/sw/app/FirstEAR
+├── APP-INF
+│          └── classes
+│              ├── example-config.xml
+│              └── tangosol-coherence-override.xml
+├── FirstWAR.war
+└── META-INF
+    ├── application.xml
+    └── weblogic-application.xml
+
+3 directories, 5 files
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>EAR format으로 Coherence를 배포하기 위해서는,</p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wlprg/classloading.html#GUID-63E6C6F0-1F21-4281-AA0B-06330E2DBDC4">Packaging Shared Utility Classes</a>에서 설명처럼</p>
+
+<p>EAR 하위 WAR 들이 공통으로 사용할 Coherence Libraries/Resources를 APP-INF/lib 또는 classes 에 배치해야 한다.</p>
+<p style="height:20px;"></p>
+<p>그러므로, “(1) Creating WAR” 과 조금 배치가 다른 점이 있다.</p>
+
+<p>FirstWAR.war 에 있던 example-config.xml, tangosol-coherence-override.xml이 EAR의 상위 레벨로 포함되기 위해 APP-INF/classes 에 배치 된다.</p>
+
+<p>EAR에 포함된 FirstWAR.war는 “(1) Creating WAR” 에서 생성한 index.jsp만 유지하고 Coherence 관련된 항목은 모두 제거되었다.</p>
+
+<p>FirstWAR.war는 Coherence와 종속성이 전혀 없다.</p>
+<p style="height:20px;"></p>
+<p>즉, FirstWAR에 포함된 요소는 다음과 같다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>index.jsp
+WEB-INF/web.xml
+WEB-INF/weblogic.xml
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>META-INF/application.xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;application&gt;</span>
+   <span class="nt">&lt;display-name&gt;</span>FirstEAR<span class="nt">&lt;/display-name&gt;</span>
+   <span class="nt">&lt;module&gt;</span>
+      <span class="nt">&lt;web&gt;</span>
+         <span class="nt">&lt;web-uri&gt;</span>FirstWAR.war<span class="nt">&lt;/web-uri&gt;</span>
+         <span class="nt">&lt;context-root&gt;</span>/FirstWAR<span class="nt">&lt;/context-root&gt;</span>
+      <span class="nt">&lt;/web&gt;</span>
+   <span class="nt">&lt;/module&gt;</span>
+<span class="nt">&lt;/application&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>META-INF/weblogic-application.xml</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;weblogic-application</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+   <span class="na">xsi:schemaLocation=</span><span class="s">"http://xmlns.oracle.com/weblogic/weblogic-application
+   http://xmlns.oracle.com/weblogic/weblogic-application/1.6/
+   weblogic-application.xsd"</span>
+   <span class="na">xmlns=</span><span class="s">"http://xmlns.oracle.com/weblogic/weblogic-application"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/weblogic-application&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h5 id="3-creating-gar">(3) Creating GAR</h5>
+
+<p>GAR(Grid ARchive)는 Coherence 의 cache 구성 요소(pof, cache-config)를 포함할 수 있는 Application 형태다.</p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer/deploying-coherence-applications.html#GUID-2E9D8A7C-F2FC-42EC-845A-A8CD28F4CF4D">Packaging Coherence Applications for WebLogic Server</a>의 설명에서,</p>
+
+<p>Cache Config file을 포함하는 GAR을 만들고,</p>
+
+<p>Java EE Module인 EAR에 GAR을 포함하는 과정을 안내한다.</p>
+<p style="height:20px;"></p>
+<p>FirstGAR 의 구조 (아래에서 FirstGAR.gar로 Packaging하여 사용한다.)</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span>tree /sw/app/FirstGAR
+/sw/app/FirstGAR
+└── META-INF
+    ├── coherence-application.xml
+    └── example-config.xml
+
+1 directory, 2 files
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>coherence-application.xml 에서 현재 pof 는 구성하지 않으니 주석 처리 된다.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;coherence-application</span> <span class="na">xmlns=</span><span class="s">"http://xmnls.oracle.com/coherence/coherence-application"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;cache-configuration-ref&gt;</span>META-INF/example-config.xml<span class="nt">&lt;/cache-configuration-ref&gt;</span>
+   <span class="c">&lt;!--&lt;pof-configuration-ref&gt;META-INF/pof-config.xml&lt;/pof-configuration-ref&gt;--&gt;</span>
+<span class="nt">&lt;/coherence-application&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>FirstEARwithGAR 의 구조</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre>/sw/app/FirstEARwithGAR
+├── APP-INF
+│          └── classes
+│              └── tangosol-coherence-override.xml
+├── FirstGAR.gar
+├── FirstWAR.war
+└── META-INF
+    ├── application.xml
+    └── weblogic-application.xml
+
+3 directories, 5 files
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>“(2) Creating EAR” 과 조금 배치가 다른 점이 있다.</p>
+
+<p>APP-INF/classes/example-config.xml이 FirstGAR.gar에 포함된 것이고,</p>
+
+<p>GAR에서 example-config.xml을 Loading하므로 tangosol-coherence-override.xml의 하단 부분은 주석/삭제 된다.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre> ... skip ...
+<span class="c">&lt;!--
+   &lt;configurable-cache-factory-config&gt;
+      &lt;init-params&gt;
+         &lt;init-param&gt;
+            &lt;param-type&gt;java.lang.String&lt;/param-type&gt;
+            &lt;param-value system-property="coherence.cacheconfig"&gt;
+               example-config.xml&lt;/param-value&gt;
+         &lt;/init-param&gt;
+      &lt;/init-params&gt;
+   &lt;/configurable-cache-factory-config&gt;
+--&gt;</span>
+<span class="nt">&lt;/coherence&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<h3 id="22-deploying-first-app">2.2 Deploying First App</h3>
+
+<p>여기 Section에서는 Reminder 목적으로 수집된 여러 자료들을 나열하기 때문에,</p>
+
+<p>공식 문서상 안내하는 순서와 다를 수 있다.</p>
+<p style="height:20px;"></p>
+<p>“2.1 Creating First App” 에서는 WAR/EAR/GAR 형식으로 Coherence Application을 구성하는 방법을 설명했다.</p>
+
+<p>Applications을 Weblogic에 배포해보면, 특별히 Application에 Coherence 관련 JAR Libraries가 없음에도 문제 없이 진행된다.</p>
+
+<p>이는 <a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer/deploying-coherence-applications.html#GUID-69C5C7E2-1F70-47FD-A127-73679DE3ADC0">Overview of the WebLogic Server Coherence Integration</a>에서 설명하고 있다.</p>
+
+<p>이미 WebLogic에는 Coherence가 Integrated 되어 있기 때문에, 상위 ClassLoader에 Coherence Libraries가 Loading 된다.</p>
+<p style="height:20px;"></p>
+<p>설명 보충을 위해, 다음의 WebLogic Log의 일부분은 FirstEARwithGAR을 배포할 시</p>
+
+<p>WebLogic에 이미 포함되어 있는 Coherence Libraries/Resources등이 호출되는 것을 보여 준다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">/sw/weblogic/14c/coherence/lib/coherence.jar</code>가 그렇다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">tangosol-coherence-override.xml</code>는 App에서 읽어지고 있다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre>&lt;Info&gt; &lt;Deployer&gt; &lt;BEA-149059&gt; &lt;Module FirstGAR.gar of application FirstEARwithGAR is transitioning from STATE_NEW to STATE_PREPARED on server M1.&gt;
+&lt;Info&gt; (thread=[STANDBY] ExecuteThread: '1' for queue: 'weblogic.kernel.Default (self-tuning)', member=n/a): Loaded operational configuration from "jar:file:/sw/weblogic/14c/coherence/lib/coherence.jar!/tangosol-coherence.xml"
+&lt;Info&gt; (thread=[STANDBY] ExecuteThread: '1' for queue: 'weblogic.kernel.Default (self-tuning)', member=n/a): Loaded operational overrides from "jar:file:/sw/weblogic/14c/coherence/lib/coherence.jar!/tangosol-coherence-override-dev.xml"
+&lt;Info&gt; (thread=[STANDBY] ExecuteThread: '1' for queue: 'weblogic.kernel.Default (self-tuning)', member=n/a): Loaded operational overrides from "file:/sw/app/FirstEARwithGAR/APP-INF/classes/tangosol-coherence-override.xml"
+&lt;Info&gt; (thread=[STANDBY] ExecuteThread: '1' for queue: 'weblogic.kernel.Default (self-tuning)', member=n/a): Optional configuration override "cache-factory-config.xml" is not specified
+&lt;Info&gt; (thread=[STANDBY] ExecuteThread: '1' for queue: 'weblogic.kernel.Default (self-tuning)', member=n/a): Optional configuration override "cache-factory-builder-config.xml" is not specified
+&lt;Info&gt; (thread=[STANDBY] ExecuteThread: '1' for queue: 'weblogic.kernel.Default (self-tuning)', member=n/a): Optional configuration override "/custom-mbeans.xml" is not specified
+
+Oracle Coherence Version 14.1.1.0.0 Build 77467
+ Grid Edition: Development mode
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+... skip ...
+
+&lt;Info&gt; (thread=DistributedCache:FirstGAR:DistributedCache, member=1): This member has become the distribution coordinator for MemberSet(Size=1
+  Member(Id=1, Timestamp=2024-09-09 15:43:42.143, Address=10.65.39.5:9000, MachineId=7674, Location=site:site_base_domain,rack:rack_base_domain,machine:machine_base_domain,process:process_base_domain,member:member_base_domain, Role=CoherenceServer)
+  )
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/administer/deploying-coherence-applications.html#GUID-6BE3BCEA-A053-4C0C-810B-A310BB4DF95A">Deploying Coherence Applications to an Application Server (Generic)</a>에서는,</p>
+
+<p>Coherence Cluster members는 ClassLoader scope를 가지고 있다.</p>
+
+<p>앞서 설명한 WAR/EAR/GAR의 구성을 되짚어 보면, 분리 구성하였기 때문에 각 App이 갖는 ClassLoader당 Coherence Member가 될 수 있었다.</p>
+<p style="height:20px;"></p>
+<p>이어서, Docs에서는 WebLogic Server Platform이 아닌 환경에서 사용될 수 있는 배포 옵션 두 가지를 설명하고 있다.</p>
+
+<ul>
+  <li>Application Server의 Library로 Coherence를 배포</li>
+  <li>또는 JavaEE Module로 Coherence를 배포</li>
+</ul>
+<p style="height:20px;"></p>
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/building-your-first-coherence-application.html#GUID-B5575517-C6B7-46BF-9188-2E3903C7862A">Building Your First Coherence Application</a>에서는</p>
+
+<p>WebLogic Server Platform이 아닌 Application Server에 배포할 목적으로 Coherence Application을 개발하는 지침을 안내하고 있다.</p>
+<p style="height:20px;"></p>
+<p>특히 <a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/building-your-first-coherence-application.html#GUID-4FBE9413-CDFA-433D-B852-3DC186E11B48">Task 4: Create and Run a Basic Coherence JavaEE Web Application</a>에서 다음처럼 Note가 포함된다.</p>
+
+<blockquote>
+  <p>“…The instructions in this section are not specific to, or recommended for, WebLogic Server.”</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>그럼에도, WebLogic Server에 배포되는 App에 Coherence Libraries를 포함하려면</p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wlcoh/deploy-wls-coherence.html#GUID-AF4DAB4F-DA19-4D02-A7A9-60BC1D68D33F">Loading Coherence From the Application Classloader</a>을 참고한다.</p>
+
+<p>권장되지 않는 사용 사례이다.</p>
+
+<p>이미 눈치 챘겠지만, 여러번 설명했듯이 Coherence가 Integrated 되어 있기 때문에 부모 ClassLoader에서 Coherence 관련 JARs, Resources를 호출하지 않기 위함이다.</p>
+<p style="height:20px;"></p>
+
+<h2 id="3-and-so-on">3. and so on</h2>
+<p>다룬 사례들은 모두 Coherence Named Cache인데,</p>
+
+<p>Coherence*Web HTTP Session 사용 사례를 다루기 위해서는 조금 더 연구가 필요해 보인다.</p>
+
+<p>WebLogic Server에 배포되는 App의 weblogic.xml 에는 “<persistent-store-type>coherence-web</persistent-store-type>” 선언을 통해 Integrated 된 Coherence를 가볍게 다루도록 되어 있다.</p>
+
+<p>이러한 방법을, WebLogic Server Platform이 아닌 다른 Application Server에 배포되는 Coherence Application에서는 어떻게 구현할 수 있는지에 대한 것 말이다.</p>
+<p style="height:20px;"></p>
+
+<h2 id="4-references">4. References</h2>
+<p>Run Multiple Coherence Clusters on the Same Machine (Doc ID 883078.1)
+Server Starts with Info “com.tangosol.coherence.metrics.internal.DefaultMetricRegistry$Adapter not found” (Doc ID 2703637.1)</p>]]></content><author><name>DongHyun Kim</name></author><category term="Coherence" /><category term="Coherence" /><category term="Creating" /><category term="Deploying" /><category term="App" /><category term="GAR" /><summary type="html"><![CDATA[1. Overview Coherence 14c 에서 App을 생성하고 배포하는 내용에 대해 설명한다. 공식 문서만을 기준으로 정리하였으며, 설명하는 순서가 공식 문서의 목차 순서와 다를 수 있다.]]></summary></entry><entry><title type="html">[Database/JDBC] Keepalive with JDBC</title><link href="https://dhkim900331.github.io/database/Keepalive-with-JDBC" rel="alternate" type="text/html" title="[Database/JDBC] Keepalive with JDBC" /><published>2024-10-08T07:44:22+00:00</published><updated>2024-10-08T07:44:22+00:00</updated><id>https://dhkim900331.github.io/database/Keepalive-with-JDBC</id><content type="html" xml:base="https://dhkim900331.github.io/database/Keepalive-with-JDBC"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>JDBC Thin Driver에서 Keepalive 구성 방법</p>
+<p style="height:20px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<h3 id="21-client-side">2.1 Client side</h3>
+<p>JDBC URL Description 절에 ENABLE=BROKEN 을 적용하면, Keepalive이 활성화 된다.
+Keepalive time 옵션값은 JDBC에 매개변수가 존재하지 않아, Linux OS의 <code class="language-plaintext highlighter-rouge">tcp_keepalive_time, tcp_keepalive_interval, tcp_keepalive_probes</code> 파라메터들에 의존한다.</p>
+
+<ul>
+  <li>tcp_keepalive_time : 기본값 7200초. 해당 시간 동안 Connection 을 유지한다.</li>
+  <li>tcp_keepalive_interval : Keepalive packet을 보내고 응답이 없으면, 해당 시간 이후 재시도 한다.</li>
+  <li>tcp_keepalive_probes : tcp_keepalive_interval 의 반복횟수</li>
+</ul>
+
+<h3 id="22-server-side">2.2 Server side</h3>
+<p><code class="language-plaintext highlighter-rouge">2.1 Client Side</code> 는 JDBC Driver 수준에서 설정하고, TCP/IP 수준에서 주고받는 Packet으로 Keepalive 가 유지된다.
+DB Server side에서는 sqlnet.ora 에 SQLNET.EXPIRE_TIME=1 속성값을 설정해, 1분마다 연결되어 있는 JDBC Connection의 health를 확인한다.</p>
+
+<p>Oracle NET DCD(Dead Connection Detection) 이라고 하며, TCP/IP 수준이 아닌 Oracle NET 세션 수준에서 이뤄지며,
+일반적으로 Client Side만으로도 충분하겠지만 양측에서 교차 검증하도록 하여 신뢰성을 높일 수 있다.</p>
+<p style="height:20px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p><a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/jjdbc/JDBC-troubleshooting.html#GUID-5ADA932F-B2BF-4E34-8995-435FD2EF1F92">E.1.5 Using JDBC with Firewalls and E.1.6 Frequent Abrupt Disconnection from Server</a></p>]]></content><author><name>DongHyun Kim</name></author><category term="DataBase" /><category term="Database" /><category term="JDBC" /><category term="Keepalive" /><category term="DCD" /><category term="Firewall" /><summary type="html"><![CDATA[1. Overview JDBC Thin Driver에서 Keepalive 구성 방법]]></summary></entry><entry><title type="html">[JDBC] How to use keepalive?</title><link href="https://dhkim900331.github.io/jdbc/How-to-use-keepalive" rel="alternate" type="text/html" title="[JDBC] How to use keepalive?" /><published>2024-10-08T07:44:22+00:00</published><updated>2024-10-08T07:44:22+00:00</updated><id>https://dhkim900331.github.io/jdbc/How-to-use-keepalive</id><content type="html" xml:base="https://dhkim900331.github.io/jdbc/How-to-use-keepalive"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>JDBC Connection에 Keepalive 사용 방법</p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p>Oracle JDBC Thin Driver에서 Keepalive 기능은
+Connect url description 에 ENABLE=BROKEN 으로 활성화 한다.</p>
+
+<p>또한, JDBC Driver에 keepalive 활성화 외에 다른 설정 가능한 매개변수는 직접적으로 없고
+OS level에 매개변수인 tcp_keepalive_time, tcp_keepalive_interval, tcp_keepalive_probes 를 사용한다.</p>
+
+<ul>
+  <li>tcp_keepalive_time : 해당 Seconds 동안 TCP 연결이 비활성 상태일 때, keepalive 패킷을 보낸다.</li>
+  <li>tcp_keepalive_interval : 첫 keepalive 패킷에 응답이 없으면, 해당 Seconds 간격마다 keepalive 패킷을 보낸다.</li>
+  <li>tcp_keepalive_probes : keepalive 패킷을 주기적으로 보낼 때, 최대 몇 회 반복할지를 정한다.</li>
+</ul>
+
+<p>즉, 다음과 같이 활성화 하면 OS TCP/IP 수준에서 Keepalive packet을 주고받는다.
+jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=<PORT>)(HOST=<HOST>))(CONNECT_DATA=(SERVICE_NAME=<SERVICE_NAME>)))</SERVICE_NAME></HOST></PORT></p>
+
+<h2 id="3-references">3. References</h2>
+<p><a href="https://docs.oracle.com/en/database/oracle/oracle-database/19/jjdbc/JDBC-troubleshooting.html#GUID-D4FEB9D7-D7F2-4AF8-858C-89E3988CD00D">JDBC Developer’s Guide : Troubleshooting</a>
+Oracle Net 12c: Changes to the Functionality of Dead Connection Detection (DCD) (Doc ID 1591874.1)</p>]]></content><author><name>DongHyun Kim</name></author><category term="JDBC" /><category term="JDBC" /><category term="keepalive" /><summary type="html"><![CDATA[1. Overview JDBC Connection에 Keepalive 사용 방법]]></summary></entry><entry><title type="html">[WebLogic/JMS] A JMS Client using IIOP</title><link href="https://dhkim900331.github.io/weblogic/A-JMS-Client-Using-IIOP" rel="alternate" type="text/html" title="[WebLogic/JMS] A JMS Client using IIOP" /><published>2024-07-03T07:39:54+00:00</published><updated>2024-07-03T07:39:54+00:00</updated><id>https://dhkim900331.github.io/weblogic/A-JMS-Client-Using-IIOP</id><content type="html" xml:base="https://dhkim900331.github.io/weblogic/A-JMS-Client-Using-IIOP"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>WebLogic 12.2.1.4 (12cR2) 환경에서 개발되는 JMS Client는 IIOP Protocol을 사용하여, JMS Resource에 접근할 수 있다.</p>
+
+<p>그러나, 권장되는 것은 T3 Protocol 이다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/saclt/basics.html#GUID-9C190A32-C8FF-40AD-8186-33ADAD2E3CCC">Overview of Standalone Clients</a>에서 WebLogic Server와 독립적으로 사용하는 Standalone client의 전반적인 목차가 소개된다.</p>
+
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/saclt/wlthint3client.html#GUID-D352B8F0-1B9D-43E8-A675-BBFE7E4DE1E9">Developing a WebLogic Thin T3 Client</a>에서 가장 권장되는 Model 인 Thin t3 client 을 소개하며,</p>
+
+<p>t3/t3s protocol을 사용하여 JMS 외에 여러 Resource에 접근하는 Standalone client를 개발할 수 있다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p>위 컨텐츠에 나와있음.</p>]]></content><author><name>DongHyun Kim</name></author><category term="WebLogic" /><category term="Middleware" /><category term="WebLogic" /><category term="JMS" /><category term="IIOP" /><category term="t3" /><category term="client" /><summary type="html"><![CDATA[1. Overview WebLogic 12.2.1.4 (12cR2) 환경에서 개발되는 JMS Client는 IIOP Protocol을 사용하여, JMS Resource에 접근할 수 있다.]]></summary></entry><entry><title type="html">[WebLogic/Servlet] weblogic.servlet.ServletServlet Class</title><link href="https://dhkim900331.github.io/weblogic/weblogic.servlet.ServletServlet" rel="alternate" type="text/html" title="[WebLogic/Servlet] weblogic.servlet.ServletServlet Class" /><published>2024-07-03T07:39:54+00:00</published><updated>2024-07-03T07:39:54+00:00</updated><id>https://dhkim900331.github.io/weblogic/weblogic.servlet.ServletServlet</id><content type="html" xml:base="https://dhkim900331.github.io/weblogic/weblogic.servlet.ServletServlet"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>weblogic.servlet.ServletServlet Class를 사용하면 잘못된 URL에도 정상 페이지가 호출 될 수 있다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p>weblogic.servlet.ServletServlet Class는 WebLogic 초기 버전에서 개발자의 Servlet 개발의 도움을 위해 제공되었다.</p>
+
+<p>WebLogic 14cR1 까지도 제공되는 Class 이며, 향후에는 포함되지 않도록 Deprecated 되었다.</p>
+<p style="height:20px;"></p>
+<p>다음과 같은 사용 예시.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;servlet&gt;</span>
+ <span class="nt">&lt;servlet-name&gt;</span>ServletServlet<span class="nt">&lt;/servlet-name&gt;</span>
+ <span class="nt">&lt;servlet-class&gt;</span>weblogic.servlet.ServletServlet<span class="nt">&lt;/servlet-class&gt;</span>
+<span class="nt">&lt;/servlet&gt;</span>
+
+<span class="nt">&lt;servlet-mapping&gt;</span> 
+ <span class="nt">&lt;servlet-name&gt;</span>ServletServlet<span class="nt">&lt;/servlet-name&gt;</span>
+ <span class="nt">&lt;url-pattern&gt;</span>/myservlet/*<span class="nt">&lt;/url-pattern&gt;</span>
+<span class="nt">&lt;/servlet-mapping&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>ServletServlet Class 내부에서는 <code class="language-plaintext highlighter-rouge">/myservlet/*</code> 호출에 대해서 Class 검색을 수행하는데,</p>
+
+<p>ClassNotFoundException 이 발생하는 경우에 대해서, dot(.)으로 하위 Class를 수행하도록 재귀호출 구조가 존재한다.</p>
+<p style="height:20px;"></p>
+<p>즉 <code class="language-plaintext highlighter-rouge">/myservlet/Hello.class.abc</code> 와 같은 요청의 경우 abc Class가 없어 CNFE 가 발생하면,</p>
+
+<p><code class="language-plaintext highlighter-rouge">/myservlet/Hello.class</code> 재귀호출하여 찾아내어 정상 페이지가 나타날 수 있다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p><a href="https://docs.oracle.com/middleware/11119/wls/WBAPP/configureservlet.htm#g163199">Table 4-1 url-patterns and Servlet Invocation</a></p>
+
+<p><strong>존재하지 않는 Servlet 을 호출해도 정상적인 페이지가 나타납니다. (Doc ID 3032777.1)</strong></p>]]></content><author><name>DongHyun Kim</name></author><category term="WebLogic" /><category term="Middleware" /><category term="WebLogic" /><category term="Servlet" /><summary type="html"><![CDATA[1. Overview weblogic.servlet.ServletServlet Class를 사용하면 잘못된 URL에도 정상 페이지가 호출 될 수 있다.]]></summary></entry><entry><title type="html">[WebTier/iPlanet] ECC Cipher Suite with iPlanet 7</title><link href="https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-iPlanet-7" rel="alternate" type="text/html" title="[WebTier/iPlanet] ECC Cipher Suite with iPlanet 7" /><published>2024-07-03T07:39:54+00:00</published><updated>2024-07-03T07:39:54+00:00</updated><id>https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-iPlanet-7</id><content type="html" xml:base="https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-iPlanet-7"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>iPlanet 7 에서 ECC(Elliptic-curve cryptography)를 지원한다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p><a href="https://docs.oracle.com/cd/E18958_01/doc.70/e18789.pdf">A.27.15 Elliptic Curve Cryptography Support</a> ECC를 지원하고 있음을 알 수 있다.</p>
+
+<p><a href="https://docs.oracle.com/cd/E19146-01/821-1827/gcfbv/index.html">ssl3-tls-ciphers</a> 에서 Cipher suites 목록을 확인한다.</p>
+<p style="height:20px;"></p>
+<p>특정 요구사항으로, X25519Kyber768 를 지원하는지에 대해서 논의한다면,</p>
+
+<p>X25519는 ECC 기반 알고리즘이지만, 위 목록에 포함되어 있지 않고,</p>
+
+<p>Kyber(Post-Quantum Cryptography) 또한 지원되지 않아 X25519Kyber768은 사용 불가하다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p>iPlanet 7.X 버전에서 ECC(Elliptic Curve Cryptography)를 지원합니까? (Doc ID 3031765.1)</p>]]></content><author><name>DongHyun Kim</name></author><category term="WebTier" /><category term="WebTier" /><category term="iPlanet" /><category term="ECC" /><category term="cipher" /><category term="suite" /><category term="ssl" /><category term="tls" /><summary type="html"><![CDATA[1. Overview iPlanet 7 에서 ECC(Elliptic-curve cryptography)를 지원한다.]]></summary></entry><entry><title type="html">[WebTier/OHS] ECC Cipher Suite with OHS 12cR2</title><link href="https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-OHS-12cR2" rel="alternate" type="text/html" title="[WebTier/OHS] ECC Cipher Suite with OHS 12cR2" /><published>2024-07-03T07:39:54+00:00</published><updated>2024-07-03T07:39:54+00:00</updated><id>https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-OHS-12cR2</id><content type="html" xml:base="https://dhkim900331.github.io/webtier/ECC-Cipher-Suite-with-OHS-12cR2"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>Oracle HTTP Server 12.2.1.4 에서 ECC(Elliptic-curve cryptography)를 지원한다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<p><a href="https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/administer-ohs/ohs-module-directives.html#GUID-C76BCA2A-9C28-4D16-9758-9346FBCF7512__CIHCEDCG">Table H-1 SSLCipher Suite Tags</a> 에서 사용 가능한 Cipher suites 목록이 있다.</p>
+
+<p>ECDSA, ECDHE와 같이 ECC 기반 Cipher suite를 사용할 수 있다.</p>
+<p style="height:20px;"></p>
+<p>특정 요구사항으로, X25519Kyber768 를 지원하는지에 대해서 논의한다면,</p>
+
+<p>X25519는 ECC 기반 알고리즘이지만, 위 목록에 포함되어 있지 않고,</p>
+
+<p>Kyber(Post-Quantum Cryptography) 또한 지원되지 않아 X25519Kyber768은 사용 불가하다.</p>
+
+<p style="height:40px;"></p>
+
+<h2 id="3-references">3. References</h2>
+<p>Oracle HTTP Server 12cR2 버전에서 ECC(Elliptic Curve Cryptography)를 지원합니까? (Doc ID 3031719.1)</p>]]></content><author><name>DongHyun Kim</name></author><category term="WebTier" /><category term="WebTier" /><category term="OHS" /><category term="ECC" /><category term="cipher" /><category term="suite" /><category term="ssl" /><category term="tls" /><summary type="html"><![CDATA[1. Overview Oracle HTTP Server 12.2.1.4 에서 ECC(Elliptic-curve cryptography)를 지원한다.]]></summary></entry><entry><title type="html">[Coherence/Data Grid] How to install Coherence Data Grid 14c?</title><link href="https://dhkim900331.github.io/coherence/How-To-Install-Coherence-Data-Grid-14c" rel="alternate" type="text/html" title="[Coherence/Data Grid] How to install Coherence Data Grid 14c?" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/coherence/How-To-Install-Coherence-Data-Grid-14c</id><content type="html" xml:base="https://dhkim900331.github.io/coherence/How-To-Install-Coherence-Data-Grid-14c"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>Coherence Data grid 설치 및 기본적인 사용 방법을 설명한다.</p>
+
+<p style="height:20px;"></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+<h3 id="21-data-grid">2.1 Data Grid</h3>
+
+<p>기본적으로 Coherence Web 과 크게 다르지 않기 때문에, <a href="https://dhkim900331.github.io/coherence/How-to-install-Coherence-Web-14c">How-to-install-Coherence-Web-14c</a> 을 참고하여 설치한다.</p>
+<p style="height:20px;"></p>
+<p><a href="https://dhkim900331.github.io/coherence/How-to-install-Coherence-Web-14c#h-32-cache-configuration">3.2 Cache Configuration</a> 에서 추출하여 사용하는 *session-cache-config.xml 은 필요치 않고, 다음의 Data grid cache config 파일을 사용한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh"> &gt; grid-cache-config.xml
+&lt;?xml version="1.0"?&gt;
+
+&lt;cache-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns="http://xmlns.oracle.com/coherence/coherence-cache-config"
+   xsi:schemaLocation="http://xmlns.oracle.com/coherence/coherence-cache-config
+   coherence-cache-config.xsd"&gt;
+   &lt;caching-scheme-mapping&gt;
+      &lt;cache-mapping&gt;
+         &lt;cache-name&gt;*&lt;/cache-name&gt;
+         &lt;scheme-name&gt;distributed&lt;/scheme-name&gt;
+      &lt;/cache-mapping&gt;
+   &lt;/caching-scheme-mapping&gt;
+
+   &lt;caching-schemes&gt;
+      &lt;distributed-scheme&gt;
+         &lt;scheme-name&gt;distributed&lt;/scheme-name&gt;
+         &lt;backing-map-scheme&gt;
+            &lt;local-scheme/&gt;
+         &lt;/backing-map-scheme&gt;
+         &lt;autostart&gt;true&lt;/autostart&gt;
+      &lt;/distributed-scheme&gt;
+   &lt;/caching-schemes&gt;
+&lt;/cache-config&gt;
+</span><span class="no">EOF
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206//develop-applications/configuring-caches.html#GUID-5035C967-54E0-480E-8B57-B0EECF241C2D">autostart</a> : false 일 경우, Cache service 가 시작되지 않아 Coherence clustering 또한 시작되지 않는다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p>Cache Server/Client(WLS 또는 CacheFactory 를 모두 포함하여) 는 다음의 환경변수를 사용한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.mode=prod"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.cacheconfig=grid-cache-config.xml"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.override=tangosol-coherence-</span><span class="k">${</span><span class="nv">DOMAIN_NAME</span><span class="k">}</span><span class="s2">.xml"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.session.localstorage=true"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.management.remote=true"</span>
+<span class="nb">export </span>COHERENCE_ARGS
+
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="s2">/lib"</span>
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="s2">/lib/coherence.jar"</span>
+<span class="nb">export </span>CLASSPATH
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>localstorage 는 상황에 맞게 변경한다.</p>
+</blockquote>
+<p style="height:20px;"></p>
+<p><a href="https://dhkim900331.github.io/coherence/How-to-install-Coherence-Web-14c">How-to-install-Coherence-Web-14c</a>을 토대로 구성하되, <code class="language-plaintext highlighter-rouge">grid-cache-config.xml</code> 만 교체하여 사용하면 된다.</p>
+<p style="height:40px;"></p>
+<h3 id="22-cachefactory">2.2 CacheFactory</h3>
+
+<p>CacheFactory API를 사용하는 <code class="language-plaintext highlighter-rouge">${ORACLE_HOME}/bin/coherence.sh</code> 을 사용시에는 다음과 같이 한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="nv">COHERENCE_HOME</span><span class="o">=</span>/sw/coherence/14c/coherence
+<span class="nv">DOMAIN_HOME</span><span class="o">=</span>/sw/coherence/14c/domains/base_domain
+<span class="nv">DOMAIN_NAME</span><span class="o">=</span>base_domain
+<span class="nv">JAVA_HOME</span><span class="o">=</span>/sw/jdk/jdk1.8.0_381
+
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.mode=prod"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.cacheconfig=grid-cache-config.xml"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.override=tangosol-coherence-</span><span class="k">${</span><span class="nv">DOMAIN_NAME</span><span class="k">}</span><span class="s2">.xml"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.session.localstorage=false"</span>
+<span class="nv">COHERENCE_ARGS</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2"> -Dcoherence.management.remote=true"</span>
+<span class="nb">export </span>COHERENCE_ARGS
+
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="s2">/lib"</span>
+<span class="nv">CLASSPATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">DOMAIN_HOME</span><span class="k">}</span><span class="s2">/lib/coherence.jar"</span>
+<span class="nb">export </span>CLASSPATH
+
+<span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">"-server -showversion -Xms128m -Xmx128m -cp </span><span class="k">${</span><span class="nv">CLASSPATH</span><span class="k">}</span><span class="s2"> </span><span class="k">${</span><span class="nv">COHERENCE_ARGS</span><span class="k">}</span><span class="s2">"</span>
+<span class="nb">export </span>JAVA_OPTS
+
+<span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin/java <span class="k">${</span><span class="nv">JAVA_OPTS</span><span class="k">}</span> com.tangosol.net.CacheFactory
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>CacheFactory Client는 Clustering에 가입하여 Cache를 조회하는데 사용하는 간단한 준비된 Application이다.</p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206//develop-applications/starting-and-stopping-cluster-members.html#GUID-ABB02255-7BDD-4E0E-A5B4-6A8E119BEB1F">Using the Legacy CacheFactory Client</a> 참고</p>
+<p style="height:40px;"></p>
+<h2 id="3-references">3. References</h2>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206/install/installing-oracle-coherence-java.html#GUID-453BF180-CBC5-4932-A947-1E1F4394F6C2">Running Coherence for the First Time</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/using-coherence-query-language.html#GUID-C0D082B1-FA62-4899-A043-4345156E6641">Using Coherence Query Language</a></p>
+
+<p><a href="https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206//develop-applications/starting-and-stopping-cluster-members.html#GUID-ABB02255-7BDD-4E0E-A5B4-6A8E119BEB1F">Using the Legacy CacheFactory Client</a></p>]]></content><author><name>DongHyun Kim</name></author><category term="Coherence" /><category term="Coherence" /><category term="Data" /><category term="Grid" /><summary type="html"><![CDATA[1. Overview Coherence Data grid 설치 및 기본적인 사용 방법을 설명한다.]]></summary></entry><entry><title type="html">[JVM/Heap] How to calculate SurvivorRatio?</title><link href="https://dhkim900331.github.io/jvm/How-To-Calculate-SurvivorRatio" rel="alternate" type="text/html" title="[JVM/Heap] How to calculate SurvivorRatio?" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/jvm/How-To-Calculate-SurvivorRatio</id><content type="html" xml:base="https://dhkim900331.github.io/jvm/How-To-Calculate-SurvivorRatio"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+<p>SurvivorRatio옵션값에 따른 계산 방식</p>
+<p style="height:40px;"></p>
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<p>Heap 은 New / Old 영역으로 구성 되어 있으며, New 영역은 다시 Eden 과 Survivor 로 구성 되어 있다.</p>
+
+<p>Survivor는 From 과 To 영역으로 구성 되어 있다.</p>
+<p style="height:20px;"></p>
+<p>JVM 옵션으로 Heap 전체 크기가 2GB, NewSize 768MB, SurvivorRatio 8 설정일 경우</p>
+
+<p>다음의 공식에 의해 계산한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre># SurvivorRatio 공식
+SurvivorRatio : 8
+NewSize = Eden : Survivor(From) : Survivor(To) -&gt; 8 : 1 : 1
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p style="height:20px;"></p>
+<p>SurvivorRatio는 Eden의 크기가 Survivor의 From과 To 개별에 보다 8배 크다는 것이다.</p>
+
+<p>Eden = NewSize(768) / 10 * 8</p>
+
+<p>Survivor(From) = NewSize(768) / 10 * 1</p>
+
+<p>Survivor(To) = NewSize(768) / 10 * 1</p>]]></content><author><name>DongHyun Kim</name></author><category term="JVM" /><category term="JVM" /><category term="Heap" /><category term="SurvivorRatio" /><summary type="html"><![CDATA[1. Overview SurvivorRatio옵션값에 따른 계산 방식 2. Descriptions]]></summary></entry><entry><title type="html">[SSL/Certificate] How to make a self-signed certificate?</title><link href="https://dhkim900331.github.io/ssl/How-to-make-a-self-signed-certificate" rel="alternate" type="text/html" title="[SSL/Certificate] How to make a self-signed certificate?" /><published>2024-06-25T07:09:26+00:00</published><updated>2024-06-25T07:09:26+00:00</updated><id>https://dhkim900331.github.io/ssl/How-to-make-a-self-signed-certificate</id><content type="html" xml:base="https://dhkim900331.github.io/ssl/How-to-make-a-self-signed-certificate"><![CDATA[<h2 id="1-overview">1. Overview</h2>
+
+<p>JAVA SSL 테스트를 위해 수없이 생성하는 self-signed certificate의 생성 방법에 대한 간략한 정리</p>
+
+<p>여기서는 JDK 1.8 기준에서 사용 가능한 RSA 와 ECDSA cipher suite를 가정한다.</p>
+<p style="height:40px;"></p>
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="c"># JAVA 환경변수</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/sw/jdk/jdk1.8.0_381/bin:<span class="k">${</span><span class="nv">PATH</span><span class="k">}</span>
+
+<span class="c"># 인증서 변수</span>
+<span class="nv">KEYSTOREPATH</span><span class="o">=</span>/tmp/ssl/keystore
+<span class="nv">KEYSTOREFILE</span><span class="o">=</span>keystore.jks
+<span class="nv">KEYPASS</span><span class="o">=</span>keypass
+<span class="nv">STOREPASS</span><span class="o">=</span>storepass
+
+<span class="c"># RSA 인증서 생성</span>
+keytool <span class="nt">-genkeypair</span> <span class="nt">-alias</span> key-RSA <span class="nt">-keyalg</span> RSA <span class="nt">-keysize</span> 2048 <span class="nt">-sigalg</span> SHA256withRSA <span class="nt">-keypass</span> <span class="k">${</span><span class="nv">KEYPASS</span><span class="k">}</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-validity</span> 365 <span class="nt">-dname</span> <span class="s2">"CN=CommonName, OU=OrgUnit, O=Org, L=City, ST=State, C=CountryCode"</span>
+keytool <span class="nt">-export</span> <span class="nt">-alias</span> key-RSA <span class="nt">-file</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/rsa_cert.cer <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-noprompt</span>
+keytool <span class="nt">-import</span> <span class="nt">-alias</span> key-RSA <span class="nt">-file</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/rsa_cert.cer <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/trust.jks <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-noprompt</span>
+
+<span class="c"># ECDSA 인증서 생성</span>
+keytool <span class="nt">-genkeypair</span> <span class="nt">-alias</span> key-EC <span class="nt">-keyalg</span> EC <span class="nt">-keysize</span> 256 <span class="nt">-sigalg</span> SHA256withECDSA <span class="nt">-keypass</span> <span class="k">${</span><span class="nv">KEYPASS</span><span class="k">}</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-validity</span> 365 <span class="nt">-dname</span> <span class="s2">"CN=CommonName, OU=OrgUnit, O=Org, L=City, ST=State, C=CountryCode"</span>
+keytool <span class="nt">-export</span> <span class="nt">-alias</span> key-EC <span class="nt">-file</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/ec_cert.cer <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-noprompt</span>
+keytool <span class="nt">-import</span> <span class="nt">-alias</span> key-EC <span class="nt">-file</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/ec_cert.cer <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/trust.jks <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-noprompt</span>
+
+<span class="c"># 필요시 PKCS12 형식으로 변환</span>
+keytool <span class="nt">-importkeystore</span> <span class="nt">-srckeystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-destkeystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span>.p12 <span class="nt">-deststoretype</span> PKCS12 <span class="nt">-srcstorepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span> <span class="nt">-deststorepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span>
+
+<span class="c"># 인증서 파일 확인</span>
+keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span> <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span>
+keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> <span class="k">${</span><span class="nv">KEYSTOREPATH</span><span class="k">}</span>/<span class="k">${</span><span class="nv">KEYSTOREFILE</span><span class="k">}</span>.p12 <span class="nt">-storetype</span> PKCS12 <span class="nt">-storepass</span> <span class="k">${</span><span class="nv">STOREPASS</span><span class="k">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>]]></content><author><name>DongHyun Kim</name></author><category term="SSL" /><category term="SSL" /><category term="Certificate" /><summary type="html"><![CDATA[1. Overview]]></summary></entry></feed>
