@@ -57,7 +57,7 @@ WORKER_ADMIN_PORT_2=10199
 # (1) ResponseFile
 # https://docs.oracle.com/middleware/1213/core/WTINS/standalone_domain.htm
 # https://docs.oracle.com/middleware/1212/core/OUIRF/response_file.htm#OUIRF390
-# https://dhkim900331.github.io/14-webserver/Install-OHS-12cR2
+# https://dhkim900331.github.io/webtier/All-In-One-Script-For-11gR1
 
 cat << EOF > ${BASEDIR}/rsp
 [ENGINE]

@@ -5,9 +5,9 @@ tags: [Database, ]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 {{ site.content.br_small }}
 
 
-# 2. 설명
+# 2. Descriptions
 {{ site.content.br_small }}

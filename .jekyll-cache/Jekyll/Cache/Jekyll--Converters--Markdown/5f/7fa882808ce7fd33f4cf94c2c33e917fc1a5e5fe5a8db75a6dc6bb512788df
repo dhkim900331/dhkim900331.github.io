@@ -1,11 +1,0 @@
-I"<h2 id="1-개요">1. 개요</h2>
-<p>WEB-INF(web.xml, weblogic.xml) 의 버전 업그레이드</p>
-<p style="height:40px;"></p>
-<h2 id="2-설명">2. 설명</h2>
-
-<p><code class="language-plaintext highlighter-rouge">java -cp "$WL_HOME/server/lib/weblogic.jar" weblogic.DDConverter -d /path/newConfig /applications/webapp</code></p>
-
-<blockquote>
-  <p>/applications/webapp/WEB-INF/web.xml과 weblogic.xml을 해당 웹로직 버전으로 업그레이드 하여, /path/newConfig 디렉토리에 저장한다.</p>
-</blockquote>
-:ET
