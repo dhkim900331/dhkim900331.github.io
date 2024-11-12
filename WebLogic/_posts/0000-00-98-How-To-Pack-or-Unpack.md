@@ -1,4 +1,5 @@
 ---
+date: 2024-11-12 15:33:47 +0900
 layout: post
 title: "[WebLogic] How To Pack or Unpack"
 tags: [Middleware, WebLogic, Pack, Unpack]

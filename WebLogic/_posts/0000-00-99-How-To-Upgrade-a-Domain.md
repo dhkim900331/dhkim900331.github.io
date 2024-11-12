@@ -1,4 +1,5 @@
 ---
+date: 2024-11-12 15:33:47 +0900
 layout: post
 title: "[WebLogic/WLST] How To Upgrade a Domain"
 tags: [Middleware, WebLogic, Upgrade, WLST]
@@ -8,7 +9,7 @@ typora-root-url: ..
 # 1. Overview
 WebLogic Domain Upgrade 방법 및 사례
 
-
+<br>
 
 # 2. Descriptions
 다음의 WLST Script를 통해 Debug log 수집과 더불어 Upgrade가 완료된다.
