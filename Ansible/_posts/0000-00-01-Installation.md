@@ -36,7 +36,7 @@ CentOS Stream release 8
 CentOS Stream release 8
 ```
 {{ site.content.br_small }}
-참고하여 CentOS 8에  설치 하였다.
+참고하여 CentOS 8에  설치 하였다..
 
 > _<https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-rhel-centos-or-fedora>_
 {{ site.content.br_small }}
