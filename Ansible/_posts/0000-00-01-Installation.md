@@ -40,7 +40,7 @@ CentOS Stream release 8
 
 > _<https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-rhel-centos-or-fedora>_
 {{ site.content.br_small }}
-Oralce Linux 7 VM은 다음 링크
+Oralce Linux 7 VM은 다음 링크.
 
 > _<https://blogs.oracle.com/scoter/ansible-with-oracle-linux-virtualization-manager-olvm>_
 {{ site.content.br_small }}
