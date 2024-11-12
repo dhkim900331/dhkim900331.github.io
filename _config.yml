@@ -211,5 +211,3 @@ plugins:
   - jekyll-spaceship
 
 permalink: /:categories/:title
-
-#
