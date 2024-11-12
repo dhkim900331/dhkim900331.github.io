@@ -25,7 +25,7 @@ DOMAIN_HOME 아래 original/pending 디렉터리에 생성되는 config.xml 의 
 * AdminServer 재시작으로 기동이 완료되면 삭제된다.
 * 해당 파일은, 공식 자료로 기술되어 있지 않지만 내부 로직에 의해 사용되는 임시 파일로 보여진다.
 * 편집 모드가 활성화 되어 있는 상태에서 재시작을 하면, Console login 시점에 다시 생성된다.
-
+ 
 
 <br><br>
 
