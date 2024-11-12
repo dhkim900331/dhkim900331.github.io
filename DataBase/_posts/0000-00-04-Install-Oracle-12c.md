@@ -5,15 +5,22 @@ title: "[Database/Oracle] Oracle 12c 설치"
 tags: [Database, Oracle, 12c, Installation]
 typora-root-url: ..
 ---
-{{ site.content.br_small }}
-# 1. 개요
+
+
+# 1. Overview
 
 Oracle DB가 필요하게 되어, 12c 설치를 하며 작성을 한다.
 
 정확도가 떨어지는 가이드의 문서가 될 수 있겠다.
-{{ site.content.br_small }}
+
+<br>
+
 [Install-Oracle-19c]({{ site.url }}/database/Install-Oracle-19c) 게시물을 참고하여 작성
-{{ site.content.br_big }}
+
+
+<br><br>
+
+
 # 2. 문서 작성 기준이 되는 테스트 환경
 
 ```shell
@@ -39,19 +46,29 @@ ORACLE_SUPPORT_PRODUCT_VERSION=8.8
 Red Hat Enterprise Linux release 8.8 (Ootpa)
 Oracle Linux Server release 8.8
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 # 3. 사전 준비사항
 
 ## 3.1 설치 파일
 
 OTN 에서 Oracle 12c 를 내려 받는다.
-{{ site.content.br_big }}
+
+
+<br><br>
+
+
 ## 3.2 Packages
 
 [4.7 About Operating System Requirements](https://docs.oracle.com/database/121/LADBI/pre_install.htm#LADBI7532) 참고
 
 > 본인은, 위 문서를 보았지만 기존 시스템에 WLS, OHS 등 다양한 설치를 진행해왔던 터라 실제 Yum 을 진행하지 않고 넘어갔다.
-{{ site.content.br_big }}
+
+<br>
+
+
 # 4. 소프트웨어 설치
 
 ## 4.1 기본 환경 구성
@@ -63,7 +80,8 @@ export ORACLE_HOME=${ORACLE_BASE}/product/12.1.0/dbhome_1
 export ORACLE_SID=ORCL
 export PATH=$ORACLE_HOME/bin:$PATH
 ```
-{{ site.content.br_small }}
+
+
 ```shell
 $ mkdir -p ${ORACLE_HOME} && \
 unzip V46095-01_1of2.zip -d ${ORACLE_HOME} && \
@@ -71,9 +89,13 @@ unzip V46095-01_2of2.zip -d ${ORACLE_HOME} && \
 mv ${ORACLE_HOME}/database/* ${ORACLE_HOME} && \
 rm -rf ${ORACLE_HOME}/database
 ```
-{{ site.content.br_small }}
+
+
 > OTN 에서 내려받은 Oracle 12c 는 1of.. 2of.. zip 으로 나뉘어져 있었다.
-{{ site.content.br_big }}
+
+<br>
+
+
 ## 4.2 응답 파일 작성
 
 기본적으로 `$ORACLE_HOME/response/db_install.rsp` 위치한 기본 응답파일을 사용하면 된다.
@@ -81,9 +103,13 @@ rm -rf ${ORACLE_HOME}/database
 아래는 위 파일을 내 환경에 맞게 변경하였고, 주석을 제거하였다.
 
 `oracle.install.responseFileVersion` 은 그대로 사용해야 되는것으로 보인다.
-{{ site.content.br_small }}
+
+<br>
+
 [3.1.2 What is a Response File?](https://docs.oracle.com/cd/E24628_01/em.121/e37799/ch3_response_file.htm#OUICG186) 참고
-{{ site.content.br_small }}
+
+<br>
+
 ```shell
 $ cp ${ORACLE_HOME}/response/db_install.rsp ${ORACLE_HOME}/response/db_install.rsp.back
 $ cat << EOF > ${ORACLE_HOME}/response/db_install.rsp
@@ -117,7 +143,10 @@ oracle.install.db.config.starterdb.password.DBSNMP=weblogic1
 oracle.install.db.config.starterdb.password.PDBADMIN=weblogic1
 EOF
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ## 4.3 설치 실행
 
 ```shell
@@ -136,7 +165,10 @@ Preparing to launch Oracle Universal Installer from /tmp/OraInstall2024-02-22_02
 You can find the log of this install session at:
  /sw/databases/oracle-12c/inventory/logs/installActions2024-02-22_02-46-50PM.log
 ```
-{{ site.content.br_small }}
+
+<br>
+
+
 ```shell
 $ tail -f /sw/databases/oracle-12c/inventory/logs/installActions2024-02-22_02-46-50PM.log
 INFO: Installation in progress
@@ -159,7 +191,10 @@ Successfully Setup Software.
 INFO: Exit Status is 0
 INFO: Shutdown Oracle Database 12c Release 1 Installer
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ## 4.4 설치 확인
 
 ```shell
@@ -173,7 +208,10 @@ Connected to an idle instance.
 
 SQL>
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 # 5. 리스너 구성 및 확인
 
 ```shell
@@ -193,7 +231,8 @@ Oracle Net Listener Startup:
 Listener configuration complete.
 Oracle Net Services configuration successful. The exit code is 0
 ```
-{{ site.content.br_small }}
+
+
 ```shell
 $ lsnrctl status
 
@@ -219,15 +258,22 @@ Listening Endpoints Summary...
 The listener supports no services
 The command completed successfully
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 # 6. 데이터베이스 생성 및 확인
 
 기본적으로 `${ORACLE_HOME}/assistants/dbca/dbca.rsp` 위치한 기본 응답파일을 사용하면 된다.
 
 아래는 위 파일을 내 환경에 맞게 변경하였고, 주석을 제거하였다.
-{{ site.content.br_small }}
+
+<br>
+
 [A.5 Running Database Configuration Assistant Using a Response File](https://docs.oracle.com/database/121/LADBI/app_nonint.htm#LADBI7843) 참고
-{{ site.content.br_small }}
+
+<br>
+
 ```shell
 $ cp ${ORACLE_HOME}/assistants/dbca/dbca.rsp ${ORACLE_HOME}/assistants/dbca/dbca.rsp.back
 $ cat << EOF > ${ORACLE_HOME}/assistants/dbca/dbca.rsp
@@ -253,7 +299,8 @@ EMCONFIGURATION = "NONE"
 DATABASETYPE = "MULTIPURPOSE"
 EOF
 ```
-{{ site.content.br_small }}
+
+
 ```shell
 $ dbca -silent -createDatabase -responsefile ${ORACLE_HOME}/assistants/dbca/dbca.rsp
 Copying database files
@@ -283,7 +330,8 @@ Look at the log file "/sw/databases/oracle-12c/cfgtoollogs/dbca/GLOBAL_ORCL/GLOB
 [weblogic@wls response]$
 
 ```
-{{ site.content.br_big }}
+
+
 ```shell
 $ sqlplus / as sysdba
 
@@ -330,9 +378,14 @@ Service "orclpdb" has 1 instance(s).
   Instance "ORCL", status READY, has 1 handler(s) for this service...
 The command completed successfully
 ```
-{{ site.content.br_big }}
+
+
 _**데이터베이스 삭제는 `dbca -silent -deleteDatabase -sourceDB ORCL`**_
-{{ site.content.br_big }}
+
+
+<br><br>
+
+
 # 7. DB & Listener Startup
 
 ```sh
@@ -349,7 +402,10 @@ Redo Buffers               30617600 bytes
 Database mounted.
 Database opened.
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 # 8. User 관리
 
 ```sh
@@ -360,7 +416,10 @@ sqlplus> GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW to weblogic;
 sqlplus> DROP USER  weblogic CASCADE;
 sqlplus> REVOKE <권한> FROM weblogic;
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 # 9. 기본 SQL Query
 
 ```sql

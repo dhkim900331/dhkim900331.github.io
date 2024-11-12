@@ -6,12 +6,16 @@ tags: [JVM, GC, Format]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 GC Log 기록에 관여하는 여러 Options가 있다.
 
 Options 변경에 따른 GC Log Format을 확인하여, 우리가 고객에게 어떤 GC Log options를 적용해줄 지 준비하자.
-{{ site.content.br_small }}
+
+
+<br><br>
+
+
 # 2. 테스트 환경
 
 * CentOS Linux release 7.9.2009
@@ -29,6 +33,8 @@ Options 변경에 따른 GC Log Format을 확인하여, 우리가 고객에게 �
     ```
 
 
+<br><br>
+
 
 # 3. 옵션별 테스트
 
@@ -42,7 +48,7 @@ Options 변경에 따른 GC Log Format을 확인하여, 우리가 고객에게 �
     JAVA_OPTS="$JAVA_OPTS -XX:-PrintTenuringDistribution"
 ```
 
-
+<br>
 
 최상단의 기동정보 Log를 제외하고, 첫 GC 부터 몇줄만을 scrab 한다.
 
@@ -61,6 +67,8 @@ gc가 발생한 jvm 상대적인 시간, heap의 확장, g1gc region 정보 등�
 ```
 
 
+<br><br>
+
 
 ## 3.2 PrintGCDetails
 
@@ -70,7 +78,7 @@ gc가 발생한 jvm 상대적인 시간, heap의 확장, g1gc region 정보 등�
     JAVA_OPTS="$JAVA_OPTS -XX:-PrintHeapAtGC"
     JAVA_OPTS="$JAVA_OPTS -XX:-PrintTenuringDistribution"
 
-
+<br>
 
 ```
  0.004: [G1Ergonomics (Heap Sizing) expand the heap, requested expansion amount: 1073741824 bytes, attempted expansion amount: 1073741824 bytes]
@@ -108,7 +116,7 @@ gc가 발생한 jvm 상대적인 시간, heap의 확장, g1gc region 정보 등�
  4.133: [G1Ergonomics (CSet Construction) add young regions to CSet, eden: 47 regions, survivors: 4 regions, predicted young region time: 983.74 ms]
 ```
 
-
+<br>
 
 ## 3.3 PrintGCDateStamps
 
@@ -121,7 +129,7 @@ JAVA_OPTS="$JAVA_OPTS -XX:-PrintTenuringDistribution"
 JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails"
 ```
 
-
+<br>
 
 해당 옵션은, `2022-08-19T16:45:21.960+0900` 와 같이 벽시계(절대값)을 표현한다.
 
@@ -138,6 +146,8 @@ JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails"
 ```
 
 
+<br><br>
+
 
 ## 3.4 PrintGCTimeStamps
 
@@ -149,7 +159,7 @@ JAVA_OPTS="$JAVA_OPTS -XX:-PrintHeapAtGC"
 JAVA_OPTS="$JAVA_OPTS -XX:-PrintTenuringDistribution"
 ```
 
-
+<br>
 
 `-verbose:gc` 옵션만 활성화 해도, 해당 옵션은 활성화 된다, 사실상 Off 불가능한 옵션으로 보인다.
 
@@ -164,6 +174,8 @@ JAVA_OPTS="$JAVA_OPTS -XX:-PrintTenuringDistribution"
 ```
 
 
+<br><br>
+
 
 ## 3.5 PrintHeapAtGC
 
@@ -175,7 +187,7 @@ JAVA_OPTS="$JAVA_OPTS -XX:+PrintHeapAtGC"
 JAVA_OPTS="$JAVA_OPTS -XX:-PrintTenuringDistribution"
 ```
 
-
+<br>
 
 GC 후 Heap 변화량을 나타낸다.
 
@@ -199,6 +211,8 @@ Heap after GC invocations=1 (full 0):
 ```
 
 
+<br><br>
+
 
 ## 3.6 PrintTenuringDistribution
 
@@ -210,7 +224,7 @@ JAVA_OPTS="$JAVA_OPTS -XX:-PrintHeapAtGC"
 JAVA_OPTS="$JAVA_OPTS -XX:+PrintTenuringDistribution"
 ```
 
-
+<br>
 
 New 영역(Eden/Survivor) 을 기본 Threshold 15번 교환 후 Old 영역으로 넘어오는데,
 
@@ -229,6 +243,8 @@ Desired survivor size 3670016 bytes, new threshold 15 (max 15)
 ```
 
 
+<br><br>
+
 
 ## 3.7 모든 옵션을 On
 
@@ -240,7 +256,7 @@ JAVA_OPTS="$JAVA_OPTS -XX:+PrintHeapAtGC"
 JAVA_OPTS="$JAVA_OPTS -XX:+PrintTenuringDistribution"
 ```
 
-
+<br>
 
 ```
  0.005: [G1Ergonomics (Heap Sizing) expand the heap, requested expansion amount: 1073741824 bytes, attempted expansion amount: 1073741824 bytes]
@@ -294,19 +310,21 @@ Heap after GC invocations=1 (full 0):
   class space    used 1214K, capacity 1315K, committed 1408K, reserved 1048576K
 ```
 
-
+<br>
 
 위 옵션은 과한 것 같다. 해당 옵션이 필요한 시점은 문제가 발생하여 디버깅을 해야 될 수준일 텐데
 
 일반적으로 그러한 시점은 없어 보인다.
 
 
+<br><br>
+
 
 ## 3.8 권장 옵션
 
 GC Log 시점은 벽시계 기준이 보기에 편리하고, Heap 상태만 알 수 있어도 반은 먹고(?) 들어간다고 생각된다.
 
-
+<br>
 
 ```
 JAVA_OPTS="$JAVA_OPTS -XX:-PrintGCDetails"
@@ -315,7 +333,8 @@ JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCTimeStamps"
 JAVA_OPTS="$JAVA_OPTS -XX:+PrintHeapAtGC"
 JAVA_OPTS="$JAVA_OPTS -XX:-PrintTenuringDistribution"
 ```
-{{ site.content.br_small }}
+
+
 또한 모든 옵션을 On 한 기준의 GC Log 파일에서, 상단 JVM Arguments 로그를 빼면 6초 동안 12 kbytes 가 기록되었다.
 
 (말도 안되지만..) 이 기준을 근거로, 1시간(3600초, 6초가 600번) 동안 7 mbytes 가 기록된다고 단순 계산된다.

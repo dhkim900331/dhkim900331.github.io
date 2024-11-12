@@ -9,14 +9,18 @@ typora-root-url: ..
 # 1. Overview
 Coherence Data grid 설치 및 기본적인 사용 방법을 설명한다.
 
-{{ site.content.br_small }}
 
+<br><br>
+
+<br>
 
 # 2. Descriptions
 ## 2.1 Data Grid
 
 기본적으로 Coherence Web 과 크게 다르지 않기 때문에, [How-to-install-Coherence-Web-14c]({{ site.url }}/coherence/How-to-install-Coherence-Web-14c) 을 참고하여 설치한다.
-{{ site.content.br_small }}
+
+<br>
+
 [3.2 Cache Configuration]({{ site.url }}/coherence/How-to-install-Coherence-Web-14c#h-32-cache-configuration) 에서 추출하여 사용하는 *session-cache-config.xml 은 필요치 않고, 다음의 Data grid cache config 파일을 사용한다.
 
 ```sh
@@ -48,7 +52,9 @@ EOF
 ```
 
 > [autostart](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206//develop-applications/configuring-caches.html#GUID-5035C967-54E0-480E-8B57-B0EECF241C2D) : false 일 경우, Cache service 가 시작되지 않아 Coherence clustering 또한 시작되지 않는다.
-{{ site.content.br_small }}
+
+<br>
+
 Cache Server/Client(WLS 또는 CacheFactory 를 모두 포함하여) 는 다음의 환경변수를 사용한다.
 
 ```sh
@@ -65,9 +71,12 @@ export CLASSPATH
 ```
 
 > localstorage 는 상황에 맞게 변경한다.
-{{ site.content.br_small }}
-[How-to-install-Coherence-Web-14c]({{ site.url }}/coherence/How-to-install-Coherence-Web-14c)을 토대로 구성하되, `grid-cache-config.xml` 만 교체하여 사용하면 된다.
-{{ site.content.br_big }}
+>
+> [How-to-install-Coherence-Web-14c]({{ site.url }}/coherence/How-to-install-Coherence-Web-14c)을 토대로 구성하되, `grid-cache-config.xml` 만 교체하여 사용하면 된다.
+
+<br>
+
+
 ## 2.2 CacheFactory
 
 CacheFactory API를 사용하는 `${ORACLE_HOME}/bin/coherence.sh` 을 사용시에는 다음과 같이 한다.
@@ -94,11 +103,16 @@ export JAVA_OPTS
 
 ${JAVA_HOME}/bin/java ${JAVA_OPTS} com.tangosol.net.CacheFactory
 ```
-{{ site.content.br_small }}
+
+
 CacheFactory Client는 Clustering에 가입하여 Cache를 조회하는데 사용하는 간단한 준비된 Application이다.
 
 [Using the Legacy CacheFactory Client](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206//develop-applications/starting-and-stopping-cluster-members.html#GUID-ABB02255-7BDD-4E0E-A5B4-6A8E119BEB1F) 참고
-{{ site.content.br_big }}
+
+
+<br><br>
+
+
 # 3. References
 
 [Running Coherence for the First Time](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.2206/install/installing-oracle-coherence-java.html#GUID-453BF180-CBC5-4932-A947-1E1F4394F6C2)

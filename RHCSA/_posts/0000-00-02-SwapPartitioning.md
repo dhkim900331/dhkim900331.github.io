@@ -6,18 +6,26 @@ tags: [Linux, RHCSA, Swap, GPT, MBR, parted]
 ---
 
 
-# 1. 개요
+# 1. Overview
 
 RHCSA 과정을 준비하면서, Swap파티셔닝을 정리한다.
 
 fdisk, gdisk 를 먼저 공부했지만, parted 가 너무 편리하여 parted로 정리한다.
-{{ site.content.br_small }}
+
+<br>
+
 _Swap이 아닌 일반 스토리지는 [여기를 클릭]({{ site.url }}/rhcsa/StoragePartitioning)_
-{{ site.content.br_small }}
+
+
+<br><br>
+
+
 # 2. Swap
 
 일반 스토리지 단계에서부터 이어서 진행한다.
-{{ site.content.br_small }}
+
+<br>
+
 ```bash
 # parted /dev/vdb print
 Model: Virtio Block Device (virtblk)
@@ -31,7 +39,10 @@ Number  Start   End     Size    File system  Name    Flags
 ```
 
 > 현재 장치 정보는 위와 같은 상태
-{{ site.content.br_small }}
+
+<br>
+
+
 ## 2.1 파티션 생성
 
 ```bash
@@ -43,7 +54,8 @@ Information: You may need to update /etc/fstab.
 ```
 
 > swap1, swap2 이름의 linux-swap 속성, 각각 512MB 크기를 2개 만들었다.
-{{ site.content.br_small }}
+
+
 ```bash
 # parted /dev/vdb print                                  
 Model: Virtio Block Device (virtblk)
@@ -59,13 +71,15 @@ Number  Start   End     Size    File system  Name    Flags
 ```
 
 > print로 확인
-{{ site.content.br_small }}
+
+
 ``` bash
 # udevadm settle 
 ```
 
 > 여기서는 헷갈리지 않고 해당 명령어를 잘 사용했다 ^^
-{{ site.content.br_small }}
+
+
 ```bash
 # mkswap /dev/vdb2
 Setting up swapspace version 1, size = 489 MiB (512749568 bytes)
@@ -79,7 +93,8 @@ no label, UUID=00eb7f1a-1082-49cb-bd04-8b1d8a48e7a4
 > 파일 시스템을 swap으로 잘 지정하였다.
 >
 > 여기도 UUID를 잘 어딘가에 기록해둔다.
-{{ site.content.br_small }}
+
+
 ```bash
 # parted /dev/vdb print
 Model: Virtio Block Device (virtblk)
@@ -95,7 +110,10 @@ Number  Start   End     Size    File system     Name    Flags
 ```
 
 > print로 swap 까지 잘 확인되는 모습
-{{ site.content.br_small }}
+
+<br>
+
+
 ## 2.2 Swap 활성화
 
 ```bash
@@ -106,7 +124,8 @@ UUID=00eb7f1a-1082-49cb-bd04-8b1d8a48e7a4 swap swap pri=10 0 0
 > /etc/fstab 으로 영구적으로 활성화 할 수 있게 설정한다.
 >
 > pri=10은 가장 먼저 사용하는 우선순위 개념.
-{{ site.content.br_small }}
+
+
 ```bash
 # swapon --show
 # swapon /dev/vdb2
@@ -124,7 +143,8 @@ NAME      TYPE      SIZE USED PRIO
 > _4-7: 정상적으로 활성화되었다고 확인된다._
 >
 > /dev/vdb3 의 PRIO는 -3을 나온다. reboot 해야 적용된다.
-{{ site.content.br_small }}
+
+
 ```bash
 # systemctl reboot
 ...

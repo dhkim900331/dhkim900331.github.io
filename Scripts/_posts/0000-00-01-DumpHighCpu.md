@@ -6,12 +6,15 @@ tags: [Scripts, Shell, Bash, Thread, Dump, CPU]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 * 커피 브랜드 프로모션 지원 중에, High CPU Thread 추적을 위해 만든 스크립트
-{{ site.content.br_small }}
 
-# 2. 설명
+
+<br><br>
+
+
+# 2. Descriptions
 
 ```bash
 #!/bin/bash

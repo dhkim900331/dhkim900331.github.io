@@ -11,7 +11,11 @@ typora-root-url: ..
 JAVA SSL 테스트를 위해 수없이 생성하는 self-signed certificate의 생성 방법에 대한 간략한 정리
 
 여기서는 JDK 1.8 기준에서 사용 가능한 RSA 와 ECDSA cipher suite를 가정한다.
-{{ site.content.br_big }}
+
+
+<br><br>
+
+
 # 2. Descriptions
 
 ```sh

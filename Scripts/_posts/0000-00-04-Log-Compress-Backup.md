@@ -6,10 +6,14 @@ tags: [Scripts, Shell, Bash, Tar, Rotation, Find]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 Log를 Tar 압축하여 분리/삭제 해본다.
-{{ site.content.br_small }}
+
+
+<br><br>
+
+
 # 2. 전체 Script
 
 전체 Script 부터 공개를 하면
@@ -48,16 +52,20 @@ do
 	/usr/bin/rm ${LINE}
 done
 ```
-{{ site.content.br_small }}
+
+
 `백업하려는 로그의 원본 위치` 는 원본 Log가 쌓이는 위치이다.
 
 여기서는 `LOG_HOME` 아래에 `nohup` 과 `gc` 디렉토리에 많은 Log가 쌓인다고 가정한다.
-{{ site.content.br_small }}
+
+<br>
+
 `압축해서 보관할 위치` 는 원본 Log가 압축되어 보관될 위치이다.
 
 여기에서는, 각각 대응하여 보관하기 위해 `BACK_LOG_HOME_...` 가 있다.
-{{ site.content.br_small }}
+
+<br>
+
 `수정 1일 지난 파일 검색 및 while loop로 압축` 아래에는 `while loop` Section이 두번 나타난다.
 
 각각 `nohup`과 `gc` 의 하루 지난 파일(`-mtime +1`)을 찾아 `tar` 와 `rm` 명령어를 실행한다.
-{{ site.content.br_small }}

@@ -11,7 +11,11 @@ typora-root-url: ..
 [How-to-install-ODI-12cR2]({{ site.url }}/odi/How-to-install-ODI-12cR2) 에서 작성한 내용을 토대로,
 
 All In One Script를 작성한다.
-{{ site.content.br_big }}
+
+
+<br><br>
+
+
 # 2. Descriptions
 
 ## 2.1 DB Scripts
@@ -28,8 +32,8 @@ OS_HOSTNAME=wls.local
 
 
 ## DB Env ##
-DB_INSTALL_PATH=/sw/databases/oracle-12c
-DB_INVENTORY_PATH=/sw/databases/inventories/12cR2
+DB_INSTALL_PATH=/sw/odi/databases/oracle-12c
+DB_INVENTORY_PATH=/sw/odi/databases/inventories/12cR2
 
 ORACLE_BASE=${DB_INSTALL_PATH}
 export ORACLE_HOME=${ORACLE_BASE}/product/12.1.0/db_home_1
@@ -39,7 +43,10 @@ ORACLE_DB_GROUP=weblogic
 ORACLE_DB_PASSWORD=weblogic1
 export PATH=${ORACLE_HOME}/bin:$PATH
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ### 2.1.2 Install DB
 
 ```sh
@@ -79,7 +86,10 @@ ${ORACLE_HOME}/runInstaller -silent -responseFile ${ORACLE_HOME}/response/db_ins
 sleep 10
 tail -f ${DB_INVENTORY_PATH}/logs/installActions$(date +%Y-%m-%d)*.log
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ### 2.1.3 Setup Listener & DB
 
 ```sh
@@ -114,7 +124,10 @@ EOF
 
 dbca -silent -createDatabase -responsefile ${ORACLE_HOME}/assistants/dbca/dbca.rsp
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ### 2.1.4 Tune DB as ODI requests
 
 ```sh
@@ -136,7 +149,51 @@ STARTUP;
 EXIT;
 EOF
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
+### 2.1.5 Start/Stop Scripts
+
+```sh
+## Startup Script
+cat << EOF > ${ORACLE_HOME}/bin/startDB.sh
+#!/bin/bash
+export ORACLE_HOME=${ORACLE_HOME}
+export ORACLE_SID=${ORACLE_SID}
+export ORACLE_ODI_PDBNAME=${ORACLE_ODI_PDBNAME}
+
+# starting listner
+\${ORACLE_HOME}/bin/lsnrctl start
+
+# starting db
+\${ORACLE_HOME}/bin/sqlplus / as sysdba << _EOF
+startup
+_EOF
+EOF
+
+## Shutdown Script
+cat << EOF > ${ORACLE_HOME}/bin/stopDB.sh
+#!/bin/bash
+export ORACLE_HOME=${ORACLE_HOME}
+export ORACLE_SID=${ORACLE_SID}
+export ORACLE_ODI_PDBNAME=${ORACLE_ODI_PDBNAME}
+
+# starting db
+\${ORACLE_HOME}/bin/sqlplus / as sysdba << _EOF
+shutdown immediate
+_EOF
+
+# starting listner
+\${ORACLE_HOME}/bin/lsnrctl stop
+EOF
+
+# Add permission
+chmod +x ${ORACLE_HOME}/bin/startDB.sh ${ORACLE_HOME}/bin/stopDB.sh
+```
+
+
+<br><br>
 
 
 ## 2.2 ODI Scripts
@@ -155,8 +212,8 @@ OS_HOSTNAME=wls.local
 ## ODI Env ##
 JAVA_HOME=/sw/jdk/jdk1.8.0_211
 ODI_INSTALL_FILE=${BASEDIR}/fmw_12.2.1.4.0_odi.jar
-ODI_INSTALL_PATH=/sw/odi/12cR2
-ODI_INVENTORY_PATH=/sw/odi/inventories/12cR2
+ODI_INSTALL_PATH=/sw/odi/odi/12cR2
+ODI_INVENTORY_PATH=/sw/odi/odi/inventories/12cR2
 ODI_INVENTORY_GROUP=${OS_GROUPNAME}
 
 ODI_DOMAIN_NAME=odi_domain
@@ -188,7 +245,14 @@ RCU_ENCRYPTION=AES-128
 RCU_JDBC_DRIVER=oracle.jdbc.OracleDriver
 RCU_JDBC_URL=jdbc:oracle:thin:@${RCU_DB_HOSTNAME}:${RCU_DB_PORT}/${RCU_DB_NAME}
 ```
-{{ site.content.br_big }}
+
+SUPERVISOR account : SUPERVISOR / ${RCU_SUPERVISOR_PASSWORD}
+SCHEMA account : ${RCU_SCHEMA_PREFIX}_ODI_REPO / ${RCU_SCHEMA_PASSWORD}
+
+
+<br><br>
+
+
 ### 2.2.2 Install ODI
 
 ```sh
@@ -210,7 +274,10 @@ EOF
 
 ${JAVA_HOME}/bin/java -jar ${ODI_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ### 2.2.3 Setup ODI Schema with RCU
 
 ```sh
@@ -231,7 +298,10 @@ ${ODI_INSTALL_PATH}/oracle_common/bin/rcu -silent -createRepository \
  -component ODI -component IAU -component IAU_APPEND -component IAU_VIEWER -component OPSS \
  < ${BASEDIR}/odi_rcu_parameters.txt
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ### 2.2.4 Setup Domain
 
 ```sh
@@ -291,7 +361,10 @@ EOF
 
 ${ODI_INSTALL_PATH}/oracle_common/common/bin/wlst.sh ${BASEDIR}/dom
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 # 3. References
 
 [How-to-install-ODI-12cR2]({{ site.url }}/odi/How-to-install-ODI-12cR2)

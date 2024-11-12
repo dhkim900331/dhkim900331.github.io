@@ -6,10 +6,14 @@ tags: [Scripts, Shell, Bash, Log, Grep]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 * 고객사 솔루션(대표적으로 WAS) 로그 점검 시, 일괄 점검할 수 있는 스크립트
-{{ site.content.br_small }}
+
+
+<br><br>
+
+
 # 2. Scripts
 
 ## 2.1 run.sh
@@ -43,7 +47,10 @@ find ${LOG_HOME} -type f -name "*out*" ! -name "*.gz" \
 > 매월 1일 ~ 다음달 01일 까지 쌓인 `*out*` 파일, 그리고 `.gz` 파일을 제외하고 검색한다.
 >
 > 여기서 `out` 은, 표준출력 로그를 의미하였지만, 공통된 단어를 넣어서 적절히 사용한다.
-{{ site.content.br_small }}
+
+<br>
+
+
 ## 2.2 grep.list
 
 ```
@@ -56,7 +63,10 @@ Too many open files
 > Exception은 WAS, App 모든 로그를 출력하므로 가장 많은 데이터가 나오는 지점이다.
 >
 > OutOfMemoryError, Dumping heap to는 관련된 하나의 메시지다.
-{{ site.content.br_small }}
+
+<br>
+
+
 ## 2.3 ignore.list
 
 ```

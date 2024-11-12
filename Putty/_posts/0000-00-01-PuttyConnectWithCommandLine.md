@@ -6,13 +6,17 @@ tags: [Putty, SSH, CLI]
 typora-root-url: ..
 ---
 
-# 1. 개요
+# 1. Overview
 
 포스트하기에도 매우 심플한 내용... 고객사 등등 여러 호스트에 접속을 시도할 때마다,
 
 Putty.exe 에 세션을 저장하는 등의 불편한 환경이라면 사용할만 하다.
-{{ site.content.br_small }}
-# 2. 설명
+
+
+<br><br>
+
+
+# 2. Descriptions
 
 ```shell
 putty.exe -ssh -P port user@host -pw pwd

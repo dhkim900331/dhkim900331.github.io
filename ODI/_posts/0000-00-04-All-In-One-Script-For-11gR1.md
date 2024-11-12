@@ -11,7 +11,10 @@ typora-root-url: ..
 [How-to-install-ODI-12cR2]({{ site.url }}/odi/How-to-install-ODI-12cR2) 에서 작성한 내용을 토대로,
 
 All In One Script를 작성한다.
-{{ site.content.br_big }}
+
+
+<br><br>
+
 
 # 2. Descriptions
 
@@ -23,7 +26,11 @@ All In One Script를 작성한다.
 - Oracle WebLogic Server 10.3.6.0.0 (1018.5 MB)
 - Oracle Data Integrator 11.1.1.9.0 (4.1 GB)
 - Oracle Fusion Middleware Repository Creation Utility 11.1.1.9.0 (561.4 MB)
-{{ site.content.br_small }}
+
+
+<br><br>
+
+
 ## 2.2 DB
 
 ### 2.2.1 Define Envs
@@ -79,7 +86,10 @@ export ORACLE_DB_GROUP=weblogic
 export ORACLE_DB_PASSWORD=weblogic1
 export PATH=${ORACLE_HOME}/bin:$PATH
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ### 2.2.2 Install DB
 
 ```sh
@@ -116,7 +126,10 @@ ${ORACLE_HOME}/runInstaller -silent -responseFile ${ORACLE_HOME}/response/db_ins
 sleep 10
 tail -f ${DB_INVENTORY_PATH}/logs/installActions$(date +%Y-%m-%d)*.log
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ### 2.2.3 Setup Listener & DB
 
 ```sh
@@ -151,7 +164,10 @@ EOF
 
 dbca -silent -createDatabase -responsefile ${ORACLE_HOME}/assistants/dbca/dbca.rsp
 ```
-{{ site.content.br_big }}
+
+<br>
+
+
 ### 2.2.4 Tune DB as ODI requests
 
 ```sh
@@ -173,7 +189,9 @@ STARTUP;
 EXIT;
 EOF
 ```
-{{ site.content.br_big }}
+
+<br>
+
 
 ## 2.3 RCU
 
@@ -203,7 +221,9 @@ RCU_JDBC_DRIVER=oracle.jdbc.OracleDriver
 RCU_JDBC_URL=jdbc:oracle:thin:@${RCU_DB_HOSTNAME}:${RCU_DB_PORT}/${RCU_DB_NAME}
 ```
 
-{{ site.content.br_big }}
+
+<br><br>
+
 
 ### 2.3.2 Setup ODI Schema with RCU
 
@@ -228,7 +248,9 @@ ${BASEDIR}/rcuHome/bin/rcu -silent -createRepository \
   -component OPSS < ${BASEDIR}/odi_rcu_parameters.txt
 ```
 
-{{ site.content.br_big }}
+
+<br><br>
+
 
 ## 2.4 WLS
 
@@ -275,7 +297,9 @@ EOF
 ${JAVA_HOME}/bin/java -jar ${WLS_INSTALL_FILE} -mode=silent -silent_xml=${BASEDIR}/silent.xml
 ```
 
-{{ site.content.br_big }}
+
+<br><br>
+
 
 ## 2.5 ODI
 
@@ -301,7 +325,9 @@ ODI_INSTALL_PATH=/sw/odi/11gR1
 ODI_INVENTORY_PATH=/sw/odi/inventories/11gR1
 ODI_INVENTORY_GROUP=${OS_GROUPNAME}
 ```
-{{ site.content.br_big }}
+
+<br>
+
 
 ### 2.5.2 Install ODI
 
@@ -337,14 +363,18 @@ EOF
 
 ${ODI_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc -jreLoc ${JAVA_HOME}
 ```
-{{ site.content.br_big }}
+
+<br>
+
 
 ### 2.5.3 ODI Studio
 
 ODI 11gR1 의 ODI Studio 가 Windows 10/11 에서 정상적으로 설치가 되지 않아, Windows에는 별도로 설치를 하지 않았다.
 
 TigerVNC 를 구축 및 활용하여, `${ODI_INSTALL_PATH}/oracledi/client/odi.sh` 실행하였다.
-{{ site.content.br_small }}
+
+<br>
+
 Studio 에서 Login을 위한 정보는 아래와 같다.
 
 ```sh
@@ -360,8 +390,9 @@ Driver List : Oracle JDBC Driver
 Driver Name : oracle.jdbc.OracleDriver
 Url : jdbc:oracle:thin:@${RCU_DB_HOSTNAME}:${RCU_DB_PORT}/${RCU_DB_NAME}
 ```
-{{ site.content.br_small }}
-{{ site.content.br_big }}
+
+<br>
+
 
 # 3. References
 
