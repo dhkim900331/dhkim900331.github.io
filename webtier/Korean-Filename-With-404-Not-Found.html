@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-translate-customization" content="108d9124921d80c3-80e20d618ff053c8-g4f02ec6f3dba68b7-c">
+  <meta name="google-site-verification" content="VA4--HCHFiwWLaC20E-0qHP0yy2WDEsRqLXx4zNzeiE">
+  <!-- Google Adsense -->
+  <meta name="google-adsense-account" content="ca-pub-6953284101209041">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6953284101209041" crossorigin="anonymous"></script><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>[WebTier/OHS] 한글 파일명 호출 시 HTTP 404 Not Found | IT Blogger DongDong</title>
+<meta name="generator" content="Jekyll v4.3.4">
+<meta property="og:title" content="[WebTier/OHS] 한글 파일명 호출 시 HTTP 404 Not Found">
+<meta name="author" content="DongHyun Kim">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="1. Overview">
+<meta property="og:description" content="1. Overview">
+<link rel="canonical" href="https://dhkim900331.github.io/webtier/Korean-Filename-With-404-Not-Found">
+<meta property="og:url" content="https://dhkim900331.github.io/webtier/Korean-Filename-With-404-Not-Found">
+<meta property="og:site_name" content="IT Blogger DongDong">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-04-25T04:48:55+00:00">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="[WebTier/OHS] 한글 파일명 호출 시 HTTP 404 Not Found">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"DongHyun Kim"},"dateModified":"2024-04-25T04:48:55+00:00","datePublished":"2024-04-25T04:48:55+00:00","description":"1. Overview","headline":"[WebTier/OHS] 한글 파일명 호출 시 HTTP 404 Not Found","mainEntityOfPage":{"@type":"WebPage","@id":"https://dhkim900331.github.io/webtier/Korean-Filename-With-404-Not-Found"},"url":"https://dhkim900331.github.io/webtier/Korean-Filename-With-404-Not-Found"}</script>
+<!-- End Jekyll SEO tag -->
+<!-- original favicon tag -->
+  <!--<link rel="shortcut icon" href="">-->
+  
+  <!-- tobe favicon tag (2022.02.22) -->
+  <!-- https://hongpage.kr/28 -->
+  <link rel="shortcut icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/favicons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/favicons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/favicons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/favicons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/favicons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/favicons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/favicons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/favicons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/favicons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/img/favicons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/img/favicons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-noto-sans@0.0.72/index.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <script src="/assets/js/main.js"></script><link type="application/atom+xml" rel="alternate" href="https://dhkim900331.github.io/feed.xml" title="IT Blogger DongDong">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+<!-- and it's easy to individually load additional languages -->
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/go.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Init highlight js
+document.addEventListener('DOMContentLoaded', function(event) {
+  var els = document.querySelectorAll('pre code')
+
+  function addLangData(block) {
+    var outer = block.parentElement.parentElement.parentElement;
+    var lang = block.getAttribute('data-lang');
+    for (var i = 0; i < outer.classList.length; i++) {
+      var cls = outer.classList[i];
+      if (cls.startsWith('language-')) {
+        lang = cls;
+        break;
+      }
+    }
+    if (!lang) {
+      cls = block.getAttribute('class');
+      lang = cls ? cls.replace('hljs ', '') : '';
+    }
+    if (lang.startsWith('language-')) {
+      lang = lang.substr(9);
+    }
+    block.setAttribute('class', 'hljs ' + lang);
+    block.parentNode.setAttribute('data-lang', lang);
+  }
+
+  function addBadge(block) {
+    var enabled = ('true' || 'true').toLowerCase();
+    if (enabled == 'true') {
+      var pre = block.parentElement;
+      pre.classList.add('badge');
+	  
+	  /* CUSTOM (2023-03-28) */  
+	  var codeBody = pre.querySelector(".rouge-code pre").innerText;
+	  pre.addEventListener('dblclick', () => {
+		var lang = block.parentNode.getAttribute('data-lang', lang);
+		window.navigator.clipboard.writeText(codeBody);
+		block.parentNode.setAttribute('data-lang', "copied");
+		setTimeout(() => {
+		  block.parentNode.setAttribute('data-lang', lang);
+		}, 2000);
+	  });
+    }
+  }
+  
+  function getPosition( element ) {
+	var rect = element.getBoundingClientRect();
+	return {
+		x: rect.left,
+		y: rect.top
+	};
+  }
+
+  function handle(block) {
+    addLangData(block);
+    addBadge(block)
+    hljs.highlightBlock(block);
+  }
+
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    handle(el);
+  }
+});
+</script>
+
+<style>
+  /* code language badge */
+  pre.badge::before {
+    content: attr(data-lang);
+    color: #fff;
+    background-color: #ff4e00;
+    padding: 0 .5em;
+    border-radius: 0 2px;
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 32px;
+    display: inline-block;
+    position: absolute;
+    right: 0;
+  }
+
+  /* fix wrong badge display for firefox browser */
+  code > table pre::before {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<header class="site-header " role="banner">
+
+  <div class="wrapper">
+    <div class="site-header-inner">
+<span class="site-brand"><a class="site-brand-inner" rel="author" href="/">
+  <img class="site-favicon" title="IT Blogger DongDong" src="" onerror="this.style.display='none'">
+  IT Blogger DongDong
+</a>
+</span><nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger">
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewbox="0 0 18 15" width="18px" height="15px">
+                <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+<a class="page-link" href="/about">ABOUT</a><a class="page-link" href="/archives">ARCHIVES</a><a class="page-link" href="/categories">CATEGORIES</a><a class="page-link" href="/">HOME</a><a class="page-link" href="/search">SEARCH</a><a class="page-link" href="/tags">TAGS</a>
+
+
+
+
+
+
+
+
+
+<span class="page-link">
+
+
+
+<div id="google_translate_element" style="display: none;">
+</div>
+
+<span class="ct-language">
+  <ul class="list-unstyled ct-language-dropdown">
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="en">
+          
+          <img src="https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png" title="English">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="fr">
+          
+          <img src="https://cdn.countryflags.com/thumbs/france/flag-400.png" title="French">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="zh-CN">
+          
+          <img src="https://cdn.countryflags.com/thumbs/china/flag-400.png" title="Chinese(Simple)">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ja">
+          
+          <img src="https://cdn.countryflags.com/thumbs/japan/flag-400.png" title="Japanese">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ko">
+          
+          <img src="https://cdn.countryflags.com/thumbs/south-korea/flag-400.png" title="Korean">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ru">
+          
+          <img src="https://cdn.countryflags.com/thumbs/russia/flag-400.png" title="Russian">
+          
+        </a>
+      </li>
+    
+  </ul>
+</span>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    autoDisplay: false,
+    layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+  }, 'google_translate_element');
+
+  // Links to cross-origin destinations are unsafe
+  var gll = document.getElementsByClassName('goog-logo-link')[0];
+  if (gll) {
+    gll.setAttribute('rel', 'noopener');
+  }
+
+  function restoreLang() {
+    var iframe = document.getElementsByClassName('goog-te-banner-frame')[0];
+    if (!iframe) return;
+
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    var restore_el = innerDoc.getElementsByTagName("button");
+
+    for (var i = 0; i < restore_el.length; i++) {
+      if (restore_el[i].id.indexOf("restore") >= 0) {
+        restore_el[i].click();
+        var close_el = innerDoc.getElementsByClassName("goog-close-link");
+        close_el[0].click();
+        return;
+      }
+    }
+  }
+
+  function triggerHtmlEvent(element, eventName) {
+    var event;
+    if (document.createEvent) {
+      event = document.createEvent('HTMLEvents');
+      event.initEvent(eventName, true, true);
+      element.dispatchEvent(event);
+    } else {
+      event = document.createEventObject();
+      event.eventType = eventName;
+      element.fireEvent('on' + event.eventType, event);
+    }
+  }
+
+  var googleCombo = document.querySelector("select.goog-te-combo");
+  var langSelect = document.querySelector('.ct-language');
+  langSelect.addEventListener('click', function(event) {
+    if (!event.target) {
+      return;
+    }
+
+    var selected = document.querySelector('.ct-language .ct-language-selected');
+    if (selected) {
+      selected.classList.remove('ct-language-selected');
+    }
+
+    var target = event.target;
+    while (target && target !== langSelect ) {
+      if (target.matches('.lang-select')) {
+        break;
+      }
+      target = target.parentElement;
+    }
+
+    if (target && target.matches('.lang-select')) {
+      var lang = target.getAttribute('data-lang');
+      if (googleCombo.value == lang) {
+        restoreLang();
+      } else {
+        target.parentElement.classList.add('ct-language-selected');
+        googleCombo.value = lang;
+        triggerHtmlEvent(googleCombo, 'change');
+      }
+    }
+
+    event.preventDefault();
+  });
+}
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</span>
+</div>
+        </nav>
+</div>
+  </div>
+</header>
+
+<script>
+  function initHeader() {
+    var lastScrollY = getScrollPos().y;
+    var documentElement = document.documentElement;
+
+    function storeScrollData() {
+      var y = getScrollPos().y;var scrollStatus = "";
+
+      if (y <= 0) {
+        scrollStatus = "top";
+      } else if ((window.innerHeight + y) >= document.body.offsetHeight) {
+        scrollStatus = "bottom";
+      } else {
+        var isScrollDown = (y - lastScrollY > 0) ? true : false;
+        scrollStatus = isScrollDown ? "down" : "up";
+      }
+
+      lastScrollY = y;
+      documentElement.setAttribute("data-scroll-status", scrollStatus);
+    }
+
+    window.addEventListener('scroll', function(e) {
+      storeScrollData();
+    });
+
+    storeScrollData();
+  }
+  document.addEventListener('DOMContentLoaded', initHeader);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  function hashLocate(hashValue) {
+    hashValue = hashValue.replace(/^.*#h-/, '');
+    hashValue = decodeURIComponent(hashValue);
+    var element = document.getElementById(hashValue);
+
+    if (!element) {
+      return;
+    }
+
+    var header = document.querySelector('header.site-header');
+    var headerRect = header.getBoundingClientRect();
+    var headerTop = Math.floor(headerRect.top);
+    var headerHeight = Math.floor(headerRect.height);
+    var scrollPos = getScrollPos();
+    var offsetY = element.offsetTop - (headerTop + headerHeight + 20);
+
+    if (offsetY == scrollPos.y) {
+      return;
+    }
+
+    if (headerTop == 0  && offsetY > scrollPos.y) {
+      offsetY += headerHeight + 2;
+    } else if (headerTop < 0  && offsetY < scrollPos.y) {
+      offsetY -= headerHeight - 2;
+    }
+
+    smoothScrollTo(offsetY);
+  }
+
+  // The first event occurred
+  window.addEventListener('load', function(event) {
+    if (window.location.hash) {
+      hashLocate(window.location.hash);
+    }
+  });
+
+  // The first event occurred
+  window.addEventListener('click', function(event) {
+    if (event.target.tagName.toLowerCase() == 'a') {
+      hashLocate(event.target.getAttribute('href'));
+    }
+  });
+</script>
+<div class="theme-toggle">
+  <input type="checkbox" id="theme-switch">
+  <label for="theme-switch">
+    <div class="toggle"></div>
+    <div class="names">
+      <p class="light">Light</p>
+      <p class="dark">Dark</p>
+    </div>
+  </label>
+</div>
+
+
+
+
+<script>
+  (function() {
+    var sw = document.getElementById('theme-switch');
+    var html = document.getElementsByTagName('html')[0];
+    var nightModeOption = ('auto' || 'auto').toLowerCase();
+    var storage = nightModeOption === 'manual'
+        ? localStorage
+        : sessionStorage;
+    var themeData = loadThemeData();
+
+    function saveThemeData(data) {
+      storage.setItem('theme', JSON.stringify(data));
+    }
+
+    function loadThemeData() {
+      var data = storage.getItem('theme');
+      try {
+        data = JSON.parse(data ? data : '');
+      } catch(e) {
+        data = { nightShift: undefined, autoToggleAt: 0 };
+        saveThemeData(data);
+      }
+      return data;
+    }
+
+    function handleThemeToggle(nightShift) {
+      themeData.nightShift = nightShift;
+      saveThemeData(themeData);
+      html.dataset.theme = nightShift ? 'dark' : 'light';
+      setTimeout(function() {
+        sw.checked = nightShift ? true : false;
+      }, 50);
+    }
+
+    function autoThemeToggle() {
+      // Next time point of theme toggle
+      var now = new Date();
+      var toggleAt = new Date();
+      var hours = now.getHours();
+      var nightShift = hours >= 19 || hours <=7;
+
+      if (nightShift) {
+        if (hours > 7) {
+          toggleAt.setDate(toggleAt.getDate() + 1);
+        }
+        toggleAt.setHours(7);
+      } else {
+        toggleAt.setHours(19);
+      }
+
+      toggleAt.setMinutes(0);
+      toggleAt.setSeconds(0);
+      toggleAt.setMilliseconds(0)
+
+      var delay = toggleAt.getTime() - now.getTime();
+
+      // auto toggle theme mode
+      setTimeout(function() {
+        handleThemeToggle(!nightShift);
+      }, delay);
+
+      return {
+        nightShift: nightShift,
+        toggleAt: toggleAt.getTime()
+      };
+    }
+
+    // Listen the theme toggle event
+    sw.addEventListener('change', function(event) {
+      handleThemeToggle(event.target.checked);
+    });
+
+    if (nightModeOption == 'auto') {
+      var data = autoThemeToggle();
+
+      // Toggle theme by local setting
+      if (data.toggleAt > themeData.autoToggleAt) {
+        themeData.autoToggleAt = data.toggleAt;
+        handleThemeToggle(data.nightShift);
+      } else {
+        handleThemeToggle(themeData.nightShift);
+      }
+    } else if (nightModeOption == 'manual') {
+      handleThemeToggle(themeData.nightShift);
+    } else {
+      var nightShift = themeData.nightShift;
+      if (nightShift === undefined) {
+        nightShift = nightModeOption === 'on';
+      }
+      handleThemeToggle(nightShift);
+    }
+  })();
+</script>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="framework">
+  <section class="main">
+
+     <div class="post">
+  <section>
+
+
+
+
+
+
+
+
+
+<header class="post-header">
+  <h1 class="post-title p-name" itemprop="name headline">[WebTier/OHS] 한글 파일명 호출 시 HTTP 404 Not Found</h1>
+  <h2 class="post-subtitle"></h2>
+
+  <p class="post-meta">
+    <time class="dt-published" datetime="2024-04-25T04:48:55+00:00" itemprop="datePublished"><i class="fa fa-calendar"></i> 2024-04-25
+    </time>
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <span class="post-reading-time left-vsplit"><i class="fa fa-clock-o"></i> About 3 mins</span>
+  </p>
+<div class="post-tags">
+<a class="post-tag" href="/tags.html#WebTier">#WebTier</a><a class="post-tag" href="/tags.html#OHS">#OHS</a><a class="post-tag" href="/tags.html#Apache">#Apache</a><a class="post-tag" href="/tags.html#Encoding">#Encoding</a>
+</div></header>
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="post-content e-content" itemprop="articleBody">
+
+      <h2 id="1-overview">1. Overview</h2>
+
+<p>OHS(Oracle HTTP Server) 에서 한글 파일명을 호출 시, HTTP 404 Not Found Error가 발생한다.</p>
+
+<p>FS(File System) 에는 한글 파일명이 올바르게 존재하고 있다.</p>
+
+<p>이러한 경우 어떻게 문제를 해결해야 하는지 살펴본다.</p>
+
+<p><br><br></p>
+
+<h2 id="2-descriptions">2. Descriptions</h2>
+
+<h3 id="21-problem-and-solution">2.1 Problem and Solution</h3>
+
+<p>FS 내에 다음과 같이 한글로 된 파일명이 존재한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-al</span> ./config/fmwconfig/components/OHS/instances/worker1/htdocs
+<span class="nt">-rw-rw-r--</span> 1 weblogic weblogic    0  4월 24 14:24 한글파일
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>Web Browser 에서 호출 시에 resource를 가져오지 못한다.</p>
+
+<p><img src="/../assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_1.png" alt="Korean-Filename-With-404-Not-Found_1"></p>
+
+<p><br></p>
+
+<p>OHS access_log는 다음과 같이 인코딩된 String으로 resource를 찾고 있다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td>
+<td class="rouge-code"><pre>[24/Apr/2024:14:29:18 +0900] 0065h3nkzGPEoIXElvtlWJ00Bn1v000003 "GET /%ED%95%9C%EA%B8%80%ED%8C%8C%EC%9D%BC HTTP/1.1" 404 210
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p><a href="https://r12a.github.io/app-conversion/">Unicode converter 와 같은 사이트</a> 에서 %ED%95%9C%EA%B8%80%ED%8C%8C%EC%9D%BC 을 변환해보면 ‘한글파일’ 로 우리가 Web Browser 에 요청한 resource를 제대로 찾고 있는 것은 분명하다.</p>
+
+<p><img src="/../assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_2.png" alt="Korean-Filename-With-404-Not-Found_2"></p>
+
+<p><br></p>
+
+<p>FS에 존재하는 ‘한글파일’ resource를 정확하게 Web Browser에 요청하였고,</p>
+
+<p>이 요청을 받는 Web Server의 Access Log에 기록된 UTF8 인코딩의 결과를 보면 문제가 없어 보인다.</p>
+
+<p><br></p>
+
+<p>조사 결과,</p>
+
+<p>해당 ‘한글파일’ <strong>파일명</strong>이 UTF8 이 아닌 eucKR 로 인코딩이 되어 있다는 점이다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$LANG</span>
+ko_KR.euckr
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>UTF-8 Locale을 설정하고, 다시 살펴보면 ‘한글파일’ 파일명이 전혀 다른 인코딩 결과물로 확인된다.</p>
+
+<p>(여기서 간과할 수 있는 부분은, SSH Client Program의 encoding 또한 UTF-8 에서 확인해야 한다.)</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ LANG</span><span class="o">=</span>en_US.UTF-8
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-al</span> ./config/fmwconfig/components/OHS/instances/worker1/htdocs
+<span class="nt">-rw-rw-r--</span> 1 weblogic weblogic    0 Apr 24 14:24 <span class="s1">''$'</span><span class="se">\3</span><span class="s1">07''畸'$'</span><span class="se">\3</span><span class="s1">33</span><span class="se">\3</span><span class="s1">06</span><span class="se">\3</span><span class="s1">04</span><span class="se">\3</span><span class="s1">00</span><span class="se">\3</span><span class="s1">17'</span>
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>Web Server는 UTF-8 로 resource를 찾지만,</p>
+
+<p>FS에는 eucKR 로 인코딩된 결과물만 있기 때문에, HTTP 404 Not Found가 발생한 것이다.</p>
+
+<p><br></p>
+
+<p>이를 해결 하기 위해서, 파일의 인코딩을 변경한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span>convmv <span class="nt">-f</span> euc-kr <span class="nt">-t</span> utf-8 <span class="nt">--notest</span> &lt;PATH&gt;/한글파일
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>그리고, 접속한 Client Program(putty 등)의 encoding 또한 euc-kr 을 utf-8 로 변환해주면,</p>
+
+<p>모든 것(SSH Client, OS Envs, File)이 UTF-8 인 환경에서 제대로된 파일을 확인할 수 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$LANG</span>
+en_US.UTF-8
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-al</span> ./config/fmwconfig/components/OHS/instances/worker1/htdocs/
+<span class="nt">-rw-rw-r--</span> 1 weblogic weblogic    0 Apr 24 14:24 한글파일
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>동시에, Web Browser에서도 문제 없이 파일을 얻을 수 있다.</p>
+
+<p><img src="/../assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_3.png" alt="Korean-Filename-With-404-Not-Found_3"></p>
+
+<p><br><br></p>
+
+<h3 id="22-so-why">2.2 So, Why?</h3>
+
+<p>이 문제를 설명하기 위해 약간의 배경 지식을 설명한다.</p>
+
+<p>영어 이외의 대부분의 문자들은 ASCII 로 표기할 수 없기 때문에, Unicode 로 정의되어 있다.</p>
+
+<p>Unicode 로 정의되어 있는 문자들은, UTF(Unicode Transformation Format) 로 인코딩 된다.</p>
+
+<p>한글은 대게 3bytes 로 이루어져 있으며, 이를 UTF-8(8 bit) 인코딩을 하는 것이다.</p>
+
+<p><br></p>
+
+<p>또한, <a href="https://datatracker.ietf.org/doc/html/rfc3986">Uniform Resource Identifier (URI): Generic Syntax</a> 에서 소개하는 <a href="https://datatracker.ietf.org/doc/html/rfc3986#section-2.1">2.1.  Percent-Encoding</a>에 따라, <code class="language-plaintext highlighter-rouge">%ED%95%9C%EA%B8%80%ED%8C%8C%EC%9D%BC</code> 와 같은 인코딩 결과물을 생성 한다.</p>
+
+<p>이 인코딩 된 URL 값으로 Web Server 에서 Resource를 처리하려고 하며,</p>
+
+<p>그렇게 되면 어떤 파일명(한글 등)을 가지고 있어도 처리할 수 있게 된다.</p>
+
+<p><br></p>
+
+<p>위에서 한차례 설명하였듯이,</p>
+
+<p>표준 인코딩 방식인 UTF-8 로 Resource를 찾으려고 하지만,</p>
+
+<p>목표 결과물은 UTF-8이 아니기 때문에 이러한 문제가 생긴것이다.</p>
+
+<p><br><br></p>
+
+<h2 id="3-references">3. References</h2>
+
+<p><a href="https://datatracker.ietf.org/doc/html/rfc3986">Uniform Resource Identifier (URI): Generic Syntax</a></p>
+
+<p><a href="https://blog.naver.com/with_msip/222009981690">한글은 어떻게 전산화되었을까? 아스키코드와 유니코드</a></p>
+
+<p><a href="https://namu.wiki/w/%EC%9C%A0%EB%8B%88%EC%BD%94%EB%93%9C">https://namu.wiki/w/유니코드</a></p>
+
+<p><a href="https://velog.io/@goggling/%EC%9C%A0%EB%8B%88%EC%BD%94%EB%93%9C%EC%99%80-UTF-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0">유니코드와 UTF 이해하기</a></p>
+
+<p><a href="https://unicode.codethoi.com/ko/index.html">유니코드 변환기 온라인</a></p>
+
+<p><strong>한글파일 요청 시 404 Not Found 발생 (Doc ID 3019045.1)</strong></p>
+
+
+    </div>
+
+</article>
+<div class="post-nav">
+<a class="previous" href="/weblogic/JDBC-Driver-Certifications" title="[WebLogic/JDBC] JDBC Driver Certifications">(이전) [WebLogic/JDBC] JDBC Driver Certifications</a><a class="next" href="/webtier/NzosSetCredential-Returned-28791" title="[WebTier/OHS] Nzos Call NzosSetCredential Returned 28791">[WebTier/OHS] Nzos Call NzosSetCredential Returned 28791... (다음)</a>
+</div>
+<div class="post-related">
+      <div>Related Articles</div>
+      <ul>
+        <li><a class="post-link" href="/programming/PrettyGmail" title="[Programming/Javascript] Gmail 을 이쁘게 복사하자">[Programming/Javascript] Gmail 을 이쁘게 복사하자</a></li>
+<li><a class="post-link" href="/weblogic/muxer" title="[WebLogic] weblogic.socket.muxer is blocked">[WebLogic] weblogic.socket.muxer is blocked</a></li>
+<li><a class="post-link" href="/scripts/DumpHighCpu" title="[Scripts/Bash] High Cpu Process의 분석을 위한 Dump">[Scripts/Bash] High Cpu Process의 분석을 위한 Dump</a></li>
+<li><a class="post-link" href="/rhcsa/SwapPartitioning" title="[RHCSA] Swap 파티셔닝">[RHCSA] Swap 파티셔닝</a></li>
+</ul>
+    </div>
+<div class="post-comments"></div></section>
+</div>
+
+
+  </section>
+  <section class="sidebar" style="margin-left: 15px;">
+    <!-- Get sidebar items --><style type="text/css" media="screen">
+.post-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+</style>
+
+<div class="post-menu">
+  <div class="post-menu-title">TOC</div>
+  <div class="post-menu-content"></div>
+</div>
+
+<script>
+  function generateContent() {
+    var menu = document.querySelector(".post-menu");
+    var menuContent =  menu.querySelector(".post-menu-content");
+    var headings = document.querySelector(".post-content").querySelectorAll("h2, h3, h4, h5, h6");
+
+    // Hide menu when no headings
+    if (headings.length === 0) {
+      return menu.style.display = "none";
+    }
+
+    // Generate post menu
+    var menuHTML = '';
+    for (var i = 0; i < headings.length; i++) {
+      var h = headings[i];
+      menuHTML += (
+        '<li class="h-' + h.tagName.toLowerCase() + '">'
+        + '<a href="#h-' + h.getAttribute('id') + '">' + h.textContent + '</a></li>');
+    }
+
+    menuContent.innerHTML = '<ul>' + menuHTML + '</ul>';
+
+    // The header element
+    var header = document.querySelector('header.site-header');
+
+    function doMenuCollapse(index, over_items) {
+      var items = menuContent.firstChild.children;
+
+      if (over_items == undefined) {
+        over_items = 20;
+      }
+
+      if (items.length < over_items) {
+        return;
+      }
+
+      var activeItem = items[index];
+      var beginItem = activeItem
+      var endItem = activeItem
+      var beginIndex = index;
+      var endIndex = index + 1;
+      while (beginIndex >= 0
+        && !items[beginIndex].classList.contains('h-h2')) {
+        beginIndex -= 1;
+      }
+      while (endIndex < items.length
+        && !items[endIndex].classList.contains('h-h2')) {
+        endIndex += 1;
+      }
+      for (var i = 0; i < beginIndex; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+      for (var i = beginIndex + 1; i < endIndex; i++) {
+        item = items[i]
+        // if (!item.classList.contains('h-h2')) {
+          item.style.display = '';
+        // }
+      }
+      for (var i = endIndex; i < items.length; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+    }
+
+    // Init menu collapsed
+    doMenuCollapse(-1);
+
+    // Active the menu item
+    window.addEventListener('scroll', function (event) {
+      var lastActive = menuContent.querySelector('.active');
+      var changed = true;
+      var activeIndex = -1;
+      for (var i = headings.length - 1; i >= 0; i--) {
+        var h = headings[i];
+        var headingRect = h.getBoundingClientRect();
+        var headerRect = header.getBoundingClientRect();
+        var headerTop = Math.floor(headerRect.top);
+        var headerHeight = Math.floor(headerRect.height);
+        var headerHeight = headerTop + headerHeight + 20;
+        if (headingRect.top <= headerHeight) {
+          var id = 'h-' + h.getAttribute('id');
+          var a = menuContent.querySelector('a[href="#' + id  + '"]');
+          var curActive = a.parentNode;
+          if (curActive) {
+            curActive.classList.add('active');
+            activeIndex = i;
+          }
+          if (lastActive == curActive) {
+            changed = false;
+          }
+          break;
+        }
+      }
+      if (changed) {
+        if (lastActive) {
+          lastActive.classList.remove('active');
+        }
+        doMenuCollapse(activeIndex);
+      }
+      event.preventDefault();
+    });
+  }
+  generateContent();
+</script>
+</section>
+</div>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+    <div class="site-footer-inner">
+<div>Copyright 2015-2024. DongHyun Kim All data cannot be copied without permission.</div>
+      <div>Powered by <a title="Jekyll is a simple, blog-aware, static site
+      generator." href="http://jekyllrb.com/">Jekyll</a> &amp; <a title="Yat, yet
+      another theme." href="https://github.com/jeffreytse/jekyll-theme-yat">Yat Theme</a>.</div>
+      <div class="footer-col rss-subscribe">Subscribe <a href="/feed.xml">via RSS</a>
+</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

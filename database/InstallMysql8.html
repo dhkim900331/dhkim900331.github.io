@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-translate-customization" content="108d9124921d80c3-80e20d618ff053c8-g4f02ec6f3dba68b7-c">
+  <meta name="google-site-verification" content="VA4--HCHFiwWLaC20E-0qHP0yy2WDEsRqLXx4zNzeiE">
+  <!-- Google Adsense -->
+  <meta name="google-adsense-account" content="ca-pub-6953284101209041">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6953284101209041" crossorigin="anonymous"></script><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>[Database/MySQL] MySQL 8.X 설치 (Source Compile) | IT Blogger DongDong</title>
+<meta name="generator" content="Jekyll v4.3.4">
+<meta property="og:title" content="[Database/MySQL] MySQL 8.X 설치 (Source Compile)">
+<meta name="author" content="DongHyun Kim">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="1. Overview">
+<meta property="og:description" content="1. Overview">
+<link rel="canonical" href="https://dhkim900331.github.io/database/InstallMysql8">
+<meta property="og:url" content="https://dhkim900331.github.io/database/InstallMysql8">
+<meta property="og:site_name" content="IT Blogger DongDong">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-05-31T02:38:35+00:00">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="[Database/MySQL] MySQL 8.X 설치 (Source Compile)">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"DongHyun Kim"},"dateModified":"2022-05-31T02:38:35+00:00","datePublished":"2022-05-31T02:38:35+00:00","description":"1. Overview","headline":"[Database/MySQL] MySQL 8.X 설치 (Source Compile)","mainEntityOfPage":{"@type":"WebPage","@id":"https://dhkim900331.github.io/database/InstallMysql8"},"url":"https://dhkim900331.github.io/database/InstallMysql8"}</script>
+<!-- End Jekyll SEO tag -->
+<!-- original favicon tag -->
+  <!--<link rel="shortcut icon" href="">-->
+  
+  <!-- tobe favicon tag (2022.02.22) -->
+  <!-- https://hongpage.kr/28 -->
+  <link rel="shortcut icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/favicons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/favicons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/favicons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/favicons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/favicons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/favicons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/favicons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/favicons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/favicons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/img/favicons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/img/favicons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-noto-sans@0.0.72/index.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <script src="/assets/js/main.js"></script><link type="application/atom+xml" rel="alternate" href="https://dhkim900331.github.io/feed.xml" title="IT Blogger DongDong">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+<!-- and it's easy to individually load additional languages -->
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/go.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Init highlight js
+document.addEventListener('DOMContentLoaded', function(event) {
+  var els = document.querySelectorAll('pre code')
+
+  function addLangData(block) {
+    var outer = block.parentElement.parentElement.parentElement;
+    var lang = block.getAttribute('data-lang');
+    for (var i = 0; i < outer.classList.length; i++) {
+      var cls = outer.classList[i];
+      if (cls.startsWith('language-')) {
+        lang = cls;
+        break;
+      }
+    }
+    if (!lang) {
+      cls = block.getAttribute('class');
+      lang = cls ? cls.replace('hljs ', '') : '';
+    }
+    if (lang.startsWith('language-')) {
+      lang = lang.substr(9);
+    }
+    block.setAttribute('class', 'hljs ' + lang);
+    block.parentNode.setAttribute('data-lang', lang);
+  }
+
+  function addBadge(block) {
+    var enabled = ('true' || 'true').toLowerCase();
+    if (enabled == 'true') {
+      var pre = block.parentElement;
+      pre.classList.add('badge');
+	  
+	  /* CUSTOM (2023-03-28) */  
+	  var codeBody = pre.querySelector(".rouge-code pre").innerText;
+	  pre.addEventListener('dblclick', () => {
+		var lang = block.parentNode.getAttribute('data-lang', lang);
+		window.navigator.clipboard.writeText(codeBody);
+		block.parentNode.setAttribute('data-lang', "copied");
+		setTimeout(() => {
+		  block.parentNode.setAttribute('data-lang', lang);
+		}, 2000);
+	  });
+    }
+  }
+  
+  function getPosition( element ) {
+	var rect = element.getBoundingClientRect();
+	return {
+		x: rect.left,
+		y: rect.top
+	};
+  }
+
+  function handle(block) {
+    addLangData(block);
+    addBadge(block)
+    hljs.highlightBlock(block);
+  }
+
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    handle(el);
+  }
+});
+</script>
+
+<style>
+  /* code language badge */
+  pre.badge::before {
+    content: attr(data-lang);
+    color: #fff;
+    background-color: #ff4e00;
+    padding: 0 .5em;
+    border-radius: 0 2px;
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 32px;
+    display: inline-block;
+    position: absolute;
+    right: 0;
+  }
+
+  /* fix wrong badge display for firefox browser */
+  code > table pre::before {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<header class="site-header " role="banner">
+
+  <div class="wrapper">
+    <div class="site-header-inner">
+<span class="site-brand"><a class="site-brand-inner" rel="author" href="/">
+  <img class="site-favicon" title="IT Blogger DongDong" src="" onerror="this.style.display='none'">
+  IT Blogger DongDong
+</a>
+</span><nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger">
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewbox="0 0 18 15" width="18px" height="15px">
+                <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+<a class="page-link" href="/about">ABOUT</a><a class="page-link" href="/archives">ARCHIVES</a><a class="page-link" href="/categories">CATEGORIES</a><a class="page-link" href="/">HOME</a><a class="page-link" href="/search">SEARCH</a><a class="page-link" href="/tags">TAGS</a>
+
+
+
+
+
+
+
+
+
+<span class="page-link">
+
+
+
+<div id="google_translate_element" style="display: none;">
+</div>
+
+<span class="ct-language">
+  <ul class="list-unstyled ct-language-dropdown">
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="en">
+          
+          <img src="https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png" title="English">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="fr">
+          
+          <img src="https://cdn.countryflags.com/thumbs/france/flag-400.png" title="French">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="zh-CN">
+          
+          <img src="https://cdn.countryflags.com/thumbs/china/flag-400.png" title="Chinese(Simple)">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ja">
+          
+          <img src="https://cdn.countryflags.com/thumbs/japan/flag-400.png" title="Japanese">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ko">
+          
+          <img src="https://cdn.countryflags.com/thumbs/south-korea/flag-400.png" title="Korean">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ru">
+          
+          <img src="https://cdn.countryflags.com/thumbs/russia/flag-400.png" title="Russian">
+          
+        </a>
+      </li>
+    
+  </ul>
+</span>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    autoDisplay: false,
+    layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+  }, 'google_translate_element');
+
+  // Links to cross-origin destinations are unsafe
+  var gll = document.getElementsByClassName('goog-logo-link')[0];
+  if (gll) {
+    gll.setAttribute('rel', 'noopener');
+  }
+
+  function restoreLang() {
+    var iframe = document.getElementsByClassName('goog-te-banner-frame')[0];
+    if (!iframe) return;
+
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    var restore_el = innerDoc.getElementsByTagName("button");
+
+    for (var i = 0; i < restore_el.length; i++) {
+      if (restore_el[i].id.indexOf("restore") >= 0) {
+        restore_el[i].click();
+        var close_el = innerDoc.getElementsByClassName("goog-close-link");
+        close_el[0].click();
+        return;
+      }
+    }
+  }
+
+  function triggerHtmlEvent(element, eventName) {
+    var event;
+    if (document.createEvent) {
+      event = document.createEvent('HTMLEvents');
+      event.initEvent(eventName, true, true);
+      element.dispatchEvent(event);
+    } else {
+      event = document.createEventObject();
+      event.eventType = eventName;
+      element.fireEvent('on' + event.eventType, event);
+    }
+  }
+
+  var googleCombo = document.querySelector("select.goog-te-combo");
+  var langSelect = document.querySelector('.ct-language');
+  langSelect.addEventListener('click', function(event) {
+    if (!event.target) {
+      return;
+    }
+
+    var selected = document.querySelector('.ct-language .ct-language-selected');
+    if (selected) {
+      selected.classList.remove('ct-language-selected');
+    }
+
+    var target = event.target;
+    while (target && target !== langSelect ) {
+      if (target.matches('.lang-select')) {
+        break;
+      }
+      target = target.parentElement;
+    }
+
+    if (target && target.matches('.lang-select')) {
+      var lang = target.getAttribute('data-lang');
+      if (googleCombo.value == lang) {
+        restoreLang();
+      } else {
+        target.parentElement.classList.add('ct-language-selected');
+        googleCombo.value = lang;
+        triggerHtmlEvent(googleCombo, 'change');
+      }
+    }
+
+    event.preventDefault();
+  });
+}
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</span>
+</div>
+        </nav>
+</div>
+  </div>
+</header>
+
+<script>
+  function initHeader() {
+    var lastScrollY = getScrollPos().y;
+    var documentElement = document.documentElement;
+
+    function storeScrollData() {
+      var y = getScrollPos().y;var scrollStatus = "";
+
+      if (y <= 0) {
+        scrollStatus = "top";
+      } else if ((window.innerHeight + y) >= document.body.offsetHeight) {
+        scrollStatus = "bottom";
+      } else {
+        var isScrollDown = (y - lastScrollY > 0) ? true : false;
+        scrollStatus = isScrollDown ? "down" : "up";
+      }
+
+      lastScrollY = y;
+      documentElement.setAttribute("data-scroll-status", scrollStatus);
+    }
+
+    window.addEventListener('scroll', function(e) {
+      storeScrollData();
+    });
+
+    storeScrollData();
+  }
+  document.addEventListener('DOMContentLoaded', initHeader);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  function hashLocate(hashValue) {
+    hashValue = hashValue.replace(/^.*#h-/, '');
+    hashValue = decodeURIComponent(hashValue);
+    var element = document.getElementById(hashValue);
+
+    if (!element) {
+      return;
+    }
+
+    var header = document.querySelector('header.site-header');
+    var headerRect = header.getBoundingClientRect();
+    var headerTop = Math.floor(headerRect.top);
+    var headerHeight = Math.floor(headerRect.height);
+    var scrollPos = getScrollPos();
+    var offsetY = element.offsetTop - (headerTop + headerHeight + 20);
+
+    if (offsetY == scrollPos.y) {
+      return;
+    }
+
+    if (headerTop == 0  && offsetY > scrollPos.y) {
+      offsetY += headerHeight + 2;
+    } else if (headerTop < 0  && offsetY < scrollPos.y) {
+      offsetY -= headerHeight - 2;
+    }
+
+    smoothScrollTo(offsetY);
+  }
+
+  // The first event occurred
+  window.addEventListener('load', function(event) {
+    if (window.location.hash) {
+      hashLocate(window.location.hash);
+    }
+  });
+
+  // The first event occurred
+  window.addEventListener('click', function(event) {
+    if (event.target.tagName.toLowerCase() == 'a') {
+      hashLocate(event.target.getAttribute('href'));
+    }
+  });
+</script>
+<div class="theme-toggle">
+  <input type="checkbox" id="theme-switch">
+  <label for="theme-switch">
+    <div class="toggle"></div>
+    <div class="names">
+      <p class="light">Light</p>
+      <p class="dark">Dark</p>
+    </div>
+  </label>
+</div>
+
+
+
+
+<script>
+  (function() {
+    var sw = document.getElementById('theme-switch');
+    var html = document.getElementsByTagName('html')[0];
+    var nightModeOption = ('auto' || 'auto').toLowerCase();
+    var storage = nightModeOption === 'manual'
+        ? localStorage
+        : sessionStorage;
+    var themeData = loadThemeData();
+
+    function saveThemeData(data) {
+      storage.setItem('theme', JSON.stringify(data));
+    }
+
+    function loadThemeData() {
+      var data = storage.getItem('theme');
+      try {
+        data = JSON.parse(data ? data : '');
+      } catch(e) {
+        data = { nightShift: undefined, autoToggleAt: 0 };
+        saveThemeData(data);
+      }
+      return data;
+    }
+
+    function handleThemeToggle(nightShift) {
+      themeData.nightShift = nightShift;
+      saveThemeData(themeData);
+      html.dataset.theme = nightShift ? 'dark' : 'light';
+      setTimeout(function() {
+        sw.checked = nightShift ? true : false;
+      }, 50);
+    }
+
+    function autoThemeToggle() {
+      // Next time point of theme toggle
+      var now = new Date();
+      var toggleAt = new Date();
+      var hours = now.getHours();
+      var nightShift = hours >= 19 || hours <=7;
+
+      if (nightShift) {
+        if (hours > 7) {
+          toggleAt.setDate(toggleAt.getDate() + 1);
+        }
+        toggleAt.setHours(7);
+      } else {
+        toggleAt.setHours(19);
+      }
+
+      toggleAt.setMinutes(0);
+      toggleAt.setSeconds(0);
+      toggleAt.setMilliseconds(0)
+
+      var delay = toggleAt.getTime() - now.getTime();
+
+      // auto toggle theme mode
+      setTimeout(function() {
+        handleThemeToggle(!nightShift);
+      }, delay);
+
+      return {
+        nightShift: nightShift,
+        toggleAt: toggleAt.getTime()
+      };
+    }
+
+    // Listen the theme toggle event
+    sw.addEventListener('change', function(event) {
+      handleThemeToggle(event.target.checked);
+    });
+
+    if (nightModeOption == 'auto') {
+      var data = autoThemeToggle();
+
+      // Toggle theme by local setting
+      if (data.toggleAt > themeData.autoToggleAt) {
+        themeData.autoToggleAt = data.toggleAt;
+        handleThemeToggle(data.nightShift);
+      } else {
+        handleThemeToggle(themeData.nightShift);
+      }
+    } else if (nightModeOption == 'manual') {
+      handleThemeToggle(themeData.nightShift);
+    } else {
+      var nightShift = themeData.nightShift;
+      if (nightShift === undefined) {
+        nightShift = nightModeOption === 'on';
+      }
+      handleThemeToggle(nightShift);
+    }
+  })();
+</script>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="framework">
+  <section class="main">
+
+     <div class="post">
+  <section>
+
+
+
+
+
+
+
+
+
+<header class="post-header">
+  <h1 class="post-title p-name" itemprop="name headline">[Database/MySQL] MySQL 8.X 설치 (Source Compile)</h1>
+  <h2 class="post-subtitle"></h2>
+
+  <p class="post-meta">
+    <time class="dt-published" datetime="2022-05-31T02:38:35+00:00" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-05-31
+    </time>
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <span class="post-reading-time left-vsplit"><i class="fa fa-clock-o"></i> About 7 mins</span>
+  </p>
+<div class="post-tags">
+<a class="post-tag" href="/tags.html#Database">#Database</a><a class="post-tag" href="/tags.html#MySQL">#MySQL</a><a class="post-tag" href="/tags.html#Source">#Source</a><a class="post-tag" href="/tags.html#Compile">#Compile</a><a class="post-tag" href="/tags.html#Build">#Build</a>
+</div></header>
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="post-content e-content" itemprop="articleBody">
+
+      <h2 id="1-overview">1. Overview</h2>
+
+<p>고객사에 MySQL 설치가 필요하게 된 상황이 생겨서, <code class="language-plaintext highlighter-rouge">rpm</code> 설치 또는 <code class="language-plaintext highlighter-rouge">source build</code> 설치 등을 확인하고 있다. (정말 별의별 업무를 다하게 된다 ㅠㅠ)</p>
+
+<p>여튼, <code class="language-plaintext highlighter-rouge">rpm</code>은 차후, 기록하고, 폐쇄망 타겟으로 <code class="language-plaintext highlighter-rouge">source build</code> 를 진행해본다.</p>
+
+<p><br><br></p>
+
+<h2 id="2-문서-작성-기준이-되는-테스트-환경">2. 문서 작성 기준이 되는 테스트 환경</h2>
+
+<p>1core/8gb mem/CentOS Stream release 8</p>
+
+<p><br><br></p>
+
+<h2 id="3-사전-준비사항">3. 사전 준비사항</h2>
+
+<h3 id="31-설치-파일">3.1 설치 파일</h3>
+
+<h4 id="311-boost">3.1.1 Boost</h4>
+
+<p>MySQL Build 하기 위해서 Boost 라는 C++ Library 집합이 필요하다.</p>
+
+<p>작성일 기준 1.79.0 이 최신이나, MySQL 최신버전 8.0.29 설치시에는 Boost 1.77.0 을 필요로 한다.</p>
+
+<p><br></p>
+
+<p>https://www.boost.org 에서 boost_1_77_0.tar.gz 을 다운로드 한다.</p>
+
+<p>URL : https://sourceforge.net/projects/boost/files/boost/1.77.0</p>
+
+<p><br></p>
+
+<p>다운로드 받은 파일은, 특정 경로에 압축을 해제한다.
+<code class="language-plaintext highlighter-rouge">Path : /usr/ssw/mysql/installFiles/boost_1_77_0</code></p>
+
+<p><br><br></p>
+
+<h4 id="312-mysql">3.1.2 MySQL</h4>
+
+<p>https://dev.mysql.com/downloads/mysql -&gt;</p>
+
+<p>Source Code -&gt;</p>
+
+<p>All Operating Systems (Generic) (Architecture Independent) -&gt;</p>
+
+<p>Compressed TAR Archive, Includes Boost Headers</p>
+
+<ul>
+  <li>mysql-boost-8.0.29.tar.gz 파일을 다운로드 받는다.</li>
+</ul>
+<p style="height:20px;"></p>
+<p>다운로드 받은 파일은, 특정 경로에 압축을 해제한다.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Path : /usr/ssw/mysql/installFiles/mysql-8.0.29</code></p>
+
+<p><br><br></p>
+
+<h3 id="32-compiler--packages">3.2 Compiler &amp; Packages</h3>
+
+<ul>
+  <li>cmake</li>
+  <li>make 3.75 이상</li>
+  <li>최소 GCC 7.1 또는 Clang 5</li>
+  <li>ncurses.x86_64</li>
+  <li>rpcgen</li>
+</ul>
+
+<p>rpcgen은 CentOS 8 Default Repository 에서 찾을 수 없고,</p>
+
+<p>다음과 같은 PowerTools 에서 찾을 수 있다.</p>
+
+<p>URL : https://centos.pkgs.org/8/centos-powertools-x86_64/rpcgen-1.3.1-4.el8.x86_64.rpm.html</p>
+
+<p><br></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sudo </span>yum <span class="nb">install</span> <span class="nt">-y</span> cmake.x86_64 make.x86_64 gcc.x86_64 ncurses-devel.x86_64 
+<span class="nv">$ </span><span class="nb">sudo </span>yum localinstall <span class="nt">-y</span> rpcgen-1.3.1-4.el8.x86_64.rpm
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>공식 가이드로 요구하는 위 목록 외에, 설치 시 에러로 다음을 요구한다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sudo </span>yum <span class="nb">install</span> <span class="nt">-y</span> gcc-toolset-11-gcc gcc-toolset-11-gcc-c++ gcc-toolset-11-binutils libtirpc-devel.x86_64
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h2 id="4-설치">4. 설치</h2>
+
+<h3 id="41-mysql">4.1 MySQL</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cd</span> /usr/ssw/mysql/installFiles/mysql-8.0.29
+<span class="nv">$ </span><span class="nb">rm</span> <span class="nt">-f</span> CMakeCache.txt <span class="o">&amp;&amp;</span> cmake <span class="nb">.</span> <span class="se">\</span>
+<span class="nt">-DFORCE_INSOURCE_BUILD</span><span class="o">=</span>on <span class="se">\</span>
+<span class="nt">-DCMAKE_INSTALL_PREFIX</span><span class="o">=</span>/usr/ssw/mysql <span class="se">\</span>
+<span class="nt">-DMYSQL_DATADIR</span><span class="o">=</span>/logs/mysql <span class="se">\</span>
+<span class="nt">-DMYSQL_TCP_PORT</span><span class="o">=</span>3306 <span class="se">\</span>
+<span class="nt">-DDEFAULT_CHARSET</span><span class="o">=</span>utf8 <span class="se">\</span>
+<span class="nt">-DDEFAULT_COLLATION</span><span class="o">=</span>utf8_general_ci <span class="se">\</span>
+<span class="nt">-DWITH_BOOST</span><span class="o">=</span>/usr/ssw/mysql/installFiles/boost_1_77_0 <span class="se">\</span>
+<span class="nt">-DDOWNLOAD_BOOST</span><span class="o">=</span>off
+
+<span class="nv">$ </span>make clean <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>charset, collation은 https://dev.mysql.com/doc/refman/8.0/en/charset-mysql.html 참고</p>
+
+  <p>2~4시간 소요</p>
+</blockquote>
+
+<p><br></p>
+
+<h2 id="5-환경-구성">5. 환경 구성</h2>
+
+<h3 id="51-데이터-디렉토리-초기화">5.1 데이터 디렉토리 초기화</h3>
+
+<p>초기 설치 후 반드시 데이터 디렉토리를 초기화 해야 한다.</p>
+
+<p>공식 가이드에서 <code class="language-plaintext highlighter-rouge">mysql-files</code> 디렉토리는 <code class="language-plaintext highlighter-rouge">LOAD DATA INFILE "text.txt" INTO table mytable;</code> 와 같은 Query를 실행 할 때, <code class="language-plaintext highlighter-rouge">mysql-files/test.txt</code> 파일을 읽는 위치이다.</p>
+
+<p>기본값은, <code class="language-plaintext highlighter-rouge">CMAKE_INSTALL_PREFIX/mysql-files</code> 이고, <code class="language-plaintext highlighter-rouge">mysqld --initialize --secure_file_priv=...path...</code> 와 같이 변경할 수 있다.</p>
+
+<p><br></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span>mysqld <span class="nt">--initialize</span> <span class="nt">--user</span><span class="o">=</span>dhkim
+2022-05-31T00:27:32.156756Z 0 <span class="o">[</span>System] <span class="o">[</span>MY-013169] <span class="o">[</span>Server] /usr/ssw/mysql/bin/mysqld <span class="o">(</span>mysqld 8.0.29<span class="o">)</span> initializing of server <span class="k">in </span>progress as process 2378
+2022-05-31T00:27:32.157288Z 0 <span class="o">[</span>Warning] <span class="o">[</span>MY-013242] <span class="o">[</span>Server] <span class="nt">--character-set-server</span>: <span class="s1">'utf8'</span> is currently an <span class="nb">alias </span><span class="k">for </span>the character <span class="nb">set </span>UTF8MB3, but will be an <span class="nb">alias </span><span class="k">for </span>UTF8MB4 <span class="k">in </span>a future release. Please consider using UTF8MB4 <span class="k">in </span>order to be unambiguous.
+2022-05-31T00:27:32.157292Z 0 <span class="o">[</span>Warning] <span class="o">[</span>MY-013244] <span class="o">[</span>Server] <span class="nt">--collation-server</span>: <span class="s1">'utf8_general_ci'</span> is a collation of the deprecated character <span class="nb">set </span>UTF8MB3. Please consider using UTF8MB4 with an appropriate collation instead.
+2022-05-31T00:27:32.223269Z 1 <span class="o">[</span>System] <span class="o">[</span>MY-013576] <span class="o">[</span>InnoDB] InnoDB initialization has started.
+2022-05-31T00:27:33.031946Z 1 <span class="o">[</span>System] <span class="o">[</span>MY-013577] <span class="o">[</span>InnoDB] InnoDB initialization has ended.
+2022-05-31T00:27:33.779099Z 6 <span class="o">[</span>Note] <span class="o">[</span>MY-010454] <span class="o">[</span>Server] A temporary password is generated <span class="k">for </span>root@localhost: SP12Kr.a7K<span class="k">*</span>_
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<blockquote>
+  <p>A temporary password is generated for root@localhost: SP12Kr.a7K*_</p>
+</blockquote>
+
+<p>위 작업을 다시 수행하려면, <code class="language-plaintext highlighter-rouge">-DMYSQL_DATADIR</code> 모든 파일을 삭제해야 한다.</p>
+
+<p><br><br></p>
+
+<h3 id="52-패스워드-정책-변경">5.2 패스워드 정책 변경</h3>
+
+<p>아래 단계에서 root로 로그인 시에 위에서 확인된 임시 패스워드를 입력하면 root 패스워드를 변경 할 수 있다.</p>
+
+<p>이후 해당 포스팅을 참고할 때, 소스 컴파일 설치가 아니라 다른 형태의 설치를 하고 패스워드 부분에서 애로 사항을 겪을 경우를 위하여</p>
+
+<p>작성한다.</p>
+
+<p><br></p>
+
+<p>임시 패스워드로 로그인 후 패스워드 정책 확인</p>
+
+<pre><code class="language-mysql">$ mysql -u root -p
+mysql&gt; SHOW VARIABLES LIKE 'validate_password%';
++--------------------------------------+--------+
+| Variable_name                        | Value  |
++--------------------------------------+--------+
+| validate_password_check_user_name    | ON     |
+| validate_password_dictionary_file    |        |
+| validate_password_length             | 8      |
+| validate_password_mixed_case_count   | 1      |
+| validate_password_number_count       | 1      |
+| validate_password_policy             | MEDIUM |
+| validate_password_special_char_count | 1      |
++--------------------------------------+--------+
+</code></pre>
+
+<blockquote>
+  <p>결과가 위와 유사하게 출력된다.</p>
+</blockquote>
+
+<p><br></p>
+
+<p>/etc/my.cnf 에 옵션을 추가하고 재기동한다.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td>
+<td class="rouge-code"><pre># vi /etc/my.cnf
+validate_password.policy=LOW
+default_password_lifetime=0
+validate_password.length=3
+validate_password.special_char_count=0
+validate_password.mixed_case_count=0
+validate_password.number_count=0
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>패스워드 정책이 변경되었다.</p>
+
+<pre><code class="language-mysql">mysql&gt; SHOW VARIABLES LIKE 'validate_password%';
++--------------------------------------+-------+
+| Variable_name                        | Value |
++--------------------------------------+-------+
+| validate_password.check_user_name    | ON    |
+| validate_password.dictionary_file    |       |
+| validate_password.length             | 3     |
+| validate_password.mixed_case_count   | 0     |
+| validate_password.number_count       | 0     |
+| validate_password.policy             | LOW   |
+| validate_password.special_char_count | 0     |
++--------------------------------------+-------+
+</code></pre>
+
+<p>패스워드 정책에서 길이제한만 ‘3’ 로 있고, 모두 풀렸다.</p>
+
+<pre><code class="language-mysql">mysql&gt; ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
+ERROR 1819 (HY000): Your password does not satisfy the current policy requirements
+
+mysql&gt; ALTER USER 'root'@'localhost' IDENTIFIED BY 'root1';
+Query OK, 0 rows affected (0.06 sec)
+</code></pre>
+
+<blockquote>
+  <p>패스워드 길이 정책이 동작하지 않은 듯하지만.. 원인을 구글링으로 찾을 수 없었다.</p>
+</blockquote>
+
+<p><br></p>
+
+<h2 id="6-실행-및-종료">6. 실행 및 종료</h2>
+
+<h4 id="61-실행">6.1 실행</h4>
+
+<p>초기 실행 후, 프로세스 확인 결과.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span>mysqld_safe <span class="nt">--user</span><span class="o">=</span>dhkim &amp;
+<span class="nv">$ </span>ps <span class="nt">-ef</span> | <span class="nb">grep </span>mysqld | <span class="nb">grep</span> <span class="nt">-v</span> <span class="nb">grep
+</span>dhkim       2477    1727  0 09:33 pts/0    00:00:00 /bin/sh bin/mysqld_safe <span class="nt">--user</span><span class="o">=</span>dhkim
+dhkim       2565    2477  0 09:33 pts/0    00:00:01 /usr/ssw/mysql/bin/mysqld <span class="nt">--basedir</span><span class="o">=</span>/usr/ssw/mysql <span class="nt">--datadir</span><span class="o">=</span>/logs/mysql <span class="nt">--plugin-dir</span><span class="o">=</span>/usr/ssw/mysql/lib/plugin <span class="nt">--log-error</span><span class="o">=</span>dhkim.err <span class="nt">--pid-file</span><span class="o">=</span>dhkim.pid
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>초기 로그인에는, <code class="language-plaintext highlighter-rouge">5.1 데이터 디렉토리 초기화</code> 시에 생성된 임시 패스워드(<code class="language-plaintext highlighter-rouge">SP12Kr.a7K*_</code>)로 로그인하고 앞으로 사용할 패스워드로 변경해야 한다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span>mysql <span class="nt">-u</span> root <span class="nt">-p</span>
+Enter password: <span class="o">(</span>SP12Kr.a7K<span class="k">*</span>_<span class="o">)</span>
+
+mysql&gt; ALTER USER <span class="s1">'root'</span>@<span class="s1">'localhost'</span> IDENTIFIED BY <span class="s1">'root'</span><span class="p">;</span>
+Query OK, 0 rows affected <span class="o">(</span>0.01 sec<span class="o">)</span>
+
+mysql&gt; quit<span class="p">;</span>
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>패스워드는 프롬프트로 입력하고, version 확인하는 예시.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span>mysqladmin <span class="nt">-u</span> root <span class="nt">-p</span> version
+Enter password: <span class="o">(</span>root<span class="o">)</span>
+mysqladmin  Ver 8.0.29 <span class="k">for </span>Linux on x86_64 <span class="o">(</span>Source distribution<span class="o">)</span>
+Copyright <span class="o">(</span>c<span class="o">)</span> 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Server version          8.0.29
+Protocol version        10
+Connection              Localhost via UNIX socket
+UNIX socket             /tmp/mysql.sock
+Uptime:                 1 min 12 sec
+
+Threads: 2  Questions: 5  Slow queries: 0  Opens: 117  Flush tables: 3  Open tables: 36  Queries per second avg: 0.069
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h3 id="62-종료">6.2 종료</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span>mysqladmin <span class="nt">-u</span> root <span class="nt">-p</span> shutdown
+Enter password: <span class="o">(</span>root<span class="o">)</span>
+2022-05-31T00:49:47.300509Z mysqld_safe mysqld from pid file /logs/mysql/dhkim.pid ended
+<span class="o">[</span>1]+  Done                    bin/mysqld_safe <span class="nt">--user</span><span class="o">=</span>dhkim
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h2 id="7-참고-문헌">7. 참고 문헌</h2>
+
+<p><a href="https://www.mysql.com/support/supportedplatforms/database.html">지원 플랫폼</a></p>
+
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/source-installation-prerequisites.html">사전 필요사항</a></p>
+
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/source-configuration-options.html">설치 시 옵션 구성</a></p>
+
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/data-directory-initialization.html">데이터 디렉토리 초기화</a></p>
+
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/starting-server.html">서버 시작</a></p>
+
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/default-privileges.html">패스워드 초기화</a></p>
+
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/testing-server.html">서버 종료 등등 서버 테스팅 명령어</a></p>
+
+
+
+    </div>
+
+</article>
+<div class="post-nav">
+<a class="previous" href="/programming/FailoverTest" title="[Servlet/JSP] Fail over Test를 위한 JSP">(이전) [Servlet/JSP] Fail over Test를 위한 JSP...</a><a class="next" href="/database/backup_and_recovery" title="[Database/MySQL] Backup &amp; Recovery (백업과 복구)">[Database/MySQL] Backup &amp; Recovery (백업과 복구)... (다음)</a>
+</div>
+<div class="post-related">
+      <div>Related Articles</div>
+      <ul>
+        <li><a class="post-link" href="/weblogic/No-error-despite-changed-datasource-password" title="[WebLogic] No error despite changed datasource password">[WebLogic] No error despite changed datasource password</a></li>
+<li><a class="post-link" href="/linux/LogRotation" title="[Linux/Log Rotation] Log Rotation">[Linux/Log Rotation] Log Rotation</a></li>
+<li><a class="post-link" href="/weblogic/Encoding" title="[WebLogic] Encoding">[WebLogic] Encoding</a></li>
+<li><a class="post-link" href="/typora/NotUsedImageCleaner" title="[Typora] 불필요한 이미지 리소스 제거">[Typora] 불필요한 이미지 리소스 제거</a></li>
+</ul>
+    </div>
+<div class="post-comments"></div></section>
+</div>
+
+
+  </section>
+  <section class="sidebar" style="margin-left: 15px;">
+    <!-- Get sidebar items --><style type="text/css" media="screen">
+.post-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+</style>
+
+<div class="post-menu">
+  <div class="post-menu-title">TOC</div>
+  <div class="post-menu-content"></div>
+</div>
+
+<script>
+  function generateContent() {
+    var menu = document.querySelector(".post-menu");
+    var menuContent =  menu.querySelector(".post-menu-content");
+    var headings = document.querySelector(".post-content").querySelectorAll("h2, h3, h4, h5, h6");
+
+    // Hide menu when no headings
+    if (headings.length === 0) {
+      return menu.style.display = "none";
+    }
+
+    // Generate post menu
+    var menuHTML = '';
+    for (var i = 0; i < headings.length; i++) {
+      var h = headings[i];
+      menuHTML += (
+        '<li class="h-' + h.tagName.toLowerCase() + '">'
+        + '<a href="#h-' + h.getAttribute('id') + '">' + h.textContent + '</a></li>');
+    }
+
+    menuContent.innerHTML = '<ul>' + menuHTML + '</ul>';
+
+    // The header element
+    var header = document.querySelector('header.site-header');
+
+    function doMenuCollapse(index, over_items) {
+      var items = menuContent.firstChild.children;
+
+      if (over_items == undefined) {
+        over_items = 20;
+      }
+
+      if (items.length < over_items) {
+        return;
+      }
+
+      var activeItem = items[index];
+      var beginItem = activeItem
+      var endItem = activeItem
+      var beginIndex = index;
+      var endIndex = index + 1;
+      while (beginIndex >= 0
+        && !items[beginIndex].classList.contains('h-h2')) {
+        beginIndex -= 1;
+      }
+      while (endIndex < items.length
+        && !items[endIndex].classList.contains('h-h2')) {
+        endIndex += 1;
+      }
+      for (var i = 0; i < beginIndex; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+      for (var i = beginIndex + 1; i < endIndex; i++) {
+        item = items[i]
+        // if (!item.classList.contains('h-h2')) {
+          item.style.display = '';
+        // }
+      }
+      for (var i = endIndex; i < items.length; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+    }
+
+    // Init menu collapsed
+    doMenuCollapse(-1);
+
+    // Active the menu item
+    window.addEventListener('scroll', function (event) {
+      var lastActive = menuContent.querySelector('.active');
+      var changed = true;
+      var activeIndex = -1;
+      for (var i = headings.length - 1; i >= 0; i--) {
+        var h = headings[i];
+        var headingRect = h.getBoundingClientRect();
+        var headerRect = header.getBoundingClientRect();
+        var headerTop = Math.floor(headerRect.top);
+        var headerHeight = Math.floor(headerRect.height);
+        var headerHeight = headerTop + headerHeight + 20;
+        if (headingRect.top <= headerHeight) {
+          var id = 'h-' + h.getAttribute('id');
+          var a = menuContent.querySelector('a[href="#' + id  + '"]');
+          var curActive = a.parentNode;
+          if (curActive) {
+            curActive.classList.add('active');
+            activeIndex = i;
+          }
+          if (lastActive == curActive) {
+            changed = false;
+          }
+          break;
+        }
+      }
+      if (changed) {
+        if (lastActive) {
+          lastActive.classList.remove('active');
+        }
+        doMenuCollapse(activeIndex);
+      }
+      event.preventDefault();
+    });
+  }
+  generateContent();
+</script>
+</section>
+</div>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+    <div class="site-footer-inner">
+<div>Copyright 2015-2024. DongHyun Kim All data cannot be copied without permission.</div>
+      <div>Powered by <a title="Jekyll is a simple, blog-aware, static site
+      generator." href="http://jekyllrb.com/">Jekyll</a> &amp; <a title="Yat, yet
+      another theme." href="https://github.com/jeffreytse/jekyll-theme-yat">Yat Theme</a>.</div>
+      <div class="footer-col rss-subscribe">Subscribe <a href="/feed.xml">via RSS</a>
+</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-translate-customization" content="108d9124921d80c3-80e20d618ff053c8-g4f02ec6f3dba68b7-c">
+  <meta name="google-site-verification" content="VA4--HCHFiwWLaC20E-0qHP0yy2WDEsRqLXx4zNzeiE">
+  <!-- Google Adsense -->
+  <meta name="google-adsense-account" content="ca-pub-6953284101209041">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6953284101209041" crossorigin="anonymous"></script><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>[Linux/Sed] sed and regex | IT Blogger DongDong</title>
+<meta name="generator" content="Jekyll v4.3.4">
+<meta property="og:title" content="[Linux/Sed] sed and regex">
+<meta name="author" content="DongHyun Kim">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="1. Overview">
+<meta property="og:description" content="1. Overview">
+<link rel="canonical" href="https://dhkim900331.github.io/linux/sed-and-regex">
+<meta property="og:url" content="https://dhkim900331.github.io/linux/sed-and-regex">
+<meta property="og:site_name" content="IT Blogger DongDong">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-03-14T23:36:40+00:00">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="[Linux/Sed] sed and regex">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"DongHyun Kim"},"dateModified":"2023-03-14T23:36:40+00:00","datePublished":"2023-03-14T23:36:40+00:00","description":"1. Overview","headline":"[Linux/Sed] sed and regex","mainEntityOfPage":{"@type":"WebPage","@id":"https://dhkim900331.github.io/linux/sed-and-regex"},"url":"https://dhkim900331.github.io/linux/sed-and-regex"}</script>
+<!-- End Jekyll SEO tag -->
+<!-- original favicon tag -->
+  <!--<link rel="shortcut icon" href="">-->
+  
+  <!-- tobe favicon tag (2022.02.22) -->
+  <!-- https://hongpage.kr/28 -->
+  <link rel="shortcut icon" href="/assets/img/favicons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/favicons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/img/favicons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/favicons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/favicons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/favicons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/img/favicons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/favicons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/img/favicons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/favicons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/img/favicons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/img/favicons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-noto-sans@0.0.72/index.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <script src="/assets/js/main.js"></script><link type="application/atom+xml" rel="alternate" href="https://dhkim900331.github.io/feed.xml" title="IT Blogger DongDong">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+<!-- and it's easy to individually load additional languages -->
+<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/go.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Init highlight js
+document.addEventListener('DOMContentLoaded', function(event) {
+  var els = document.querySelectorAll('pre code')
+
+  function addLangData(block) {
+    var outer = block.parentElement.parentElement.parentElement;
+    var lang = block.getAttribute('data-lang');
+    for (var i = 0; i < outer.classList.length; i++) {
+      var cls = outer.classList[i];
+      if (cls.startsWith('language-')) {
+        lang = cls;
+        break;
+      }
+    }
+    if (!lang) {
+      cls = block.getAttribute('class');
+      lang = cls ? cls.replace('hljs ', '') : '';
+    }
+    if (lang.startsWith('language-')) {
+      lang = lang.substr(9);
+    }
+    block.setAttribute('class', 'hljs ' + lang);
+    block.parentNode.setAttribute('data-lang', lang);
+  }
+
+  function addBadge(block) {
+    var enabled = ('true' || 'true').toLowerCase();
+    if (enabled == 'true') {
+      var pre = block.parentElement;
+      pre.classList.add('badge');
+	  
+	  /* CUSTOM (2023-03-28) */  
+	  var codeBody = pre.querySelector(".rouge-code pre").innerText;
+	  pre.addEventListener('dblclick', () => {
+		var lang = block.parentNode.getAttribute('data-lang', lang);
+		window.navigator.clipboard.writeText(codeBody);
+		block.parentNode.setAttribute('data-lang', "copied");
+		setTimeout(() => {
+		  block.parentNode.setAttribute('data-lang', lang);
+		}, 2000);
+	  });
+    }
+  }
+  
+  function getPosition( element ) {
+	var rect = element.getBoundingClientRect();
+	return {
+		x: rect.left,
+		y: rect.top
+	};
+  }
+
+  function handle(block) {
+    addLangData(block);
+    addBadge(block)
+    hljs.highlightBlock(block);
+  }
+
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    handle(el);
+  }
+});
+</script>
+
+<style>
+  /* code language badge */
+  pre.badge::before {
+    content: attr(data-lang);
+    color: #fff;
+    background-color: #ff4e00;
+    padding: 0 .5em;
+    border-radius: 0 2px;
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 32px;
+    display: inline-block;
+    position: absolute;
+    right: 0;
+  }
+
+  /* fix wrong badge display for firefox browser */
+  code > table pre::before {
+    display: none;
+  }
+</style>
+<script>MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"svg":{"fontCache":"global"}}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<header class="site-header " role="banner">
+
+  <div class="wrapper">
+    <div class="site-header-inner">
+<span class="site-brand"><a class="site-brand-inner" rel="author" href="/">
+  <img class="site-favicon" title="IT Blogger DongDong" src="" onerror="this.style.display='none'">
+  IT Blogger DongDong
+</a>
+</span><nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger">
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewbox="0 0 18 15" width="18px" height="15px">
+                <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+<a class="page-link" href="/about">ABOUT</a><a class="page-link" href="/archives">ARCHIVES</a><a class="page-link" href="/categories">CATEGORIES</a><a class="page-link" href="/">HOME</a><a class="page-link" href="/search">SEARCH</a><a class="page-link" href="/tags">TAGS</a>
+
+
+
+
+
+
+
+
+
+<span class="page-link">
+
+
+
+<div id="google_translate_element" style="display: none;">
+</div>
+
+<span class="ct-language">
+  <ul class="list-unstyled ct-language-dropdown">
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="en">
+          
+          <img src="https://cdn.countryflags.com/thumbs/united-states-of-america/flag-400.png" title="English">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="fr">
+          
+          <img src="https://cdn.countryflags.com/thumbs/france/flag-400.png" title="French">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="zh-CN">
+          
+          <img src="https://cdn.countryflags.com/thumbs/china/flag-400.png" title="Chinese(Simple)">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ja">
+          
+          <img src="https://cdn.countryflags.com/thumbs/japan/flag-400.png" title="Japanese">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ko">
+          
+          <img src="https://cdn.countryflags.com/thumbs/south-korea/flag-400.png" title="Korean">
+          
+        </a>
+      </li>
+    
+      <li>
+        <a href="#" class="lang-select" data-lang="ru">
+          
+          <img src="https://cdn.countryflags.com/thumbs/russia/flag-400.png" title="Russian">
+          
+        </a>
+      </li>
+    
+  </ul>
+</span>
+
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en',
+    autoDisplay: false,
+    layout: google.translate.TranslateElement.InlineLayout.VERTICAL
+  }, 'google_translate_element');
+
+  // Links to cross-origin destinations are unsafe
+  var gll = document.getElementsByClassName('goog-logo-link')[0];
+  if (gll) {
+    gll.setAttribute('rel', 'noopener');
+  }
+
+  function restoreLang() {
+    var iframe = document.getElementsByClassName('goog-te-banner-frame')[0];
+    if (!iframe) return;
+
+    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+    var restore_el = innerDoc.getElementsByTagName("button");
+
+    for (var i = 0; i < restore_el.length; i++) {
+      if (restore_el[i].id.indexOf("restore") >= 0) {
+        restore_el[i].click();
+        var close_el = innerDoc.getElementsByClassName("goog-close-link");
+        close_el[0].click();
+        return;
+      }
+    }
+  }
+
+  function triggerHtmlEvent(element, eventName) {
+    var event;
+    if (document.createEvent) {
+      event = document.createEvent('HTMLEvents');
+      event.initEvent(eventName, true, true);
+      element.dispatchEvent(event);
+    } else {
+      event = document.createEventObject();
+      event.eventType = eventName;
+      element.fireEvent('on' + event.eventType, event);
+    }
+  }
+
+  var googleCombo = document.querySelector("select.goog-te-combo");
+  var langSelect = document.querySelector('.ct-language');
+  langSelect.addEventListener('click', function(event) {
+    if (!event.target) {
+      return;
+    }
+
+    var selected = document.querySelector('.ct-language .ct-language-selected');
+    if (selected) {
+      selected.classList.remove('ct-language-selected');
+    }
+
+    var target = event.target;
+    while (target && target !== langSelect ) {
+      if (target.matches('.lang-select')) {
+        break;
+      }
+      target = target.parentElement;
+    }
+
+    if (target && target.matches('.lang-select')) {
+      var lang = target.getAttribute('data-lang');
+      if (googleCombo.value == lang) {
+        restoreLang();
+      } else {
+        target.parentElement.classList.add('ct-language-selected');
+        googleCombo.value = lang;
+        triggerHtmlEvent(googleCombo, 'change');
+      }
+    }
+
+    event.preventDefault();
+  });
+}
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</span>
+</div>
+        </nav>
+</div>
+  </div>
+</header>
+
+<script>
+  function initHeader() {
+    var lastScrollY = getScrollPos().y;
+    var documentElement = document.documentElement;
+
+    function storeScrollData() {
+      var y = getScrollPos().y;var scrollStatus = "";
+
+      if (y <= 0) {
+        scrollStatus = "top";
+      } else if ((window.innerHeight + y) >= document.body.offsetHeight) {
+        scrollStatus = "bottom";
+      } else {
+        var isScrollDown = (y - lastScrollY > 0) ? true : false;
+        scrollStatus = isScrollDown ? "down" : "up";
+      }
+
+      lastScrollY = y;
+      documentElement.setAttribute("data-scroll-status", scrollStatus);
+    }
+
+    window.addEventListener('scroll', function(e) {
+      storeScrollData();
+    });
+
+    storeScrollData();
+  }
+  document.addEventListener('DOMContentLoaded', initHeader);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+  function hashLocate(hashValue) {
+    hashValue = hashValue.replace(/^.*#h-/, '');
+    hashValue = decodeURIComponent(hashValue);
+    var element = document.getElementById(hashValue);
+
+    if (!element) {
+      return;
+    }
+
+    var header = document.querySelector('header.site-header');
+    var headerRect = header.getBoundingClientRect();
+    var headerTop = Math.floor(headerRect.top);
+    var headerHeight = Math.floor(headerRect.height);
+    var scrollPos = getScrollPos();
+    var offsetY = element.offsetTop - (headerTop + headerHeight + 20);
+
+    if (offsetY == scrollPos.y) {
+      return;
+    }
+
+    if (headerTop == 0  && offsetY > scrollPos.y) {
+      offsetY += headerHeight + 2;
+    } else if (headerTop < 0  && offsetY < scrollPos.y) {
+      offsetY -= headerHeight - 2;
+    }
+
+    smoothScrollTo(offsetY);
+  }
+
+  // The first event occurred
+  window.addEventListener('load', function(event) {
+    if (window.location.hash) {
+      hashLocate(window.location.hash);
+    }
+  });
+
+  // The first event occurred
+  window.addEventListener('click', function(event) {
+    if (event.target.tagName.toLowerCase() == 'a') {
+      hashLocate(event.target.getAttribute('href'));
+    }
+  });
+</script>
+<div class="theme-toggle">
+  <input type="checkbox" id="theme-switch">
+  <label for="theme-switch">
+    <div class="toggle"></div>
+    <div class="names">
+      <p class="light">Light</p>
+      <p class="dark">Dark</p>
+    </div>
+  </label>
+</div>
+
+
+
+
+<script>
+  (function() {
+    var sw = document.getElementById('theme-switch');
+    var html = document.getElementsByTagName('html')[0];
+    var nightModeOption = ('auto' || 'auto').toLowerCase();
+    var storage = nightModeOption === 'manual'
+        ? localStorage
+        : sessionStorage;
+    var themeData = loadThemeData();
+
+    function saveThemeData(data) {
+      storage.setItem('theme', JSON.stringify(data));
+    }
+
+    function loadThemeData() {
+      var data = storage.getItem('theme');
+      try {
+        data = JSON.parse(data ? data : '');
+      } catch(e) {
+        data = { nightShift: undefined, autoToggleAt: 0 };
+        saveThemeData(data);
+      }
+      return data;
+    }
+
+    function handleThemeToggle(nightShift) {
+      themeData.nightShift = nightShift;
+      saveThemeData(themeData);
+      html.dataset.theme = nightShift ? 'dark' : 'light';
+      setTimeout(function() {
+        sw.checked = nightShift ? true : false;
+      }, 50);
+    }
+
+    function autoThemeToggle() {
+      // Next time point of theme toggle
+      var now = new Date();
+      var toggleAt = new Date();
+      var hours = now.getHours();
+      var nightShift = hours >= 19 || hours <=7;
+
+      if (nightShift) {
+        if (hours > 7) {
+          toggleAt.setDate(toggleAt.getDate() + 1);
+        }
+        toggleAt.setHours(7);
+      } else {
+        toggleAt.setHours(19);
+      }
+
+      toggleAt.setMinutes(0);
+      toggleAt.setSeconds(0);
+      toggleAt.setMilliseconds(0)
+
+      var delay = toggleAt.getTime() - now.getTime();
+
+      // auto toggle theme mode
+      setTimeout(function() {
+        handleThemeToggle(!nightShift);
+      }, delay);
+
+      return {
+        nightShift: nightShift,
+        toggleAt: toggleAt.getTime()
+      };
+    }
+
+    // Listen the theme toggle event
+    sw.addEventListener('change', function(event) {
+      handleThemeToggle(event.target.checked);
+    });
+
+    if (nightModeOption == 'auto') {
+      var data = autoThemeToggle();
+
+      // Toggle theme by local setting
+      if (data.toggleAt > themeData.autoToggleAt) {
+        themeData.autoToggleAt = data.toggleAt;
+        handleThemeToggle(data.nightShift);
+      } else {
+        handleThemeToggle(themeData.nightShift);
+      }
+    } else if (nightModeOption == 'manual') {
+      handleThemeToggle(themeData.nightShift);
+    } else {
+      var nightShift = themeData.nightShift;
+      if (nightShift === undefined) {
+        nightShift = nightModeOption === 'on';
+      }
+      handleThemeToggle(nightShift);
+    }
+  })();
+</script>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="framework">
+  <section class="main">
+
+     <div class="post">
+  <section>
+
+
+
+
+
+
+
+
+
+<header class="post-header">
+  <h1 class="post-title p-name" itemprop="name headline">[Linux/Sed] sed and regex</h1>
+  <h2 class="post-subtitle"></h2>
+
+  <p class="post-meta">
+    <time class="dt-published" datetime="2023-03-14T23:36:40+00:00" itemprop="datePublished"><i class="fa fa-calendar"></i> 2023-03-14
+    </time>
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <span class="post-reading-time left-vsplit"><i class="fa fa-clock-o"></i> About 9 mins</span>
+  </p>
+<div class="post-tags">
+<a class="post-tag" href="/tags.html#Linux">#Linux</a><a class="post-tag" href="/tags.html#OS">#OS</a><a class="post-tag" href="/tags.html#Sed">#Sed</a><a class="post-tag" href="/tags.html#Regex">#Regex</a>
+</div></header>
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <div class="post-content e-content" itemprop="articleBody">
+
+      <h2 id="1-overview">1. Overview</h2>
+
+<p>sed 기본적인 사용 방법과 regex를 활용한 몇몇 유용한 패턴을 정리한다</p>
+
+<p><br><br></p>
+
+<h2 id="2-기본-사용법">2. 기본 사용법</h2>
+
+<p>다음과 같은 Document가 있다고 가정하고,</p>
+
+<p>기본적인 사용방법을 예시로 든다.</p>
+
+<p>변경된 결과만 언급하기로 한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> /tmp/sed/before.txt
+Hello world!
+My name is <span class="k">${</span><span class="nv">NAME</span><span class="k">}</span>
+
+This <span class="nb">time </span>is <span class="s1">'How to use sed'</span>
+Through practice, You can enhance editing text document!
+-
+Ref. My blog addr is //dhkim900331.github.com
+My email is ks900331@naver.com
+My phone is 010-1234-5678
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p><br></p>
+
+<h3 id="21-간단한-문자-변경">2.1 간단한 문자 변경</h3>
+
+<ul>
+  <li>
+    <div class="language-sh highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"s/</span><span class="se">\!</span><span class="s2">/</span><span class="se">\!\!</span><span class="s2">/g"</span> before.txt
+Hello world!!
+Through practice, You can enhance editing text document!!
+</pre></td>
+</tr></tbody></table></code></pre></div>    </div>
+
+    <ul>
+      <li>느낌표(!) 두개 만들기</li>
+      <li>느낌표(!, Exclamation Mark)는 Linux에서 특수문자이기 때문에 문자마다 Escape(\, back-slash)를 사용해야 한다. <a href="https://www.baeldung.com/linux/bash-exclamation-mark">참고</a>
+</li>
+      <li>추가로 확인해보니, single quote(‘)를 사용하여 특수문자를 제거할 수 있다.
+        <ul>
+          <li><code class="language-plaintext highlighter-rouge">sed 's,!,!!,g' before.txt</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><br></p>
+
+<ul>
+  <li>
+    <div class="language-sh highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"s/world</span><span class="se">\!</span><span class="s2">/world</span><span class="se">\!\!</span><span class="s2">/g"</span> before.txt
+Hello world!!
+</pre></td>
+</tr></tbody></table></code></pre></div>    </div>
+
+    <ul>
+      <li>원하는 글자의 느낌표만 두개로 변경하였다.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br><br></p>
+
+<h3 id="22-특수-문자-변경">2.2 특수 문자 변경</h3>
+
+<p>slash, quote와 같은 특수문자를 변경할 때는 escape가 필요하다고 하였는데, 다음과 같이 복잡하게 구성이 되는 경우가 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"s/</span><span class="se">\/\/</span><span class="s2">/https:</span><span class="se">\/\/</span><span class="s2">/g"</span> before.txt
+Ref. My blog addr is https://dhkim900331.github.com
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>// → https:// 변경하기 위해 slash와 escape를 섞다보니 복잡하다.</p>
+
+<p><br></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"s|//|https://|g"</span> before.txt
+Ref. My blog addr is https://dhkim900331.github.com
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>이렇게 delimiter(구분자) 를 변경하면 가독성이 좋아진다.</p>
+
+<p>또는 <code class="language-plaintext highlighter-rouge">sed "s,//,https://,g" before.txt</code>, <code class="language-plaintext highlighter-rouge">sed "s@//@https://@g" before.txt</code></p>
+
+<p><br><br></p>
+
+<h3 id="23-라인-변경">2.3 라인 변경</h3>
+
+<p>특정 라인을 편집하려면,</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> <span class="nt">-n</span> before.txt
+     1  Hello world!
+     2  My name is <span class="k">${</span><span class="nv">NAME</span><span class="k">}</span>
+     3
+     4  This <span class="nb">time </span>is <span class="s1">'How to use sed'</span>
+     5  Through practice, You can enhance editing text document!
+     6  -
+     7  Ref. My blog addr is //dhkim900331.github.com
+     8  My email is ks900331@naver.com
+     9  My phone is 010-1234-5678
+
+<span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"6s,-,------------,"</span> before.txt
+Through practice, You can enhance editing text document!
+<span class="nt">------------</span>
+Ref. My blog addr is //dhkim900331.github.com
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>6번째 줄의 Dash(<code class="language-plaintext highlighter-rouge">-</code>)를 여러개 복사했다.</p>
+
+<p><br><br></p>
+
+<h3 id="24-라인-전체-변경">2.4 라인 전체 변경</h3>
+
+<p>라인 전체를 통째로 변경하려면,</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"/My/c</span><span class="se">\p</span><span class="s2">rivacy"</span> before.txt
+privacy
+privacy
+privacy
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>Blog, Email, Phone 정보가 있던 줄 전체를 변경했다.</p>
+
+<p><br></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"/^My/c</span><span class="se">\p</span><span class="s2">rivacy"</span> before.txt
+Ref. My blog addr is //dhkim900331.github.com
+privacy
+privacy
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>Regex로 시작(<code class="language-plaintext highlighter-rouge">^</code>) 문자를 지정하여, 일부만 변경했다.</p>
+
+<p>이 명령어 패턴에서는, delimiter가 slash만 되는 것 같다.</p>
+
+<p><br><br></p>
+
+<h3 id="25-추가-및-삭제">2.5 추가 및 삭제</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"1p"</span> before.txt
+Hello world!
+Hello world!
+My name is <span class="k">${</span><span class="nv">NAME</span><span class="k">}</span>
+
+<span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"1d"</span> before.txt
+My name is <span class="k">${</span><span class="nv">NAME</span><span class="k">}</span>
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>P(print), D(delete) 으로 첫번째 줄을 복사 또는 첫번째 줄 삭제</p>
+
+<p><br></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"1,3d"</span> before.txt
+This <span class="nb">time </span>is <span class="s1">'How to use sed'</span>
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>1~3줄 삭제</p>
+
+<p><br></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat</span> <span class="nt">-n</span> before.txt
+     1  Hello world!
+     2  My name is <span class="k">${</span><span class="nv">NAME</span><span class="k">}</span>
+     3
+     4  This <span class="nb">time </span>is <span class="s1">'How to use sed'</span>
+     5  Through practice, You can enhance editing text document!
+     6  -
+     7  Ref. My blog addr is //dhkim900331.github.com
+     8  My email is ks900331@naver.com
+     9  My phone is 010-1234-5678
+     
+<span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"1~3d"</span> before.txt
+My name is <span class="k">${</span><span class="nv">NAME</span><span class="k">}</span>
+
+Through practice, You can enhance editing text document!
+-
+My email is ks900331@naver.com
+My phone is 010-1234-5678
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>Line 1 삭제, Line 3 까지 건너 뛰기를 반복한다.</p>
+
+<p>반복하므로, Line 1, 4(1+3), 7(1+3+3), 10(1+3+3+3) 을 삭제한다.</p>
+
+<p><br></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'1,1!d'</span> before.txt
+Hello world!
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>1~1 라인을 제외하고 모두 삭제한다.</p>
+
+<p><br><br></p>
+
+<h3 id="26-정규식-변경">2.6 정규식 변경</h3>
+
+<p>개인정보 중에 전화번호만 검출하여 변경한다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">sed</span> <span class="s1">'s/[0-9]\{1,3\}-[0-9]\{1,4\}-[0-9]\{1,4\}/privacy/g'</span> before.txt
+My phone is privacy
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>[0-9] : 0~9 숫자</p>
+
+<p>\{1,3\} : 1~3 자리이며 escape brace 필요</p>
+
+<p>복잡하므로 강조 표시를 해보자면,,,</p>
+
+<p>$ sed ‘s/<strong>[0-9]\{1,3\}</strong>-<strong>[0-9]\{1,4\}</strong>-<strong>[0-9]\{1,4\}</strong>/privacy/g’ before.txt</p>
+
+<p><br></p>
+
+<p>사실 이 부분은,, 정규식을 알면 되는 내용이다.</p>
+
+<p><br><br></p>
+
+<h3 id="27-group-capture">2.7 Group Capture</h3>
+
+<p>Group Catpure라는 것은, 정규식으로 검색된 특정 부분을 Capture(촬영, 변수화)하여 원하는 대로 꺼내어 쓸 수 있게 해주는 것이다.</p>
+
+<p>사실 이 부분은 sed의 범위를 넘어선다.</p>
+
+<p><br></p>
+
+<p>다음의 예제를 보면,</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ TEXT</span><span class="o">=</span><span class="s2">"0 a A"</span>
+
+<span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">TEXT</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s2">"s#</span><span class="se">\(</span><span class="s2">[0-9]</span><span class="se">\)</span><span class="s2"> </span><span class="se">\(</span><span class="s2">[a-z]</span><span class="se">\)</span><span class="s2"> </span><span class="se">\(</span><span class="s2">[A-Z]</span><span class="se">\)</span><span class="s2">#numeric(</span><span class="se">\1</span><span class="s2">) lower(</span><span class="se">\2</span><span class="s2">) upper(</span><span class="se">\3</span><span class="s2">)#"</span>
+numeric<span class="o">(</span>0<span class="o">)</span> lower<span class="o">(</span>a<span class="o">)</span> upper<span class="o">(</span>A<span class="o">)</span>
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>0 a A 문자를 정규식으로 숫자, 소문자, 대문자 구분을 하고 소괄호로 group capture 하여 \1, \2, \3 으로 꺼내어 쓸 수 있다.</p>
+
+<p>숫자,소문자,대문자 인지를 구별하는 것은 정규식의 기능이고, 구분된 문자들을 특정 그룹으로 묶어 (묶을 때 소괄호) group capture를 하였고,</p>
+
+<p>capture를 back-slash 숫자로 갯수만큼 꺼내어 쓸 수 있다는 것.</p>
+
+<p><br></p>
+
+<p>위 예제를 변형시켜 보면,</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ TEXT</span><span class="o">=</span><span class="s2">"a 0 A"</span>
+<span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">TEXT</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s2">"s#</span><span class="se">\(</span><span class="s2">[0-9]</span><span class="se">\)</span><span class="s2"> </span><span class="se">\(</span><span class="s2">[a-z]</span><span class="se">\)</span><span class="s2"> </span><span class="se">\(</span><span class="s2">[A-Z]</span><span class="se">\)</span><span class="s2">#numeric(</span><span class="se">\1</span><span class="s2">) lower(</span><span class="se">\2</span><span class="s2">) upper(</span><span class="se">\3</span><span class="s2">)#"</span>
+a 0 A
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>TEXT 변수안의 글자의 순서를 뒤바꿨을 뿐인데, sed 정규식이 실행되지 않아 원본 그대로 출력이 되었다.</p>
+
+<p>내가 지금까지 알기로는, 순서 까지 스마트하게 capture하는 방법은 모르겠다.</p>
+
+<p>위의 정규식은 항상 “숫자 v 소문자 v 대문자”가 위치할 것이라는 가정이 들어있다.</p>
+
+<p><strong><em>v 는 뛰어 쓰기를 의미한다.</em></strong></p>
+
+<p><br><br></p>
+
+<h2 id="3-유용한-패턴">3. 유용한 패턴</h2>
+
+<p>기본 사용법을 가지고, 필드에서 바로 써먹을 수 있는 몇가지 유용한 패턴을 정리해본다.</p>
+
+<p><br><br></p>
+
+<h3 id="31-group-capture">3.1 Group Capture</h3>
+
+<p>다음과 같이 이미 정리된 문서가 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cat </span>phone_email_name.txt
+010-1234-5678 Jason@Jason.com Jason
+010-2555-2323 Daniel@Daniel.com
+013-5555-1234 bakeuion@bakeuion.com bakeuion
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>1단계, Phone number 정규식 만들기
+    <ul>
+      <li>
+<code class="language-plaintext highlighter-rouge">[0-9]{1,4}</code> : 0~9 숫자가 1~4자리 있다는 의미</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">-</code> : Phone 중간 번호 마디로써, 그냥 단순 문자.</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">( ~ )</code> : 소괄호 단위로 Group이라고 하며, Capture가 된다. 아래에서 설명하지만 Capture를 하면 변수로 꺼내어 쓸 수 있게 된다.</li>
+    </ul>
+  </li>
+</ul>
+
+<font size="5pt">( [0-9]{1,4} - [0-9]{1,4} - [0-9]{1,4} )</font>
+
+<p><br></p>
+
+<ul>
+  <li>2단계, 불필요한 공백 제거 및 소,중괄호 Escape 처리
+    <ul>
+      <li>불필요한 공백이라는 의미는, 1단계에서 정규식 코드를 가독성있게 하여 설명하기 위하여 공백을 추가하였는데, 그것을 제거한다는 의미</li>
+      <li>소,중괄호만 Back-slash로 escape 처리해야 하는 것으로 보여진다, 대괄호는 하지 않아도 되는 것으로 확인됨, 구체적은 설명된 문서는 못찾음.</li>
+      <li>변수로 담아 3단계에서 가독성을 높인다.</li>
+    </ul>
+  </li>
+</ul>
+
+<font size="5pt">PHONE_REGEX="\\([0-9]\\{1,4\\}-[0-9]\\{1,4\\}-[0-9]\\{1,4\\}\\)"</font>
+
+<p><br></p>
+
+<ul>
+  <li>3단계, 다음의 sed syntax에 삽입한다.
+    <ul>
+      <li>
+<code class="language-plaintext highlighter-rouge">\1</code> : 1단계에서 말한 Group Capture 순서대로 꺼낼 수 있는 변수다. 소괄호 묶음 마다 숫자를 증가시켜 꺼내 쓸 수 있다.</li>
+    </ul>
+  </li>
+</ul>
+
+<font size="5pt">sed "s#${PHONE_REGEX}#Phone(\1)#" phone_email_name.txt</font>
+
+<p><br></p>
+
+<p>결과는,,,</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ PHONE_REGEX</span><span class="o">=</span><span class="s2">"</span><span class="se">\(</span><span class="s2">[0-9]</span><span class="se">\{</span><span class="s2">1,4</span><span class="se">\}</span><span class="s2">-[0-9]</span><span class="se">\{</span><span class="s2">1,4</span><span class="se">\}</span><span class="s2">-[0-9]</span><span class="se">\{</span><span class="s2">1,4</span><span class="se">\}\)</span><span class="s2">"</span>
+<span class="nb">sed</span> <span class="s2">"s#</span><span class="k">${</span><span class="nv">PHONE_REGEX</span><span class="k">}</span><span class="s2">#Phone(</span><span class="se">\1</span><span class="s2">)#"</span> phone_email_name.txt
+Phone<span class="o">(</span>010-1234-5678<span class="o">)</span> Jason@Jason.com Jason
+Phone<span class="o">(</span>010-2555-2323<span class="o">)</span> Daniel@Daniel.com Daniel
+Phone<span class="o">(</span>013-5555-1234<span class="o">)</span> bakeuion@bakeuion.com bakeuion
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>최종적으로는 다음처럼 정리할 수 있다.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr>
+<td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td>
+<td class="rouge-code"><pre><span class="nv">$ PHONE_REGEX</span><span class="o">=</span><span class="s2">"</span><span class="se">\(</span><span class="s2">[0-9]</span><span class="se">\{</span><span class="s2">1,4</span><span class="se">\}</span><span class="s2">-[0-9]</span><span class="se">\{</span><span class="s2">1,4</span><span class="se">\}</span><span class="s2">-[0-9]</span><span class="se">\{</span><span class="s2">1,4</span><span class="se">\}\)</span><span class="s2">"</span>
+<span class="nv">$ EMAIL_REGEX</span><span class="o">=</span><span class="s2">"</span><span class="se">\(</span><span class="s2">[0-9a-zA-Z].*@[0-9a-zA-Z].*[.com|.kr]</span><span class="se">\)</span><span class="s2">"</span>
+<span class="nv">$ NAME_REGEX</span><span class="o">=</span><span class="s2">"</span><span class="se">\(</span><span class="s2">[a-zA-Z].*</span><span class="se">\)</span><span class="s2">"</span>
+
+<span class="nv">$ </span><span class="nb">sed</span> <span class="s2">"s#</span><span class="k">${</span><span class="nv">PHONE_REGEX</span><span class="k">}</span><span class="s2"> </span><span class="k">${</span><span class="nv">EMAIL_REGEX</span><span class="k">}</span><span class="s2"> </span><span class="k">${</span><span class="nv">NAME_REGEX</span><span class="k">}</span><span class="s2"># Phone(</span><span class="se">\1</span><span class="s2">) Email(</span><span class="se">\2</span><span class="s2">) Name(</span><span class="se">\3</span><span class="s2">) #"</span> phone_email_name.txt
+ Phone<span class="o">(</span>010-1234-5678<span class="o">)</span> Email<span class="o">(</span>Jason@Jason.com<span class="o">)</span> Name<span class="o">(</span>Jason<span class="o">)</span>
+ Phone<span class="o">(</span>010-2555-2323<span class="o">)</span> Email<span class="o">(</span>Daniel@Daniel.com<span class="o">)</span> Name<span class="o">(</span>Daniel<span class="o">)</span>
+ Phone<span class="o">(</span>013-5555-1234<span class="o">)</span> Email<span class="o">(</span>bakeuion@bakeuion.com<span class="o">)</span> Name<span class="o">(</span>bakeuion<span class="o">)</span>
+</pre></td>
+</tr></tbody></table></code></pre></div></div>
+
+<p>어떤 데이터 순서를 가지고 있던 간에, 이메일 데이터만 제대로 뽑을 수 있는 regex를 만들다가 어려워서 포기했다~</p>
+
+<p><br><br></p>
+
+<h2 id="4-참고">4. 참고</h2>
+
+<p><a href="https://www.regexlib.com/CheatSheet.aspx">Regex Cheat Sheet</a></p>
+
+
+    </div>
+
+</article>
+<div class="post-nav">
+<a class="previous" href="/webtier/All-In-One-Script-For-12cR2" title="[WebTier/OHS] All In One Script For 12cR2">(이전) [WebTier/OHS] All In One Script For...</a><a class="next" href="/weblogic/Non-Supported-Character-Set" title="[WebLogic/JDBC] Non supported character set">[WebLogic/JDBC] Non supported character set (다음)</a>
+</div>
+<div class="post-related">
+      <div>Related Articles</div>
+      <ul>
+        <li><a class="post-link" href="/weblogic/Non-Supported-Character-Set" title="[WebLogic/JDBC] Non supported character set">[WebLogic/JDBC] Non supported character set</a></li>
+<li><a class="post-link" href="/webtier/iPlanet-Error-Page-To-OHS" title="[WebTier/OHS] iPlanet Error Page To OHS">[WebTier/OHS] iPlanet Error Page To OHS</a></li>
+<li><a class="post-link" href="/weblogic/Annotation-Scanning" title="[WebLogic] Annotation Scanning">[WebLogic] Annotation Scanning</a></li>
+<li><a class="post-link" href="/weblogic/A-config-xml-under-pending-or-original" title="[WebLogic] A config.xml under pending or original directory">[WebLogic] A config.xml under pending or original directory</a></li>
+</ul>
+    </div>
+<div class="post-comments"></div></section>
+</div>
+
+
+  </section>
+  <section class="sidebar" style="margin-left: 15px;">
+    <!-- Get sidebar items --><style type="text/css" media="screen">
+.post-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+</style>
+
+<div class="post-menu">
+  <div class="post-menu-title">TOC</div>
+  <div class="post-menu-content"></div>
+</div>
+
+<script>
+  function generateContent() {
+    var menu = document.querySelector(".post-menu");
+    var menuContent =  menu.querySelector(".post-menu-content");
+    var headings = document.querySelector(".post-content").querySelectorAll("h2, h3, h4, h5, h6");
+
+    // Hide menu when no headings
+    if (headings.length === 0) {
+      return menu.style.display = "none";
+    }
+
+    // Generate post menu
+    var menuHTML = '';
+    for (var i = 0; i < headings.length; i++) {
+      var h = headings[i];
+      menuHTML += (
+        '<li class="h-' + h.tagName.toLowerCase() + '">'
+        + '<a href="#h-' + h.getAttribute('id') + '">' + h.textContent + '</a></li>');
+    }
+
+    menuContent.innerHTML = '<ul>' + menuHTML + '</ul>';
+
+    // The header element
+    var header = document.querySelector('header.site-header');
+
+    function doMenuCollapse(index, over_items) {
+      var items = menuContent.firstChild.children;
+
+      if (over_items == undefined) {
+        over_items = 20;
+      }
+
+      if (items.length < over_items) {
+        return;
+      }
+
+      var activeItem = items[index];
+      var beginItem = activeItem
+      var endItem = activeItem
+      var beginIndex = index;
+      var endIndex = index + 1;
+      while (beginIndex >= 0
+        && !items[beginIndex].classList.contains('h-h2')) {
+        beginIndex -= 1;
+      }
+      while (endIndex < items.length
+        && !items[endIndex].classList.contains('h-h2')) {
+        endIndex += 1;
+      }
+      for (var i = 0; i < beginIndex; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+      for (var i = beginIndex + 1; i < endIndex; i++) {
+        item = items[i]
+        // if (!item.classList.contains('h-h2')) {
+          item.style.display = '';
+        // }
+      }
+      for (var i = endIndex; i < items.length; i++) {
+        item = items[i]
+        if (!item.classList.contains('h-h2')) {
+          item.style.display = 'none';
+        }
+      }
+    }
+
+    // Init menu collapsed
+    doMenuCollapse(-1);
+
+    // Active the menu item
+    window.addEventListener('scroll', function (event) {
+      var lastActive = menuContent.querySelector('.active');
+      var changed = true;
+      var activeIndex = -1;
+      for (var i = headings.length - 1; i >= 0; i--) {
+        var h = headings[i];
+        var headingRect = h.getBoundingClientRect();
+        var headerRect = header.getBoundingClientRect();
+        var headerTop = Math.floor(headerRect.top);
+        var headerHeight = Math.floor(headerRect.height);
+        var headerHeight = headerTop + headerHeight + 20;
+        if (headingRect.top <= headerHeight) {
+          var id = 'h-' + h.getAttribute('id');
+          var a = menuContent.querySelector('a[href="#' + id  + '"]');
+          var curActive = a.parentNode;
+          if (curActive) {
+            curActive.classList.add('active');
+            activeIndex = i;
+          }
+          if (lastActive == curActive) {
+            changed = false;
+          }
+          break;
+        }
+      }
+      if (changed) {
+        if (lastActive) {
+          lastActive.classList.remove('active');
+        }
+        doMenuCollapse(activeIndex);
+      }
+      event.preventDefault();
+    });
+  }
+  generateContent();
+</script>
+</section>
+</div>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+    <div class="site-footer-inner">
+<div>Copyright 2015-2024. DongHyun Kim All data cannot be copied without permission.</div>
+      <div>Powered by <a title="Jekyll is a simple, blog-aware, static site
+      generator." href="http://jekyllrb.com/">Jekyll</a> &amp; <a title="Yat, yet
+      another theme." href="https://github.com/jeffreytse/jekyll-theme-yat">Yat Theme</a>.</div>
+      <div class="footer-col rss-subscribe">Subscribe <a href="/feed.xml">via RSS</a>
+</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
