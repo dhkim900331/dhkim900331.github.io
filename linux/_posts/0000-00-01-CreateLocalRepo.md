@@ -6,7 +6,7 @@ tags: [OS, Linux, Repository, Local]
 typora-root-url: ..
 ---
 
-# 1. Overviews
+# 1. Overview
 
 고객사에 Apache 설치를 위해 OS Package가 사전 설치되어 있어야 하나, 폐쇄망으로 인하여 직접 Package를 설치해야 되는 상황이 발생하였다.
 
