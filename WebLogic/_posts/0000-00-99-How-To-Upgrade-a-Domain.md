@@ -37,7 +37,7 @@ SEVERE [20] com.oracle.cie.domain.progress.AbstractProgressGenerator - 20850: Th
 20850: Domain Location:
         /sw/weblogic/12213/domains/one_domain
    Admin Server URL:
-        http://wls.local:8001
+        http://wls.local:8001 
 Click cancel to exit the wizard.
 20850: Click cancel to exit the wizard.
  Error occurred in phase {Selecting Reconfig Templates} execution.
