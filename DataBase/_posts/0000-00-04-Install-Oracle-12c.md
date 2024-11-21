@@ -327,8 +327,6 @@ Creating Pluggable Databases
 78% complete
 100% complete
 Look at the log file "/sw/databases/oracle-12c/cfgtoollogs/dbca/GLOBAL_ORCL/GLOBAL_O.log" for further details.
-[weblogic@wls response]$
-
 ```
 
 
@@ -381,6 +379,8 @@ The command completed successfully
 
 
 _**데이터베이스 삭제는 `dbca -silent -deleteDatabase -sourceDB ORCL`**_
+
+_**재설치 시에 SID 가 이미 있다고 하면 `/etc/oratab` 을 확인한다.**_
 
 
 <br><br>
