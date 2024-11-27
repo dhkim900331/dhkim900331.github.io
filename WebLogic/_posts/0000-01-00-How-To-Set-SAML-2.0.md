@@ -49,7 +49,7 @@ IdP측은 SAML Response data를 만들고, SP 측에서 원하는 통신 방식�
 
 일반적으로, SAML Response data는 메세지 크기가 작지 않고, XML Data이며 노출을 꺼리기 때문에 HTTP/POST를 사용한다.
 
-IdP는 사용자에게 `<SP URL/saml2/acs/sp/post` (ACS URL 이라고 한다.) 으로 POST Data와 함께 가도록 지시한다.
+IdP는 사용자에게 `<SP URL>/saml2/acs/sp/post` (ACS URL 이라고 한다.) 으로 POST Data와 함께 가도록 지시한다.
 
 사용자가 직접 SP 에 도착 하는 것으로 마무리 된다.
 
@@ -60,7 +60,7 @@ IdP는 사용자에게 `<SP URL/saml2/acs/sp/post` (ACS URL 이라고 한다.) �
 
 <br><br>
 
-
+<br>
 
 ## 2.2 기능
 사용자가 SP에 접근하면, 사용자를 IdP로 보낸다.
@@ -74,7 +74,7 @@ IdP에서 사용자가 로그인에 성공하면, SP로 보낸다.
 
 <br><br>
 
-
+<br>
 
 ## 2.3 구현
 다음 환경을 구성한다.
@@ -110,7 +110,7 @@ SAML2_CredentialMapper - Configuration - Provider Specific - Save & Activate Cha
 
 <br>
 
-Servers - <Server Name> - Configuration - Federation Services - SAML 2.0 Identity Provider
+Servers - \<Server Name\> - Configuration - Federation Services - SAML 2.0 Identity Provider
 
 ```
  Enabled : check
@@ -121,7 +121,7 @@ Servers - <Server Name> - Configuration - Federation Services - SAML 2.0 Identit
 
 <br>
 
-Servers - <Server Name> - Configuration - Federation Services - SAML 2.0 General - Save & Activate Changes
+Servers - \<Server Name\> - Configuration - Federation Services - SAML 2.0 General - Save & Activate Changes
 
 ```
 Replicated Cache Enabled : It depends on using clustering
@@ -131,7 +131,7 @@ Entity ID : IdP_domain
 
 <br>
 
-Servers - <Server Name> - Configuration - Federation Services - SAML 2.0 General - Publish Meta Data
+Servers - \<Server Name\> - Configuration - Federation Services - SAML 2.0 General - Publish Meta Data
 
 으로 지금까지의 IdP 설정을 File로 게시한다.
 
@@ -156,7 +156,7 @@ Security RealmsSecurity Realms - myrealm - Providers - Authentication - New - Sa
 
 <br>
 
-Servers - <Server Name> - Configuration - Federation Services - SAML 2.0 Service Provider
+Servers - \<Server Name\> - Configuration - Federation Services - SAML 2.0 Service Provider
 
 ```
  Enabled : check
@@ -168,7 +168,7 @@ Servers - <Server Name> - Configuration - Federation Services - SAML 2.0 Service
 
 <br>
 
-Servers - <Server Name> - Configuration - Federation Services - SAML 2.0 General - Save & Activate Changes
+Servers - \<Server Name\> - Configuration - Federation Services - SAML 2.0 General - Save & Activate Changes
 
 ```
 Replicated Cache Enabled : It depends on using clustering
@@ -178,7 +178,7 @@ Entity ID : SP_domain
 
 <br>
 
-Servers - <Server Name> - Configuration - Federation Services - SAML 2.0 General - Publish Meta Data
+Servers - \<Server Name\> - Configuration - Federation Services - SAML 2.0 General - Publish Meta Data
 
 으로 지금까지의 IdP 설정을 File로 게시한다.
 
@@ -424,7 +424,7 @@ IdP에서 로그인이 완료되면, 다시 SP로 돌아오는 간단한 구조�
 
 <br><br>
 
-
+<br>
 
 ## 2.4 SAML Debugging
 SAML 호출 시, WLS Log를 통해 어떤 흐름을 생성하는지 구체적으로 이해해본다.
@@ -434,6 +434,25 @@ SP 외에도 IdP 또한 WLS 이므로 IdP 의 Debug log도 살펴볼 수도 있�
 그러나, 여기 SAML 에서는 IdP 측을 일반적으로 WLS 으로 구현하지 않는 경우가 많아 특별히 볼 필요가 없으며,
 
 당장 여기에 IdP 측의 Log를 넣으면, 얻는 정보보다, 복잡함이 증대하므로 넣지 않기로 한다.
+
+<br>
+
+Debug options.
+
+```sh
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.StdoutDebugEnabled=true"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.log.StdoutSeverity=Debug"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.log.LogSeverity=Debug"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.log.LoggerSeverity=Debug"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.debug.DebugSecuritySAML2Service=true"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.debug.DebugSecuritySAML2CredMap=true"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.debug.DebugSecuritySAML2Atn=true"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.debug.DebugSecuritySAML2Lib=true"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.debug.DebugHttpSessions=true"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.debug.DebugHttp=true"
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.debug.DebugSecurityAtn=true"
+export JAVA_OPTIONS
+```
 
 <br>
 

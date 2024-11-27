@@ -1,5 +1,4 @@
 ---
-date: 2024-11-21 10:08:10 +0900
 layout: post
 title: "[WebLogic/] "
 tags: [Middleware, WebLogic, ]
