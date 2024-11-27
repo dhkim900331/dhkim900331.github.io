@@ -13,7 +13,6 @@ HttpSession store method로 file 을 사용하는 경우, 간헐적으로 Hang �
 
 <br><br>
 
-<br>
 
 # 2. Descriptions
 
@@ -70,7 +69,6 @@ File이 아닌 방식으로 관리하도록 구성한다.
 
 <br><br>
 
-<br>
 
 # 3. References
 
