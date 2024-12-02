@@ -9,7 +9,9 @@ typora-root-url: ..
 # 1. Overview
 WebLogic Domain Upgrade 방법 및 사례
 
-<br>
+
+<br><br>
+
 
 # 2. Descriptions
 다음의 WLST Script를 통해 Debug log 수집과 더불어 Upgrade가 완료된다.
@@ -30,33 +32,22 @@ exit()
 EOF
 ```
 
-Upgrade 하려는 Domain의 ORACLE_HOME과
-상위 버전의 ORACLE_HOME이 동일하면 Upgrade를 수행하는 WLST에서 다음과 유사한 Exception이 발생한다.
-```
-SEVERE [20] com.oracle.cie.domain.progress.AbstractProgressGenerator - 20850: The domain is already at the current version.
-20850: Domain Location:
-        /sw/weblogic/12213/domains/one_domain
-   Admin Server URL:
-        http://wls.local:8001 
-Click cancel to exit the wizard.
-20850: Click cancel to exit the wizard.
- Error occurred in phase {Selecting Reconfig Templates} execution.
-com.oracle.cie.wizard.ext.progress.ProgressOperationException
-    at com.oracle.cie.domain.progress.domain.reconfig.wlscore.SelectReconfigTemplatePhase.execute(SelectReconfigTemplatePhase.java:71)
-    at com.oracle.cie.domain.progress.AbstractProgressGenerator.run(AbstractProgressGenerator.java:94)
-    at java.lang.Thread.run(Thread.java:750)
-```
+<br>
 
-실제 위 사례는,
-`/sw/weblogic/12213`은 WLS 12.2.1.4 버전이며 (경로만 같을 뿐, 상위 버전),
-사용하던 이전 버전의 `one_domain`만 새로 설치한 WLS 12.2.1.4 아래에 옮겨 경로를 유지하려고 했다.
-업그레이드 과정 중(domain version이 변경된 이후로 보임), 기 경로가 동일하여 실패한다.
+WLS 12cR2 기준으로, 12.2.1.1 이상에서 12.2.1.4 으로 업그레이드 하는 경우, ORACLE_HOME과 JAVA_HOME을 동일하게 구성 할 수 있다.
 
-다르게 설명하면,
-업그레이드를 위해 `one_domain`의 구성 요소를 Parsing 하는 과정 중에,
-이미 `${DOMAIN_HOME}` 값이 변경될 필요 없이 동일하다는 것이 문제다.
+ORACLE_HOME과 JAVA_HOME이 변경되지 않는 경우에는 Reconfiguration Wizard 를 실행하지 않아도 된다.
+
+즉, 별도로 상위 버전의 ORACLE_HOME을 별도 설치할 필요가 없고, 업그레이드 과정이 필요치 않다.
+
+> [참고](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/wlupg/intro.html#GUID-CA66052C-DA8C-45B6-9A4F-D67B63B524A8)
+>
+>   \>\>  If you are upgrading from version 12.2.1.1.0 and later to version 12.2.1.4.0, the Reconfiguration Wizard only needs to be run when the location of the JDK or the Oracle Home is changed as part of the upgrade. If the Oracle Home and the JDK binaries are in the same location, running Reconfiguration Wizard is not required.
+
+
+<br><br>
+
 
 
 # 3. References
-동일 사례 없음
-문서 작성하여 번호 부여 필요
+본문에 링크됨

@@ -96,7 +96,7 @@ Security RealmsSecurity Realms - myrealm - Providers - Credential Mapping - New
 
 ```
  Name : SAML2_CredentialMapper
- Type : SAML2_CredentialMapper
+ Type : SAML2CredentialMapper
 ```
 
 <br>
@@ -147,7 +147,7 @@ Servers - \<Server Name\> - Configuration - Federation Services - SAML 2.0 Gener
 
 SP_domain (이하 SP) 측에 다음과 같이 구현한다.
 
-Security RealmsSecurity Realms - myrealm - Providers - Authentication - New - Save & Activate Changes - Restart AdminServer
+Security Realms - myrealm - Providers - Authentication - New - Save & Activate Changes - Restart AdminServer
 
 ```
  Name : SAML2_IdentityAsserter
@@ -194,7 +194,7 @@ Servers - \<Server Name\> - Configuration - Federation Services - SAML 2.0 Gener
 
 IdP.xml 과 SP.xml 을 각 Domain에 배포한다.
 
-IdP > Security Realms - myrealm - Providers - Credential Mapping - SAML2_CredentialMapper - Management - New WebService Service Provider Partner
+IdP > Security Realms - myrealm - Providers - Credential Mapping - SAML2_CredentialMapper - Management - New - WebService Service Provider Partner
 
 ```
 Name : SAML_SSO_SP01
@@ -213,11 +213,11 @@ Key Info Included : check
 
 <br>
 
-SP > Security Realms - myrealm - Providers - Authentication - SAML2_IdentityAsserter - Management - New Web Single Sign-On Identity Provider Partner
+SP > Security Realms - myrealm - Providers - Authentication - SAML2_IdentityAsserter - Management - New - Web Single Sign-On Identity Provider Partner
 
 ```
-Name : SAML_SSO_SP01
-File : /path/to/SP.xml (* No IdP.xml) 
+Name : SAML_SSO_IDP01
+File : /path/to/IdP.xml (* No SP.xml) 
 ```
 
 <br>
@@ -878,6 +878,159 @@ Session에 Cached Key가 있을 것으로 예상하고, 진행한 테스트였�
 <br><br>
 
 
+## 2.7 Expired Certificate
+
+IdP측와 SP측은 서로 간에 SAML Request/Response Data를 주고 받을 때,
+
+상대방의 메타데이터(이미 서로 가지고 있음) 안에 있는 상대방의 인증서의 공개키로 암호화를 하여 전달한다.
+
+다시, 서로 간에 주고 받는 SAML Data를 각자가 가지고 있는 개인키로 복호화 하는, 일반적인 SSL 기반과 동일하다.
+
+이 과정 가운데, IdP 측의 인증서가 만료된 경우에 대하여 재현한다.
+
+<br>
+
+다음의 명령어로, IdP Metadata xml file에 포함된 인증서의 유효기간을 알 수 있다.
+
+```
+# IDP Metadata xml file에서 '<ds:X509Certificate>' 와 '</ds:X509Certificate>' 사이의 내용을
+# 아래와 같이 certificate.pem 으로 저장
+
+cat << EOF > certificate.pem
+-----BEGIN CERTIFICATE-----
+...<here, write key down>
+-----END CERTIFICATE-----
+EOF
+
+# 아래 명령어의 결과로, Not Before/After를 보면 된다.
+$ openssl x509 -in certificate.pem -text -noout
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            3e:10:9e:d3:0c:af:d4:83:a2:7b:d7:e9:47:97:2a:f2
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C = US, ST = MyState, L = MyTown, O = MyOrganization, OU = FOR TESTING ONLY, CN = CertGenCA
+        Validity
+            Not Before: Nov 17 01:56:47 2024 GMT
+            Not After : Nov 18 01:56:47 2039 GMT
+        Subject: C = US, ST = MyState, L = MyTown, O = MyOrganization, OU = FOR TESTING ONLY, CN = wls.local
+        ...
+```
+
+<br>
+
+> 이 게시물에서는, IdP가 WebLogic 이므로 다음의 문서에 따라 사용되고 있는 Demo 인증서의 유효기간을 확인하면, 위와 같다.
+>
+> `keytool -list -v -keystore ${DOMAIN_HOME}/security/DemoIdentity.jks -storepass DemoIdentityKeyStorePassPhrase`
+>
+> **What are the Default Passwords for Demo Identity and Demo Trust Keystores (Doc ID 2886289.1)**
+
+<br>
+
+다음의 명령어로, 의도적으로 만료된 인증서를 생성하고 본래의 시간으로 복귀한다.
+
+idp.jks는 WebLogic(IdP) Keystore/SSL에 등록하고, 메타데이터를 재생산(Publish Meta Data) 한다.
+
+메타데이터 파일을 SP 측에 등록한다.
+
+```sh
+sudo date -s '2001-02-03 04:05:06'
+
+openssl req -newkey rsa:2048 -nodes -keyout idp.key -out idp.csr -subj "/CN=wls.local/OU=FOR TESTING ONLY/O=MyOrganization/L=MyTown/ST=MyState/C=US"
+openssl x509 -req -in idp.csr -signkey idp.key -out idp.crt -days 365
+openssl x509 -in idp.crt -out idp.pem -outform PEM
+openssl x509 -in idp.pem -text -noout
+openssl pkcs12 -export -in idp.crt -inkey idp.key -out idp.p12 -name idp -passout pass:idp
+
+keytool -importkeystore \
+  -srckeystore idp.p12 -srcstoretype PKCS12 -srcstorepass idp \
+  -destkeystore idp.jks -deststoretype JKS -deststorepass idppass
+keytool -list -v -keystore idp.jks -storepass idppass
+
+sudo date -s '2024-11-30 12:21:25'
+```
+
+<br>
+
+SP Initiator로 SP에서 IdP 측으로 SAML Request가 전달된 다음,
+
+IdP측에서 서명을 할 때, 만료된 인증서의 경우 예외가 발생한다.
+
+클라이언트는 IdP 측으로 부터 HTTP 500 Error 를 받는다.
+
+IdP 로 동작하는 WLS 의 Debug log 를 살펴본다.
+
+```
+# IdP 측에서 login 처리
+<Dec 2, 2024 10:55:18,629 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <SAML2Servlet: Processing request on URI '/saml2/idp/login'>
+
+...
+
+# 만료된 인증서로 서명을 하는 경우에 발생하는 예외
+Dec 2, 2024 10:55:18,716 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <Using expired certificate at alias null for signing.>
+<Dec 2, 2024 10:55:18,717 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <allow expired cert is false>
+<Dec 2, 2024 10:55:18,725 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <[Security:096630]Using expired certificate at alias null for signing.>
+<Dec 2, 2024 10:55:18,725 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <Caused by: NotAfter: Sun Feb 03 04:05:06 KST 2002>
+<Dec 2, 2024 10:55:18,726 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <exception info
+com.bea.security.saml2.service.SAML2Exception: [Security:096630]Using expired certificate at alias null for signing.
+        at com.bea.security.saml2.service.AbstractService.checkSSOCertificate(AbstractService.java:122)
+        at com.bea.security.saml2.service.sso.SSOServiceProcessor.sendResponse(SSOServiceProcessor.java:359)
+        at com.bea.security.saml2.service.sso.SSOServiceProcessor.loginReturn(SSOServiceProcessor.java:236)
+        ...
+```
+
+<br>
+
+IdP에 `-Dcom.bea.common.security.saml2.allowExpiredCerts=true` 옵션을 적용 후, 만료된 인증서로도 서명을 한다.
+
+```
+<Dec 2, 2024 10:51:46,668 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <SAML2Servlet: Processing request on URI '/saml2/idp/login'>
+
+...
+
+<Dec 2, 2024 10:51:46,758 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <allow expired cert is true>
+```
+
+<br>
+
+그러나, SP 측에서는 만료된 인증서를 수락하지 않으므로, 예외가 발생한다.
+
+아래는 SP 측 Log
+
+```
+# Response 는 서명되었지만, 예외가 발생하는 경우의 로그
+<Dec 2, 2024 11:01:45,683 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <<samlp:Response> is signed.>
+<Dec 2, 2024 11:01:45,683 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <NotAfter: Sun Feb 03 04:05:06 KST 2002>
+<Dec 2, 2024 11:01:45,683 AM KST> <Debug> <SecuritySAML2Service> <BEA-000000> <exception info
+java.security.cert.CertificateExpiredException: NotAfter: Sun Feb 03 04:05:06 KST 2002
+        at sun.security.x509.CertificateValidity.valid(CertificateValidity.java:277)
+        at sun.security.x509.X509CertImpl.checkValidity(X509CertImpl.java:671)
+        at sun.security.x509.X509CertImpl.checkValidity(X509CertImpl.java:644)
+        ...
+```
+
+<br>
+
+[Configuring SAML 2.0 Services: Main Steps](https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/secmg/saml20.html#GUID-C541F7EB-1833-4500-8269-5ADB91E6BB6E) 페이지의 설명으로,
+
+기본적으로 SAML 2.0 에서는 만료/유효하지 않은 인증서를 서명(Singing)에 사용하지 않으며
+
+ `-Dcom.bea.common.security.saml2.allowExpiredCerts=true` 옵션을 사용하여 허용하도록 한다.
+
+여기서 서명은 IdP 측에서 하므로, IdP가 WLS 로 구현된 경우에 사용 가능한 옵션이다.
+
+<br>
+
+SP 에서 만료된 인증서를 수락하는 옵션은 없으므로, IdP 측이 WLS가 아닌 경우 반드시 인증서를 갱신해야 한다.
+
+해당 옵션은, 12.2.1.3.0.0 에서 추가 되었다.
+
+
+<br><br>
+
+
+
 # 3. References
 
 SAML Assertion Consumer Service (ACS) with Non Default Cookie in WebLogic Server (Doc ID 2960556.1)
@@ -890,3 +1043,4 @@ Does SAML 1.1 Require The Default JSESSIONID Cookie Name? (Doc ID 1376040.1)
 
 [SAML WebLogic 가이드 #2](https://blogs.oracle.com/blogbypuneeth/post/steps-to-configure-saml-20-with-weblogic-server-using-embedded-ldap-as-a-security-store-only-for-dev-environment)
 
+What are the Default Passwords for Demo Identity and Demo Trust Keystores (Doc ID 2886289.1)

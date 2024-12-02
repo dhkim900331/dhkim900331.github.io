@@ -58,7 +58,7 @@ HttpSession의 저장을 위해 다음의 설정이 적용되어 있다.
 
 모든 HttpSession을 File 기반으로 생성하고, Session의 읽기/쓰기 및, Expired 되면 다시 삭제하는 모든 일련의 과정이 Disk I/O 에 의존한다.
 
-<br> 
+<br>
 
 Stack Trace 최상위 `java.io.WinNTFileSystem.list(Native Method)` 는 OS Level 수준에서 Disk I/O 의 응답을 기다리는 것을 보여주고 있다.
 
