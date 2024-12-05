@@ -32,8 +32,8 @@ OS_HOSTNAME=wls.local
 
 
 ## DB Env ##
-DB_INSTALL_PATH=/sw/odi/databases/oracle-12c
-DB_INVENTORY_PATH=/sw/odi/databases/inventories/12cR2
+DB_INSTALL_PATH=/sw/odi/databases/12.1.0
+DB_INVENTORY_PATH=/sw/odi/databases/inventories/12.1.0
 
 ORACLE_BASE=${DB_INSTALL_PATH}
 export ORACLE_HOME=${ORACLE_BASE}/product/12.1.0/db_home_1
@@ -188,8 +188,28 @@ _EOF
 \${ORACLE_HOME}/bin/lsnrctl stop
 EOF
 
+
+## Reset DB Script
+cat << EOF > ${ORACLE_HOME}/bin/resetDB.sh
+#!/bin/bash
+export ORACLE_HOME=${ORACLE_HOME}
+export ORACLE_SID=${ORACLE_SID}
+export ORACLE_ODI_PDBNAME=${ORACLE_ODI_PDBNAME}
+
+# starting db
+\${ORACLE_HOME}/bin/sqlplus / as sysdba << _EOF
+shutdown immediate
+startup mount
+alert system enable restricted session
+drop database
+_EOF
+
+# starting listner
+\${ORACLE_HOME}/bin/lsnrctl stop
+EOF
+
 # Add permission
-chmod +x ${ORACLE_HOME}/bin/startDB.sh ${ORACLE_HOME}/bin/stopDB.sh
+chmod +x ${ORACLE_HOME}/bin/startDB.sh ${ORACLE_HOME}/bin/stopDB.sh ${ORACLE_HOME}/bin/resetDB.sh
 ```
 
 
@@ -211,22 +231,23 @@ OS_HOSTNAME=wls.local
 
 ## ODI Env ##
 JAVA_HOME=/sw/jdk/jdk1.8.0_211
-ODI_INSTALL_FILE=${BASEDIR}/fmw_12.2.1.4.0_odi.jar
-ODI_INSTALL_PATH=/sw/odi/odi/12cR2
-ODI_INVENTORY_PATH=/sw/odi/odi/inventories/12cR2
-ODI_INVENTORY_GROUP=${OS_GROUPNAME}
+INSTALL_FILE=${BASEDIR}/fmw_12.2.1.4.0_odi.jar
+INSTALL_PATH=/sw/odi/odi/12.2.1.4
+INVENTORY_PATH=/sw/odi/odi/inventories/12.2.1.4
+INVENTORY_GROUP=${OS_GROUPNAME}
 
-ODI_DOMAIN_NAME=odi_domain
-ODI_DOMAIN_HOME=${ODI_INSTALL_PATH}/domains/${ODI_DOMAIN_NAME}
-ODI_DOMAIN_PASSWORD=weblogic1
+DOMAIN_NAME=odi_domain
+DOMAIN_HOME=${INSTALL_PATH}/domains/${DOMAIN_NAME}
 
-ODI_ADM_ADDR=${OS_HOSTNAME}
-ODI_ADM_NAME=odiAdm
-ODI_ADM_PORT=8001
+ADM_ADDR=${OS_HOSTNAME}
+ADM_NAME=AdminServer
+ADM_PORT=8001
+ADM_USERNAME=weblogic
+ADM_PASSWORD=weblogic1
 
-ODI_AGENT_1_NAME=odiAgent1
-ODI_AGENT_1_ADDR=${OS_HOSTNAME}
-ODI_AGENT_1_PORT=8002
+AGENT_1_NAME=M1
+AGENT_1_ADDR=${OS_HOSTNAME}
+AGENT_1_PORT=8002
 
 
 ## RCU Env ##
@@ -246,8 +267,8 @@ RCU_JDBC_DRIVER=oracle.jdbc.OracleDriver
 RCU_JDBC_URL=jdbc:oracle:thin:@${RCU_DB_HOSTNAME}:${RCU_DB_PORT}/${RCU_DB_NAME}
 ```
 
-SUPERVISOR account : SUPERVISOR / ${RCU_SUPERVISOR_PASSWORD}
-SCHEMA account : ${RCU_SCHEMA_PREFIX}_ODI_REPO / ${RCU_SCHEMA_PASSWORD}
+> SUPERVISOR account : SUPERVISOR / ${RCU_SUPERVISOR_PASSWORD}
+> SCHEMA account : ${RCU_SCHEMA_PREFIX}_ODI_REPO / ${RCU_SCHEMA_PASSWORD}
 
 
 <br><br>
@@ -262,20 +283,23 @@ cat << EOF > ${BASEDIR}/rsp
 Response File Version=1.0.0.0.0
 
 [GENERIC]
-ORACLE_HOME=${ODI_INSTALL_PATH}
+ORACLE_HOME=${INSTALL_PATH}
 INSTALL_TYPE=Enterprise Installation
 EOF
 
 
 cat << EOF > ${BASEDIR}/loc
-inventory_loc=${ODI_INVENTORY_PATH}
-inst_group=${ODI_INVENTORY_GROUP}
+inventory_loc=${INVENTORY_PATH}
+inst_group=${INVENTORY_GROUP}
 EOF
 
-${JAVA_HOME}/bin/java -jar ${ODI_INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
+
+${JAVA_HOME}/bin/java -jar ${INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp -invPtrLoc ${BASEDIR}/loc
 ```
 
-<br>
+
+<br><br>
+
 
 
 ### 2.2.3 Setup ODI Schema with RCU
@@ -291,7 +315,7 @@ ${RCU_WORK_REPOSITORY}
 ${RCU_ENCRYPTION}
 EOF
 
-${ODI_INSTALL_PATH}/oracle_common/bin/rcu -silent -createRepository \
+${INSTALL_PATH}/oracle_common/bin/rcu -silent -createRepository \
  -connectString ${RCU_DB_HOSTNAME}:${RCU_DB_PORT}/${RCU_DB_NAME} -dbUser SYS -dbRole SYSDBA \
  -useSamePasswordForAllSchemaUsers true \
  -schemaPrefix ${RCU_SCHEMA_PREFIX} \
@@ -299,7 +323,9 @@ ${ODI_INSTALL_PATH}/oracle_common/bin/rcu -silent -createRepository \
  < ${BASEDIR}/odi_rcu_parameters.txt
 ```
 
-<br>
+
+<br><br>
+
 
 
 ### 2.2.4 Setup Domain
@@ -340,29 +366,294 @@ set('Username', 'SUPERVISOR') # Must be 'SUPERVISOR'
 cmo.setPassword('${RCU_SUPERVISOR_PASSWORD}')
 
 # Setup WLS account #
-cd('/Security/base_domain/User/weblogic')
-cmo.setPassword('${ODI_DOMAIN_PASSWORD}')
+cd('/Security/base_domain/User/${ADM_USERNAME}')
+cmo.setPassword('${ADM_PASSWORD}')
 
 # Setup Admin&Managed(ODI) Servers #
 cd('/Servers/AdminServer')
-set('Name','${ODI_ADM_NAME}')
-set('ListenAddress','${ODI_ADM_ADDR}')
-set('ListenPort', ${ODI_ADM_PORT})
+set('Name','${ADM_NAME}')
+set('ListenAddress','${ADM_ADDR}')
+set('ListenPort', ${ADM_PORT})
 
 cd('/Servers/ODI_server1')
-set('Name','${ODI_AGENT_1_NAME}')
-set('ListenAddress','${ODI_AGENT_1_ADDR}')
-set('ListenPort', ${ODI_AGENT_1_PORT})
+set('Name','${AGENT_1_NAME}')
+set('ListenAddress','${AGENT_1_ADDR}')
+set('ListenPort', ${AGENT_1_PORT})
 
 # Create domain #
-writeDomain('${ODI_DOMAIN_HOME}')
+writeDomain('${DOMAIN_HOME}')
 closeTemplate()
 EOF
 
-${ODI_INSTALL_PATH}/oracle_common/common/bin/wlst.sh ${BASEDIR}/dom
+${INSTALL_PATH}/oracle_common/common/bin/wlst.sh ${BASEDIR}/dom
 ```
 
-<br>
+
+<br><br>
+
+
+### 2.2.5 Create instance scripts
+
+```sh
+# Create boot.properties
+cat << EOF > ${DOMAIN_HOME}/boot.properties
+username=${ADM_USERNAME}
+password=${ADM_PASSWORD}
+EOF
+
+# Create instance scripts
+# AdminServer (start, stop, log, ps)
+cat << "EOF" > ${DOMAIN_HOME}/startA.sh
+#!/bin/sh
+DOMAIN_NAME=#DOMAIN_NAME#
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+SERVER_PORT=#SERVER_PORT#
+BOOT_PROPERTIES=${DOMAIN_HOME}/boot.properties
+
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+GC_LOG=${LOG_HOME}/gc
+HEAPDUMP_DIR=${LOG_HOME}/heapdump
+LOG_TIME=$(date +%y%m%d_%H%M)
+
+##### Make Path #####
+mkdir -p ${LOG_HOME} ${NOHUP_LOG} ${GC_LOG} ${HEAPDUMP_DIR}
+###################
+
+##### User Check #####
+USER=#OS_USERNAME#
+if [ "$USER" != $(/usr/bin/whoami) ]; then
+     echo "* you do not have permission. *"
+     exit;
+fi
+####################
+
+## Process Check ##
+WAS_PID=$(${DOMAIN_HOME}/psA.sh)
+if [ "$WAS_PID" != "" ]; then
+     echo "Server already Started."
+     exit;
+fi
+###################
+
+##### gc log rotation #####
+mv ${GC_LOG}/gc_${SERVER_NAME}.out ${GC_LOG}/gc_${SERVER_NAME}.out.${LOG_TIME}
+USER_MEM_ARGS="${USER_MEM_ARGS} -verbose:gc -Xloggc:${GC_LOG}/gc_${SERVER_NAME}.out"
+######################
+
+##### Heap dump #####
+USER_MEM_ARGS="${USER_MEM_ARGS} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${HEAPDUMP_DIR}"
+####################
+
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.system.BootIdentityFile=${BOOT_PROPERTIES}"
+export JAVA_OPTIONS
+
+USER_MEM_ARGS="${USER_MEM_ARGS} -D${SERVER_NAME}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dserver.name=${SERVER_NAME} -Dserver.port=${SERVER_PORT}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Xms1024m -Xmx1024m -XX:MetaspaceSize=512m -XX:MaxMetaspaceSize=512m"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dweblogic.wsee.skip.async.response=true"
+USER_MEM_ARGS="${USER_MEM_ARGS} -D_Offline_FileDataArchive=true -Dweblogic.connector.ConnectionPoolProfilingEnabled=false -Dcom.bea.wlw.netui.disableInstrumentation=true"
+export USER_MEM_ARGS
+
+mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
+nohup ${DOMAIN_HOME}/bin/startWebLogic.sh > ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
+#sleep 1
+#tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
+EOF
+
+
+cat << "EOF" > ${DOMAIN_HOME}/stopA.sh
+#!/bin/sh
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_ADDR=#SERVER_ADDR#
+SERVER_PORT=#SERVER_PORT#
+
+. ${DOMAIN_HOME}/bin/setDomainEnv.sh
+
+##### User Check #####
+USER=#OS_USERNAME#
+if [ "$USER" != $(/usr/bin/whoami) ]; then
+     echo "* you do not have permission. *"
+     exit;
+fi
+####################
+
+## Process Check ##
+WAS_PID=$(${DOMAIN_HOME}/psA.sh)
+if [ "$WAS_PID" == "" ]; then
+     echo "Server already Stopped."
+     exit;
+fi
+###################
+
+java weblogic.WLST << INNER_EOF
+connect(url='${SERVER_ADDR}:${SERVER_PORT}')
+shutdown(force='true')
+exit()
+INNER_EOF
+EOF
+
+
+cat << "EOF" > ${DOMAIN_HOME}/logA.sh
+#!/bin/sh
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
+EOF
+
+
+cat << "EOF" > ${DOMAIN_HOME}/psA.sh
+#!/bin/sh
+SERVER_NAME=#SERVER_NAME#
+ps -ef | grep "java" | grep "weblogic.Server" | grep "D${SERVER_NAME}"
+EOF
+
+sed -i "s|#OS_USERNAME#|${OS_USERNAME}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#DOMAIN_NAME#|${DOMAIN_NAME}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#DOMAIN_HOME#|${DOMAIN_HOME}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#SERVER_NAME#|${ADM_NAME}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#SERVER_ADDR#|${ADM_ADDR}|g" ${DOMAIN_HOME}/*A.sh
+sed -i "s|#SERVER_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*A.sh
+
+
+# Managed Server (start, stop, log, ps)
+cat << "EOF" > ${DOMAIN_HOME}/startM.sh
+#!/bin/sh
+DOMAIN_NAME=#DOMAIN_NAME#
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+SERVER_PORT=#SERVER_PORT#
+ADM_URL="t3://#ADM_ADDR#:#ADM_PORT#"
+BOOT_PROPERTIES=${DOMAIN_HOME}/boot.properties
+
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+GC_LOG=${LOG_HOME}/gc
+HEAPDUMP_DIR=${LOG_HOME}/heapdump
+LOG_TIME=$(date +%y%m%d_%H%M)
+
+##### Make Path #####
+mkdir -p ${LOG_HOME} ${NOHUP_LOG} ${GC_LOG} ${HEAPDUMP_DIR}
+###################
+
+##### User Check #####
+USER=#OS_USERNAME#
+if [ "$USER" != $(/usr/bin/whoami) ]; then
+     echo "* you do not have permission. *"
+     exit;
+fi
+####################
+
+## Process Check ##
+WAS_PID=$(${DOMAIN_HOME}/ps${SERVER_NAME}.sh)
+if [ "$WAS_PID" != "" ]; then
+     echo "Server already Started."
+     exit;
+fi
+###################
+
+##### gc log rotation #####
+mv ${GC_LOG}/gc_${SERVER_NAME}.out ${GC_LOG}/gc_${SERVER_NAME}.out.${LOG_TIME}
+USER_MEM_ARGS="${USER_MEM_ARGS} -verbose:gc -Xloggc:${GC_LOG}/gc_${SERVER_NAME}.out"
+######################
+
+##### Heap dump #####
+USER_MEM_ARGS="${USER_MEM_ARGS} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${HEAPDUMP_DIR}"
+####################
+
+JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.system.BootIdentityFile=${BOOT_PROPERTIES}"
+export JAVA_OPTIONS
+
+USER_MEM_ARGS="${USER_MEM_ARGS} -D${SERVER_NAME}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dserver.name=${SERVER_NAME} -Dserver.port=${SERVER_PORT}"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Xms1024m -Xmx1024m -XX:MetaspaceSize=512m -XX:MaxMetaspaceSize=512m"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv6Addresses=false -Dweblogic.wsee.skip.async.response=true"
+USER_MEM_ARGS="${USER_MEM_ARGS} -D_Offline_FileDataArchive=true -Dweblogic.connector.ConnectionPoolProfilingEnabled=false -Dcom.bea.wlw.netui.disableInstrumentation=true"
+export USER_MEM_ARGS
+
+mv ${NOHUP_LOG}/${SERVER_NAME}.out ${NOHUP_LOG}/${SERVER_NAME}.out.${LOG_TIME}
+nohup ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${SERVER_NAME} ${ADM_URL}> ${NOHUP_LOG}/${SERVER_NAME}.out 2>&1 &
+#sleep 1
+#tail -f ${NOHUP_LOG}/${SERVER_NAME}.out
+EOF
+
+
+cat << "EOF" > ${DOMAIN_HOME}/stopM.sh
+#!/bin/sh
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+SERVER_ADDR=#SERVER_ADDR#
+SERVER_PORT=#SERVER_PORT#
+
+. ${DOMAIN_HOME}/bin/setDomainEnv.sh
+
+##### User Check #####
+USER=#OS_USERNAME#
+if [ "$USER" != $(/usr/bin/whoami) ]; then
+     echo "* you do not have permission. *"
+     exit;
+fi
+####################
+
+## Process Check ##
+WAS_PID=$(${DOMAIN_HOME}/ps${SERVER_NAME}.sh)
+if [ "$WAS_PID" == "" ]; then
+     echo "Server already Stopped."
+     exit;
+fi
+###################
+
+java weblogic.WLST << INNER_EOF
+connect(url='${SERVER_ADDR}:${SERVER_PORT}')
+shutdown(force='true')
+exit()
+INNER_EOF
+EOF
+
+
+cat << "EOF" > ${DOMAIN_HOME}/logM.sh
+#!/bin/sh
+DOMAIN_HOME=#DOMAIN_HOME#
+SERVER_NAME=#SERVER_NAME#
+
+LOG_HOME=${DOMAIN_HOME}/logs
+NOHUP_LOG=${LOG_HOME}/nohup
+tail -10f ${NOHUP_LOG}/${SERVER_NAME}.out
+EOF
+
+
+cat << "EOF" > ${DOMAIN_HOME}/psM.sh
+#!/bin/sh
+SERVER_NAME=#SERVER_NAME#
+ps -ef | grep "java" | grep "weblogic.Server" | grep "D${SERVER_NAME}"
+EOF
+
+
+cp ${DOMAIN_HOME}/startM.sh ${DOMAIN_HOME}/start${AGENT_1_NAME}.sh
+cp ${DOMAIN_HOME}/stopM.sh ${DOMAIN_HOME}/stop${AGENT_1_NAME}.sh
+cp ${DOMAIN_HOME}/logM.sh ${DOMAIN_HOME}/log${AGENT_1_NAME}.sh
+cp ${DOMAIN_HOME}/psM.sh ${DOMAIN_HOME}/ps${AGENT_1_NAME}.sh
+
+sed -i "s|#OS_USERNAME#|${OS_USERNAME}|g" ${DOMAIN_HOME}/*${AGENT_1_NAME}.sh
+sed -i "s|#DOMAIN_NAME#|${DOMAIN_NAME}|g" ${DOMAIN_HOME}/*${AGENT_1_NAME}.sh
+sed -i "s|#DOMAIN_HOME#|${DOMAIN_HOME}|g" ${DOMAIN_HOME}/*${AGENT_1_NAME}.sh
+sed -i "s|#SERVER_NAME#|${AGENT_1_NAME}|g" ${DOMAIN_HOME}/*${AGENT_1_NAME}.sh
+sed -i "s|#SERVER_ADDR#|${AGENT_1_ADDR}|g" ${DOMAIN_HOME}/*${AGENT_1_NAME}.sh
+sed -i "s|#SERVER_PORT#|${AGENT_1_PORT}|g" ${DOMAIN_HOME}/*${AGENT_1_NAME}.sh
+sed -i "s|#ADM_ADDR#|${ADM_ADDR}|g" ${DOMAIN_HOME}/*${AGENT_1_NAME}.sh
+sed -i "s|#ADM_PORT#|${ADM_PORT}|g" ${DOMAIN_HOME}/*${AGENT_1_NAME}.sh
+
+chmod 700 ${DOMAIN_HOME}/*.sh
+rm ${DOMAIN_HOME}/*M.sh
+```
+
+
+<br><br>
+
 
 
 # 3. References
