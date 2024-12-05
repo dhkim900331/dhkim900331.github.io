@@ -12,7 +12,7 @@ ODI 12.2.1.4 (12cR2) 에 SPB 적용 가이드
 
 <br><br>
 
-
+<br>
 
 # 2. Descriptions
 작성일 기준 다음의 Patch files을 적용한다.

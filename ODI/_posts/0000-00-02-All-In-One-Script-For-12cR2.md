@@ -300,7 +300,7 @@ ${JAVA_HOME}/bin/java -jar ${INSTALL_FILE} -silent -responseFile ${BASEDIR}/rsp 
 
 <br><br>
 
-
+<br>
 
 ### 2.2.3 Setup ODI Schema with RCU
 
@@ -326,7 +326,7 @@ ${INSTALL_PATH}/oracle_common/bin/rcu -silent -createRepository \
 
 <br><br>
 
-
+<br>
 
 ### 2.2.4 Setup Domain
 
@@ -654,7 +654,7 @@ rm ${DOMAIN_HOME}/*M.sh
 
 <br><br>
 
-
+<br>
 
 # 3. References
 

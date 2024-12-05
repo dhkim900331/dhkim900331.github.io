@@ -1,8 +1,7 @@
 ---
 layout: post
-title: "[ETC/] "
-tags: [ETC, ]
-typora-root-url: ..
+title: "[Mermaid] "
+tags: [Mermaid, Jekyll, ]
 ---
 
 # 1. Overview

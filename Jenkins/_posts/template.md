@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "[ETC/] "
-tags: [ETC, ]
+title: "[Jenkins] "
+tags: [Jenkins, ]
 typora-root-url: ..
 ---
 
-# 1. Overview
 
+# 1. Overview
 
 
 

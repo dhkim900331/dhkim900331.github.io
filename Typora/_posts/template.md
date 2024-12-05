@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "[ETC/] "
-tags: [ETC, ]
+title: "[Typora] "
+tags: [Typora, ]
 typora-root-url: ..
 ---
 

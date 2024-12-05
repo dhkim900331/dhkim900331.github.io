@@ -1,8 +1,7 @@
 ---
 layout: post
-title: "[ETC/] "
-tags: [ETC, ]
-typora-root-url: ..
+title: "[RHCSA] "
+tags: [Linux, RHCSA]
 ---
 
 # 1. Overview
