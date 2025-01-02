@@ -76,7 +76,7 @@ OTN 에서 Oracle 12c 를 내려 받는다.
 ```shell
 $ cat ~/.bash_profile
 export ORACLE_BASE=/sw/databases/oracle-12c
-export ORACLE_HOME=${ORACLE_BASE}/product/12.1.0/dbhome_1
+export ORACLE_HOME=${ORACLE_BASE}/product/12.1.0/db_home_1
 export ORACLE_SID=ORCL
 export PATH=$ORACLE_HOME/bin:$PATH
 ```

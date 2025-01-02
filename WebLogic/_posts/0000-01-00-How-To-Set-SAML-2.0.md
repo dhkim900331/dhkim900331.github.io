@@ -1044,3 +1044,5 @@ Does SAML 1.1 Require The Default JSESSIONID Cookie Name? (Doc ID 1376040.1)
 [SAML WebLogic 가이드 #2](https://blogs.oracle.com/blogbypuneeth/post/steps-to-configure-saml-20-with-weblogic-server-using-embedded-ldap-as-a-security-store-only-for-dev-environment)
 
 What are the Default Passwords for Demo Identity and Demo Trust Keystores (Doc ID 2886289.1)
+
+**WebLogic: [Security:096552]Illegal destination: <URL>/saml2/sp/acs/post of assertion response (Doc ID 3063248.1)**
