@@ -15,7 +15,7 @@ Application 배포 설명자 파일 (Deployment Descriptor) 의 구성 요소를
 
 <br><br>
 
-
+<br>
 
 # 2. Descriptions
 
@@ -112,7 +112,7 @@ java weblogic.Deployer \
 
 <br><br>
 
-
+<br>
 
 # 3. References
 
