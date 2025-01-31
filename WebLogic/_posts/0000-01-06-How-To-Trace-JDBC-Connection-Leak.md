@@ -24,7 +24,7 @@ JDBC Connection Leak이 발생하는 상황에서의 추적 방법
 <br>
 
 다음과 같이 문제가 발생하지 않는, sql.jsp 를 준비하고,
- 
+
 ```jsp
 <%@ page import="java.sql.*, javax.naming.*, javax.sql.DataSource" %>
 <%
