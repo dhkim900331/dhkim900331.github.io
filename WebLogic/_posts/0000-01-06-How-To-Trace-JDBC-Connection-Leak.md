@@ -13,7 +13,7 @@ JDBC Connection Leak이 발생하는 상황에서의 추적 방법
 
 <br><br>
 
-
+<br>
 
 # 2. Descriptions
 
@@ -117,7 +117,7 @@ App 코드 수준의 sysout과 WLS debug 를 설정하여, 최초 Connection 생
 
 <br><br>
 
-
+<br>
 
 # 3. References
 
