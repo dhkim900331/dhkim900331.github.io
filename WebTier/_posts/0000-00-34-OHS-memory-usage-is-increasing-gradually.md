@@ -1,7 +1,7 @@
 ---
 date: 2025-01-31 09:38:02 +0900
 layout: post
-title: "[WebTier/OHS] OHS Memory Usage increase gradually"
+title: "[WebTier/OHS] OHS memory usage is increasing gradually"
 tags: [WebTier, OHS, smaps, valgrind, MaxConnectionsPerChild]
 typora-root-url: ..
 ---

@@ -264,8 +264,15 @@ CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib
 
 CLASSPATH 에 있는 xml 파일을 override 할 수 있다.
 
+<br><br>
+
+> **2025-02-14** Coherence 14.1.2 에 위 override.xml 상단 Header를 삭제하여 문제 없이 기동이 되었다.
+>
+> "<coherence ...>" -> "<coherence>"
+
 
 <br><br>
+
 
 
 ### 3.2.2 Startup Cache-Server
@@ -458,16 +465,17 @@ Cache-Client로 WebLogic Managed Server를 사용할 것이다.
 다음의 옵션을 WLS Instance에서 사용한다.
 
 ```sh
--Dcoherence.mode=prod
--Dcoherence.override=tangosol-coherence-${DOMAIN_NAME}.xml
--Dcoherence.session.localstorage=false
--Dcoherence.management.remote=true
-
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dcoherence.mode=prod"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dcoherence.override=tangosol-coherence-${DOMAIN_NAME}.xml"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dcoherence.session.localstorage=false"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dcoherence.management.remote=true"
+export USER_MEM_ARGS
 
 # lib 아래 jar는 자동 등록되므로 필요 없다, xml 을 위해 사용한다.
-CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib
+CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib"
 #CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib/coherence-web.jar
 #CLASSPATH="${CLASSPATH}:${DOMAIN_HOME}/lib/coherence.jar
+export CLASSPATH
 ```
 
 
@@ -511,6 +519,12 @@ Application 마다 Cache 구성이 다를 수 있기 때문이다.
   * persistent-store-type : coherence-web
 
 ```xml
+<weblogic-web-app>
+
+    <session-descriptor>
+        <persistent-store-type>coherence-web</persistent-store-type>
+    </session-descriptor>
+
     <container-descriptor>
         <servlet-reload-check-secs>1</servlet-reload-check-secs>
         <resource-reload-check-secs>1</resource-reload-check-secs>
@@ -520,14 +534,11 @@ Application 마다 Cache 구성이 다를 수 있기 때문이다.
         <page-check-seconds>1</page-check-seconds>
     </jsp-descriptor>
 
-    <session-descriptor>
-        <timeout-secs>30</timeout-secs>
-        <invalidation-interval-secs>60</invalidation-interval-secs>
-        <persistent-store-type>coherence-web</persistent-store-type>
-    </session-descriptor>
+
 </weblogic-web-app>
 ```
 
+<br>
 
 App을 Deploy 시에 Log
 

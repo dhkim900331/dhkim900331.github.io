@@ -46,3 +46,6 @@ keytool -list -v -keystore ${KEYSTOREPATH}/${KEYSTOREFILE} -storepass ${STOREPAS
 keytool -list -v -keystore ${KEYSTOREPATH}/${KEYSTOREFILE}.p12 -storetype PKCS12 -storepass ${STOREPASS}
 ```
 
+<br>
+
+> WLS 14.1.2 (JDK 17) 에서 KEYPASS와 STOREPASS가 다르면 인증서 로딩 에러가 발생하여, 동일하게 맞춘다.
