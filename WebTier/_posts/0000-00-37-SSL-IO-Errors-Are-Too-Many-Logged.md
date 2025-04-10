@@ -1,7 +1,7 @@
 ---
 date: 2025-03-08 10:18:06 +0900
 layout: post
-title: "[WebTier/OHS] SSL IO Error Are Too Many Logged"
+title: "[WebTier/OHS] SSL IO Errors Are Too Many Logged"
 tags: [WebTier, OHS, OSSL]
 typora-root-url: ..
 ---

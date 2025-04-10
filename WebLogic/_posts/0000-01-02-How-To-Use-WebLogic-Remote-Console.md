@@ -10,8 +10,9 @@ typora-root-url: ..
 
 WebLogic Remote Console(이하 WRC) 를 상세하게 다룬다.
 
+대부분의 아래 내용은, 24년도 말~25년도 초에 작성되었는데, 시간이 경과함에 따라 Remote Console 공식 메뉴얼 페이지에 리뉴얼되면서 링크가 많이 변경되었다. 보존을 위해 깨진 링크가 있다 하더라도, 기능 자체가 달라지지는 않았으므로 그대로 두었다.
 
-<br><br>
+<br>
 
 <br>
 
@@ -25,7 +26,7 @@ WRC는 Oracle Cloud, K8S, Container 환경, VM, On-Prem 와 같은 다양한 환
 
 WebLogic REST APIs 를 활용하는 WRC는 어디에서나, 손쉽게 Destktop Application으로 설치하여 Domain의 Admin Server에 연결할 수 있다.
 
-WRC는 WebLogic Server 12.2.1.3, 12.2.1.4, 그리고 14.1.1.0 에서 모든 기능을 지원 한다.
+WRC는 WebLogic Server 12.2.1.2.0 이상 버전에 연결할 수 있고, 14.1.2 에서 모든 기능을 완벽히 지원 한다.
 
 
 <br><br>
@@ -52,7 +53,7 @@ WRC를 사용하여, WebLogic Domain에 접근하면 다음을 활용할 수 있
 
 ### 2.3.1 Installation
 
-- [시스템 요구 사항](https://oracle.github.io/weblogic-remote-console/setup/#sys_reqs) 확인
+- [시스템 요구 사항](https://oracle.github.io/weblogic-remote-console/set-console/#GUID-FFC1F9AC-7CE7-4BC1-9D3D-BD59CC228C6B) 확인
 
 - [여기](https://github.com/oracle/weblogic-remote-console/releases)에서 최신 Release 를 받고, Desktop Application으로 손쉽게 설치한다.
 
@@ -62,13 +63,14 @@ WRC를 사용하여, WebLogic Domain에 접근하면 다음을 활용할 수 있
     WRC Extension File을 위와 같이 배치하고,
     Admin Server를 재시작 하는 것만으로도 배포가 완료 된다.
     Latest version으로 Old version을 덮어 씌우는 것만으로도 Update가 된다.
+  - WLS 14.1.2 부터는 자동으로 낮은 버전이 배포가 되고, 최신버전을 받아 위의 단계에 따라 구성하면 업그레이드가 된다.
 
 <br><br>
 
 
 ### 2.3.2 Connect to a provider
 
-기본적인 내용은 [여기](https://oracle.github.io/weblogic-remote-console/setup/#connect)에서 확인.
+기본적인 내용은 [여기](https://oracle.github.io/weblogic-remote-console/set-console/#GUID-82C1C605-D42E-45EA-AC16-5BA3D5853C96)에서 확인.
 
 <br>
 
@@ -84,11 +86,11 @@ Provider type으로 제공되는 항목은,
 
 ### 2.3.3 Provider: Administration Server
 
-[여기](https://oracle.github.io/weblogic-remote-console/userguide/providers/administration-server/)에서 본문 확인
+[여기](https://oracle.github.io/weblogic-remote-console/administration-server/domain-configuration/#GUID-37C3DE03-B1A7-42AA-B596-83D7A9520D33)에서 본문 확인
 
 WebLogic Admin Server에 연결되어, Domain의 구성을 편집한다. 기존의 WebLogic Admin Console의 대체.
 
-기존의 Admin Console과 어떤 [차이점](https://oracle.github.io/weblogic-remote-console/setup/admin-console-diff)이 있냐면,
+기존의 Admin Console과 어떤 [차이점](https://oracle.github.io/weblogic-remote-console/2.0.0/setup/admin-console-diff/)이 있냐면,
 
 - Oracle Redwood Theme와, [Oracle JET(Javascript Extension Toolkit)](https://www.oracle.com/application-development/technologies/jet/oracle-jet.html)으로 구성
 - 기존의 Console에서는 Configuration 항목과 Monitoring 항목이 하나의 Page에 구성된 것에 반해,
@@ -124,6 +126,11 @@ Weblogic Console이 HTTPS 로 보호 받고 있다면,
 
 인증서가 만료된 경우에는, `비보안 접속하기`를 사용할 수 있다.
 
+[HostnameVertification 을 disable](https://oracle.github.io/weblogic-remote-console/administration-server/domain-configuration/#GUID-85D3E2FF-86EA-49E1-8BAE-5ECB1A9A9E1E) 하려면 설정 - 네트워킹 - 호스트 이름 확인 사용 안함? 에서 '예'를 하면 Certification CN 필드를 검사하지 않는다.
+
+<br>
+
+Administartion Mode가 활성화 된 도메인의 경우에도, `${DOMAIN_HOME}/security/DemoTrust.p12 (14.1.2 예시)` 와 같은 pkcs12 인증서 파일을 Remote Console에 설정하면 연결할 수 있다.
 
 <br><br>
 
@@ -227,11 +234,6 @@ Security Data 관점에서 변경하는 사항들은, 재시작 필요없이 즉
 
 이미 있거나, 여기서 새로 만드는 사용자로 WRC 로그인을 하면 사용자에게 부여된 권한(Admin, Developer, Monitor 등등)에 따라서 Tree가 제한적으로 보여진다.
 
-<br>
-
-내용 다 해봐야 할듯
-
-
 <br><br>
 
 
@@ -241,9 +243,7 @@ Security Data 관점에서 변경하는 사항들은, 재시작 필요없이 즉
 
 <br>
 
-이게 뭔지 요약은 나중에 작성
-
-지금 이해한 바로는, 아래 WDT model file에 key:value 형식으로 손쉽게 값을 넘겨주기 위한 파일임.
+WDT 로 만들어진 JSON 파일로, 이것을 Property file이라고 하며 Remote Console에 Provider 항목으로 추가하면 GUI 환경에서 편집할 수 있다.
 
 
 <br><br>
@@ -257,9 +257,6 @@ Security Data 관점에서 변경하는 사항들은, 재시작 필요없이 즉
 
   Property List Filename에 Filename만 입력하고 Directory Icon을 선택하면, 경로가 완성되며 저장된다.
 
-- 
-
-
 <br><br>
 
 
@@ -269,27 +266,20 @@ Security Data 관점에서 변경하는 사항들은, 재시작 필요없이 즉
 
 <br>
 
-WDT(Weblogic Deploy Tooling) 이해하기로는,
+WDT 기능 자체는 WebLogic Domain을 YAML/JSON 형태로 편집할 수 있게 한다.
 
-지금까지 WLS 복잡한 작업을 위해 WLST scripting등을 사용해왔는데
+도메인 자체에 대한 편집을 비개발자도 매우 빠르고 쉽게 다룰 수 있게 되는 것이며,
 
-이제 yaml 형식으로 손쉽게 선언하는 방식의 메타파일을 만들고
+WDT 를 통해 만들어진 Model file(YAML/JSON) 들을 Remote Console 에 Provider로 추가하면
 
-WDT 실행파일로 실행하면, WLST 보다 간소화되었지만 많은 동작을 실행가능
-
-도메인 생성부터 여러가지 업데이트 까지..?
-
-WLST는 python까지 접목해야 하니, 실제로 이게 편해보임.
-
-그리고 위 Property file과 연계하여 사용 가능
-
+GUI 환경에서 편집할 수 있다.
 
 <br><br>
 
 
 ### 2.3.6 Provider: WDT Composite Model FIle
 
-WDT Model file을 여러 개로 병합한 모델 파일이라는데.. WDT model file이 선행되어야 가능할 것으로 보임
+WDT Model file 을 세분화 하여 다룰 수 있는 부분
 
 
 <br><br>
@@ -305,15 +295,53 @@ WDT Model file을 여러 개로 병합한 모델 파일이라는데.. WDT model 
 
 <br>
 
-2.3.9 Upgrade the WebLogic Remote Console
+### 2.3.9 Upgrade the WebLogic Remote Console
 
-<br>
+Desktop App은 Github에서 최신버전을 다운로드 받아 재설치하거나, Remote Console 상단에 최신 버전을 업데이트 하라는 안내가 보이면 따라하면 된다.
 
-2.3.10 Check log files
+Hosted App은 매 분기마다 나오는 PSU 패치를 통해 최신 버전으로 업그레이드 하면 된다.
 
-<br>
+
+<br><br>
+
+
+### 2.3.10 Check log files
+
+Linux, macOs, Windows 플랫폼별로 out.log 가 저장된다.
+
+Windows 의 경우, `%APPDATA%\Roaming\weblogic-remote-console`에 out.log가 날짜별로 로테이션 되어 저장된다.
+
+아직까지 해당 로그에 기록되는 에러 코드 등에 대해서 참고할 문서는 없다.
+
+
+<br><br>
+
 
 2.3.10 Understand access discrepancies
+
+<br>
+
+2.3.11 Remote console version naming rule
+
+WRC는 MAJOR.MINOR.PATCH 세개의 Numbering/Naming rule을 갖는다.
+
+
+<br><br>
+
+
+### 2.3.12 Oracle Support Policy : WRC
+
+WRC 제품이 릴리즈되면 첫 12개월 동안은, Active(활성) 상태.
+
+12개월 지난 이후부터는 Maintenance(유지보수) 상태.
+
+또 다시 12개월 지나는, 릴리즈 되고 나서 24개월이 지난 시점 부터는 End of Life(수명 종료) 상태.
+
+<br>
+
+각 상태별로 Oracle 지원 정책이 달라진다.
+
+Webcast 확인 또는 최신 문서 확인 필요
 
 
 <br><br>
@@ -324,3 +352,4 @@ WDT Model file을 여러 개로 병합한 모델 파일이라는데.. WDT model 
 
 # 3. References
 
+**Advisor Webcast: WebLogic Console의 혁신, Remote Console을 소개합니다, Mar 19, 2025 [video] (Doc ID 3067753.1)**
