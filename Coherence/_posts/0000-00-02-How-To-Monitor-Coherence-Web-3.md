@@ -217,6 +217,12 @@ https://docs.oracle.com/cd/E24290_01/coh.371/e22620/manageapps.htm#CIHCBHIG
 
   ** Overflow : 특별히 큰 세션 객체에 대한 속성들
 
+<br>
+
+Coherence 12.2.1.4 에서 다음 문서를 찾았다. [Table 5-2 Information Returned by the HttpSessionManager](https://docs.oracle.com/en/middleware/fusion-middleware/coherence/12.2.1.4/administer-http-sessions/monitoring-applications.html#GUID-63D75695-1CCC-49A5-94F3-98CFCC3B3C7B__CIHCBHIG)
+
+<br>
+
 
 <br><br>
 
