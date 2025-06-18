@@ -179,7 +179,7 @@ coherence-mock.jar 또한 관련 Exception이 발생을 하기에 넣은 것이�
 
 <br><br>
 
-
+<br>
 
 #### (2) Creating EAR
 EAR 단위의 Coherence App은 WAR 보다는 더 적은 Resource를 사용한다.
