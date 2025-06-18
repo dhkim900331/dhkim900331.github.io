@@ -13,7 +13,6 @@ typora-root-url: ..
 
 <br><br>
 
-<br>
 
 # 2. Descriptions
 
@@ -37,7 +36,7 @@ Hello는 `http://<same-url>:3030` , World는 `http://<same-url>:5050` 에서 서
 
 OHS는 다른 WLS의 JVMID (World 서비스의 OHS는 Hello 서비스의 WLS를 모른다.) 를 모르므로,
 
-Plugin default algorithm에 의해, Round Robin 방식으로 Random한 World WLS로 Proxies 한다.
+Plugin default algorithm에 의해, Round Robin 방식으로 World WLS로 Proxies 한다.
 
 World WLS는 JVMID를 Set-Cookie로 덮어 씌운다.
 
@@ -70,16 +69,29 @@ Port 구분을 하지 못하기 때문에, `<same-url>` 아래 Session이 Overwr
 
 <br>
 
-두 Application이 서로 다른데, EAR 등으로 묶지 않고 Http Session을 공유하고자 한 것의 결과이다.
+두 Application은 독립적으로 실행되는데, 세션을 공유하고자 Cookie Name을 동일하며 Cookie가 동일 위치 기반에서 읽기/쓰기가 되도록 의도적으로 설계되었다.
 
-두 Application을 끝끝내 EAR 등으로 묶지 않고, `<same-url>`을 다르게 한다고 해도, Cookie가 다른 URL에 업데이트 할 방법이 없으므로
+그러나 OHS에서 인지하는 JVMID의 변화로 인해, 클라이언트가 두 App을 순환할 때마다 접속하는 WLS 인스턴스가 바뀌는 현상은 제어할 수 없다.
 
-sub-domain 방식을 쓰거나, 포기하고 EAR을 사용해야 한다.
+OHS의 WebLogicCluster에 모든 WLS 인스턴스를 나열하면, OHS는 모든 JVMID 를 인지하겠지만, 최초 사용자가 OHS에 접근할 때 어느 Application의 서비스를 요청하려는 것인지 구분할 수 없는 설계의 모호점이 발생한다.
+
+<br>
+
+Application에서 다른 Application으로 넘어가기 직전에, 현재의 JVMID를 originJVMID 값으로 별도로 보관하고, 돌아올때 Set-Cookie로 강제 할당하면 해결될 수는 있으나 우아하지 않다.
+
+<br>
+
+**2025-05-20 추가**
+
+블로그 수정 전에, EAR로 패키징 해야 한다고 말했는데, 이는 Session의 공유만을 가능케 하는 것이다.
+
+서로 다른 부모 OHS에서는 여전히 모르는 JVMID를 얻게 되므로, 업무를 오갈 때마다 서로 다른 인스턴스로 Round robin 하게 된다.
+
+이는 Application 의 문제가 아니라, OHS와 WLS의 JVMID 를 인식하는 범위에 따른 결과이다.
 
 
 <br><br>
 
-<br>
 
 # 3. References
 

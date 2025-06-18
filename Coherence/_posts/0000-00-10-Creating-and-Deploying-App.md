@@ -18,7 +18,6 @@ Coherence 14c 에서 App을 생성하고 배포하는 내용에 대해 설명한
 ## 2.1 Creating First App
 [Building Your First Coherence Application](https://docs.oracle.com/en/middleware/standalone/coherence/14.1.1.0/develop-applications/building-your-first-coherence-application.html#GUID-B5575517-C6B7-46BF-9188-2E3903C7862A)에서 가장 심플한 Coherence App을 만들 수 있다.
 
-
 <br><br>
 
 
@@ -29,7 +28,7 @@ Coherence 14c 에서 App을 생성하고 배포하는 내용에 대해 설명한
 
 
 ### 2.1.2 Basic Coherence JavaEE Web Application
-해당 과정은, JavaEE Module로 Container 등에 배포하는 것이고, WebLogic Server에는 권장되지 않는다고 설명한다.
+해당 과정은, JavaEE Module로 Container 등에 배포하는 것이고, WLS 에 권장 한다거나 국한되어 설명하는 내용이 아니다.
 
 >  "The instructions in this section are not specific to, or recommended for, WebLogic Server."
 
@@ -40,7 +39,6 @@ Coherence 14c 에서 App을 생성하고 배포하는 내용에 대해 설명한
 그러나 그것을 제외하면, WAR/EAR 단위의 Coherence Application 배포는 가장 이상적인 구조이다.
 
 JVM의 Life cycle에 영향을 받지 않기도 하고, 즉시 변경사항을 Update 할 수 있기 때문이다.
-
 
 <br><br>
 
@@ -54,20 +52,22 @@ FirstWAR 의 구조
 
 ```
 /sw/app/FirstWAR
-├── index.jsp
+├── session.jsp
 └── WEB-INF
     ├── classes
-    │          ├── example-config.xml
-    │          └── tangosol-coherence-override.xml
+    │   ├── example-config.xml
+    │   └── tangosol-coherence-override.xml
+    ├── lib
+    │   └── coherence.jar
     ├── weblogic.xml
     └── web.xml
 
-2 directories, 5 files
+3 directories, 6 files
 ```
 
 <br>
 
-Cache 서비스를 호출하는 index.jsp
+Cache 서비스를 호출하는 session.jsp
 
 ```jsp
 <html>
@@ -148,13 +148,37 @@ Coherence Cluster member 정의를 위한 tangosol-coherence-override.xml 에서
 </coherence>
 ```
 
+<br>
 
-> lib에 coherence-metrics.jar는 Server Starts with Info "com.tangosol.coherence.metrics.internal.DefaultMetricRegistry$Adapter not found" (Doc ID 2703637.1) 로 인해 넣은것이고,
->
-> coherence-mock.jar 또한 관련 Exception이 발생을 하기에 넣은 것이다.
+weblogic.xml 에는 `prefer-web-inf-classes` 로 WLS 에 기본적으로 내장된 coherence.jar 대신 WEB-INF/lib/coherence.jar 를 로드하도록 하고, 그러면 classes/*xml 을 읽어 캐시 구성을 할 수 있다.
+
+```xml
+<weblogic-web-app>
+    <container-descriptor>
+        <servlet-reload-check-secs>1</servlet-reload-check-secs>
+        <resource-reload-check-secs>1</resource-reload-check-secs>
+        <prefer-web-inf-classes>true</prefer-web-inf-classes>
+    </container-descriptor>
+
+    <jsp-descriptor>
+        <page-check-seconds>1</page-check-seconds>
+    </jsp-descriptor>
+</weblogic-web-app>
+```
+
+<br>
+
+어떤 환경에서는 다음과 같은 해결책이 필요할 수 있다.
+
+```
+lib에 coherence-metrics.jar는 Server Starts with Info "com.tangosol.coherence.metrics.internal.DefaultMetricRegistry$Adapter not found" (Doc ID 2703637.1) 로 인해 넣은것이고,
+
+coherence-mock.jar 또한 관련 Exception이 발생을 하기에 넣은 것이다.
+```
 
 
 <br><br>
+
 
 
 #### (2) Creating EAR
@@ -164,48 +188,36 @@ EAR 단위의 ClassLoader에 Singleton으로 생성된 Coherence Cluster 1개가
 
 <br>
 
-FirstEAR 의 구조
+Coherence 구성 요소가 없는 FirstWAR_with_no_coherence 를 WAR 패키징 하여 FirstEAR 에 넣는다.
+
+기존 FirstWAR 에서 Coherence 구성 요소를 제외 했을 뿐이다.
+
+```sh
+/sw/app/FirstWAR_with_no_coherence
+├── session.jsp
+└── WEB-INF
+    ├── weblogic.xml
+    └── web.xml
+
+1 directory, 3 files
+```
+
+<br>
 
 ```
 /sw/app/FirstEAR
 ├── APP-INF
-│          └── classes
-│              ├── example-config.xml
-│              └── tangosol-coherence-override.xml
-├── FirstWAR.war
+│   ├── classes
+│   │   ├── example-config.xml
+│   │   └── tangosol-coherence-override.xml
+│   └── lib
+│       └── coherence.jar
+├── FirstWAR_with_no_coherence.war
 └── META-INF
     ├── application.xml
-    └── weblogic-application.xml
+    └── weblogic-applilcation.xml
 
-3 directories, 5 files
-```
-
-<br>
-
-EAR format으로 Coherence를 배포하기 위해서는,
-
-[Packaging Shared Utility Classes](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/wlprg/classloading.html#GUID-63E6C6F0-1F21-4281-AA0B-06330E2DBDC4)에서 설명처럼
-
-EAR 하위 WAR 들이 공통으로 사용할 Coherence Libraries/Resources를 APP-INF/lib 또는 classes 에 배치해야 한다.
-
-<br>
-
-그러므로, "(1) Creating WAR" 과 조금 배치가 다른 점이 있다.
-
-FirstWAR.war 에 있던 example-config.xml, tangosol-coherence-override.xml이 EAR의 상위 레벨로 포함되기 위해 APP-INF/classes 에 배치 된다.
-
-EAR에 포함된 FirstWAR.war는 "(1) Creating WAR" 에서 생성한 index.jsp만 유지하고 Coherence 관련된 항목은 모두 제거되었다.
-
-FirstWAR.war는 Coherence와 종속성이 전혀 없다.
-
-<br>
-
-즉, FirstWAR에 포함된 요소는 다음과 같다.
-
-```
-index.jsp
-WEB-INF/web.xml
-WEB-INF/weblogic.xml
+4 directories, 6 files
 ```
 
 <br>
@@ -217,11 +229,12 @@ META-INF/application.xml
    <display-name>FirstEAR</display-name>
    <module>
       <web>
-         <web-uri>FirstWAR.war</web-uri>
-         <context-root>/FirstWAR</context-root>
+         <web-uri>FirstWAR_with_no_coherence.war</web-uri>
+         <context-root>/FirstWAR_with_no_coherence</context-root>
       </web>
    </module>
 </application>
+<?xml version="1.0"?>
 ```
 
 <br>
@@ -229,19 +242,27 @@ META-INF/application.xml
 META-INF/weblogic-application.xml
 
 ```xml
-<?xml version="1.0"?>
 <weblogic-application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-application
    http://xmlns.oracle.com/weblogic/weblogic-application/1.6/
    weblogic-application.xsd"
    xmlns="http://xmlns.oracle.com/weblogic/weblogic-application">
+
+        <prefer-application-packages>
+                <package-name>com.tangosol.*</package-name>
+                <package-name>com.oracle.*</package-name>
+        </prefer-application-packages>
+
+    <prefer-application-resources>
+        <resource-name>example-config.xml</resource-name>
+        <resource-name>tangosol-coherence-override.xml</resource-name>
+    </prefer-application-resources>
 </weblogic-application>
 ```
 
 
 <br><br>
 
-<br>
 
 #### (3) Creating GAR
 
@@ -415,7 +436,7 @@ WebLogic Server Platform이 아닌 Application Server에 배포할 목적으로 
 
 Coherence*Web HTTP Session 사용 사례를 다루기 위해서는 조금 더 연구가 필요해 보인다.
 
-WebLogic Server에 배포되는 App의 weblogic.xml 에는 "<persistent-store-type>coherence-web</persistent-store-type>" 선언을 통해 Integrated 된 Coherence를 가볍게 다루도록 되어 있다.
+WebLogic Server에 배포되는 App의 weblogic.xml 에는 `<persistent-store-type>coherence-web</persistent-store-type>` 선언을 통해 Integrated 된 Coherence를 가볍게 다루도록 되어 있다.
 
 이러한 방법을, WebLogic Server Platform이 아닌 다른 Application Server에 배포되는 Coherence Application에서는 어떻게 구현할 수 있는지에 대한 것 말이다.
 
