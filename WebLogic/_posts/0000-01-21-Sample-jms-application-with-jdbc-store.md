@@ -8,7 +8,7 @@ typora-root-url: ..
 
 # 1. Overview
 
-[Creating-JMS-With-WLST]({{ site.url }}/WebLogic/Creating-JMS-With-WLST) 포스팅에서 생성한 환경에 JDBC Store 구성을 더하고, 샘플 JMS Application 으로 테스트
+[Creating-JMS-With-WLST]({{ site.url }}/weblogic/Creating-JMS-With-WLST) 포스팅에서 생성한 환경에 JDBC Store 구성을 더하고, 샘플 JMS Application 으로 테스트
 
 <br><br>
 

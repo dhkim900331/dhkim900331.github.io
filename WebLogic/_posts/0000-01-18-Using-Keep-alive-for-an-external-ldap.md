@@ -1,8 +1,8 @@
 ---
 date: 2025-08-29 12:22:37 +0900
 layout: post
-title: "[WebLogic/] "
-tags: [Middleware, WebLogic, ]
+title: "[WebLogic/LDAP] Using Keep alive for an external ldap"
+tags: [Middleware, WebLogic, LDAP]
 typora-root-url: ..
 ---
 
