@@ -50,7 +50,7 @@ Oracle Linux Server release 8.7
 
 <br><br>
 
-
+<br>
 
 # 3. 사전 준비사항
 
@@ -70,7 +70,7 @@ Oracle Linux Server release 8.7
 
 <br><br>
 
-
+<br>
 
 # 4. 소프트웨어 설치
 
@@ -94,7 +94,7 @@ cd ${ORACLE_HOME} && unzip ${ORACLE_HOME}/LINUX.X64_193000_db_home.zip
 
 <br><br>
 
-
+<br>
 
 ## 4.2 응답 파일 작성
 
@@ -145,7 +145,7 @@ EOF
 
 <br><br>
 
-
+<br>
 
 ## 4.3 설치 실행
 
@@ -204,7 +204,7 @@ SQL>
 
 <br><br>
 
-
+<br>
 
 ## 4.5 리스너 구성 및 확인
 
