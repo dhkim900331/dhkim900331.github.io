@@ -30,11 +30,10 @@ All-In-One-Script-For-11gR1.sh 실행으로 다음 환경을 구성하도록 한
 ## 3.1 Engine
 
 ```sh
-BASEDIR=/sw/installFiles
+BASEDIR=/sw/downloads
 OS_USERNAME=$(id --user --name)
 OS_GROUPNAME=$(id --group --name)
 
-OHS_INSTALL_FILE=ofm_webtier_linux_11.1.1.9.0_64_disk1_1of1.zip
 ENGINE_PATH=/sw/webtier/11gR1/Oracle_WT1
 INVENTORY_PATH=/sw/webtier/inventories/11gR1
 INVENTORY_GROUP=${OS_GROUPNAME}
@@ -79,7 +78,6 @@ EOF
 
 
 # (3) Installation
-cd ${BASEDIR} && jar -xf ${OHS_INSTALL_FILE}
 chmod 700 ${BASEDIR}/Disk1/runInstaller
 chmod 700 ${BASEDIR}/Disk1/install/*/runInstaller
 chmod 700 ${BASEDIR}/Disk1/install/*/unzip
@@ -121,21 +119,21 @@ ${ENGINE_PATH}/opmn/bin/opmnctl createcomponent -oracleInstance ${INSTANCE_HOME}
 # (6) Create Component Scripts (start, stop, ps)
 cat << "EOF" > ${INSTANCE_HOME}/start.sh
 #!/usr/bin/bash
-BASEDIR=$(realpath $(dirname $0))
+BASEDIR=$(readlink -f $(dirname $0))
 ${BASEDIR}/bin/opmnctl startall
 EOF
 
 
 cat << "EOF" > ${INSTANCE_HOME}/stop.sh
 #!/usr/bin/bash
-BASEDIR=$(realpath $(dirname $0))
+BASEDIR=$(readlink -f $(dirname $0))
 ${BASEDIR}/bin/opmnctl stopall
 EOF
 
 
 cat << "EOF" > ${INSTANCE_HOME}/status.sh
 #!/usr/bin/bash
-BASEDIR=$(realpath $(dirname $0))
+BASEDIR=$(readlink -f $(dirname $0))
 ${BASEDIR}/bin/opmnctl status -l
 EOF
 

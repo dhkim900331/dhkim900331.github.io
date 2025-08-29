@@ -47,7 +47,9 @@ Red Hat Enterprise Linux release 8.7 (Ootpa)
 Oracle Linux Server release 8.7
 ```
 
-<br>
+
+<br><br>
+
 
 
 # 3. 사전 준비사항
@@ -55,7 +57,6 @@ Oracle Linux Server release 8.7
 ## 3.1 설치 파일
 
 [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle-database-software-downloads.html)에서 `Linux x86-64 (ZIP, 2.8GB)` 를 받았다.
-
 
 <br><br>
 
@@ -66,7 +67,9 @@ Oracle Linux Server release 8.7
 
 > 본인은, 위 문서를 보았지만 기존 시스템에 WLS, OHS 등 다양한 설치를 진행해왔던 터라 실제 Yum 을 진행하지 않고 넘어갔다.
 
-<br>
+
+<br><br>
+
 
 
 # 4. 소프트웨어 설치
@@ -74,21 +77,23 @@ Oracle Linux Server release 8.7
 ## 4.1 기본 환경 구성
 
 ```shell
-$ cat ~/.bash_profile
+# === Oracle env ===
 export ORACLE_BASE=/sw/databases/oracle-19c
-export ORACLE_HOME=${ORACLE_BASE}/product/19.3/dbhome_1
-export ORACLE_SID=ORCL
-export PATH=$ORACLE_HOME/bin:$PATH
+export ORACLE_HOME=/sw/databases/oracle-19c/product/19.3/dbhome_1
+export ORACLE_SID=ORCL                  # CDB SID (dbca로 만든 값)
+export PATH="$ORACLE_HOME/bin:$PATH"
 ```
 
 
 ```shell
-$ mkdir -p $ORACLE_HOME
-$ mv LINUX.X64_193000_db_home.zip ${ORACLE_HOME}
-$ cd ${ORACLE_HOME} && unzip ${ORACLE_HOME}/LINUX.X64_193000_db_home.zip
+mkdir -p $ORACLE_HOME
+cp LINUX.X64_193000_db_home.zip ${ORACLE_HOME}
+cd ${ORACLE_HOME} && unzip ${ORACLE_HOME}/LINUX.X64_193000_db_home.zip
 ```
 
-<br>
+
+<br><br>
+
 
 
 ## 4.2 응답 파일 작성
@@ -102,39 +107,43 @@ $ cd ${ORACLE_HOME} && unzip ${ORACLE_HOME}/LINUX.X64_193000_db_home.zip
 <br>
 
 ```shell
-$ cat $ORACLE_HOME/install/response/db_install.rsp
-
-UNIX_GROUP_NAME=<Group Name of OS Account that run installer>
-INVENTORY_LOCATION=/sw/databases/oracle-19c/inventory
-ORACLE_HOME=/sw/databases/oracle-19c/product/19.3/dbhome_1
-ORACLE_BASE=/sw/databases/oracle-19c
-
+cat << EOF > $ORACLE_HOME/install/response/db_install.rsp
 oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v19.0.0
 oracle.install.option=INSTALL_DB_SWONLY
 
+UNIX_GROUP_NAME=weblogic
+INVENTORY_LOCATION=/sw/databases/oracle-19c/inventory
+ORACLE_BASE=/sw/databases/oracle-19c
+ORACLE_HOME=/sw/databases/oracle-19c/product/19.3/dbhome_1
+
+# 에디션: EE | SE2 중 선택
 oracle.install.db.InstallEdition=SE2
-oracle.install.db.OSDBA_GROUP=<Group Name>
-oracle.install.db.OSBACKUPDBA_GROUP=<Group Name>
-oracle.install.db.OSDGDBA_GROUP=<Group Name>
-oracle.install.db.OSKMDBA_GROUP=<Group Name>
-oracle.install.db.OSRACDBA_GROUP=<Group Name>
+
+# OS 그룹 (분리 필요 없으면 모두 dba 로 통일 가능)
+oracle.install.db.OSDBA_GROUP=weblogic
+oracle.install.db.OSOPER_GROUP=weblogic
+oracle.install.db.OSBACKUPDBA_GROUP=weblogic
+oracle.install.db.OSDGDBA_GROUP=weblogic
+oracle.install.db.OSKMDBA_GROUP=weblogic
+oracle.install.db.OSRACDBA_GROUP=weblogic
+
+# 루트 스크립트를 sudo로 자동 실행하려면 (선택)
 oracle.install.db.rootconfig.executeRootScript=true
 oracle.install.db.rootconfig.configMethod=SUDO
 oracle.install.db.rootconfig.sudoPath=/usr/bin/sudo
-oracle.install.db.rootconfig.sudoUserName=<sudo username>
-oracle.install.db.config.starterdb.type=GENERAL_PURPOSE
-oracle.install.db.config.starterdb.globalDBName=GLOBAL_ORCL
-oracle.install.db.config.starterdb.SID=ORCL
-oracle.install.db.ConfigureAsContainerDB=false
-oracle.install.db.config.starterdb.characterSet=AL32UTF8
-oracle.install.db.config.starterdb.password.ALL=<Password of OS Account that run installer>
-oracle.install.db.config.starterdb.password.SYS=<Password of OS Account that run installer>
-oracle.install.db.config.starterdb.password.SYSTEM=<Password of OS Account that run installer>
-oracle.install.db.config.starterdb.password.DBSNMP=<Password of OS Account that run installer>
-oracle.install.db.config.starterdb.password.PDBADMIN=<Password of OS Account that run installer>
+oracle.install.db.rootconfig.sudoUserName=weblogic
+EOF
+
+
+cat << EOF > /etc/oraInst.loc
+inventory_loc=/sw/databases/oracle-19c/inventory
+inst_group=weblogic
+EOF
 ```
 
-<br>
+
+<br><br>
+
 
 
 ## 4.3 설치 실행
@@ -150,6 +159,7 @@ Launching Oracle Database Setup Wizard...
        - java.lang.NullPointerException
 ```
 
+<br>
 
 내 환경과 같이 OS Pass에 실패할 경우, 다음과 같이 진행한다. [참고](https://positivemh.tistory.com/486)
 
@@ -171,7 +181,9 @@ You can find the log of this install session at:
 Successfully Setup Software.
 ```
 
-<br>
+
+<br><br>
+
 
 
 ## 4.4 설치 확인
@@ -189,7 +201,9 @@ Connected to an idle instance.
 SQL>
 ```
 
-<br>
+
+<br><br>
+
 
 
 # 5. 리스너 구성 및 확인
@@ -247,24 +261,31 @@ The command completed successfully
 # 6. 데이터베이스 생성 및 확인
 
 ```shell
-$ cat $ORACLE_HOME/assistants/dbca/dbca.rsp
+cat << EOF > $ORACLE_HOME/assistants/dbca/dbca.rsp
 gdbName=GLOBAL_ORCL
 sid=ORCL
-databaseConfigType=SI
+
 createAsContainerDatabase=true
 numberOfPDBs=1
 pdbName=ORCLPDB
-useLocalUndoForPDBs=true
-pdbAdminPassword=wls.local1234
+pdbAdminPassword=weblogic1
+
 templateName=General_Purpose.dbc
-sysPassword=wls.local1234
-systemPassword= wls.local1234
-storageType=FS
 characterSet=AL32UTF8
 nationalCharacterSet=AL16UTF16
+
+databaseConfigType=SI
+storageType=FS
+
 listeners=LISTENER
 databaseType=MULTIPURPOSE
-totalMemory=1024
+emConfiguration=NONE
+
+sysPassword=weblogic1
+systemPassword=weblogic1
+
+totalMemory=2048
+EOF
 ```
 
 
@@ -290,7 +311,7 @@ Look at the log file "/sw/databases/oracle-19c/cfgtoollogs/dbca/GLOBAL_ORCL/GLOB
 ```shell
 $ sqlplus / as sysdba
 
-SQL> select NAME,CDB from v$database ;
+SQL> select NAME,CDB from v$database;
 NAME      CDB
 --------- ---
 GLOBAL_O  YES

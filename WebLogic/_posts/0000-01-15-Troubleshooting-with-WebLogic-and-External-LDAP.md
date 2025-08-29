@@ -56,6 +56,19 @@ dc=example,dc=com
 <br><br>
 
 
+`testuser1` 와 같이 생성한 LDAP 계정은 WLS에서 권한을 부여 해야 한다.
+
+```
+myrealm - Roles and Policies - Realm Roles - Global Roles - Admin - View Role Conditions 클릭
+ Predicate List: User
+   여기서 testuser1 추가
+```
+
+
+<br><br>
+
+
+
 ## 2.2 WebLogic LDAP Configurations
 
 Security Realm - myrealm - Providers - Authentication - New
@@ -361,7 +374,8 @@ Caused By: weblogic.security.providers.authentication.LoginServerUnavailableExce
 
 ***WebLogic Provider 우선순위에서 LDAP Server가 가장 높아 외부 Server에서 우선 검색한 것이고, 모든 재시도 작업이 끝난 후 그 다음 우선순위인 Embedded LDAP 에서 완료된 것이다.***
 
-```<2025. 6. 17 오후 12시 47분 24,507초 KST> <Debug> <SecurityAtn> <BEA-000000> <com.bea.common.security.internal.service.CallbackHandlerWrapper.handle did not get username or IDD user from a callback>
+```
+<2025. 6. 17 오후 12시 47분 24,507초 KST> <Debug> <SecurityAtn> <BEA-000000> <com.bea.common.security.internal.service.CallbackHandlerWrapper.handle did not get username or IDD user from a callback>
 <2025. 6. 17 오후 12시 47분 24,507초 KST> <Debug> <SecurityAtn> <BEA-000000> <LDAP Atn Login username: weblogic>
 <2025. 6. 17 오후 12시 47분 24,507초 KST> <Debug> <SecurityAtn> <BEA-000000> <authenticate user:weblogic>
 <2025. 6. 17 오후 12시 47분 24,507초 KST> <Debug> <SecurityAtn> <BEA-000000> <getConnection return conn:LDAPConnection { ldapVersion:2 bindDN:""}>
