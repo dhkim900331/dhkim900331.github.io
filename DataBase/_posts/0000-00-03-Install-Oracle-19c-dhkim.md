@@ -50,7 +50,7 @@ Oracle Linux Server release 8.7
 
 <br><br>
 
-
+<br>
 
 # 3. 사전 준비사항
 
@@ -65,12 +65,12 @@ Oracle Linux Server release 8.7
 
 [Operating System Checklist for Oracle Database Installation on Linux](https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/operating-system-checklist-for-oracle-database-installation-on-linux.html#GUID-E5C0A90E-7750-45D9-A8BC-C7319ED934F0) 참고
 
-> 위 문서를 보았지만 기존 시스템에 WLS, OHS 등 다양한 설치를 진행해왔던 터라 실제 Yum 을 진행하지 않고 넘어갔다.
+> 본인은, 위 문서를 보았지만 기존 시스템에 WLS, OHS 등 다양한 설치를 진행해왔던 터라 실제 Yum 을 진행하지 않고 넘어갔다.
 
 
 <br><br>
 
-
+<br>
 
 # 4. 소프트웨어 설치
 
@@ -94,7 +94,7 @@ cd ${ORACLE_HOME} && unzip ${ORACLE_HOME}/LINUX.X64_193000_db_home.zip
 
 <br><br>
 
-
+<br>
 
 ## 4.2 응답 파일 작성
 
@@ -135,7 +135,6 @@ oracle.install.db.rootconfig.sudoUserName=weblogic
 EOF
 
 
-# /etc/oraInst.loc는 root:root 소유자이고 기존 다른 DB를 가리키므로 주의
 cat << EOF > /etc/oraInst.loc
 inventory_loc=/sw/databases/oracle-19c/inventory
 inst_group=weblogic
@@ -145,7 +144,7 @@ EOF
 
 <br><br>
 
-
+<br>
 
 ## 4.3 설치 실행
 
@@ -185,6 +184,7 @@ Successfully Setup Software.
 
 <br><br>
 
+<br>
 
 ## 4.4 설치 확인
 
@@ -204,9 +204,9 @@ SQL>
 
 <br><br>
 
+<br>
 
-
-## 4.5 리스너 구성 및 확인
+# 5. 리스너 구성 및 확인
 
 ```shell
 $ netca -silent -responseFile $ORACLE_HOME/assistants/netca/netca.rsp
@@ -255,11 +255,10 @@ The listener supports no services
 The command completed successfully
 ```
 
+<br>
 
-<br><br>
 
-
-## 4.6 CDB 및 기본 PDB 생성
+# 6. 데이터베이스 생성 및 확인
 
 ```shell
 cat << EOF > $ORACLE_HOME/assistants/dbca/dbca.rsp
@@ -289,8 +288,6 @@ totalMemory=2048
 EOF
 ```
 
-<br>
-
 
 ```shell
 $ dbca -silent -createDatabase -responsefile $ORACLE_HOME/assistants/dbca/dbca.rsp
@@ -309,8 +306,6 @@ Global Database Name:GLOBAL_ORCL
 System Identifier(SID):ORCL
 Look at the log file "/sw/databases/oracle-19c/cfgtoollogs/dbca/GLOBAL_ORCL/GLOBAL_ORCL.log" for further details.
 ```
-
-<br>
 
 
 ```shell
@@ -374,167 +369,45 @@ The command completed successfully
 
 _**데이터베이스 삭제는 `dbca -silent -deleteDatabase -sourceDB ORCL`**_
 
+
 <br><br>
 
-## 4.7 스크립트 생성
+
+# 7. DB & Listener Startup
 
 ```sh
-# --------------
-# start_DB.sh, stop_DB.sh : CDB 기동과 함께 모든 PDB Open
-# --------------
-cat << EOF > start_DB.sh
-#!/usr/bin/env bash
-source ./env_PDB_WLS.sh
-sqlplus -s / as sysdba <<SQL
-startup;
-alter pluggable database all open;
-exit
-SQL
-EOF
+$ /sw/databases/oracle-19c/product/19.3/dbhome_1/bin/lsnrctl start LISTENER
+$ sqlplus / as sysdba
+sqlplus> startup
+ORACLE instance started.
 
-cat << EOF > stop_DB.sh
-#!/usr/bin/env bash
-source ./env_PDB_WLS.sh
-sqlplus -s / as sysdba <<SQL
-alter pluggable database all close immediate;
-shutdown immediate;
-exit
-SQL
-EOF
-
-
-# --------------
-# start_listener.sh, stop_listener.sh, status_listener.sh : 말안해도 알제?
-# --------------
-cat << EOF > start_listener.sh
-#!/usr/bin/env bash
-source ./env_PDB_WLS.sh
-exec lsnrctl start LISTENER
-EOF
-
-cat << EOF > stop_listener.sh
-#!/usr/bin/env bash
-source ./env_PDB_WLS.sh
-exec lsnrctl stop LISTENER
-EOF
-
-cat << EOF > stop_listener.sh
-#!/usr/bin/env bash
-source ./env_PDB_WLS.sh
-exec lsnrctl status LISTENER
-EOF
-
-
-# --------------
-# env_PDB_WLS.sh : 전용 PDB 환경변수 셋업 스크립트
-# --------------
-cat << EOF > env_PDB_WLS.sh
-#!/usr/bin/env bash
-# WLS 전용 PDB 환경
-
-export ORACLE_BASE=/sw/databases/oracle-19c
-export ORACLE_HOME=/sw/databases/oracle-19c/product/19.3/dbhome_1
-export ORACLE_SID=ORCL
-export PATH=$ORACLE_HOME/bin:$PATH
-
-# Listener 접속 정보
-export ORA_HOST=wls.local
-export ORA_PORT=1521
-
-# 생성할 PDB와 PDB 관리자 계정/암호
-export PDB_NAME=PDB_WLS
-export PDBADMIN_USER=PDBADMIN
-export PDBADMIN_PASS=PDBADMIN1
-
-# 애플리케이션 계정/암호 + 전용 테이블스페이스
-export APP_USER=weblogic
-export APP_PASS=weblogic1
-export APP_TS=WLS_TS
-EOF
-
-
-# --------------
-# create_PDB_WLS.sh : 전용 PDB 생성 / PDB 계정 생성 / PDB 테이블 생성
-# --------------
-cat << EOF > create_PDB_WLS.sh
-#!/usr/bin/env bash
-source ./env_PDB_WLS.sh
-
-# CDB 데이터파일 베이스 디렉터리 (pdbseed가 있는 곳의 상위)
-BASE_DIR=$ORACLE_BASE/oradata/GLOBAL_ORCL
-
-# ======== [자동 파생 경로] ========
-SEED_DIR="$BASE_DIR/pdbseed"
-PDB_DIR="$BASE_DIR/$PDB_NAME"
-APP_DF="$PDB_DIR/${APP_TS}01.dbf"
-
-# ======== [실행] ========
-sqlplus -s / as sysdba <<SQL
-set echo on
-whenever sqlerror exit 1
-
--- 1) PDB 생성 (seed -> 새 PDB 디렉터리로 파일 매핑)
-CREATE PLUGGABLE DATABASE $PDB_NAME
-  ADMIN USER $PDBADMIN_USER IDENTIFIED BY "$PDBADMIN_PASS"
-  FILE_NAME_CONVERT = (
-    '$SEED_DIR',
-    '$PDB_DIR'
-  );
-
--- 2) PDB OPEN + 재기동 시 자동 OPEN 저장
-ALTER PLUGGABLE DATABASE $PDB_NAME OPEN;
-ALTER PLUGGABLE DATABASE ALL SAVE STATE;
-
--- 3) 새 PDB로 전환
-ALTER SESSION SET CONTAINER=$PDB_NAME;
-
--- 4) 전용 테이블스페이스 + 애플리케이션 계정/권한
-CREATE TABLESPACE $APP_TS
-  DATAFILE '$APP_DF' SIZE 2G AUTOEXTEND ON NEXT 512M MAXSIZE UNLIMITED;
-
-CREATE USER $APP_USER IDENTIFIED BY "$APP_PASS"
-  DEFAULT TABLESPACE $APP_TS
-  QUOTA UNLIMITED ON $APP_TS;
-
-GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE SEQUENCE, CREATE PROCEDURE TO $APP_USER;
-
--- 확인 (옵션)
-SHOW CON_NAME;
-SELECT username, default_tablespace FROM dba_users WHERE username=UPPER('$APP_USER');
-SQL
-
-echo "[OK] $PDB_NAME 생성 및 $APP_USER 계정/권한 설정 완료"
-echo "접속: sqlplus $APP_USER/$APP_PASS@$ORA_HOST:$ORA_PORT/$PDB_NAME"
-EOF
-
-
-# --------------
-# sqlplus_sysdba.sh : CDB 관리자 접속
-# sqlplus_PDB_WLS.sh : 해당 PDB 접속
-# --------------
-cat << EOF > sqlplus_sysdba.sh
-#!/usr/bin/env bash
-source ./env_PDB_WLS.sh
-exec sqlplus / as sysdba
-EOF
-
-cat << EOF > sqlplus_PDB_WLS.sh
-#!/usr/bin/env bash
-source ./env_PDB_WLS.sh
-exec sqlplus "${APP_USER}/${APP_PASS}@${ORA_HOST}:${ORA_PORT}/${PDB_NAME}"
-EOF
+Total System Global Area  805304088 bytes
+Fixed Size                  9139992 bytes
+Variable Size             218103808 bytes
+Database Buffers          570425344 bytes
+Redo Buffers                7634944 bytes
+Database mounted.
+Database opened.
 ```
 
-> CDB = 전체 DB
->
-> PDB = 목적별 사용할 DB로써 별도로 만들어 사용할 수 있다.
-
-<br>
-
 <br>
 
 
-# 5. 기본 SQL Query
+# 8. User 관리
+
+```sh
+sqlplus> ALTER SESSION SET "_ORACLE_SCRIPT"=true;
+sqlplus> CREATE USER weblogic IDENTIFIED BY weblogic1;
+sqlplus> ALTER USER weblogic IDENTIFIED BY weblogic1;
+sqlplus> GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW to weblogic;
+sqlplus> DROP USER  weblogic CASCADE;
+sqlplus> REVOKE <권한> FROM weblogic;
+```
+
+<br>
+
+
+# 9. 기본 SQL Query
 
 ```sql
 CREATE TABLE emp (empno NUMBER(4) NOT NULL, ename VARCHAR2(10));

@@ -67,7 +67,7 @@ myrealm - Roles and Policies - Realm Roles - Global Roles - Admin - View Role Co
 
 <br><br>
 
-
+<br>
 
 ## 2.2 WebLogic LDAP Configurations
 
