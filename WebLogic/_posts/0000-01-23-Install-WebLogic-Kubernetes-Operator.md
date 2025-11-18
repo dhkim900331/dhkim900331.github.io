@@ -1,8 +1,8 @@
 ---
 date: 2025-11-18 13:53:50 +0900
 layout: post
-title: "[WebLogic/] "
-tags: [Middleware, WebLogic, ]
+title: "[WebLogic/Install WebLogic Kubernetes Operator] "
+tags: [Middleware, WebLogic, Kubernetes, WKO]
 typora-root-url: ..
 ---
 
