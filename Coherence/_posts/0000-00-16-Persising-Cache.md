@@ -1,17 +1,11 @@
 ---
 date: 2026-02-23 13:44:30 +0900
-tags: [Import-7730]
-title: 1. Overview
-created: '2026-01-13T01:04:04.689Z'
-modified: '2026-01-13T01:22:59.848Z'
----
-
----
 layout: post
 title: "[Coherence/Cache] Persisting Cache for HttpSession"
 tags: [Coherence, Cache, Session]
 typora-root-url: ..
 ---
+
 
 # 1. Overview
 Coherence 12.2.1.4 에서 Persisting Cache는 Cache Data를 Local File로 저장 할 수 있게 한다.

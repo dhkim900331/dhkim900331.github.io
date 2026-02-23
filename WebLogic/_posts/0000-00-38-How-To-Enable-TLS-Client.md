@@ -33,7 +33,7 @@ USER_MEM_ARGS="${USER_MEM_ARGS} -Dweblogic.security.SSL.minimumProtocolVersion=T
 
 <br><br>
 
-
+<br>
 
 ## 2.2 Outbound TLS
 
@@ -357,7 +357,7 @@ Server Hello는
 
 <br><br>
 
-
+<br>
 
 # 4. Outcome
 
