@@ -18,7 +18,10 @@ WebLogic Server 14c 기준에서 Client 측에 TLS Protocol을 어떻게 다루�
 <br><br>
 
 
-# 2. Inbound TLS
+# 2. Descriptions
+
+
+## 2.1 Inbound TLS
 
 다음 옵션으로 TLS를 받아들이는 Server측의 Protocol은 TLSv1.2 이상이 된다.
 
@@ -27,63 +30,66 @@ USER_MEM_ARGS="${USER_MEM_ARGS} -Djava.security.properties=${DOMAIN_HOME}/java.s
 USER_MEM_ARGS="${USER_MEM_ARGS} -Dweblogic.security.SSL.minimumProtocolVersion=TLSv1.2"
 ```
 
+
+<br><br>
+
+
+
+## 2.2 Outbound TLS
+
+WLS가 Client가 될 때에는, 세가지 유형이 있다.
+
+* javax.net.ssl.HttpsURLConnection
+* java.net.URL
+* Apache HttpClient (주로 사용)
+
 <br>
 
-
-# 3. Outbound TLS
-
-WLS 가 Client가 되어 Outbound TLS 통신은 여러가지 환경에 따라, 살펴보아야 하는것 같다.
+세가지 방법 모두 JSSE 구현체다.
 
 
 <br><br>
 
 
-## 3.1 URL openStream
+## 2.3 URL openStream
 
-URL class의 openStream으로 Outbound TLS 호출을 할 경우를 살펴본다.
+```jsp
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="java.io.*" %>
+<%@ page import="java.net.*" %>
+
+<%
+String urlString = "https://...";
+
+try {
+    URL url = new URL(urlString);
+
+    // openStream()만 사용
+    BufferedReader br =
+        new BufferedReader(new InputStreamReader(url.openStream()));
+
+    String line;
+    while ((line = br.readLine()) != null) {
+        out.println(line + "<br/>");
+    }
+    br.close();
+
+} catch (Exception e) {
+    out.println("ERROR : " + e + "<br/>");
+    e.printStackTrace(new PrintWriter(out));
+}
+%>
+```
 
 <br>
 
-호출 어플리케이션
-
-```jsp
-<%@ page import="java.io.*" %>
-<%@ page import="java.net.URL" %>
-<%@ page import="weblogic.net.http.HttpsURLConnection" %>
-
-
-<%
-    String url = "https://wls.local:8442/testApp/index.jsp";
-    URL u = new URL(url);
-    HttpsURLConnection httpsUrlConnection = (HttpsURLConnection) u.openConnection();
-    System.out.println("Resp Code : " + httpsUrlConnection.getResponseCode());
-    System.out.println("Cipher Suite : " + httpsUrlConnection.getCipherSuite());
-
-    // https://docs.oracle.com/javase/tutorial/networking/urls/readingURL.html
-    BufferedReader br = new BufferedReader(new InputStreamReader(u.openStream()));
-    String inputLine;
-    while ((inputLine = br.readLine()) != null) System.out.println(inputLine);
-    br.close();
-%>
-
-```
-
-
-Outbound TLSv1.2 를 활성화 해야 한다.
+Outbound TLSv1.2 를 활성화 해야 한다. (위에서 Inbound TLS 설정했으면)
 
 ```shell
 USER_MEM_ARGS="${USER_MEM_ARGS} -Djdk.tls.client.protocols=TLSv1.2"
 ```
 
-
-어플리케이션 호출 시에, 정상적인 경우 아래처럼 표시된다.
-
-```
-Resp Code : 200
-Cipher Suite : TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-Hello World
-```
-
+<br>
 
 `-Djdk.tls.client.protocols=TLSv1.1` 설정 시에는 아래처럼 표시된다.
 
@@ -98,10 +104,13 @@ javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabl
 
 ```
 
+<br>
 
 [weblogic.security.SSL.minimumProtocolVersion 시스템 속성 사용](https://docs.oracle.com/en/middleware/standalone/weblogic-server/14.1.1.0/secmg/ssl_version.html#GUID-CAC4495F-B8A1-4F62-A9C2-358DC717A830) 의 아래 메모에 따르면, `weblogic.security.SSL.minimumProtocolVersion`옵션과, `jdk.tls.client.protocols` 옵션은 같이 적용할 수 없다고 나와 있다. 
 
 그렇기 때문에, 인스턴스를 2개로 분리하여 테스트 해야 한다.
+
+> Inbound TLS 설정한 A 인스턴스, Outbound 호출을 하는 App이 있는 B 인스턴스
 
 <br>
 
@@ -111,9 +120,7 @@ HttpsURLConnection 클래스, URL 클래스의 openStream 을 사용할 때는 `
 
 위 URL 클래스의 openStream 테스트시 `jdk.tls.client.protocols` 옵션에 영향이 미쳤다.
 
-~~이러한 부분은, 블로그 작성 중에도 정확히 파악이 안된다.~~
-
-다시 살펴보니, Java 7 이전 버전에서 Client의 Outbound TLS 통신일 경우에 적용하는 옵션으로 보여진다.
+두 Class 모두 JSSE 구현체이므로 그러한 것이다.
 
 <br>
 
@@ -123,92 +130,57 @@ HttpsURLConnection 클래스, URL 클래스의 openStream 을 사용할 때는 `
 <br><br>
 
 
-## 3.2 HttpsUrlConnection (SSLContext)
+## 2.4 HttpsURLConnection
 
-해당 부분은 URL openStream과 동일할 것이므로,
-
-SSLContext 부분옵션으로 테스트 한다.
-
-<br>
-
-HTTPS URL은 호출 시마다 독립적인 채널(?)이 사용된다고 한다.
-
-이 채널마다 서로 다른 TLS protocol을 적용하기 위하여 SSLContext를 이번 테스트에 녹여보았다.
-
-_다만, 맨 아래에서 설명하겠지만 SSLContext에 원하는 protocol이 사실상 구현되지 않았다._
-
-<br>
-
-다음의 [어플리케이션](https://goddaehee.tistory.com/268)을 사용하고,
-
-SSLContext 를 사용하여 특정 TLS version을 강제 지정한다.
-
-```
+```jsp
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.io.*" %>
 <%@ page import="java.net.*" %>
-<%@ page import="javax.net.ssl.SSLContext" %>
-<%@ page import="javax.net.ssl.HttpsURLConnection" %>
-<%@ page import="javax.net.ssl.SSLSession" %>
-<%@ page import="javax.net.ssl.HostnameVerifier" %>
+<%@ page import="javax.net.ssl.*" %>
 
 <%
-
-String urlString = "https://wls.local:8442/testApp/index.jsp";
-String line = null;
-InputStream in = null;
-BufferedReader reader = null;
-HttpsURLConnection httpsConn = null;
-
-String protocol=request.getParameter("protocol");
+String urlString = "https://...";
 
 try {
-	// Get HTTPS URL connection
-	URL url = new URL(urlString);
-	httpsConn = (HttpsURLConnection) url.openConnection();
+    URL url = new URL(urlString);
 
-	httpsConn.setHostnameVerifier(new HostnameVerifier() {
-		@Override
-		public boolean verify(String hostname, SSLSession session) {
-			// Ignore host name verification. It always returns true.
-			return true;
-		}
-			});
+    HttpsURLConnection conn =
+        (HttpsURLConnection) url.openConnection();
 
-	int responseCode = httpsConn.getResponseCode();
-	System.out.println("Resp Code : " + responseCode);
-	System.out.println("Resp Msgs : " + httpsConn.getResponseMessage());
+    // JSSE 명시 (UseSunHttpHandler와 무관)
+    SSLContext ctx = SSLContext.getInstance("TLS");
+    ctx.init(null, null, null);
+    conn.setSSLSocketFactory(ctx.getSocketFactory());
 
-	// SSL setting
-	SSLContext context = SSLContext.getInstance(protocol);
-	context.init(null,null,null);
-	httpsConn.setSSLSocketFactory(context.getSocketFactory());
-	System.out.println("getProtocol() : " + context.getProtocol());
+    // 테스트용 HostnameVerifier
+    conn.setHostnameVerifier((host, sess) -> true);
 
-	// Connect to host
-	httpsConn.connect();
-	httpsConn.setInstanceFollowRedirects(true);
+    int code = conn.getResponseCode();
+    out.println("Resp Code : " + code + "<br/>");
+    out.println("Cipher    : " + conn.getCipherSuite() + "<br/><br/>");
 
-	// Print response from host
-	if (responseCode == HttpsURLConnection.HTTP_OK) { // 정상 호출 200
-			in = httpsConn.getInputStream();
-	} else { // 에러 발생
-			in = httpsConn.getErrorStream();
-	}
-	reader = new BufferedReader(new InputStreamReader(in));
-	while ((line = reader.readLine()) != null) {
-			System.out.printf("%s\n", line);
-	}
+    InputStream in =
+        (code == HttpsURLConnection.HTTP_OK)
+            ? conn.getInputStream()
+            : conn.getErrorStream();
 
-	reader.close();
+    BufferedReader br =
+        new BufferedReader(new InputStreamReader(in));
+
+    String line;
+    while ((line = br.readLine()) != null) {
+        out.println(line + "<br/>");
+    }
+    br.close();
+
 } catch (Exception e) {
-	System.out.println("error : " + e);
-	e.printStackTrace();
+    out.println("ERROR : " + e + "<br/>");
+    e.printStackTrace(new PrintWriter(out));
 }
-
 %>
-
 ```
 
+<br>
 
 [Java 공식 언급 - Enabling TLSv1.3 by default on the client](https://www.java.com/en/configure_crypto.html) 에 따르면 HttpsUrlConnection과 URL.openStream() 사용 시에 어떤 옵션을 사용해야 하는지를 알려주고 있다.
 
@@ -222,21 +194,25 @@ try {
 java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection cannot be cast to javax.net.ssl.HttpsURLConnection
 ```
 
+<br>
 
-위 해결책으로 다음의 공식 자료가 Google snipets 으로 나오나
+다음은 그 해결책.
 
 > **java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection을 javax.net.ssl.HttpsURLConnection으로 캐스트할 수 없음(Doc ID 2332805.1)**
 
 <br>
 
-여기에 그 내용을 온전히 옮길 수 없다.
+HttpsURLConnection이 javax.net.ssl이 아니라 `weblogic.net.http.SOAPHttpsURLConnection` 를 WLS 측에서 반환한다.
 
-다만 그 외 자료를 통틀어보면 , 대게 다음의 해결책이 거론되었다.
+WLS SSL 또한 JSSE 구현을 하였는데, Class 가 다르므로 CastException이 발생한다.
+
+다음의 옵션을 적용하면 WLS Class가 아닌 `javax.next.ssl.HttpsURLConnection` 이 반환되기 때문에 문제가 해결된다.
 
 ```shell
 -DUseSunHttpHandler=true
 ```
 
+<br>
 
 위 옵션으로 실행 시, 추가로 인증서 옵션이 필요하였다.
 
@@ -251,6 +227,75 @@ java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection cannot be
 ```
 
 
+<br><br>
+
+
+## 2.5 Apache HttpClient
+
+여기서는 [HttpClient 4.5.14 (GA)](https://hc.apache.org/downloads.cgi) 를 다운로드하였다.
+
+다음을 WEB-INF/lib에 배치한다.
+
+*  commons-codec-1.11.jar
+*  commons-logging-1.2.jar
+*  httpclient-4.5.14.jar
+*  httpcore-4.4.16.jar
+
+<br>
+
+```jsp
+<%@ page contentType="text/plain; charset=UTF-8" %>
+<%@ page import="org.apache.http.client.methods.HttpGet" %>
+<%@ page import="org.apache.http.impl.client.CloseableHttpClient" %>
+<%@ page import="org.apache.http.impl.client.HttpClients" %>
+<%@ page import="org.apache.http.client.methods.CloseableHttpResponse" %>
+<%@ page import="org.apache.http.util.EntityUtils" %>
+
+<%
+    String url = request.getParameter("url");
+    if (url == null) {
+        url = "https://wls.local:1443";
+    }
+
+    try (CloseableHttpClient client = HttpClients.createDefault()) {
+        HttpGet get = new HttpGet(url);
+
+        try (CloseableHttpResponse resp = client.execute(get)) {
+            String body = EntityUtils.toString(resp.getEntity(), "UTF-8");
+            out.print(body);
+        }
+    } catch (Exception e) {
+        e.printStackTrace(new java.io.PrintWriter(out));
+    }
+%>
+```
+
+<br>
+
+HttpClient library는 가장 널리 사용되는 library 이며 내부적으로 JSSE 구현체이다.
+
+그러므로 Outbound SSL 구현 시 다른 외부 영향에 간섭받지 않는다.
+
+
+<br><br>
+
+
+## 2.6 Debugging
+
+다음의 Debugging option을 사용하면 all 보다는 낮은 레벨이지만 충분히 디버깅할 만한 로그들을 확인할 수 있다.
+
+```sh
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dweblogic.log.StdoutSeverity=Debug"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Djavax.net.debug=ssl,handshake,record,trustmanager"
+USER_MEM_ARGS="${USER_MEM_ARGS} -Dweblogic.security.SSL.verbose=true"
+```
+
+
+<br><br>
+
+
+### 2.5.1 Mismatch protocols
+
 `jdk.tls.client.protocols` 값이 Outbound Target인 Server의 TLS Version과 맞지 않으면 다음과 같이 에러가 발생한다.
 
 * Client WAS is TLSv1.1
@@ -260,6 +305,7 @@ java.lang.ClassCastException: weblogic.net.http.SOAPHttpsURLConnection cannot be
 javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)
 ```
 
+<br>
 
 `jdk.tls.client.protocols` 값이 Outbound Target인 Server의 TLS Version과 교집합으로 설정될 경우.
 
@@ -268,17 +314,15 @@ javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabl
 
 <br>
 
-위 상황에서, 어플리케이션을 `https.jsp?protocol=TLSv1.1` 으로 호출할 경우, 현재 URL 호출에 대해서만 특별히 TLSv1.1 으로 강제 지정하길 원하였지만, 어플리케이션 문제인지, 혹은 지금 알지 못하는 다른 환경에 대한 문제인지...
-
 <br>
 
 위 어플리케이션 통신 시 정상적인 경우 `javax.net.debug=all` 을 살펴보면
 
-* Client Hello
-
 아래와 같이 JDK 1.8의 기본값 TLSv1.2 가 사용되고 있다.
 
-다시 언급하자면, SSLContext에 직접 TLSv1.3 강제 설정 후 호출하였는데, 아래 로그가 그와 연관이 있는게 맞다면 테스트 어플리케이션 또는 환경의 문제가 있으리라 생각된다.
+Client Hello의 지원되는 버전이 확인된다.
+
+* Client Hello
 
 ```
 "ClientHello": {
@@ -286,7 +330,8 @@ javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabl
 ```
 
 
-Client Hello의 지원되는 버전이 확인된다.
+<br><br>
+
 
 `jdk.tls.client.protocols` 값으로 설정한 TLSv1.1 은 안보인다...
 
@@ -295,6 +340,7 @@ Client Hello의 지원되는 버전이 확인된다.
       "versions": [TLSv1.3, TLSv1.2]
 ```
 
+<br>
 
 Server Hello는
 
@@ -308,11 +354,21 @@ Server Hello는
       "selected version": [TLSv1.3]
 ```
 
-<br>
+
+<br><br>
+
 
 
 # 4. Outcome
 
-Outbound SSL 통신시, WAS 솔루션마다 지원하는 옵션이 있음이 확인된다.
+WLS에서는 과거 Certicom 이었으나 어느 버전부터 JSSE 구현을 따라 SSL 을 제공하고 있다.
 
-여기서는 대부분 기본(SunHandler) 를 사용하게 되어, 그쪽으로 옵션이 안내되었다.
+<br>
+
+사용자의 App에서 Outbound SSL 호출 시, JSSE 구현을 따라가게 되는데 HttpsURLConnection 사용 시 WebLogic Class가 반환될 때 CastException이 발생되는 것 말고 크게 신경 쓸게 없다.
+
+<br>
+
+이외에는 JSSE 구현을 상속하므로 `javax.net.ssl.trustStore` 옵션이 필요한것만 인지하면 된다.
+
+일부 고객은 WLS의 DemoIdentity/DemoTrust 인증서 등과 같이 WLS내에 인증서가 사용되는것으로 오해를 하는 경우가 있다.
