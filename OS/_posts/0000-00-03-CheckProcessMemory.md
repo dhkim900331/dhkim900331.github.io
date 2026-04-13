@@ -1,7 +1,7 @@
 ---
 date: 2022-10-06 17:15:38 +0900
 layout: post
-title: "[Linux/Memory] Check the process memory"
+title: "[OS/Memory] Check the process memory"
 tags: [OS, Linux, Process, RSS]
 typora-root-url: ..
 ---

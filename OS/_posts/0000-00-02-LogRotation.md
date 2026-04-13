@@ -1,7 +1,7 @@
 ---
 date: 2022-08-18 17:18:20 +0900
 layout: post
-title: "[Linux/Log Rotation] Log Rotation"
+title: "[OS/Log Rotation] Log Rotation"
 tags: [OS, Linux, Logrotate, Null, Copy]
 typora-root-url: ..
 ---

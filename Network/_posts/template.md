@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "[Linux] "
-tags: [Linux, OS, ]
+title: "[Network/] "
+tags: [Network, TCP, Linux, ]
 typora-root-url: ..
 ---
 
@@ -9,11 +9,7 @@ typora-root-url: ..
 
 
 
-
-
 # 2. Descriptions
-
-
 
 
 

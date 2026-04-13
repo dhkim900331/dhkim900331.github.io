@@ -1,7 +1,7 @@
 ---
 date: 2023-03-15 08:36:40 +0900
 layout: post
-title: "[Linux/Sed] sed and regex"
+title: "[OS/Sed] sed and regex"
 tags: [Linux, OS, Sed, Regex]
 typora-root-url: ..
 ---
