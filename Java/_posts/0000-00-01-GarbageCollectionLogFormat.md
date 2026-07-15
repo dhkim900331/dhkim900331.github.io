@@ -1,8 +1,8 @@
 ---
 date: 2022-08-22 14:04:46 +0900
 layout: post
-title: "[JVM/GC] GC Log Options에 따른 Format"
-tags: [JVM, GC, Format]
+title: "[Java/GC] GC Log Options에 따른 Format"
+tags: [Java, JVM, GC, Format]
 typora-root-url: ..
 ---
 

@@ -1,8 +1,8 @@
 ---
 date: 2024-06-25 16:09:26 +0900
 layout: post
-title: "[JVM/Heap] How to calculate SurvivorRatio?"
-tags: [JVM, Heap, SurvivorRatio]
+title: "[Java/Heap] How to calculate SurvivorRatio?"
+tags: [Java, JVM, Heap, SurvivorRatio]
 typora-root-url: ..
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "[JVM/] "
-tags: [JVM, ]
+title: "[Java/] "
+tags: [Java, JVM, ]
 typora-root-url: ..
 ---
 
