@@ -3,7 +3,7 @@ date: 2025-03-08 10:18:06 +0900
 layout: post
 title: "[WebTier/OHS] Logging for X-ORACLE-DMS-ECID"
 tags: [WebTier, OHS, DMS]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

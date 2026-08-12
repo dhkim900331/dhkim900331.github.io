@@ -3,7 +3,7 @@ date: 2022-05-17 20:07:33 +0900
 layout: post
 title: "[JBoss] Color Log Pattern"
 tags: [Middleware, JBoss, Log, Pattern]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

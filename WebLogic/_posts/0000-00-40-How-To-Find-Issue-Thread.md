@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] 웹로직에 부하를 주는 스레드 찾기(Linux, AIX, Windows7)"
 tags: [Middleware, WebLogic, Thread]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 
@@ -81,7 +81,7 @@ for (int i=0; i < 3; i++)
 >
 > 실행 결과는 다음과 같다. 인스턴스(22384)의 32.2퍼센트 cpu를 사용하는 스레드 아이디는 **22557, 22558, 22559**
 >
-![How-To-Find-Issue-Thread_1](/../assets/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_1.png)
+![How-To-Find-Issue-Thread_1](/assets/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_1.png)
 
 
 >22557, 22558, 22559를 헥사값(16진수)로 변환하면 각각 **0x581d, 0x581e, 0x581f** 다.
@@ -132,7 +132,7 @@ for (int i=0; i < 3; i++)
 # pslist java
 ```
 
-![How-To-Find-Issue-Thread_2](/../assets/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_2.png)
+![How-To-Find-Issue-Thread_2](/assets/posts/images/WebLogic/How-To-Find-Issue-Thread/How-To-Find-Issue-Thread_2.png)
 
 
 >

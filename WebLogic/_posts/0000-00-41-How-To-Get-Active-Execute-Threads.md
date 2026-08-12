@@ -3,7 +3,7 @@ date: 2024-10-30 14:36:54 +0900
 layout: post
 title: "[WebLogic] How To Get Active Execute Threads"
 tags: [Middleware, WebLogic, Execute, Thread]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

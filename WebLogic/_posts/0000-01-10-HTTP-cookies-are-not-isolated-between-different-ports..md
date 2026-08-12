@@ -3,7 +3,7 @@ date: 2025-04-11 00:21:07 +0900
 layout: post
 title: "[WebLogic] HTTP cookies are not isolated between different ports"
 tags: [Middleware, WebLogic, Session, Cookie, Clustering]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

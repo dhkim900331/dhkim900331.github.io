@@ -3,7 +3,7 @@ date: 2025-04-30 23:47:17 +0900
 layout: post
 title: "[Coherence/Web] How To Change Journal Directory?"
 tags: [Coherence, Web, Flashjournal]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

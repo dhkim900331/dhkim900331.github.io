@@ -3,7 +3,7 @@ date: 2025-08-29 12:22:37 +0900
 layout: post
 title: "[WebTier/iPlanet] ERR_SSL_KEY_USAGE_INCOMPATIBLE On iPlanet"
 tags: [WebTier, iPlanet, Browser, Certificate, SSL, HTTPS]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

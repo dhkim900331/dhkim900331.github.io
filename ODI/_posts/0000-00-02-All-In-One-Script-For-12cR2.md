@@ -3,7 +3,7 @@ date: 2024-03-13 13:41:39 +0900
 layout: post
 title: "[ODI] All In One Script For 12cR2"
 tags: [ODI, Installation, WLST]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -27,6 +27,9 @@
 title: IT Blogger DongDong
 email: ks900331@naver.com
 author: DongHyun Kim
+lang: ko-KR
+timezone: Asia/Seoul
+repository: dhkim900331/dhkim900331.github.io
 
 # Copyright setting
 # You can use any html code, currently below placeholders are available:
@@ -198,6 +201,9 @@ yat:
 markdown: kramdown
 kramdown:
   input: GFM
+  # Keep Markdown paragraph semantics intact. Visual spacing is handled by the
+  # authoring workflow, never by a blanket conversion that can corrupt code.
+  hard_wrap: false
   header_offset: 1
   syntax_highlighter_opts:
     block:
@@ -211,3 +217,10 @@ plugins:
   - jekyll-spaceship
 
 permalink: /:categories/:title
+
+# Development artefacts must never be considered publishable site content.
+exclude:
+  - .jekyll-cache
+  - _sass_backup_20230315
+  - docs
+  - tools

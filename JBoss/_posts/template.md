@@ -2,7 +2,7 @@
 layout: post
 title: "[JBoss] "
 tags: [Middleware, JBoss, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

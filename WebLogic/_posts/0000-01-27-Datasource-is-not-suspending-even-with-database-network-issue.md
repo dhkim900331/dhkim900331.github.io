@@ -3,7 +3,7 @@ date: 2026-07-03 18:06:17 +0900
 layout: post
 title: "[WebLogic/Datasource] Datasource is not suspending even with database network issue"
 tags: [Middleware, WebLogic, Datasource]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

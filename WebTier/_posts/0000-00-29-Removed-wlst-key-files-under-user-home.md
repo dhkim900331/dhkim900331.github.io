@@ -3,7 +3,7 @@ date: 2024-05-02 14:41:32 +0900
 layout: post
 title: "[WebTier/OHS] Removed wlst key files under user home"
 tags: [WebTier, OHS, nmConnect, NodeManager]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

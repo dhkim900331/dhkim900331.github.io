@@ -3,7 +3,7 @@ date: 2024-10-30 14:36:54 +0900
 layout: post
 title: "[WebLogic] How to change context root of console"
 tags: [Middleware, WebLogic, console, context, root, WLST]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2024-10-30 14:41:56 +0900
 layout: post
 title: "[WebLogic] Password Encryption Algorithm With 12cR2"
 tags: [Middleware, WebLogic, encryption, algorithm, aes]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

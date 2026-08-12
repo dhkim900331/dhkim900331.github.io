@@ -3,7 +3,7 @@ date: 2023-03-16 08:54:50 +0900
 layout: post
 title: "[WebLogic/JDBC] Non supported character set"
 tags: [Middleware, WebLogic, Driver, JDBC, OJDBC]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

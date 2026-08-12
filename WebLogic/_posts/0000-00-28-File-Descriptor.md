@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] File Descriptor 로그 확인 및 변경"
 tags: [Middleware, WebLogic, Ulimit, File, Descriptor]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

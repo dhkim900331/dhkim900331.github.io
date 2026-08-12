@@ -3,7 +3,7 @@ date: 2023-07-28 08:38:57 +0900
 layout: post
 title: "[WebTier/Apache] MaxConnectionsPerChild Monitoring"
 tags: [WebTier, Apache, MaxConnectionsPerChild, server-status, ExtendedStatus]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2025-11-18 13:53:50 +0900
 layout: post
 title: "[WebLogic/Spring] BeanDefinitionParsingException occurs after patching PSU"
 tags: [Middleware, WebLogic, PSU, Bean, Spring]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

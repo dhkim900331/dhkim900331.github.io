@@ -3,7 +3,7 @@ date: 2024-11-27 17:16:55 +0900
 layout: post
 title: "[WebLogic] Intermittently hangs with using file session"
 tags: [Middleware, WebLogic, HttpSession]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

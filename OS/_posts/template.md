@@ -2,7 +2,7 @@
 layout: post
 title: "[OS] "
 tags: [OS, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

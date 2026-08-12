@@ -3,7 +3,7 @@ date: 2024-10-30 14:46:10 +0900
 layout: post
 title: "[WebLogic] When Using Same Cookie-Name"
 tags: [Middleware, WebLogic, JSESSIONID, Cookie, Invalidate, Session]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

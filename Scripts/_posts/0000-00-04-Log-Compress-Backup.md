@@ -3,7 +3,7 @@ date: 2022-11-26 14:25:51 +0900
 layout: post
 title: "[Scripts/Shell] Log를 Compress 및 Backup"
 tags: [Scripts, Shell, Bash, Tar, Rotation, Find]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

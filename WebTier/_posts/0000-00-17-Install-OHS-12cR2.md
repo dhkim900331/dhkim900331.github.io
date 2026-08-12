@@ -3,7 +3,7 @@ date: 2022-12-05 08:54:01 +0900
 layout: post
 title: "[WebTier/OHS] Oracle HTTP Server 12cR2 Installation"
 tags: [WebTier, OHS, Install]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

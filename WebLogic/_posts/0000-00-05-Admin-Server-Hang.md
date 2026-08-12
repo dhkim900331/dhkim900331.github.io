@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Admin Server Hang 일 때, MSI Mode socket time out"
 tags: [Middleware, WebLogic, Hang, MSI]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

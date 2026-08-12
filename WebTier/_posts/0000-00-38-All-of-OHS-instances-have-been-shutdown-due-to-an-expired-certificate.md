@@ -3,7 +3,7 @@ date: 2025-04-11 00:21:07 +0900
 layout: post
 title: "[WebTier/OHS] All of OHS instances have been shutdown due to an expired certificate"
 tags: [WebTier, OHS, SSL, mod_dms]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

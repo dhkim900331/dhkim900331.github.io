@@ -3,7 +3,7 @@ date: 2022-02-15 12:26:08 +0900
 layout: post
 title: "[JBoss] EAP Patch 명령어"
 tags: [Middleware, JBoss, EAP, Patch]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

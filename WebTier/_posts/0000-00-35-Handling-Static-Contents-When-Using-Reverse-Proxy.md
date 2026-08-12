@@ -3,7 +3,7 @@ date: 2025-03-08 10:18:06 +0900
 layout: post
 title: "[WebTier] Handling Static Contents When Using Reverse Proxy"
 tags: [WebTier, OHS, Apache, Reverse, Proxy]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

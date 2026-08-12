@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic/WLS8] 웹로직 8버전 USER_MEM_ARGS 기능 넣기"
 tags: [Middleware, WebLogic, WLS8, USER_MEM_ARGS]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

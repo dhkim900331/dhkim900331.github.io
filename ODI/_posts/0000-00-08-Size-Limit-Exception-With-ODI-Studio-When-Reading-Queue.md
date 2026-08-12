@@ -3,7 +3,7 @@ date: 2024-11-11 14:17:56 +0900
 layout: post
 title: "[ODI] Size limit exception with ODI studio when reading queue"
 tags: [ODI, Studio, JMS, XML, Queue, MaxMessageSize]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

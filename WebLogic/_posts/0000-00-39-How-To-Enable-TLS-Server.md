@@ -3,7 +3,7 @@ date: 2022-12-23 08:46:50 +0900
 layout: post
 title: "[WebLogic] How to Enable TLS-Server"
 tags: [Middleware, WebLogic, TLS, SSL, Certificate]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. 개요

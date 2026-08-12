@@ -3,7 +3,7 @@ date: 2022-08-22 14:04:46 +0900
 layout: post
 title: "[Java/GC] GC Log Options에 따른 Format"
 tags: [Java, JVM, GC, Format]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

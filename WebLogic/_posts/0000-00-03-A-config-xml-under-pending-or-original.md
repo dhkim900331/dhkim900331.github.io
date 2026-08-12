@@ -3,7 +3,7 @@ date: 2024-06-25 16:09:26 +0900
 layout: post
 title: "[WebLogic] A config.xml under pending or original directory"
 tags: [Middleware, WebLogic, backup, archive, original, pending]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

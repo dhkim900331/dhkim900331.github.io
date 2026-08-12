@@ -3,7 +3,7 @@ date: 2023-12-14 17:56:01 +0900
 layout: post
 title: "[WebLogic/Datasource] BEA-000627 And No resources currently available in pool"
 tags: [Middleware, WebLogic, Datasource, Connection Pool, JDBC]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

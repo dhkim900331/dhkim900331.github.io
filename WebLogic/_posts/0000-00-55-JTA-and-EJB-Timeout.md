@@ -3,7 +3,7 @@ date: 2024-06-25 16:09:26 +0900
 layout: post
 title: "[WebLogic/JTA] JTA Timeout and EJB Timeout"
 tags: [Middleware, WebLogic, EJB, Timeout, JTA]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

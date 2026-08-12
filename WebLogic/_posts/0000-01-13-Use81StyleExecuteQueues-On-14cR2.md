@@ -3,7 +3,7 @@ date: 2025-04-30 23:47:19 +0900
 layout: post
 title: "[WebLogic/Thread Management] Use81StyleExecuteQueues On 14cR2"
 tags: [Middleware, WebLogic, Thread, Pool, WorkManager, Queue]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2024-10-30 14:36:54 +0900
 layout: post
 title: "[ODI] How To Set JMS XML Queue"
 tags: [ODI, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Stdout Log Rotation (perl script)"
 tags: [Middleware, WebLogic, Log, Perl, Stdout]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

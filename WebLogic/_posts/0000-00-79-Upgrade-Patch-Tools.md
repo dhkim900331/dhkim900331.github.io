@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] BSU, OPatch, Tool Upgrade 정리"
 tags: [Middleware, WebLogic, OPatch, BSU]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

@@ -3,7 +3,7 @@ date: 2022-12-01 08:41:51 +0900
 layout: post
 title: "[Typora] 이미지 커스텀 업로드 기능 사용해보기"
 tags: [Typora, Shell, Bash, Script, Image, Assets]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 
@@ -39,7 +39,7 @@ typora-root-url: ..
 
 우선, 다음과 같이 `Upload image` 및 `Custom Command` 를 설정한다.
 
-![CustomUploadImageForTypora_1](/../assets/posts/images/Typora/CustomUploadImageForTypora/CustomUploadImageForTypora_1.png)
+![CustomUploadImageForTypora_1](/assets/posts/images/Typora/CustomUploadImageForTypora/CustomUploadImageForTypora_1.png)
 
 <br>
 
@@ -107,7 +107,7 @@ then
 fi
 
 echo ${MSG_SUC}
-#echo "file:///../assets/posts/images/${MD_FILENAME}/${IMG_FILENAME}"
+#echo "file:///assets/posts/images/${MD_FILENAME}/${IMG_FILENAME}"
 #echo 'https://dhkim900331.github.io/assets/posts/images/${MD_FILENAME}/${IMG_FILENAME}'
 ```
 
@@ -199,6 +199,6 @@ img cloud 에 업로드한 후 uri 를 받아온 다음에 활용하기 좋을 �
 
 ```shell
 echo ${MSG_SUC}
-#echo "file:///../assets/posts/images/${MD_FILENAME}/${IMG_FILENAME}"
+#echo "file:///assets/posts/images/${MD_FILENAME}/${IMG_FILENAME}"
 #echo 'https://dhkim900331.github.io/assets/posts/images/${MD_FILENAME}/${IMG_FILENAME}'
 ```

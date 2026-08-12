@@ -2,7 +2,7 @@
 layout: post
 title: "[Database/] "
 tags: [Database, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

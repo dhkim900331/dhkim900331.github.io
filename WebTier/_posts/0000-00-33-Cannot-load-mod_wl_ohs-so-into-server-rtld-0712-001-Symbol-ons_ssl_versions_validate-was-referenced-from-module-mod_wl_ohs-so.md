@@ -3,7 +3,7 @@ date: 2024-12-05 16:08:28 +0900
 layout: post
 title: "[WebTier/OHS] Cannot load mod_wl_ohs.so into server: rtld: 0712-001 Symbol ons_ssl_versions_validate was referenced from module mod_wl_ohs.so(), but a runtime definition"
 tags: [WebTier, OHS, Bundle Patch, PSU, AIX]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

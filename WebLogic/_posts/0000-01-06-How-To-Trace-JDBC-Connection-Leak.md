@@ -3,7 +3,7 @@ date: 2025-01-31 09:38:02 +0900
 layout: post
 title: "[WebLogic/JDBC] How To Trace JDBC Connection Leak"
 tags: [Middleware, WebLogic, JDBC, Connection, Leak]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

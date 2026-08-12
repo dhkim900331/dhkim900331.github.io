@@ -3,7 +3,7 @@ date: 2023-05-25 09:55:14 +0900
 layout: post
 title: "[Coherence/App] Coherence Session Test Application"
 tags: [Coherence, App, Session]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. 개요

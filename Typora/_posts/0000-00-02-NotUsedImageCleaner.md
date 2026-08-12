@@ -3,7 +3,7 @@ date: 2022-12-02 08:52:18 +0900
 layout: post
 title: "[Typora] 불필요한 이미지 리소스 제거"
 tags: [Typora, Shell, Bash, Script, Image, Assets, Remove]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

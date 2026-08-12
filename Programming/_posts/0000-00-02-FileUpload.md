@@ -3,7 +3,7 @@ date: 2023-05-11 09:07:29 +0900
 layout: post
 title: "[Servlet/JSP] File upload App"
 tags: [Programming, JSP, Servlet, File, Upload]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

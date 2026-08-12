@@ -3,7 +3,7 @@ date: 2023-05-23 09:09:18 +0900
 layout: post
 title: "[ETC/Outlook/VBA] How To Automatically Send Mail"
 tags: [ETC, Outlook, VBA, Macro]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

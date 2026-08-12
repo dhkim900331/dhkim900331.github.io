@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] Windows 환경에서 WebLogic Java Thread Dump 추출 방법"
 tags: [Middleware, WebLogic, Java, Thread, Dump, Windows]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 
@@ -47,19 +47,19 @@ C:\Windows\System32\cmd.exe /k startAdmin.cmd
 
 (3). startAdmin.bat 실행
 
-![Java-Thread-Dump-On-Windows_1](/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_1.png)
+![Java-Thread-Dump-On-Windows_1](/assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_1.png)
 
 <br>
 
 (4). `Ctrl + Break` 일괄 작업을 끝내지 않음. `N`
 
-![Java-Thread-Dump-On-Windows_2](/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_2.png)
+![Java-Thread-Dump-On-Windows_2](/assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_2.png)
 
 <br>
 
 (5). `tail -f LOG 실행` (startAdmin.bat 으로 실행하지 않은 경우, tail 명령어로 다시 log를 띄울 수 없습니다.)
 
-![Java-Thread-Dump-On-Windows_3](/../assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_3.png)
+![Java-Thread-Dump-On-Windows_3](/assets/posts/images/WebLogic/Java-Thread-Dump-On-Windows/Java-Thread-Dump-On-Windows_3.png)
 
 <br>
 

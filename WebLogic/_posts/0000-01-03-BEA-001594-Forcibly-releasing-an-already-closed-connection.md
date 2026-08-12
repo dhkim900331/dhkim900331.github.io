@@ -3,7 +3,7 @@ date: 2025-01-02 23:04:36 +0900
 layout: post
 title: "[WebLogic] BEA-001594: Forcibly releasing an already closed connection back into the data source connection pool"
 tags: [Middleware, WebLogic, Connection Pool, Datasource]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

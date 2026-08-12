@@ -2,7 +2,7 @@
 layout: post
 title: "[ODI/] "
 tags: [ODI, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2023-07-14 08:50:48 +0900
 layout: post
 title: "[WebTier/Nginx] Install Nginx"
 tags: [WebTier, Nginx, Install]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

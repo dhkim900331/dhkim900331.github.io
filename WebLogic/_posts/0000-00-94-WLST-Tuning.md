@@ -3,7 +3,7 @@ date: 2023-05-11 09:07:29 +0900
 layout: post
 title: "[WebLogic/WLST] WLST Tuning"
 tags: [Middleware, WebLogic, WLST, Tuning, CPU, Usage]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. 개요

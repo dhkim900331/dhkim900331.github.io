@@ -3,7 +3,7 @@ date: 2023-11-21 15:39:45 +0900
 layout: post
 title: "[Programming/Batch] VPN Command Line Interface"
 tags: [Programming, Batch, Cisco, Anyconnect, VPN]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

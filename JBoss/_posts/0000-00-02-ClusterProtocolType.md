@@ -3,7 +3,7 @@ date: 2022-05-30 10:24:20 +0900
 layout: post
 title: "[JBoss] Cluster Protocol Type"
 tags: [Middleware, JBoss, Cluster, Protocol, TCP, PING, TCPPING, Member, Session]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

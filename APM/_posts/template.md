@@ -2,7 +2,7 @@
 layout: post
 title: "[APM/] "
 tags: [APM, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

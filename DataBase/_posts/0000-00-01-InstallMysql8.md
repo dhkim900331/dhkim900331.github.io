@@ -3,7 +3,7 @@ date: 2022-05-31 11:38:35 +0900
 layout: post
 title: "[Database/MySQL] MySQL 8.X 설치 (Source Compile)"
 tags: [Database, MySQL, Source, Compile, Build]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

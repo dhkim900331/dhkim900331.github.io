@@ -3,7 +3,7 @@ date: 2023-06-30 09:02:19 +0900
 layout: post
 title: "[WebLogic] Keep Alive"
 tags: [Middleware, WebLogic, KeepAlive, HTTP]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2024-02-27 13:38:15 +0900
 layout: post
 title: "[WebLogic] JIT Exclude"
 tags: [Middleware, WebLogic, JIT]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

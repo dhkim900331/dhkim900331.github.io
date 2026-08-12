@@ -3,7 +3,7 @@ date: 2026-02-23 13:44:32 +0900
 layout: post
 title: "[WebLogic/HTTP] Which HTTP Version Does WebLogic 14c Support?"
 tags: [Middleware, WebLogic, HTTP]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

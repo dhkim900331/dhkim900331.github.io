@@ -3,7 +3,7 @@ date: 2022-02-22 14:05:22 +0900
 layout: post
 title: "[Jekyll] jekyll-theme-yat 테마를 사용하기 위한 기본 Setup"
 tags: [Jekyll, Theme, Yat, Blog]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

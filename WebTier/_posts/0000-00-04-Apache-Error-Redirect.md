@@ -3,7 +3,7 @@ date: 2023-07-25 09:33:29 +0900
 layout: post
 title: "[WebTier/Apache] Error Redirect"
 tags: [WebTier, Apache, ErrorDocument, Rewrite, Redirect]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2023-10-11 13:11:07 +0900
 layout: post
 title: "[SSL] SSL Handshake"
 tags: [SSL, Handshake]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

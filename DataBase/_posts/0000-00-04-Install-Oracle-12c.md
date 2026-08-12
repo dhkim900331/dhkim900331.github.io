@@ -3,7 +3,7 @@ date: 2024-02-27 13:38:15 +0900
 layout: post
 title: "[Database/Oracle] Oracle 12c 설치"
 tags: [Database, Oracle, 12c, Installation]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

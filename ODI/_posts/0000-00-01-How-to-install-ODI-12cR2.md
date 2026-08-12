@@ -3,7 +3,7 @@ date: 2024-02-27 13:38:15 +0900
 layout: post
 title: "[ODI] How to install ODI 12cR2?"
 tags: [ODI, Installation]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -324,7 +324,7 @@ ODI Studio 환경은 GUI에서 대부분 사용되므로,
 
 '저장소에 접속...' 클릭
 
-![How-to-install-ODI-12cR2_1](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_1.png)
+![How-to-install-ODI-12cR2_1](/assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_1.png)
 
 <br>
 
@@ -332,13 +332,13 @@ ODI Studio 환경은 GUI에서 대부분 사용되므로,
 
 기입되는 정보는 [Connecting to the Master Repository](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-oracle-data-integrator-studio.html#GUID-79B5C886-DBFC-460C-A8A0-29710A42A30A) 참고
 
-![How-to-install-ODI-12cR2_2](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_2.png)
+![How-to-install-ODI-12cR2_2](/assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_2.png)
 
 <br>
 
 최초 로그인 시 'ODI 초기화' 수행 된다.
 
-![How-to-install-ODI-12cR2_3](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_3.png)
+![How-to-install-ODI-12cR2_3](/assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_3.png)
 
 
 <br><br>
@@ -354,17 +354,17 @@ ODI Studio 환경은 GUI에서 대부분 사용되므로,
 
 [Creating an Agent in the Master Repository with ODI Studio](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/oding/configuring-domain-standalone-agent.html#GUID-6EEED355-F944-447F-A4CE-EA7BD9FE160C) 참고
 
-![How-to-install-ODI-12cR2_4](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_4.png)
+![How-to-install-ODI-12cR2_4](/assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_4.png)
 
 <br>
 
-![How-to-install-ODI-12cR2_5](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_5.png)
+![How-to-install-ODI-12cR2_5](/assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_5.png)
 
 <br>
 
 모두 저장.
 
-![How-to-install-ODI-12cR2_6](/../assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_6.png)
+![How-to-install-ODI-12cR2_6](/assets/posts/images/ODI/How-to-install-ODI-12cR2/How-to-install-ODI-12cR2_6.png)
 
 <br>
 

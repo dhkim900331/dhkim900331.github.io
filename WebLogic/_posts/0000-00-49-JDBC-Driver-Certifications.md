@@ -3,7 +3,7 @@ date: 2024-04-24 17:36:33 +0900
 layout: post
 title: "[WebLogic/JDBC] JDBC Driver Certifications"
 tags: [Middleware, WebLogic, JDBC, Certification]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

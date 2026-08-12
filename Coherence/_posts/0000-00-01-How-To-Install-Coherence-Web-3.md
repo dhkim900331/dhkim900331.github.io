@@ -3,7 +3,7 @@ date: 2023-02-02 08:58:49 +0900
 layout: post
 title: "[Coherence/Web] How to Install Coherence Web 3.X"
 tags: [Coherence, Web, Installation]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

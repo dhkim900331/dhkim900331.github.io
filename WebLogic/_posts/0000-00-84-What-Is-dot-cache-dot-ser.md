@@ -3,7 +3,7 @@ date: 2024-01-31 13:27:29 +0900
 layout: post
 title: "[WebLogic] What Is .cache.ser"
 tags: [Middleware, WebLogic, Deploy, Cache]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

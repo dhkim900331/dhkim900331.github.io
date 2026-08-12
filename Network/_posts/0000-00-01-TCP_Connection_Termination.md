@@ -3,14 +3,14 @@ date: 2026-04-13 09:30:29 +0900
 layout: post
 title: "[Network/TCP] TCP Connection Termination (4-Way Handshake)"
 tags: [Network, TCP, Linux, FIN, ACK, TIME_WAIT, CLOSE_WAIT]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
 
 아래 애니메이션은 서로 연결된 A와 B의 TCP Connection 종료 과정을 단계별로 보여준다.
 
-![TCP Connection 종료 과정 애니메이션](/../assets/posts/images/Network/TCP_Connection_Termination/TCP_Connection_Termination.gif)
+![TCP Connection 종료 과정 애니메이션](/assets/posts/images/Network/TCP_Connection_Termination/TCP_Connection_Termination.gif)
 
 
 <br><br>

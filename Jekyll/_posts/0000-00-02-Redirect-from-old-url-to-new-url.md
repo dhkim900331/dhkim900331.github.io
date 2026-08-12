@@ -3,7 +3,7 @@ date: 2025-01-31 09:38:00 +0900
 layout: post
 title: "[Jekyll] Redirect from old url to new url"
 tags: [Jekyll, redirect]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

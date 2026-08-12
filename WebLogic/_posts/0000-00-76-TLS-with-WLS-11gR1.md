@@ -3,7 +3,7 @@ date: 2024-06-25 16:09:26 +0900
 layout: post
 title: "[WebLogic/TLS] TLS with WLS 11gR1"
 tags: [Middleware, WebLogic, TLS]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

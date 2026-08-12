@@ -3,7 +3,7 @@ date: 2023-03-03 08:54:19 +0900
 layout: post
 title: "[WebTier/Apache] Content Security Policy Header"
 tags: [WebTier, OHS, Apache, Header, CSP]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

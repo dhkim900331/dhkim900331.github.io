@@ -3,7 +3,7 @@ date: 2022-04-11 12:00:04 +0900
 layout: post
 title: "[Scripts/Bash] Log 일괄 점검 스크립트"
 tags: [Scripts, Shell, Bash, Log, Grep]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

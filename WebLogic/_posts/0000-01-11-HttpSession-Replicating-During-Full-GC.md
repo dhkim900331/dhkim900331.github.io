@@ -3,7 +3,7 @@ date: 2025-04-11 00:21:07 +0900
 layout: post
 title: "[WebLogic] HttpSession Replicating During Full GC"
 tags: [Middleware, WebLogic, WebTier, HttpSession, Clustering]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

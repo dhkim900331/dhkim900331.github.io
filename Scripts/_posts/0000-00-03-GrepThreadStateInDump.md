@@ -3,7 +3,7 @@ date: 2022-04-11 12:00:04 +0900
 layout: post
 title: "[Scripts/Bash] Thread Dump 파일들 비교 분석"
 tags: [Scripts, Shell, Bash, Thread, Dump]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2022-10-06 17:15:38 +0900
 layout: post
 title: "[OS/Putty] Port Forwarding"
 tags: [OS, Linux, Putty, Port, Forwarding]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -49,7 +49,7 @@ $ sudo systemctl status firewalld
 
 서버외부에서 TCP 8081 호출할 수 없다.
 
-![PortForwarding_1](/../assets/posts/images/Linux/PortForwarding/PortForwarding_1.png)
+![PortForwarding_1](/assets/posts/images/Linux/PortForwarding/PortForwarding_1.png)
 
 <br>
 
@@ -57,7 +57,7 @@ putty.exe의 SSH - Tunnels 에서 Target Address 를 설정한다.
 
 (사진에서 Add 버튼 까지 눌러야 설정이 완료.)
 
-![PortForwarding_2](/../assets/posts/images/Linux/PortForwarding/PortForwarding_2.png)
+![PortForwarding_2](/assets/posts/images/Linux/PortForwarding/PortForwarding_2.png)
 
 <br>
 
@@ -65,13 +65,13 @@ Windows CMD로 localhost:8081 이 LISTENING 되어 있는 것이 확인 된다.
 
 이는, putty.exe가 LISTEN을 하고 있는 것이다.
 
-![PortForwarding_3](/../assets/posts/images/Linux/PortForwarding/PortForwarding_3.png)
+![PortForwarding_3](/assets/posts/images/Linux/PortForwarding/PortForwarding_3.png)
 
 <br>
 
 localhost:8081 접속 시, putty.exe가 proxy 역할을 수행한다.
 
-![PortForwarding_4](/../assets/posts/images/Linux/PortForwarding/PortForwarding_4.png)
+![PortForwarding_4](/assets/posts/images/Linux/PortForwarding/PortForwarding_4.png)
 
 
 <br><br>
@@ -118,7 +118,7 @@ $ curl <Bastion IP>:8001
 
 putty.exe 의 Tunnels 기능을 통해, Client - Bastion 구간을 다음과 같이 설정하면, Client의 Browser 를 통해 Target Port에 Access 할 수 있다.
 
-![PortForwarding_5](/../assets/posts/images/Linux/PortForwarding/PortForwarding_5.png)
+![PortForwarding_5](/assets/posts/images/Linux/PortForwarding/PortForwarding_5.png)
 
 <br>
 

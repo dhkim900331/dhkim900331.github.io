@@ -3,7 +3,7 @@ date: 2026-02-23 13:44:32 +0900
 layout: post
 title: "[WebLogic/TLS/SSL] Applying a self-signed certificate on 14cR2"
 tags: [Middleware, WebLogic, TLS, SSL, Certificate]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

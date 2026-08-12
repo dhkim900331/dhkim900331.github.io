@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] DataSource Password 변경"
 tags: [Middleware, WebLogic, Datasource]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

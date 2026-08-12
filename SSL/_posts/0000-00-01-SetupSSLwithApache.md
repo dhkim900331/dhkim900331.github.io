@@ -3,7 +3,7 @@ date: 2022-04-27 13:13:10 +0900
 layout: post
 title: "[SSL/Apache] 사설 SSL 인증서 사용과 검증"
 tags: [SSL, Apache, Openssl, Tomcat]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -141,7 +141,7 @@ SSLCertificateKeyFile       ${CERT}/private.key
 
 * 접속 시 아래와 같이 완료되었습니다.
 
-![SetupSSLwithApache_1](/../assets/posts/images/SSL/SetupSSLwithApache/SetupSSLwithApache_1.png)
+![SetupSSLwithApache_1](/assets/posts/images/SSL/SetupSSLwithApache/SetupSSLwithApache_1.png)
 
 
 <br><br>

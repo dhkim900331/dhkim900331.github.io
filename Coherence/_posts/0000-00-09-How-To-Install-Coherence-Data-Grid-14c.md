@@ -3,7 +3,7 @@ date: 2024-06-25 16:09:26 +0900
 layout: post
 title: "[Coherence/Data Grid] How to install Coherence Data Grid 14c?"
 tags: [Coherence, Data, Grid]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

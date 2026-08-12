@@ -3,7 +3,7 @@ date: 2024-11-05 14:25:03 +0900
 layout: post
 title: "[WebTier/OHS] iPlanet Error Page To OHS"
 tags: [WebTier, OHS, iPlanet, ErrorDocument]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

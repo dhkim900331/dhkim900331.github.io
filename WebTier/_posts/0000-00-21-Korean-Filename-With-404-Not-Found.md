@@ -3,7 +3,7 @@ date: 2024-04-25 13:48:55 +0900
 layout: post
 title: "[WebTier/OHS] 한글 파일명 호출 시 HTTP 404 Not Found"
 tags: [WebTier, OHS, Apache, Encoding]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -32,7 +32,7 @@ $ ls -al ./config/fmwconfig/components/OHS/instances/worker1/htdocs
 
 Web Browser 에서 호출 시에 resource를 가져오지 못한다.
 
-![Korean-Filename-With-404-Not-Found_1](/../assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_1.png)
+![Korean-Filename-With-404-Not-Found_1](/assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_1.png)
 
 <br>
 
@@ -45,7 +45,7 @@ OHS access_log는 다음과 같이 인코딩된 String으로 resource를 찾고 
 
 [Unicode converter 와 같은 사이트](https://r12a.github.io/app-conversion/) 에서 %ED%95%9C%EA%B8%80%ED%8C%8C%EC%9D%BC 을 변환해보면 '한글파일' 로 우리가 Web Browser 에 요청한 resource를 제대로 찾고 있는 것은 분명하다.
 
-![Korean-Filename-With-404-Not-Found_2](/../assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_2.png)
+![Korean-Filename-With-404-Not-Found_2](/assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_2.png)
 
 <br>
 
@@ -104,7 +104,7 @@ $ ls -al ./config/fmwconfig/components/OHS/instances/worker1/htdocs/
 
 동시에, Web Browser에서도 문제 없이 파일을 얻을 수 있다.
 
-![Korean-Filename-With-404-Not-Found_3](/../assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_3.png)
+![Korean-Filename-With-404-Not-Found_3](/assets/posts/images/WebTier/Korean-Filename-With-404-Not-Found/Korean-Filename-With-404-Not-Found_3.png)
 
 
 <br><br>

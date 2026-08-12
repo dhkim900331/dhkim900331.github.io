@@ -3,7 +3,7 @@ date: 2025-08-29 12:22:38 +0900
 layout: post
 title: "[WebTier/Apache] How to set log level as debug to specific module"
 tags: [WebTier, OHS, Apache, LogLevel, Debug]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

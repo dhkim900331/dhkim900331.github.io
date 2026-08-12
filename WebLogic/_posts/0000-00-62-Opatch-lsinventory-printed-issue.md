@@ -3,7 +3,7 @@ date: 2023-05-10 09:01:07 +0900
 layout: post
 title: "[WebLogic/WLST] OPatch lsinventory Printed Issue"
 tags: [Middleware, WebLogic, WLST, OPatch, lsinventory]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. 개요

@@ -2,7 +2,7 @@
 layout: post
 title: "[Network/] "
 tags: [Network, TCP, Linux, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

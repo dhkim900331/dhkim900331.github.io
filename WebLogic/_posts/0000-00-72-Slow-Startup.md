@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 기동이 느린 경우"
 tags: [Middleware, WebLogic, Slow, Startup]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Administration Port, Side-By-Side Deploy"
 tags: [Middleware, WebLogic, Deploy]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 
@@ -36,7 +36,7 @@ Administration Port, Side-By-Side Deploy 기능을 알아보자.
 
 (3). https://ip : administration Port로 console을 재접속한다.
 
-![AdminPort-SideDeploy_1](/../assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_1.png)
+![AdminPort-SideDeploy_1](/assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_1.png)
 
 <br>
 
@@ -87,7 +87,7 @@ Configuration - General - Advanced - Local Administration Port Override : Admini
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3://adminServer_Address -user weblogic -password weblogic1 -deploy -name webapp -source D:\weblogic\WLS1036\domains\dm1036\webapp -targets m1 -appversion v1
 ```
 
-![AdminPort-SideDeploy_2](/../assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_2.png)
+![AdminPort-SideDeploy_2](/assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_2.png)
 
 <br>
 
@@ -104,7 +104,7 @@ java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3:
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3://adminServer_Address -user weblogic -password weblogic1 -deploy -name webapp -source D:\weblogic\WLS1036\domains\dm1036\webapp -targets m1 -appversion v2
 ```
 
-![AdminPort-SideDeploy_3](/../assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_3.png)
+![AdminPort-SideDeploy_3](/assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_3.png)
 
 <br>
 
@@ -127,11 +127,11 @@ administration port를 사용하여 접근하는 행위가 허가된 유저&그�
 java -Dweblogic.security.TrustKeyStore=DemoTrust weblogic.Deployer -adminurl t3s://adminServerIP:administrationPORT -user weblogic -password weblogic1 -adminmode -name webapp -deploy -upload -remote D:\weblogic\WLS1036\domains\dm1036\webapp
 ```
 
-![AdminPort-SideDeploy_4](/../assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_4.png)
+![AdminPort-SideDeploy_4](/assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_4.png)
 
 <br>
 
-![AdminPort-SideDeploy_5](/../assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_5.png)
+![AdminPort-SideDeploy_5](/assets/posts/images/WebLogic/AdminPort-SideDeploy/AdminPort-SideDeploy_5.png)
 
 <br>
 

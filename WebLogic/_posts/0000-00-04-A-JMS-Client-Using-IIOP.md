@@ -3,7 +3,7 @@ date: 2024-07-03 16:39:54 +0900
 layout: post
 title: "[WebLogic/JMS] A JMS Client using IIOP"
 tags: [Middleware, WebLogic, JMS, IIOP, t3, client]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

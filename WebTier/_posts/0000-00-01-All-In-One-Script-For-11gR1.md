@@ -3,7 +3,7 @@ date: 2023-05-19 08:37:17 +0900
 layout: post
 title: "[WebTier/OHS] All In One Script For 11gR1"
 tags: [WebTier, OHS, Apache, Install, WLST, Jython]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

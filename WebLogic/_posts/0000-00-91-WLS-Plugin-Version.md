@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 플러그인 정보, 플러그인 버전 보는 방법"
 tags: [Middleware, WebLogic, Plugin]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

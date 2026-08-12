@@ -2,7 +2,7 @@
 layout: post
 title: "[Programming/] "
 tags: [Programming, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

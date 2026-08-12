@@ -3,7 +3,7 @@ date: 2023-05-16 07:39:11 +0900
 layout: post
 title: "[WebTier/OHS] How to Configure SSL ProxyPass"
 tags: [WebTier, OHS, Apache, SSL, ProxyPass, HTTPS]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2023-04-25 09:00:13 +0900
 layout: post
 title: "[Coherence/Web] How to use Coherence Web 14c"
 tags: [Coherence, Web, Manual, Use]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -166,7 +166,7 @@ Coherence - WebLogicHttpSessionManager - \<Member ID> - \<Web App> - Attributes 
 
 Member ID는 Node의 각 Attributes 에서 MemberName이나 ProcessName 으로 획득하면 수월하겠다.
 
-![How-to-use-Coherence-Web-14c_1](/../assets/posts/images/Coherence/How-to-use-Coherence-Web-14c/How-to-use-Coherence-Web-14c_1.png)
+![How-to-use-Coherence-Web-14c_1](/assets/posts/images/Coherence/How-to-use-Coherence-Web-14c/How-to-use-Coherence-Web-14c_1.png)
 
 <br>
 

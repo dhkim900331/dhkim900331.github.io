@@ -3,7 +3,7 @@ date: 2024-10-30 14:41:56 +0900
 layout: post
 title: "[WebTier/OHS] How To DNS Lookup?"
 tags: [WebTier, OHS, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

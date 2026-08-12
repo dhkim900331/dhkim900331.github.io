@@ -3,7 +3,7 @@ date: 2025-03-08 10:18:05 +0900
 layout: post
 title: "[WebLogic] How To Set Cache-Control?"
 tags: [Middleware, WebLogic, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

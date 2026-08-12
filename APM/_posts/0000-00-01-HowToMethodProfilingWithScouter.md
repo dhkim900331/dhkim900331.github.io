@@ -3,7 +3,7 @@ date: 2022-04-11 12:00:04 +0900
 layout: post
 title: "[APM/Scouter] Method Profiling"
 tags: [APM, Scouter, Method, Profling, XView]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

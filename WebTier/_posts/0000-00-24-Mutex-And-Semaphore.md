@@ -3,7 +3,7 @@ date: 2023-03-08 08:39:33 +0900
 layout: post
 title: "[WebTier/Apache] Mutex And Semaphore"
 tags: [WebTier, OHS, Apache, Mutex, Semaphore]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

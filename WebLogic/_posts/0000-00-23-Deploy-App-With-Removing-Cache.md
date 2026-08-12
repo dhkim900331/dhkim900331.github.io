@@ -3,7 +3,7 @@ date: 2024-11-11 14:02:26 +0900
 layout: post
 title: "[WebLogic] Redeploy App With Removing Cache"
 tags: [Middleware, WebLogic, Deploy, Cache]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

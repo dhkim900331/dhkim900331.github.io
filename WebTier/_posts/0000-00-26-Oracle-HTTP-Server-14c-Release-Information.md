@@ -3,7 +3,7 @@ date: 2024-01-23 13:14:55 +0900
 layout: post
 title: "[WebTier/OHS] Oracle HTTP Server 14c Release Information"
 tags: [WebTier, OHS, Release]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

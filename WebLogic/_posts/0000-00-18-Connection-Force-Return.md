@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 커넥션 풀 강제 반환"
 tags: [Middleware, WebLogic, Harvest, Connection, Pool]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

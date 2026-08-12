@@ -3,7 +3,7 @@ date: 2024-10-30 14:41:56 +0900
 layout: post
 title: "[WebLogic/Hibernate] HV000030 No validator could be found for constraint 'javax.validation.constraints.Email'"
 tags: [Middleware, WebLogic, Hibernate, JSR]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2022-05-09 15:45:29 +0900
 layout: post
 title: "[WebTier/Apache] X-Forwarded-For"
 tags: [WebTier, OHS, Apache, XFF, RewriteRule]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -20,7 +20,7 @@ typora-root-url: ..
 
 # 2. Request Flow
 
-![X-Forwarded-For_1](/../assets/posts/images/WebTier/X-Forwarded-For/X-Forwarded-For_1.png)
+![X-Forwarded-For_1](/assets/posts/images/WebTier/X-Forwarded-For/X-Forwarded-For_1.png)
 
 <br>
 

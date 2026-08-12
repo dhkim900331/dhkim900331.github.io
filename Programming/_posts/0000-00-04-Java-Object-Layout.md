@@ -3,7 +3,7 @@ date: 2023-06-07 11:00:37 +0900
 layout: post
 title: "[Java/JOL] Java Layout Object"
 tags: [Programming, JOL]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

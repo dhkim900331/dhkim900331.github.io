@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] JDBC 스펙에 의해, AutoCommit 이 실행되는 경우"
 tags: [Middleware, WebLogic, JDBC, Autocommit]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

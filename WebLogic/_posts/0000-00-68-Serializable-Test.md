@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Serializable Test"
 tags: [Middleware, WebLogic, Serializable]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

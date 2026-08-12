@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 다른 JDBC Driver 적용 방법"
 tags: [Middleware, WebLogic, JDBC, Driver, Setup]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

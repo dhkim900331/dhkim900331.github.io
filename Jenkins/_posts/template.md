@@ -2,7 +2,7 @@
 layout: post
 title: "[Jenkins] "
 tags: [Jenkins, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

@@ -2,7 +2,7 @@
 layout: post
 title: "[WebLogic/] "
 tags: [Middleware, WebLogic, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

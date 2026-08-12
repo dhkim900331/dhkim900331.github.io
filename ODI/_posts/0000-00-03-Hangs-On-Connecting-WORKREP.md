@@ -3,7 +3,7 @@ date: 2024-03-26 13:36:02 +0900
 layout: post
 title: "[ODI/Studio] Hangs On Connecting WORKREP with ODI Studio"
 tags: [ODI, Studio, WORKREP]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -18,7 +18,7 @@ ODI  12cR2 Studio 에서 WORKREP (작업저장소 Repository) 접근 시 Hang �
 
 ODI Studio 에서 WORKREP 를 접근 시, 다음 화면에서 Hang 걸린다.
 
-![Hangs-On-Connecting-WORKREP_1](/../assets/posts/images/ODI/Hangs-On-Connecting-WORKREP/Hangs-On-Connecting-WORKREP_1.png)
+![Hangs-On-Connecting-WORKREP_1](/assets/posts/images/ODI/Hangs-On-Connecting-WORKREP/Hangs-On-Connecting-WORKREP_1.png)
 
 <br>
 
@@ -62,7 +62,7 @@ ODI 설치 위치 아래 log/studio.log 를 보면, WARNING 메시지가 있다.
 
 ODI Studio 에서 Master Schema 에 로그인 후 도구 > Groovy 에서 새 스크립트를 만들어, 'print OdiAdapter.getClientSeedingVersion()' 를 실행하면 아래와 같이 Client seeding version이 확인된다.
 
-![Hangs-On-Connecting-WORKREP_2](/../assets/posts/images/ODI/Hangs-On-Connecting-WORKREP/Hangs-On-Connecting-WORKREP_2.png)
+![Hangs-On-Connecting-WORKREP_2](/assets/posts/images/ODI/Hangs-On-Connecting-WORKREP/Hangs-On-Connecting-WORKREP_2.png)
 
 <br>
 

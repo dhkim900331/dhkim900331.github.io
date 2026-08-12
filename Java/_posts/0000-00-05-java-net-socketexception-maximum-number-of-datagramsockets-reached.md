@@ -3,7 +3,7 @@ date: 2026-07-15 20:04:12 +0900
 layout: post
 title: "[Java/Datagram socket] java.net.SocketException: maximum number of DatagramSockets reached"
 tags: [Java, JVM, UDP]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

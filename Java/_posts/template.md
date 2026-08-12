@@ -2,7 +2,7 @@
 layout: post
 title: "[Java/] "
 tags: [Java, JVM, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

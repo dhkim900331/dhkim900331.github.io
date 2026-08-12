@@ -3,7 +3,7 @@ date: 2023-02-02 08:58:49 +0900
 layout: post
 title: "[Database/Oracle] Oracle 19c 설치"
 tags: [Database, Oracle, 19c, Installation]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

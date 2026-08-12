@@ -3,7 +3,7 @@ date: 2026-07-03 18:06:16 +0900
 layout: post
 title: "[MSW] 003. 자동 맵 교체 시스템 기본틀과 타일 통과 플래그 처리"
 tags: [MSW, Lua]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

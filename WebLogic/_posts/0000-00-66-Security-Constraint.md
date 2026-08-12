@@ -3,7 +3,7 @@ date: 2023-04-06 08:54:37 +0900
 layout: post
 title: "[WebLogic] security-constraint in web.xml"
 tags: [Middleware, WebLogic, web.xml, Security, J2EE]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. 개요

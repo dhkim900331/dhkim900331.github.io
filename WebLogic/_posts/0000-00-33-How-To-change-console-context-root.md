@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] consoleapp context-root 다르게 변경 방법"
 tags: [Middleware, WebLogic, consoleapp, context, root]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

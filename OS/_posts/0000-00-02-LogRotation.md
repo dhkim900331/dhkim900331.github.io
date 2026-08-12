@@ -3,7 +3,7 @@ date: 2022-08-18 17:18:20 +0900
 layout: post
 title: "[OS/Log Rotation] Log Rotation"
 tags: [OS, Linux, Logrotate, Null, Copy]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

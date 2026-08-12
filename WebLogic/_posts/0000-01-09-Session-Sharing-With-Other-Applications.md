@@ -3,7 +3,7 @@ date: 2025-03-08 10:18:05 +0900
 layout: post
 title: "[WebLogic/Session] Session Sharing With Other Applications"
 tags: [Middleware, WebLogic, Session, EAR]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

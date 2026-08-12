@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 스레드 풀 사이즈 튜닝(조절)"
 tags: [Middleware, WebLogic, Thread, Pool, Size, Tuning]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

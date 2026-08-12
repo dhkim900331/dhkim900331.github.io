@@ -3,7 +3,7 @@ date: 2026-07-03 18:06:15 +0900
 layout: post
 title: "[Java/G1GC] References Processing Takes Too Long"
 tags: [Java, JVM, GC, G1GC, STW]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

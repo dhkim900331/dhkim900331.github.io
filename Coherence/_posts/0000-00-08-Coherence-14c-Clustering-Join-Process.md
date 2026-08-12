@@ -3,7 +3,7 @@ date: 2023-06-16 08:27:25 +0900
 layout: post
 title: "[Coherence] Coherence 14c Clustering Join Process"
 tags: [Coherence, Clustering, Join]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

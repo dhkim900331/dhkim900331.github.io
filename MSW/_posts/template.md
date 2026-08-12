@@ -2,7 +2,7 @@
 layout: post
 title: "[MSW] "
 tags: [MSW, Lua]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

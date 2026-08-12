@@ -3,7 +3,7 @@ date: 2024-10-30 14:41:56 +0900
 layout: post
 title: "[WebLogic] No error despite changed datasource password"
 tags: [Middleware, WebLogic, Dasasource, Password, DB, Connection]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

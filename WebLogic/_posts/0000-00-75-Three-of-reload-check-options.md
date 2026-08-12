@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] servlet-reload-check-secs, resource-reload-check-secs, page-check-seconds"
 tags: [Middleware, WebLogic, Hot, Reploy, Reload]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

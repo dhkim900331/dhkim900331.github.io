@@ -3,7 +3,7 @@ date: 2025-06-18 14:55:42 +0900
 layout: post
 title: "[WebLogic/LDAP] Troubleshooting with WebLogic and External LDAP"
 tags: [Middleware, WebLogic, LDAP]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

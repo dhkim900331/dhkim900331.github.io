@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] WLST로 DB 상태 출력"
 tags: [Middleware, WebLogic, WLST, Datasource, Status]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

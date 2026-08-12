@@ -3,7 +3,7 @@ date: 2024-01-11 12:11:25 +0900
 layout: post
 title: "[OS] tcpdump basic usage"
 tags: [Linux, OS, tcpdump]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

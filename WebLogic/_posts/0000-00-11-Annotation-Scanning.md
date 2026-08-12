@@ -3,7 +3,7 @@ date: 2024-01-09 11:55:47 +0900
 layout: post
 title: "[WebLogic] Annotation Scanning"
 tags: [Middleware, WebLogic, Annoation, Scanning]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

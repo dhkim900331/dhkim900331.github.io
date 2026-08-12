@@ -3,7 +3,7 @@ date: 2025-04-30 23:47:17 +0900
 layout: post
 title: "[Coherence] Coehrence Console Application"
 tags: [Coherence, Tool, CLI]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

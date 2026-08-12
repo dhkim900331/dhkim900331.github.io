@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Serializable 란 무엇인가?"
 tags: [Middleware, WebLogic, Serializable]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 
@@ -68,7 +68,7 @@ class gtplus{
 
 그래프는 다음과 같습니다.
 
-![What-Is-Serializable_1](/../assets/posts/images/WebLogic/What-Is-Serializable/What-Is-Serializable_1.png)
+![What-Is-Serializable_1](/assets/posts/images/WebLogic/What-Is-Serializable/What-Is-Serializable_1.png)
 
 <br>
 
@@ -92,7 +92,7 @@ JDK 1.1에서 나온 직렬화는 단순히 인터페이스를 구현(implements
 
 <br>
 
-![What-Is-Serializable_2](/../assets/posts/images/WebLogic/What-Is-Serializable/What-Is-Serializable_2.png)
+![What-Is-Serializable_2](/assets/posts/images/WebLogic/What-Is-Serializable/What-Is-Serializable_2.png)
 
 
 <br><br>

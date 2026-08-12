@@ -3,7 +3,7 @@ date: 2023-04-19 08:56:19 +0900
 layout: post
 title: "[Coherence/Web] How to install Coherence Web 14c"
 tags: [Coherence, Web, Installation]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2025-11-18 13:52:51 +0900
 layout: post
 title: "[JDBC] java.sql.SQLException: Fail to convert between UTF8 and UCS2"
 tags: [JDBC, UTF8]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2024-07-03 16:39:54 +0900
 layout: post
 title: "[WebTier/OHS] ECC Cipher Suite with OHS 12cR2"
 tags: [WebTier, OHS, ECC, cipher, suite, ssl, tls]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

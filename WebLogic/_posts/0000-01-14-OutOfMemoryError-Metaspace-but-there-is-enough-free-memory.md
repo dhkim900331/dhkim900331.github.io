@@ -3,7 +3,7 @@ date: 2025-06-18 14:55:41 +0900
 layout: post
 title: "[WebLogic/JVM] OutOfMemoryError: Metaspace, but there is enough free memory"
 tags: [Middleware, WebLogic, JVM, OutOfMemoryError, GC, Memory]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

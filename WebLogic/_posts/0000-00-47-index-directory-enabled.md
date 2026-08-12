@@ -3,7 +3,7 @@ date: 2024-10-30 14:41:56 +0900
 layout: post
 title: "[WebLogic] index-directory-enabled"
 tags: [Middleware, WebLogic]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

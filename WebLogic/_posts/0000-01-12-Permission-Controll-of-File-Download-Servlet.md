@@ -3,7 +3,7 @@ date: 2025-04-11 00:21:07 +0900
 layout: post
 title: "[WebLogic/Servlet] Permission Control of File Download Servlet"
 tags: [Middleware, WebLogic, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

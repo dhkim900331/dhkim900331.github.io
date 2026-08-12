@@ -2,7 +2,7 @@
 layout: post
 title: "[Typora] 블로그 이미지 업로드"
 tags: [Typora, Shell, Bash, Script, Image, Assets, Sort]
-typora-root-url: ..
+typora-root-url: ../..
 date: 2021-12-08 12:41:57 +0900
 ---
 
@@ -25,7 +25,7 @@ blog post 작성 시 이미지 업로드를 위해 Typora 에 PicGo 를 활용�
 
 Format > Image > Use Image Root Path 메뉴
 
-![UploadImageForTypora_1](/../assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_1.png)
+![UploadImageForTypora_1](/assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_1.png)
 
 
 <br><br>
@@ -33,7 +33,7 @@ Format > Image > Use Image Root Path 메뉴
 
 디렉토리는 다음 이미지처럼 최상단을 지정한다.
 
-![UploadImageForTypora_2](/../assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_2.png)
+![UploadImageForTypora_2](/assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_2.png)
 
 
 <br><br>
@@ -48,7 +48,7 @@ date: 2021-12-08 12:41:57 +0900
 categories: [GIT Blog, Plugins]
 tags: [Typora, PicGo, Jekyll]
 author: DongHyun Kim
-typora-root-url: ..
+typora-root-url: ../..
 ---
 ```
 
@@ -64,7 +64,7 @@ typora-root-url: ..
 
 클립보드 이미지 또는 드래그&드랍으로 삽입하는 이미지를 assets/img/<md 파일명 디렉토리/ 안에 넣는다.
 
-![UploadImageForTypora_3](/../assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_3.png)
+![UploadImageForTypora_3](/assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_3.png)
 
 
 <br><br>
@@ -72,7 +72,7 @@ typora-root-url: ..
 
 실제로 이미지는 md 파일명을 디렉토리로 삼고, 그 안에 들어간다.
 
-![UploadImageForTypora_4](/../assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_4.png)
+![UploadImageForTypora_4](/assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_4.png)
 
 <br>
 
@@ -88,5 +88,5 @@ typora-root-url: ..
 
 포스팅 후 확인해보면 이미지가 잘 나타나고, 이미지 별로 다음과 같이 URL이 생성된다.
 
-![UploadImageForTypora_5](/../assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_5.png)
+![UploadImageForTypora_5](/assets/posts/images/Typora/UploadImageForTypora/UploadImageForTypora_5.png)
 

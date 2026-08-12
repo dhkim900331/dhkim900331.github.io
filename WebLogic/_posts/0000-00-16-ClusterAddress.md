@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Cluster Address(클러스터 주소), Number Of Servers In Cluster Address(클러스터 주소의 서버 수)"
 tags: [Middleware, WebLogic, Cluster]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

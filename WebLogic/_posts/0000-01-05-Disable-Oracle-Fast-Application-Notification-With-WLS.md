@@ -3,7 +3,7 @@ date: 2025-01-31 09:38:02 +0900
 layout: post
 title: "[WebLogic] Disable Oracle Fast Application Notification With WLS"
 tags: [Middleware, WebLogic, Fan, RAC, MDS]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

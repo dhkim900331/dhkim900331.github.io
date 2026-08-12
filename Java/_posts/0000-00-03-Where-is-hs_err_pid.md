@@ -3,7 +3,7 @@ date: 2024-11-21 10:08:10 +0900
 layout: post
 title: "[Java/Crash] Where is hs_err_pid file?"
 tags: [Java, JVM, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

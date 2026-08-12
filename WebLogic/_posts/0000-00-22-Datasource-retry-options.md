@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] 데이터소스 커넥션 풀 시도 횟수 관련 옵션"
 tags: [Middleware, WebLogic, Datasource, Connection Pool]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 
@@ -17,7 +17,7 @@ typora-root-url: ..
 
 # 2. Descriptions
 
-![Datasource-retry-options_1](/../assets/posts/images/WebLogic/Datasource-retry-options/Datasource-retry-options_1.png)
+![Datasource-retry-options_1](/assets/posts/images/WebLogic/Datasource-retry-options/Datasource-retry-options_1.png)
 
 <br>
 

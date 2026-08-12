@@ -3,7 +3,7 @@ date: 2024-01-31 13:27:29 +0900
 layout: post
 title: "[WebLogic] ClassNotFoundException com.bea.xml.stream.MXParserFactory"
 tags: [Middleware, WebLogic, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

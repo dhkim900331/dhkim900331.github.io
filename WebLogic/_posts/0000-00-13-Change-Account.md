@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 아이디, 비밀번호 변경하기"
 tags: [Middleware, WebLogic, boot.properties]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

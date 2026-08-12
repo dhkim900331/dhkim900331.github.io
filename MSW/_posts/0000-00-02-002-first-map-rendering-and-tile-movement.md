@@ -3,7 +3,7 @@ date: 2026-07-03 18:06:16 +0900
 layout: post
 title: "[MSW] 002. 메이플스토리 월드 첫 맵 로딩과 좌표계 이해"
 tags: [MSW, Lua]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2023-11-23 16:29:01 +0900
 layout: post
 title: "[WebLogic/JDBC] Why Doest It Show Different JDBC Driver Version?"
 tags: [Middleware, WebLogic, JDBC, Driver]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

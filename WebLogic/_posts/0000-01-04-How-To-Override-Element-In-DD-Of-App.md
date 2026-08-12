@@ -3,7 +3,7 @@ date: 2025-01-02 23:04:36 +0900
 layout: post
 title: "[WebLogic/Deployment Plan] How To Override Element In DD Of Application"
 tags: [Middleware, WebLogic, Plan, Deployer, Override]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

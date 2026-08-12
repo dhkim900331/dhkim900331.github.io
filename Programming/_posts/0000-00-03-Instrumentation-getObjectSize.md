@@ -3,7 +3,7 @@ date: 2023-06-01 08:58:38 +0900
 layout: post
 title: "[Java/Instrumentation] Instrumentation.getObjectSize()"
 tags: [Programming, Java, Instrumentation, getObjectSize]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -2,7 +2,7 @@
 layout: post
 title: "[Jekyll] "
 tags: [Jekyll, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

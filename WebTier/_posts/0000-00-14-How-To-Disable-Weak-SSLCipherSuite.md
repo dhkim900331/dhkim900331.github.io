@@ -3,7 +3,7 @@ date: 2023-08-24 09:33:44 +0900
 layout: post
 title: "[WebTier/OHS] How To Disable Weak SSLCipherSuite"
 tags: [WebTier, OHS, ossl, cipher, ssl, suite]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

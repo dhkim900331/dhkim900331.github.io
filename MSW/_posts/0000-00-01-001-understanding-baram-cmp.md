@@ -3,7 +3,7 @@ date: 2026-07-03 18:06:16 +0900
 layout: post
 title: "[MSW] 001. 바람의나라 맵 데이터(CMP) 구조 분석"
 tags: [MSW, Lua]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

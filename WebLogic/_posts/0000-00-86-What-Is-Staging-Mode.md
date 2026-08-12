@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] nostage와 stage 배포 흐름"
 tags: [Middleware, WebLogic, nostage, stage, Deploy]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

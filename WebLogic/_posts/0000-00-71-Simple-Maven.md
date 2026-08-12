@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Maven 간단히 해볼까..?"
 tags: [Middleware, WebLogic, Mavel]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

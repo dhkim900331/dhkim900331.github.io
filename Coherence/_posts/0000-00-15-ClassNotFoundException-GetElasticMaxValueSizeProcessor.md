@@ -3,7 +3,7 @@ date: 2025-11-18 13:52:47 +0900
 layout: post
 title: "[Coherence] ClassNotFoundException GetElasticMaxValueSizeProcessor"
 tags: [Coherence, Session, Split]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

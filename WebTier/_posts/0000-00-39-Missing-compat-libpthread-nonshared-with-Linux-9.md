@@ -3,7 +3,7 @@ date: 2025-04-11 00:21:07 +0900
 layout: post
 title: "[WebTier/OHS] Missing compat-libpthread-nonshared with Linux 9"
 tags: [WebTier, OHS, OFM, WebLogic, RHEL9, OL9, compat-libpthread-nonshared]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

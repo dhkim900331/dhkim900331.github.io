@@ -4,7 +4,7 @@ date: 2025-08-29 12:22:37 +0900
 layout: post
 title: "[WebTier/OHS] Creating a wallet on 12cR2"
 tags: [WebTier, OHS, Wallet, SSL, Certificate]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

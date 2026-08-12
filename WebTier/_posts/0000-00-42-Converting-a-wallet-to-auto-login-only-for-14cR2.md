@@ -4,7 +4,7 @@ date: 2025-08-29 12:22:37 +0900
 layout: post
 title: "[WebTier/OHS] Converting a wallet to auto_login_only for 14cR2"
 tags: [WebTier, OHS, Wallet, SSL, Certificate, auto_login_only]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

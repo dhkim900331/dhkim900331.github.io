@@ -3,7 +3,7 @@ date: 2025-08-29 12:22:37 +0900
 layout: post
 title: "[WebLogic/JMS] Creating JMS With WLST"
 tags: [Middleware, WebLogic, JMS, WLST]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

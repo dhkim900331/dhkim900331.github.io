@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 웹로직 Client IP와 WebServer IP를 얻는 방법"
 tags: [Middleware, WebLogic, Plugin, Clientip, Realip]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

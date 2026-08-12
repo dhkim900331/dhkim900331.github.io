@@ -3,7 +3,7 @@ date: 2022-04-11 12:01:17 +0900
 layout: post
 title: "[OS/Repository] Create Local Repository"
 tags: [OS, Linux, Repository, Local]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

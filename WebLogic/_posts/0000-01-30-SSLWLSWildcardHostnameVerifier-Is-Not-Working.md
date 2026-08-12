@@ -3,7 +3,7 @@ date: 2026-07-03 18:06:17 +0900
 layout: post
 title: "[WebLogic/SSL] SSLWLSWildcardHostnameVerifier가 적용 되지 않음"
 tags: [Middleware, WebLogic, SSL, Certificate]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

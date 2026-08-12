@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 접근 허용 아이피 설정"
 tags: [Middleware, WebLogic, Security, Filter]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -29,7 +29,7 @@ Security Filter를 이용하면, 접근 제한 규칙을 활용하여 인스턴�
   \* 192.168.56.1 8001 deny
   ```
 
-![Security-Filter_1](/../assets/posts/images/WebLogic/Security-Filter/Security-Filter_1.png)
+![Security-Filter_1](/assets/posts/images/WebLogic/Security-Filter/Security-Filter_1.png)
 
   > Connection Filter는 1줄에 1개의 Rule만 작성하며, 클라이언트가 접속하면, 맨위부터 1개의 Rule씩 적용한다.
   >

@@ -3,7 +3,7 @@ date: 2026-07-03 18:06:17 +0900
 layout: post
 title: "[WebLogic/Clustering] Multicast Clustering Is Not Working"
 tags: [Middleware, WebLogic, Cluster, Multicast, UDP]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2022-04-11 11:39:37 +0900
 layout: post
 title: "[Scripts/Bash] High Cpu Process의 분석을 위한 Dump"
 tags: [Scripts, Shell, Bash, Thread, Dump, CPU]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

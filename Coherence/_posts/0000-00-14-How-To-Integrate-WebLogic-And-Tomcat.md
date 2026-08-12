@@ -3,7 +3,7 @@ date: 2025-06-18 14:55:33 +0900
 layout: post
 title: "[Coherence/Web] How To Integrate WebLogic And Tomcat?"
 tags: [Coherence, WebLogic, Tomcat, HttpSession]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

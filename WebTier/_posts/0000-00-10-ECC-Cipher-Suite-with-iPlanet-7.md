@@ -3,7 +3,7 @@ date: 2024-07-03 16:39:54 +0900
 layout: post
 title: "[WebTier/iPlanet] ECC Cipher Suite with iPlanet 7"
 tags: [WebTier, iPlanet, ECC, cipher, suite, ssl, tls]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

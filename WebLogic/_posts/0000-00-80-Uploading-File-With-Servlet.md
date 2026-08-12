@@ -3,7 +3,7 @@ date: 2023-05-11 09:07:29 +0900
 layout: post
 title: "[WebLogic] Uploading Files with Java Servlet Tech"
 tags: [Middleware, WebLogic, Multipart, Upload, Servlet]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

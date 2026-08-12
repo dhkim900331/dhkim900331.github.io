@@ -3,7 +3,7 @@ date: 2025-04-30 23:47:17 +0900
 layout: post
 title: "[Coherence/Web] How to install Coherence Web 12cR2"
 tags: [Coherence, Web, Installation]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

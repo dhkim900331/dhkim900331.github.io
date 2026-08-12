@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] HttpSession, Cookie, JSESSIONID"
 tags: [Middleware, WebLogic, Session, Cookie, JSESSIONID]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

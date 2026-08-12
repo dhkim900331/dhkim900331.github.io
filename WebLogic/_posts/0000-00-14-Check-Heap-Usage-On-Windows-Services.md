@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 윈도우 서비스 Heap Usage 확인"
 tags: [Middleware, WebLogic, jmap, Window, Service, Heap, Usage]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

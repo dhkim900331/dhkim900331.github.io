@@ -3,7 +3,7 @@ date: 2024-06-25 16:09:26 +0900
 layout: post
 title: "[SSL/Certificate] How to make a self-signed certificate?"
 tags: [SSL, Certificate]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2022-12-06 08:53:52 +0900
 layout: post
 title: "[WebTier/OHS] Proxy Plugin 12cR2"
 tags: [WebTier, Apache, OHS, Proxy, Plugin]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

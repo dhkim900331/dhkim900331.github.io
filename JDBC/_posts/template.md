@@ -3,7 +3,7 @@ date: 2025-11-18 13:52:52 +0900
 layout: post
 title: "[JDBC] "
 tags: [JDBC, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

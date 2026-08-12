@@ -3,7 +3,7 @@ date: 2024-10-08 16:44:22 +0900
 layout: post
 title: "[Coherence] Creating and Deploying App with WebLogic"
 tags: [Coherence, Creating, Deploying, App, GAR]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

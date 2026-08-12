@@ -3,7 +3,7 @@ date: 2026-02-23 13:44:30 +0900
 layout: post
 title: "[Coherence/Cache] Persisting Cache for HttpSession"
 tags: [Coherence, Cache, Session]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

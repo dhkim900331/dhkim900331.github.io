@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic/Bash] config.xml 에서 정보 일괄 추출"
 tags: [Middleware, WebLogic, Bash]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. 개요
@@ -129,7 +129,7 @@ do
 done
 ```
 
-![Get-Config-Bash_1](/../assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_1.png)
+![Get-Config-Bash_1](/assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_1.png)
 
 # 3. 배포 App 정보
 
@@ -222,7 +222,7 @@ do
 done
 ```
 
-![Get-Config-Bash_2](/../assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_2.png)
+![Get-Config-Bash_2](/assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_2.png)
 
 
 <br><br>
@@ -333,5 +333,5 @@ do
 done
 ```
 
-![Get-Config-Bash_3](/../assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_3.png)
+![Get-Config-Bash_3](/assets/posts/images/WebLogic/Get-Config-Bash/Get-Config-Bash_3.png)
 

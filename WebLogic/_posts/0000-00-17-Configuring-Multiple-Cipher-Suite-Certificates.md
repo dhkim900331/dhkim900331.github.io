@@ -3,7 +3,7 @@ date: 2024-06-25 16:09:26 +0900
 layout: post
 title: "[WebLogic/SSL] Configuring Multiple Cipher Suite Certificates"
 tags: [Middleware, WebLogic, SSL, TLS, Keystore, cipher, suite, JSSE]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

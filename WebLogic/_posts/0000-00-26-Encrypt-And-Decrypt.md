@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Encryption/Decryption (암/복호화)"
 tags: [Middleware, WebLogic, Encrypt, Decrypt, Password]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

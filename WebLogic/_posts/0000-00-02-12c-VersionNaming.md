@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] 12c 버전 네이밍"
 tags: [Middleware, WebLogic, Version, 12c]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

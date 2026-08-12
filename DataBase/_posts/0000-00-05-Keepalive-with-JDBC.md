@@ -3,7 +3,7 @@ date: 2024-10-08 16:44:22 +0900
 layout: post
 title: "[Database/JDBC] Keepalive with JDBC"
 tags: [Database, JDBC, Keepalive, DCD, Firewall]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2024-11-11 14:17:56 +0900
 layout: post
 title: "[ODI] How to create a JMS XML Queue dataserver"
 tags: [ODI, Studio, Topology, JMS, XML, Queue]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

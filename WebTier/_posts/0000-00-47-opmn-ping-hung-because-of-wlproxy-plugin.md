@@ -3,7 +3,7 @@ date: 2026-07-15 20:04:15 +0900
 layout: post
 title: "[WebTier/OHS] OPMN Ping hung because of WebLogic Proxy Plugin"
 tags: [WebTier, OHS, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

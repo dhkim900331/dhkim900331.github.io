@@ -3,7 +3,7 @@ date: 2025-04-30 23:47:19 +0900
 layout: post
 title: "[WebTier/OHS] All In One Script For 14cR2"
 tags: [WebTier, OHS, Apache, Install, WLST, Jython]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

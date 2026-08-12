@@ -3,7 +3,7 @@ date: 2022-11-29 18:03:31 +0900
 layout: post
 title: "[Typora] 포스트 이미지 깔끔하게 정리"
 tags: [Typora, Shell, Bash, Script, Image, Assets, Sort]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

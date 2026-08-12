@@ -3,7 +3,7 @@ date: 2026-07-15 20:04:12 +0900
 layout: post
 title: "[MSW] 004. Cluade AI 툴킷으로 전환하여 코드 리팩토링"
 tags: [MSW, Lua]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

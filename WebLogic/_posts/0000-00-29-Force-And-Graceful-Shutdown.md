@@ -3,7 +3,7 @@ date: 2023-03-27 08:46:20 +0900
 layout: post
 title: "[WebLogic] Force and Graceful shutdown"
 tags: [Middleware, WebLogic, Shutdown, Force, Graceful]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. 개요

@@ -3,7 +3,7 @@ date: 2023-02-02 08:58:49 +0900
 layout: post
 title: "[Coherence/Web] Performance Test In Coherence Web 3.X"
 tags: [Coherence, Web, Thread, Tuning, Performance, Test, WLST, Python]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -121,7 +121,7 @@ Jmeter 20 Users 가 지속적으로 세션을 생성하는 과정에서, 위 스
 
 <br>
 
-![Performance-Test-In-Coherence-Web-3_1](/../assets/posts/images/Coherence/Performance-Test-In-Coherence-Web-3/Performance-Test-In-Coherence-Web-3_1.png)
+![Performance-Test-In-Coherence-Web-3_1](/assets/posts/images/Coherence/Performance-Test-In-Coherence-Web-3/Performance-Test-In-Coherence-Web-3_1.png)
 
 <br>
 

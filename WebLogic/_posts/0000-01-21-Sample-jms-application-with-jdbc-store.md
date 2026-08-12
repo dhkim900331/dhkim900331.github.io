@@ -3,7 +3,7 @@ date: 2025-08-29 12:26:41 +0900
 layout: post
 title: "[WebLogic/JMS] Sample jms application with jdbc store"
 tags: [Middleware, WebLogic, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

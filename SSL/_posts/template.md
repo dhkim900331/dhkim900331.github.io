@@ -2,7 +2,7 @@
 layout: post
 title: "[SSL] "
 tags: [SSL, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

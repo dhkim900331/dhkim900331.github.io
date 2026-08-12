@@ -3,7 +3,7 @@ date: 2025-08-29 12:22:37 +0900
 layout: post
 title: "[WebLogic/LDAP] Using Keep alive for an external ldap"
 tags: [Middleware, WebLogic, LDAP]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

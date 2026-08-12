@@ -3,7 +3,7 @@ date: 2022-08-05 14:41:19 +0900
 layout: post
 title: "[JBoss] Application Deployment"
 tags: [Middleware, JBoss, Deploy, War, App]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

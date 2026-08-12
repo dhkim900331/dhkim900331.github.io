@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] WTC 설정"
 tags: [Middleware, WebLogic, WTC]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -32,19 +32,19 @@ WTC 설정 가이드
 
 1. 콘솔 > 상호 운용성 > WTC 서버 > 새로 만들기 > WTC Server-0
 
-![WTC-Configration_1](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_1.png)
+![WTC-Configration_1](/assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_1.png)
 
 <br>
 
 2. 새로 만든 WTC Server-0 대상 M1 설정
 
-![WTC-Configration_2](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_2.png)
+![WTC-Configration_2](/assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_2.png)
 
 <br>
 
 3. WTC Server-0 > 로컬 AP
 
-![WTC-Configration_3](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_3.png)
+![WTC-Configration_3](/assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_3.png)
 
 
 > `netstat -an | grep 8011`으로 할당되지 않은 포트 검증하고 진행
@@ -53,13 +53,13 @@ WTC 설정 가이드
 
 4. WTC Server-0 > 원격 AP
 
-![WTC-Configration_4](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_4.png)
+![WTC-Configration_4](/assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_4.png)
 
 <br>
 
 5. WTC Server-0 > Import
 
-![WTC-Configration_5](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_5.png)
+![WTC-Configration_5](/assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_5.png)
 
 <br>
 
@@ -72,20 +72,20 @@ WTC 설정 가이드
 
 1. 웹로직 기동 시 8001, 8011 port 확인된다.
 
-![WTC-Configration_6](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_6.png)
+![WTC-Configration_6](/assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_6.png)
 
 <br>
 
 2. 웹로직 Log에서 TDOM 연결 되었음이 확인된다.
 
-![WTC-Configration_7](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_7.png)
+![WTC-Configration_7](/assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_7.png)
 
 <br>
 
 3. 아래 JSP를 호출 시 TOUPPER 서비스는 잘 호출되나,
    정의되지 않은 `tpcall("LTOUPPER")` 호출하면 에러 발생한다.
 
-![WTC-Configration_8](/../assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_8.png)
+![WTC-Configration_8](/assets/posts/images/WebLogic/WTC-Configration/WTC-Configration_8.png)
 
 <br>
 

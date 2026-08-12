@@ -3,7 +3,7 @@ date: 2024-12-05 16:08:27 +0900
 layout: post
 title: "[WebLogic/WRC] How To Use WebLogic Remote Console?"
 tags: [Middleware, WebLogic, WRC, Remote, Console, REST, OpenSource]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -171,9 +171,6 @@ Admin Server Provider는, 사용자에게 최대 4개의 관점을 제공한다.
 Extension WAR가 배포되어 있는 경우와 그렇지 않은 경우, (좌/우 이미지)
 
 Commit이 필요한 변경사항에 대해 쉽게 확인이 된다.
-
-![image-20241216102842507](/../../../../../AppData/Roaming/Typora/typora-user-images/image-20241216102842507.png)
-
 
 <br><br>
 

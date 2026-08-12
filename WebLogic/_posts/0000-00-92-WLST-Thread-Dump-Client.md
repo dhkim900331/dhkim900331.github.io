@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] WLST으로 Thread Dump Client 만들기"
 tags: [Middleware, WebLogic, Thread, Dump, WLST]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

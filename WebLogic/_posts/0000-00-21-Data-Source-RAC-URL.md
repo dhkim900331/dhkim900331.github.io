@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 데이터소스 RAC URL"
 tags: [Middleware, WebLogic, DataSource, RAC, URL]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. 개요

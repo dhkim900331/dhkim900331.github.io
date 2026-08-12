@@ -3,7 +3,7 @@ date: 2023-11-03 08:57:37 +0900
 layout: post
 title: "[WebLogic] How To Load Balancing Without Proxy?"
 tags: [Middleware, WebLogic, Load Balancing, Plugin, Proxy]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

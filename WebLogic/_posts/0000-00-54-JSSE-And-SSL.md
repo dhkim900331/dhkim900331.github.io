@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] JSSE 및 SSL 관련"
 tags: [Middleware, WebLogic, JSSE, SSL]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

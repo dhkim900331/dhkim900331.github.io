@@ -3,7 +3,7 @@ date: 2023-03-15 08:36:40 +0900
 layout: post
 title: "[OS/Sed] sed and regex"
 tags: [Linux, OS, Sed, Regex]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

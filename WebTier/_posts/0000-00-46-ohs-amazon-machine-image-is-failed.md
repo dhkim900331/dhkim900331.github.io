@@ -3,7 +3,7 @@ date: 2025-11-18 13:54:05 +0900
 layout: post
 title: "[WebTier/OHS] ohs amazon machine image starting is failed"
 tags: [WebTier, OHS, AMI, Amazon, Image]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

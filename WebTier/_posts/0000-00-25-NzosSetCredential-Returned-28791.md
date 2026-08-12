@@ -3,7 +3,7 @@ date: 2024-05-02 14:41:32 +0900
 layout: post
 title: "[WebTier/OHS] Nzos Call NzosSetCredential Returned 28791"
 tags: [WebTier, OHS, NZOS, Certificate, SSL, Expired]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

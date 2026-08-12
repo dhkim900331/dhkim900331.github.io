@@ -3,7 +3,7 @@ date: 2023-11-01 10:58:33 +0900
 layout: post
 title: "[Programming/VBA/Outlook] How to play sound with VBA in Outlook?"
 tags: [Programming, VBA, Outlook, Sound, Play]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

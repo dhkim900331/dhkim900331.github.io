@@ -3,7 +3,7 @@ date: 2023-02-10 08:06:28 +0900
 layout: post
 title: "[WebLogic] All In One Script For 14c"
 tags: [Middleware, WebLogic, Install, WLST, Python]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

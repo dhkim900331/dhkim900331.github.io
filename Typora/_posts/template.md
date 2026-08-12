@@ -2,7 +2,7 @@
 layout: post
 title: "[Typora] "
 tags: [Typora, ]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

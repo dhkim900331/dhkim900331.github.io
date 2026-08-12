@@ -3,7 +3,7 @@ date: 2022-02-15 12:26:08 +0900
 layout: post
 title: "[Jenkins] 설치"
 tags: [Jenkins, CICD]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 
@@ -20,7 +20,7 @@ war를 Tomcat에 배포하는 것으로 설치해보기로 한다.
 ## 2.1 다운로드
 [여기 클릭](https://www.jenkins.io/download/)
 
-![InstallJenkins_1](/../assets/posts/images/Jenkins/InstallJenkins/InstallJenkins_1.png)
+![InstallJenkins_1](/assets/posts/images/Jenkins/InstallJenkins/InstallJenkins_1.png)
 
 <br>
 

@@ -3,7 +3,7 @@ date: 2023-08-04 08:47:48 +0900
 layout: post
 title: "[WebTier/OHS] mod_ossl 과 openssl"
 tags: [WebTier, OHS, openSSL, mod_ossl	]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

@@ -3,7 +3,7 @@ date: 2022-04-30 14:19:33 +0900
 layout: post
 title: "[WebTier/OHS] Cross Domain (Access Control Allow Origin)"
 tags: [WebTier, OHS, Apache, CORS]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

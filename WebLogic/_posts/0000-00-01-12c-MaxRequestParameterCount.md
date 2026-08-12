@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] 12c max request parameter count 최대값 변경"
 tags: [Middleware, WebLogic, Parameter]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 

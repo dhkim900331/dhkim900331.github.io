@@ -3,7 +3,7 @@ date: 2022-08-02 14:56:46 +0900
 layout: post
 title: "[Database/MySQL] Backup & Recovery (백업과 복구)"
 tags: [Database, MySQL, Backup, Recovery]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

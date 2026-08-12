@@ -3,13 +3,13 @@ date: 2024-05-29 14:53:50 +0900
 layout: post
 title: "[ODI/Studio] Why does not show Physical Schema Lists in Logical Architecture?"
 tags: [ODI, ODI Studio, Schema]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
 Logical Architecture Component에 Context와 이에 대응되는 Physical Schemas 를 선택하려고 하지만, List box에는 Undefined 만 표시된다.
 
-![image-20240507152843622](/../assets/posts/images/Why-Does-Not-Show-Physical-Schema-Lists/image-20240507152843622.png)
+![image-20240507152843622](/assets/posts/images/Why-Does-Not-Show-Physical-Schema-Lists/image-20240507152843622.png)
 
 
 <br><br>
@@ -22,7 +22,7 @@ Undefined 로 표시되는 원인은, Physical Architecture 에서 생성한 Com
 
 Physical Architecture Component에 Physical Schema 를 생성하면 된다.
 
-![image-20240507153038000](/../assets/posts/images/Why-Does-Not-Show-Physical-Schema-Lists/image-20240507153038000.png)
+![image-20240507153038000](/assets/posts/images/Why-Does-Not-Show-Physical-Schema-Lists/image-20240507153038000.png)
 
 <br>
 

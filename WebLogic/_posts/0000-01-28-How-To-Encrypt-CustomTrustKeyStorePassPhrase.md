@@ -3,7 +3,7 @@ date: 2026-07-03 18:06:17 +0900
 layout: post
 title: "[WebLogic] How To Encrypt CustomTrustKeyStorePassPhrase"
 tags: [Middleware, WebLogic, Encrypt]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

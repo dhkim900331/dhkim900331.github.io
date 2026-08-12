@@ -3,7 +3,7 @@ date: 2022-05-09 15:45:29 +0900
 layout: post
 title: "[Putty] Putty Connect Host With CLI"
 tags: [Putty, SSH, CLI]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview

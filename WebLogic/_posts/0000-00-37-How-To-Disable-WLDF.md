@@ -3,7 +3,7 @@ date: 2022-02-21 16:44:14 +0900
 layout: post
 title: "[WebLogic] 진단 기록 끄기 - WLS_DIAGNOSTICS"
 tags: [Middleware, WebLogic, WLDF]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 # 1. Overview
@@ -41,11 +41,11 @@ WLDF (WebLogic Diagnostics Framework) Off
 * 웹로직 도메인 Console Page를 열어,
   Menu tree > 진단(Diagnostics) > 내장 진단 모듈(Built-in Diagnostics Module)을 엽니다.
 
-![How-To-Disable-WLDF_1](/../assets/posts/images/WebLogic/How-To-Disable-WLDF/How-To-Disable-WLDF_1.png)
+![How-To-Disable-WLDF_1](/assets/posts/images/WebLogic/How-To-Disable-WLDF/How-To-Disable-WLDF_1.png)
 
 * 비활성화 상태의 인스턴스를 선택하고, 활성화를 누릅니다.
 
-![How-To-Disable-WLDF_2](/../assets/posts/images/WebLogic/How-To-Disable-WLDF/How-To-Disable-WLDF_2.png)
+![How-To-Disable-WLDF_2](/assets/posts/images/WebLogic/How-To-Disable-WLDF/How-To-Disable-WLDF_2.png)
 
 * 상태가 활성으로 바뀌면, 진단 기능이 활성화 된 것을 의미합니다.
 

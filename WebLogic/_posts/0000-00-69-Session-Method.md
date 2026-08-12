@@ -3,7 +3,7 @@ date: 2022-02-15 11:57:12 +0900
 layout: post
 title: "[WebLogic] Session을 생성하고 복제하는 Method (setAttribute, getAttribute, getSession)"
 tags: [Middleware, WebLogic, Session]
-typora-root-url: ..
+typora-root-url: ../..
 ---
 
 
@@ -21,7 +21,7 @@ Session을 생성하고 복제하는 Method (setAttribute, getAttribute, getSess
 
 > (setAttribute 로 검색시)
 
-![Session-Method_1](/../assets/posts/images/WebLogic/Session-Method/Session-Method_1.png)
+![Session-Method_1](/assets/posts/images/WebLogic/Session-Method/Session-Method_1.png)
 
 
 <br><br>
@@ -59,4 +59,4 @@ getSession(false) = HttpSession이 존재하면 현재 HttpSession을 반환하�
 
 <br>
 
-![Session-Method_2](/../assets/posts/images/WebLogic/Session-Method/Session-Method_2.png)
+![Session-Method_2](/assets/posts/images/WebLogic/Session-Method/Session-Method_2.png)
