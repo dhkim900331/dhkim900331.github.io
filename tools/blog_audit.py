@@ -58,6 +58,10 @@ def main() -> None:
                     if not (ROOT / source.lstrip("/")).is_file():
                         warn(path, number, "image points to a missing file below assets/")
                         warnings += 1
+                    expected = f"/assets/posts/images/{path.parents[1].name}/{DATE_PREFIX.match(path.name).group(1)}/"
+                    if source.startswith("/assets/posts/images/") and not source.startswith(expected):
+                        warn(path, number, f"image path does not match this post; expected {expected}")
+                        warnings += 1
                     continue
                 if re.match(r"^(file:|[A-Za-z]:[\\/]|\\\\|/(?:\.\./)+)", source):
                     warn(path, number, "image uses a local filesystem path; import it under assets/posts/images and use /assets/...")

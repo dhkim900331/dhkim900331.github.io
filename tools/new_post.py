@@ -50,26 +50,27 @@ def main() -> None:
     content = f'''---
 layout: post
 title: "{args.title.replace('"', "'")}"
+description: ""
 date: {when}
 tags: [{tags}]
 typora-root-url: ../..
 ---
 
-# 1. Overview
+# 1. Issue
 
-<!-- One sentence: what occurred and why this note is useful. -->
+<!-- SR symptom, customer impact, and a safely anonymized scope. -->
 
-# 2. Environment and scope
+# 2. Cause
 
-<!-- Product/version, relevant topology, and what has been intentionally anonymized. -->
+<!-- Evidence-led diagnosis. Clearly separate confirmed cause from hypotheses. -->
 
-# 3. Symptom and diagnosis
+# 3. Solution
 
-<!-- Include only the minimal reproducible logs, commands, and observations. -->
+<!-- Corrective action, safe commands, prerequisites, and rollback considerations. -->
 
-# 4. Resolution and verification
+# 4. Verification
 
-<!-- State exactly how the result was verified. -->
+<!-- Observable result that proves the solution; include a safe test when possible. -->
 
 # 5. References
 

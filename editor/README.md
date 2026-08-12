@@ -15,7 +15,7 @@ http://localhost:4173/editor/
 ## 동작
 
 - 새 글: 기존 `0000-XX-XX-slug.md` 순번을 계산하고 실제 발행일은 front matter의 `date`에 기록합니다.
-- 이미지: 파일을 선택하거나 왼쪽 원문 창에 끌어놓습니다. 파일은 자동으로 `assets/posts/images/<Category>/<slug>/`에 복사되고, `/assets/posts/images/...` Markdown URL이 삽입됩니다.
+- 이미지: 파일을 선택하거나 왼쪽 원문 창에 끌어놓습니다. 파일은 자동으로 `assets/posts/images/<Category>/<slug>/`에 복사되고, `/assets/posts/images/...` 사이트 절대 경로 Markdown URL이 삽입됩니다. 마지막 URL은 버튼으로 클립보드에 복사할 수 있습니다. alt 텍스트는 파일명으로 자동 입력됩니다.
 - 줄바꿈: 일반 Enter 한 번은 그대로 둡니다. 연속 Enter가 설정한 횟수에 도달하면 `<br>`을 원문에 자동 삽입합니다. 코드 블록 내부는 변환하지 않습니다.
 - 저장: 현재 게시물 파일에 UTF-8로 저장합니다. 게시 전에는 기존 `tools/blog_audit.py`도 실행하세요.
 

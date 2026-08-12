@@ -14,16 +14,16 @@
       <button id="newPost">새 글</button>
       <button id="openPost">기존 글 열기</button>
       <button id="importImage">이미지 추가</button>
+      <button id="copyImageUrl">마지막 이미지 URL 복사</button>
       <button id="save" class="primary">저장</button>
     </div>
   </header>
   <section class="meta">
     <label>카테고리 <select id="category"></select></label>
     <label>slug <input id="slug" placeholder="jdbc-store-recovery"></label>
-    <label>이미지 alt <input id="imageAlt" placeholder="이미지 설명"></label>
     <label>한 번 줄바꿈 <input id="oneBreak" type="number" min="2" value="2"></label>
     <label>두 번 줄바꿈 <input id="twoBreak" type="number" min="3" value="4"></label>
-    <span class="hint">연속 Enter를 `<br>`로 바꾸는 기준입니다. 코드 블록은 제외됩니다.</span>
+    <span class="hint">이미지 alt는 파일명으로 자동 입력됩니다. 연속 Enter 기준은 코드 블록에 적용하지 않습니다.</span>
   </section>
   <main>
     <section class="pane"><h2>Markdown <small id="fileName">새 초안</small></h2><textarea id="source" spellcheck="false" placeholder="Markdown을 작성하거나 이미지를 여기로 끌어놓으세요."></textarea></section>
