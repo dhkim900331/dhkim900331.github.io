@@ -224,3 +224,4 @@ exclude:
   - _sass_backup_20230315
   - docs
   - tools
+  - editor
