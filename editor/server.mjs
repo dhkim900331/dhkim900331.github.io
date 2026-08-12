@@ -63,7 +63,7 @@ async function publish(message) {
   return { ok: push.code === 0, stage: push.code === 0 ? 'complete' : 'push', output: `${checked.output}\n\n${commit.stdout}${commit.stderr}${push.stdout}${push.stderr}` };
 }
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
     if (req.method === 'POST' && url.pathname === '/api/token') {
@@ -86,4 +86,13 @@ createServer(async (req, res) => {
   } catch (error) {
     json(res, 500, { ok: false, message: error.message });
   }
-}).listen(port, () => console.log(`Blog editor: http://localhost:${port}/editor/`));
+});
+
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.log(`Blog editor is already running. Open: http://localhost:${port}/editor/`);
+    process.exit(0);
+  }
+  throw error;
+});
+server.listen(port, () => console.log(`Blog editor: http://localhost:${port}/editor/`));
