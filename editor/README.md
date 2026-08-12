@@ -18,5 +18,7 @@ http://localhost:4173/editor/
 - 이미지: 파일을 선택하거나 왼쪽 원문 창에 끌어놓습니다. 파일은 자동으로 `assets/posts/images/<Category>/<slug>/`에 복사되고, `/assets/posts/images/...` 사이트 절대 경로 Markdown URL이 삽입됩니다. 마지막 URL은 버튼으로 클립보드에 복사할 수 있습니다. alt 텍스트는 파일명으로 자동 입력됩니다.
 - 줄바꿈: 일반 Enter 한 번은 그대로 둡니다. 연속 Enter가 설정한 횟수에 도달하면 `<br>`을 원문에 자동 삽입합니다. 코드 블록 내부는 변환하지 않습니다.
 - 저장: 현재 게시물 파일에 UTF-8로 저장합니다. 게시 전에는 기존 `tools/blog_audit.py`도 실행하세요.
+- 저장 및 게시: 현재 글을 먼저 저장하고, 전체 블로그의 `tools/blog_audit.py`를 실행합니다. 중복 URL·누락/규칙 위반 이미지가 없을 때만 모든 변경을 Git commit 후 `gh-pages`로 push합니다. 자격증명 형태의 기존 예제 문자열은 경고로만 남습니다.
+- GitHub 토큰 설정: GitHub Fine-grained PAT(이 저장소 `Contents: Read and write`) 또는 Classic PAT(`repo`)를 한 번 입력합니다. 토큰은 Windows Git Credential Manager에만 저장되고, 저장소·브라우저 저장소·커밋에는 남지 않습니다. 이후 게시에는 브라우저 로그인이 필요 없습니다.
 
 이 앱은 로컬 파일 권한을 위해 Chromium 계열 브라우저(Edge 또는 Chrome)에서 `localhost`로 실행해야 합니다.
