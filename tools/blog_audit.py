@@ -10,8 +10,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 POSTS = [p for p in ROOT.glob("*/_posts/*.md") if p.name != "template.md"]
 IMAGE = re.compile(r"!\[[^]]*\]\(([^)\s]+)(?:\s+[^)]*)?\)")
+LINK = re.compile(r"(?<!!)\[[^]]*\]\(([^)\s]+)(?:\s+[^)]*)?\)")
 SECRET = re.compile(r"(?i)(?:password|passphrase|secret|api[_ -]?key|token)\s*(?:=|:)\s*(?!<|\$\{|\*{3}|\.\.\.)\S+")
 DATE_PREFIX = re.compile(r"^0000-\d{2}-\d{2}-(.+)\.md$")
+PERMALINK = re.compile(r"^permalink:\s*(\S+)")
 
 
 def warn(path: Path, line: int, message: str) -> None:
@@ -41,6 +43,10 @@ def main() -> None:
         text = path.read_text(encoding="utf-8", errors="replace")
         in_fence = False
         for number, line in enumerate(text.splitlines(), 1):
+            permalink = PERMALINK.match(line)
+            if permalink and permalink.group(1).lower().endswith(".md"):
+                warn(path, number, "permalink ends in .md; GitHub Pages serves it as text instead of rendering the post")
+                warnings += 1
             if SECRET.search(line):
                 warn(path, number, "possible credential literal; verify it is a disposable example or replace it")
                 warnings += 1
@@ -68,6 +74,22 @@ def main() -> None:
                 else:
                     warn(path, number, "image is not root-relative; it may break after publishing")
                 warnings += 1
+            for target in LINK.findall(line):
+                # Generated post and tag URLs are valid root-relative links. Assets,
+                # however, must resolve to an actual tracked file.
+                if target.startswith("/assets/"):
+                    if not (ROOT / target.lstrip("/")).is_file():
+                        warn(path, number, "asset link points to a missing file")
+                        warnings += 1
+                    elif target.startswith("/assets/upload/"):
+                        warn(path, number, "asset uses the legacy shared upload directory; move it below assets/posts or assets/downloads")
+                        warnings += 1
+                elif re.match(r"^(file:|[A-Za-z]:[\\/]|\\\\)", target):
+                    warn(path, number, "link uses a local filesystem path; import the file below assets and use a root-relative URL")
+                    warnings += 1
+                elif not re.match(r"^(?:https?://|mailto:|#|/)", target):
+                    warn(path, number, "link is relative; it may break when the post URL changes")
+                    warnings += 1
     for url, paths in sorted(urls.items()):
         if len(paths) > 1:
             print(f"ERROR duplicate output URL {url}")

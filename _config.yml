@@ -46,8 +46,8 @@ repository: dhkim900331/dhkim900331.github.io
 copyright: "Copyright 2015-{currentYear}. {author} All data cannot be copied without permission."
 
 description: >- # this means to ignore newlines until "baseurl:"
-  소프트웨어/솔루션/IT 엔지니어로 종사하며 얻는 모든 지식들을 공유하고자 블로그로 기록하고 있습니다.
-  제가 알고 있는 것을 공유하고 기록하는 행동을 통해, 많은 지식을 흡수하고 있습니다.
+  Oracle Middleware와 Java, Linux 환경에서 검증한 장애 분석과 운영 절차를 기록하는 기술 노트입니다.
+  증상·진단·해결·검증을 분리해 재현 가능한 운영 지식을 공유합니다.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://dhkim900331.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 favicon: "" # the favicon for your site
@@ -70,7 +70,7 @@ yat:
 # google_analytics: [Tracking ID]
 
 # If you want to generate website sitemap, you can set true
-  sitemap: true
+sitemap: true
 
 # If you want to change site language, you can set lang option
 # lang: "en"  # default lang is en
@@ -135,7 +135,7 @@ yat:
 # it will be always kept on every visit (i.e. no matter
 # the browser is closed or not)
 #
-  night_mode: "auto"
+night_mode: "manual"
 
 # Code badge setting
 # You can enable or disable the code badge and so on
@@ -155,11 +155,19 @@ yat:
 #   - about.md
 
 # Page default value
-  defaults:
-    home:
-      heading: "Heading"
-      subheading: "SubHeading"
-      banner: "Banner"
+defaults:
+  home:
+    heading: "운영에서 확인한 기술 지식"
+    subheading: "증상부터 검증까지, 다시 찾기 쉬운 기술 노트"
+    banner: "Banner"
+
+# Keep primary navigation intentional rather than relying on filesystem order.
+header_pages:
+  - index.html
+  - archives.html
+  - categories.html
+  - tags.html
+  - about.html
 
 # Banner default settings
 # These banner settings are for global banner default, but you can also
@@ -220,6 +228,7 @@ permalink: /:categories/:title
 
 # Development artefacts must never be considered publishable site content.
 exclude:
+  - AGENTS.md
   - .jekyll-cache
   - _sass_backup_20230315
   - docs

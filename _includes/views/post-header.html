@@ -1,4 +1,7 @@
 <header class="post-header">
+  {%- if page.categories.size > 0 -%}
+  <p class="post-category">{{ page.categories | join: " · " }}</p>
+  {%- endif -%}
   <h1 class="post-title p-name" itemprop="name headline">{{ heading | default: page.title | escape }}</h1>
   <h2 class="post-subtitle">{{ subheading | default: page.subtitle | escape }}</h2>
 
@@ -18,7 +21,7 @@
   {%- if page.tags.size > 0 -%}
   <div class="post-tags">
     {%- for tag in page.tags -%}
-    <a class="post-tag" href="{{ '/tags.html ' | relative_url }}#{{tag}}">#{{tag}}</a>
+    <a class="post-tag" href="{{ '/tags.html' | relative_url }}#{{tag}}">#{{tag}}</a>
     {%- endfor -%}
   </div>
   {%- endif -%}

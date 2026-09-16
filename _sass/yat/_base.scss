@@ -14,7 +14,7 @@ dl, dd, ol, ul, figure {
  * Basic styling
  */
 body {
-  font-family: $base-font-family;
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: $base-font-weight;
   font-size: #{$base-font-size};
   font-display: swap;
@@ -119,6 +119,11 @@ a {
       text-decoration: underline;
     }
   }
+}
+
+:focus-visible {
+  outline: 3px solid rgba($brand-color, .45);
+  outline-offset: 3px;
 }
 
 /**

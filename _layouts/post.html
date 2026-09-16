@@ -46,9 +46,10 @@ sidebar:
     {%- assign result = hidden | where_exp: "item", "item == 'related_posts'" -%}
     {%- if result.size == 0 -%}
     <div class="post-related">
-      <div>Related Articles</div>
+      <div>함께 읽으면 좋은 글</div>
       <ul>
-        {% assign posts = site[page.collection] | sample:4 %}
+        {% assign posts = site[page.collection] | where_exp: "post", "post.url != page.url" %}
+        {% assign posts = posts | where_exp: "post", "post.tags contains page.tags.first" | slice: 0, 4 %}
         {%- for post in posts -%}
         <li><a class="post-link" href="{{post.url | relative_url}}" title="{{ post.title | escape }}">{{ post.title | escape | truncatewords: 12 }}</a></li>
         {%- endfor -%}

@@ -402,7 +402,17 @@ html {
     }
   }
 
+  .post-category {
+    margin-bottom: 10px;
+    color: $brand-color;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
   .post-content {
+    font-size: 1rem;
+    line-height: 1.85;
     margin-bottom: $spacing-unit;
     overflow-wrap: normal;
     word-wrap: normal;
@@ -410,6 +420,8 @@ html {
 
     h2 {
       @include relative-font-size(2);
+      padding-top: 18px;
+      border-top: 1px solid #e8edf2;
 
       @include media-query($on-laptop) {
         @include relative-font-size(1.75);
@@ -459,13 +471,32 @@ html {
     }
     
     p, hr {
-      margin-bottom: 8px; /* CUSTOM (2023-06-07) */
+      margin-bottom: 18px;
     }
+
+    ul, ol { margin-bottom: 18px; }
+
+    li + li { margin-top: 6px; }
 
     hr {
       height: 1px;
       background-color: #ebebeb;
       border: none;
+    }
+
+    blockquote {
+      margin: 24px 0;
+      padding: 12px 18px;
+      background: #f7f9fc;
+      border-left-color: $brand-color;
+      font-style: normal;
+    }
+
+    pre {
+      margin: 22px 0;
+      padding: 14px;
+      border-radius: 8px;
+      line-height: 1.55;
     }
   }
 
@@ -508,6 +539,20 @@ html {
       }
     }
   }
+}
+
+// A post should never look "new" simply because it has not been visited.
+.pagination .post-title a:after,
+.post-related a:after,
+.page-segments li a:after {
+  content: none;
+}
+
+@include media-query($on-palm) {
+  .page-content { padding-top: 36px; }
+  .post .post-header { margin: 20px auto 36px; }
+  .post .post-content { font-size: 0.975rem; line-height: 1.8; }
+  .post .post-content h2 { margin-top: 34px; }
 }
 
 .post-comments {

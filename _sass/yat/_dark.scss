@@ -146,6 +146,13 @@ html[data-theme="dark"]  {
     img:not([raw]) {
       background-color: #ffffff33;
     }
+
+    h2 { border-top-color: #363b42; }
+
+    blockquote {
+      background: #1b1f24;
+      border-left-color: lighten($brand-color, 12%);
+    }
   }
 
   .post-related {

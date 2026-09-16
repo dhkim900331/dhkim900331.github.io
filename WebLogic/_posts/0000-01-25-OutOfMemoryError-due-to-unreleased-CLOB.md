@@ -2,8 +2,6 @@
 date: 2026-02-23 13:44:32 +0900
 layout: post
 title: "[WebLogic/JVM] OutOfMemoryError due to unreleased CLOB"
-# The source file was renamed from *.md.md; retain the already-public URL.
-permalink: /weblogic/OutOfMemoryError-due-to-unreleased-CLOB.md
 tags: [Middleware, WebLogic, OOME, JVM, Heap]
 typora-root-url: ../..
 ---
@@ -183,7 +181,7 @@ oracle.sql.CLOB|   1,000 |       40,000 |    >= 168,248
 
 CLOB 객체를 상위 레벨에서 포함하고 있는 데이터를 조사하기 위해,
 
-Incomong references를 살펴보면 아래와 같다.
+Incoming references를 살펴보면 아래와 같다.
 
 HttpSession와 연관되는 Servlet Internal 클래스와 T4CConnection 클래스가 확인된다.
 
@@ -207,7 +205,7 @@ Total: 30 of 1,000 entries; 970 more
 
 <br>
 
-CLOB 객체에 대해 freeTemorary() 호출하여 명시적으로 정리를 하면,
+CLOB 객체에 대해 freeTemporary()를 호출하여 명시적으로 정리하면,
 
 아래처럼 HttpSession의 strong references 만 보여지고, T4CConnection 클래스에서는 정리된 것이 확인된다.
 
