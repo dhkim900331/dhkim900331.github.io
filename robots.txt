@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://dhkim900331.github.io/sitemap.xml
+Sitemap: https://dhkim900331.github.io/sitemap-2026.xml
