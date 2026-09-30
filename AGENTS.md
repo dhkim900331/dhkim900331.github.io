@@ -33,8 +33,29 @@ and clearly bounded conclusions.
   outside fenced code blocks, lists, tables, and blockquotes. Confirm the thresholds before
   changing source text.
 
+## SR-derived technical posts
+
+- Treat SR and BUG material as private evidence, not public sources. Do not publish an SR/
+  BUG number, customer identity, environment identifier, internal URL, or raw support log.
+- Write the reusable technical mechanism, then provide an anonymized configuration or a
+  verification command. Keep the explanation concise, but retain the causal link between a
+  product change, its design purpose, and the observed behavior.
+- For Apache/OHS `ProxyPassMatch` cases with `$1` backreferences, distinguish the configured
+  worker from the runtime URL, explain matchable workers and the backend parent/child worker
+  hierarchy, and state whether the effect happens at startup-time configuration registration
+  or request routing. Prefer specific `ProxyPass` rules before a broad `ProxyPassMatch`.
+- For TLS capability posts, separate version facts from a live handshake result. Prefer a
+  reproducible `openssl s_client` check and identify the actual TLS termination point before
+  drawing a conclusion.
+- Use public upstream documentation or commits as references whenever available. Label any
+  conclusion inferred from support evidence as an inference rather than a documented fact.
+
 ## Required checks before a commit or publication proposal
 
 Run `python tools/blog_audit.py`. Explain every warning that affects the new or edited
 post. Block publication for duplicate output URLs, Windows/file image paths, or suspected
 real secrets until resolved or explicitly approved.
+
+Also run the available site build and `git diff --cached --check`. If a required check cannot
+run because of the local runtime, record the exact blocker. Report public post links only
+after the push succeeds and the deployed URL is reachable.
